@@ -1,0 +1,11 @@
+.form-container {
+    display: flex;
+    flex-direction: column;
+
+    margin: 200px auto;
+    padding: 20px;
+
+ 
+
+  }
+  
