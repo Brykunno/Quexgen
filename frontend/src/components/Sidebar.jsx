@@ -3,7 +3,7 @@ import { SidebarData } from "./SidebarData";
 import { SidebarData_teacher } from "./SidebarData_teacher";
 import api from "../api";
 import Avatar from '@mui/material/Avatar';
-import Stack from '@mui/material/Stack';
+
 
 function stringToColor(string) {
   let hash = 0;
@@ -117,8 +117,16 @@ function Sidebar() {
     }
   return (
     <div className="Sidebar">
-        <div className="text-center p-9">
-        <Avatar {...stringAvatar(full_name)} />
+     
+        <div className='w-full text-center'>
+          <div>
+            <ul>
+              <li className='px-24 mt-4'>     <Avatar {...stringAvatar(full_name)} size='large' /> </li>
+              <li className='text-white mb-3 mt-3'>   {full_name}</li>
+            </ul>
+   
+     
+        </div>
         </div>
       <ul className="SidebarList">
         {data}

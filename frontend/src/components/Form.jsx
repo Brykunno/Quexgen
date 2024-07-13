@@ -3,6 +3,9 @@ import api from "../api";
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import "../styles/Form.css"
+import LoadingIndicator from "./LoadingIndicator";
+
+
 
 import { Button, Checkbox, Label, TextInput,Card } from "flowbite-react";
 
@@ -63,9 +66,11 @@ function Form({ route, method }) {
           required
         />
       </div>
-
+      <div className="text-center w-full">
+      {loading && <LoadingIndicator/>}
+      </div>
       <Button type="submit" color="success">
-        LOGIN
+        LOGIN 
       </Button>
     </form>
     </Card>

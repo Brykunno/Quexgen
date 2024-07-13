@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table of Specifications for Bloom's Taxonomy</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Table of Specifications for Bloom's Taxonomy</h1>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Create ToS</a>
+            <a href="#">View ToS</a>
+            <a href="#">Help</a>
+            <a href="#">Logout</a>
+        </nav>
+    </header>
+    <main>
+        <section class="course-info">
+            <h2>Course Information</h2>
+            <label for="course-title">Course Title:</label>
+            <input type="text" id="course-title" name="course-title">
+            <label for="instructor-name">Instructor Name:</label>
+            <input type="text" id="instructor-name" name="instructor-name">
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date">
+        </section>
+
+        <section class="learning-objectives">
+            <h2>Learning Objectives</h2>
+            <label for="objective-description">Objective Description:</label>
+            <input type="text" id="objective-description" name="objective-description">
+            <label for="bloom-level">Bloom's Level:</label>
+            <select id="bloom-level" name="bloom-level">
+                <option value="remembering">Remembering</option>
+                <option value="understanding">Understanding</option>
+                <option value="applying">Applying</option>
+                <option value="analyzing">Analyzing</option>
+                <option value="evaluating">Evaluating</option>
+                <option value="creating">Creating</option>
+            </select>
+            <button id="add-sub-objective">Add Sub-Objective</button>
+        </section>
+
+        <section class="content-areas">
+            <h2>Content Areas</h2>
+            <label for="content-title">Content Area Title:</label>
+            <input type="text" id="content-title" name="content-title">
+            <label for="content-description">Content Description:</label>
+            <input type="text" id="content-description" name="content-description">
+            <label for="linked-objectives">Associated Learning Objectives:</label>
+            <select id="linked-objectives" name="linked-objectives" multiple>
+                <!-- Options will be dynamically generated based on Learning Objectives -->
+            </select>
+        </section>
+
+        <section class="assessment-methods">
+            <h2>Assessment Methods</h2>
+            <label for="assessment-type">Assessment Type:</label>
+            <select id="assessment-type" name="assessment-type">
+                <option value="quiz">Quiz</option>
+                <option value="assignment">Assignment</option>
+                <option value="exam">Exam</option>
+                <option value="project">Project</option>
+            </select>
+            <label for="assessment-description">Description:</label>
+            <input type="text" id="assessment-description" name="assessment-description">
+            <label for="linked-objectives-assessment">Linked Objectives:</label>
+            <select id="linked-objectives-assessment" name="linked-objectives-assessment" multiple>
+                <!-- Options will be dynamically generated based on Learning Objectives -->
+            </select>
+            <label for="bloom-level-assessment">Bloom's Level Coverage:</label>
+            <select id="bloom-level-assessment" name="bloom-level-assessment" multiple>
+                <!-- Options will be dynamically generated based on Bloom's Levels -->
+            </select>
+        </section>
+
+        <section class="interactive-table">
+            <h2>Interactive Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Content Area</th>
+                        <th>Learning Objectives</th>
+                        <th>Bloom's Level</th>
+                        <th>Assessment Method</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr>
+                        <td><input type="text"></td>
+                        <td><input type="text"></td>
+                        <td><input type="text"></td>
+                        <td><input type="text"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button id="add-row">Add Row</button>
+        </section>
+
+        <section class="actions">
+            <button id="save-draft">Save Draft</button>
+            <button id="export">Export</button>
+            <button id="share">Share</button>
+            <a href="#" id="help">Help</a>
+        </section>
+    </main>
+</body>
+</html>
