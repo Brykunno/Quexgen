@@ -4,6 +4,9 @@ import { Button, Checkbox, Label, TextInput,  Select } from "flowbite-react";
 function TOSform() {
   return (
     <div className='mb-5'> 
+    <h1 className='text-3xl'>Course information</h1>
+    <hr />
+    <br />
      <div className="flex w-full flex-col gap-4">
 
         <div className='flex w-full gap-4'>

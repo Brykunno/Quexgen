@@ -29,6 +29,7 @@ background-color: #dee8f7;
     margin:0;
     padding: 0;
     font-family: 'Poppins';
+   
  }
 
  .Sidebar{
@@ -46,7 +47,10 @@ background-color: #dee8f7;
 .content{
 
     padding: 16px; 
+    padding-left: 30px;
+    padding-right: 30px;
 }
+
 
 .SidebarList{
     height: auto;
