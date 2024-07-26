@@ -78,6 +78,7 @@ function App() {
       
  
     <Route path="/login" element={<Login />} />
+    <Route path="/add_user" element={<Add_userlogout />} />
     <Route path="/logout" element={<Logout />} />
     <Route path="*" element={<NotFound />} />
     </Routes>

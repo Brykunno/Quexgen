@@ -6,8 +6,18 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import TableRow from "@mui/material/TableRow";
-import { Label, Textarea, TextInput } from "flowbite-react";
+import { Card,Progress,Label, Textarea, TextInput,Button,RangeSlider,Modal,Select } from "flowbite-react";
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import TOSmodal from "./TOSmodal";
+import api from "../api";
+import { useNavigate } from "react-router-dom";
+import LoadingPage from "./LoadingPage";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
+import { useState,useEffect } from "react";
+import ToastMessage from "./Toast";
 
 
 function createData(
@@ -44,12 +54,36 @@ function createData(
 
 
 
-export default function TOS() {
+
+ function TOS() {
+
+  if (localStorage.getItem('lessonsData') === null) {
+    
+localStorage.setItem('lessonsData',JSON.stringify([{  
+  topic: '',
+learning_outcomes: '',
+teachingHours: 0,
+allocation: 0,
+items: 0,
+remembering: 0,
+understanding: 0,
+applying: 0,
+analyzing: 0,
+evaluating: 0,
+creating: 0,
+total: 0,
+placement: '',
+totalItems:0,
+tos_teacher: 0,
+}]));
+  } 
+
+
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [lesson, setLesson] = React.useState(0);
   const [totalItems, setTotalItems] = React.useState(0);
-  const [lessonsData, setLessonsData] = React.useState([]);
+  const [lessonsDataInitial, setLessonsDatainitial] = React.useState([]);
 
   const [Remembering, setRemembering] = React.useState(0);
   const [Understanding, setUnderstanding] = React.useState(0);
@@ -57,6 +91,43 @@ export default function TOS() {
   const [Analyzing, setAnalyzing] = React.useState(0);
   const [Evaluating, setEvaluating] = React.useState(0);
   const [Creating, setCreating] = React.useState(0);
+  const [TotalTaxonomy, setTotalTaxonomy] = React.useState(0);
+
+  const [indexRow, setIndexRow] = React.useState(0);
+  
+  const [loading, setLoading] = useState(false);
+  const [Toast, setToast] = useState(false);
+  const navigate = useNavigate();
+
+  const [openModal, setOpenModal] = useState(false);
+
+  const [sample, setSample] = useState([]);
+
+
+  React.useEffect(() => {
+    // Retrieve lessons data from local storage on component mount
+    const storedLessonsString = localStorage.getItem('lessonsData');
+    if (storedLessonsString) {
+      setLessonsDatainitial(JSON.parse(storedLessonsString));
+    }
+  }, []);
+
+  const addLesson = (newLesson) => {
+    const updatedLessons = [...lessonsDataInitial, newLesson];
+    setLessonsDatainitial(updatedLessons);
+
+    // Store the updated lessons array in local storage
+    localStorage.setItem('lessonsData', JSON.stringify(updatedLessons));
+   
+  };
+
+  const lessonsDataStorage = localStorage.getItem('lessonsData');
+
+  // Parse the JSON string back to a JavaScript object
+  const lessonsData = JSON.parse(lessonsDataStorage);
+  
+  // Now you can use the `storedLessons` array as needed
+  console.log(lessonsData);
 
   
 const columns = [
@@ -87,7 +158,7 @@ const columns = [
     id: "remembering",
     label: (
       <span>
-        KNOWLEDGE/REMEMBERING <br />
+        Knowledge/<br />Remembering <br />
         {Remembering}%
       </span>
     ),
@@ -99,7 +170,7 @@ const columns = [
     id: "understanding",
     label: (
     <span>
-      COMPREHENSION/UNSERSTANDING <br />
+      Comprehension/<br />Understanding <br />
       {Understanding}%
     </span>
   ),
@@ -111,7 +182,7 @@ const columns = [
     id: "applying",
     label: (
       <span>
-        APPLICATION/APPLYING <br />
+        Application/<br />Applying <br />
         {Applying}%
       </span>
     ),
@@ -123,7 +194,7 @@ const columns = [
     id: "analyzing",
     label: (
     <span>
-      ANALYSIS/ANALYZING <br />
+      Analysis/<br />Analyzing <br />
       {Analyzing}%
     </span>
   ),
@@ -135,7 +206,7 @@ const columns = [
     id: "evaluating",
     label: (
       <span>
-        SYNTHESIS/EVALUATING <br />
+        Synthesis/<br />Evaluating <br />
         {Evaluating}%
       </span>
     ),
@@ -147,7 +218,7 @@ const columns = [
     id: "creating",
     label: (
       <span>
-        EVALUATION/CREATING <br />
+        Evaluation/<br />Creating <br />
         {Creating}%
       </span>
     ),
@@ -157,46 +228,42 @@ const columns = [
   },
   {
     id: "total",
-    label: "TOTAL",
+    label: "Total",
     minWidth: 100,
     align: "center",
     type: "number",
   },
   {
     id: "placement",
-    label: "ITEM PLACEMENT",
+    label: "Item Placement",
     minWidth: 170,
     align: "right",
     format: (value) => value.toFixed(2),
   },
 ];
 
-  React.useEffect(() => {
-    const initialData = Array.from({ length: lesson }, () => ({
-      teachingHours: 0,
-      allocation: 0,
-      items: 0,
-      remembering: 0,
-      understanding: 0,
-      applying: 0,
-      analyzing: 0,
-      evaluating: 0,
-      creating: 0,
-      total: 0,
-      placement: '',
-    }));
-    setLessonsData(initialData);
-  }, [lesson]);
+  // React.useEffect(() => {
+  //   const initialData = Array.from({ length: lesson }, () => ({
+  //     topic: '',
+  //     learning_outcomes: '',
+  //     teachingHours: 0,
+  //     allocation: 0,
+  //     items: 0,
+  //     remembering: 0,
+  //     understanding: 0,
+  //     applying: 0,
+  //     analyzing: 0,
+  //     evaluating: 0,
+  //     creating: 0,
+  //     total: 0,
+  //     placement: '',
+  //     totalItems:0,
+   
+  //   }));
+  //   setLessonsData(initialData);
+  // }, [lesson]);
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
+  
   const handleLessonChange = (event) => {
     setLesson(event.target.value);
   };
@@ -205,44 +272,70 @@ const columns = [
     setTotalItems(event.target.value);
   };
 
+  let getTotalTaxonomy = Number(Remembering) + Number(Understanding) + Number(Applying) + Number(Analyzing) + Number(Evaluating) + Number(Creating)
   const handleRememberingChange = (event) => {
 
-    setRemembering(event.target.value);
+    setRemembering(hundred(event.target.value));
+    setTotalTaxonomy(getTotalTaxonomy)
   };
 
 
-  function updateTable(){
-    const newData = [...lessonsData];
-    for(let i = 0; i<newData.length; i++){
-      newData[i]['allocation'] = newData[i]['allocation'];
-      newData[i]['items'] =newData[i]['items'] ;
-      newData[i]['remembering'] = newData[i]['remembering'];
-    }
-  }
-
   const handleUnderstandingChange = (event) => {
-    setUnderstanding(event.target.value);
+    setUnderstanding(hundred(event.target.value));
+    setTotalTaxonomy(getTotalTaxonomy)
   };
 
   const handleApplyingChange = (event) => {
-    setApplying(event.target.value);
+    setApplying(hundred(event.target.value));
+    setTotalTaxonomy(getTotalTaxonomy)
   };
 
   const handleAnalyzingChange = (event) => {
-    setAnalyzing(event.target.value);
+    setAnalyzing(hundred(event.target.value));
+    setTotalTaxonomy(getTotalTaxonomy)
   };
 
   const handleEvaluatingChange = (event) => {
-    setEvaluating(event.target.value);
+    setEvaluating(hundred(event.target.value));
+    setTotalTaxonomy(getTotalTaxonomy)
   };
 
   const handleCreatingChange = (event) => {
-    setCreating(event.target.value);
+    setCreating(hundred(event.target.value));
+    setTotalTaxonomy(getTotalTaxonomy)
   };
+
+  const handleLessconClick = (event) => {
+    setLesson(lesson+1)
+  }
+
+   function checkTaxonomy(getTotalTaxonomy){
+    let check = 100-getTotalTaxonomy
+
+    if(check >= 0){
+      return <span className="w-full">{check}% remaining</span>
+    }
+    else{
+      return <span className="w-full text-red-700">Taxonomy allocation exceeds 100%</span>
+    }
+
+   }
+
+   function hundred(value){
+    if(value < 0 || value > 100){
+      return 0
+
+    }
+    else{
+      return value
+    }
+   }
+  
+  
 
   function getAllocation(hours,totalHours){
 
-    return (hours/totalHours)*100
+    return Math.round((hours / totalHours) * 100);
   }
 
 // let getTotalHours = lessonsData.reduce((acc, data) => {
@@ -263,7 +356,7 @@ function getTotalHours(){
 
 function getNumItems(totalItems,allocation){
   const allocationDecimal = allocation / 100;
-  return totalItems * allocationDecimal;
+  return Math.round(totalItems * allocationDecimal);
  
 
 }
@@ -326,18 +419,19 @@ function getPlacement(total,placements){
 
 }
 
- 
 const handleLessonDataChange = (index, field, value) => {
+  // Clone the lessonsData array to avoid direct mutation
   const newData = [...lessonsData];
+
+  // Update the specific field in the corresponding lesson object
   newData[index][field] = value;
 
+  // Log the updated lessonsData for debugging
+  console.log('Lessons Data:', newData);
+
   if (field === 'teachingHours') {
- 
-
     for (let i = 0; i < newData.length; i++) {
-
-      
-
+      // Recalculate fields based on the updated teachingHours
       newData[i]['allocation'] = getAllocation(Number(newData[i][field]), getTotalHours());
       newData[i]['items'] = getNumItems(totalItems, newData[i]['allocation']);
       newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
@@ -355,46 +449,32 @@ const handleLessonDataChange = (index, field, value) => {
         newData[i]['creating']
       );
 
-      newData[i]['placement'] = getPlacement(newData[i]['total'],placements);
+      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+      newData[i]['totalItems'] = totalItems;
     }
   }
 
-  setLessonsData(newData);
+  // Update the state with the new data
+  setLessonsDatainitial(newData);
+
+  // Save the updated lessonsData to localStorage
+  localStorage.setItem('lessonsData', JSON.stringify(newData));
 };
 
- 
 
-  const handleLessonHoursDataChange = (index, field, value) => {
-    const newData = [...lessonsData];
-    newData[index][field] = value;
-  
-    setLessonsData(newData);
-  };
+
+
+
+
 
 
 
 
   const rows = lessonsData.map((data, index) =>
     createData(
-      <Textarea
-        id={`topic-${index}`}
-        value={data.topic}
-        onChange={(e) => handleLessonDataChange(index, 'topic', e.target.value)}
-        required
-      />,
-      <Textarea
-        id={`learning_outcomes-${index}`}
-        value={data.learning_outcomes}
-        onChange={(e) => handleLessonDataChange(index, 'learning_outcomes', e.target.value)}
-        required
-      />,
-      <TextInput
-        id={`teaching_hours-${index}`}
-        type="number"
-        value={data.teachingHours}
-        onChange={(e) => handleLessonDataChange(index, 'teachingHours', e.target.value)}
-        required
-      />,
+    <div className="max-w-36  overflow-hidden" key={index}> {data.topic}</div>,
+    <div className="max-w-36  overflow-hidden" key={index}> {data.learning_outcomes}</div>,
+     data.teachingHours,
      
      data.allocation,
      data.items,
@@ -412,64 +492,646 @@ const handleLessonDataChange = (index, field, value) => {
     )
   );
 
+  const handleModalRow = (event,index) => {
+    setOpenModal(true)
+    setIndexRow(index)
+   
+  }
+
+ 
+  
+
+const removeLesson = (lessonsData) =>{
+  let myArray = lessonsData;
+
+// Check if the array is not null and has elements
+if (myArray && myArray.length > 0) {
+  // Remove the last item from the array
+  myArray.pop();
+
+  setLessonsDatainitial(myArray)
+  // Save the updated array back to local storage
+  localStorage.setItem('lessonsData', JSON.stringify(myArray));
+} else {
+  console.log('Array is empty or does not exist.');
+}
+}
+
+
+
+  function inputModal(indexRow,lessonsData){
+    if(lessonsData[indexRow] === undefined){
+      return 0
+    }
+    else{
+      return <div>   <div className="mb-4">
+      <div className="mb-2 block">
+        <Label htmlFor={`topic-${indexRow}`} value="Lesson/Topic" />
+      </div>
+      <Textarea
+        id={`topic-${indexRow}`}
+        value={lessonsData[indexRow]['topic']}
+        className="min-h-44"
+        onChange={(e) => handleLessonDataChange(indexRow, 'topic', e.target.value)}
+        required
+      />
+    </div>
+    <div className="mb-4">
+      <div className="mb-2 block">
+        <Label htmlFor={`learning_outcomes-${indexRow}`} value="Learning Outcomes" />
+      </div>
+      <Textarea
+        id={`learning_outcomes-${indexRow}`}
+        value={lessonsData[indexRow]['learning_outcomes']}
+         className="min-h-44"
+        onChange={(e) => handleLessonDataChange(indexRow, 'learning_outcomes', e.target.value)}
+        required
+      />
+    </div>
+    <div className="mb-4">
+      <div className="mb-2 block">
+        <Label htmlFor={`teaching_hours-${indexRow}`} value="No. of Teaching Hours" />
+      </div>
+      <TextInput
+        id={`teaching_hours-${indexRow}`}
+        type="number"
+        value={lessonsData[indexRow]['teachingHours']}
+        onChange={(e) => handleLessonDataChange(indexRow, 'teachingHours', e.target.value)}
+        required
+      />
+    </div>
+
+    <div className="mb-4">
+      <div className="mb-2 block">
+        <Label htmlFor={`teaching_hours-${indexRow}`} value="% of Allocation" />
+      </div>
+    {lessonsData[indexRow]['allocation']}%
+    </div>
+
+    <div className="mb-4">
+      <div className="mb-2 block">
+        <Label htmlFor={`teaching_hours-${indexRow}`} value="Number of Items" />
+      </div>
+    {lessonsData[indexRow]['items']}
+    </div>
+
+    <div className="mb-4">
+      <div className="mb-2 block">
+        <Label htmlFor={`teaching_hours-${indexRow}`} value={`Knowledge/Remembering ${Remembering}%`} />
+      </div>
+    {lessonsData[indexRow]['remembering']}
+    </div>
+
+    <div className="mb-4">
+      <div className="mb-2 block">
+        <Label htmlFor={`teaching_hours-${indexRow}`} value={`Comprehension/Understanding ${Understanding}%`} />
+      </div>
+    {lessonsData[indexRow]['understanding']}
+    </div>
+
+    <div className="mb-4">
+      <div className="mb-2 block">
+        <Label htmlFor={`teaching_hours-${indexRow}`} value={`Application/Applying ${Applying}%`} />
+      </div>
+    {lessonsData[indexRow]['applying']}
+    </div>
+    
+    <div className="mb-4">
+      <div className="mb-2 block">
+        <Label htmlFor={`teaching_hours-${indexRow}`} value={`Analysis/Analyzing ${Analyzing}%`} />
+      </div>
+    {lessonsData[indexRow]['analyzing']}
+    </div>
+
+    <div className="mb-4">
+      <div className="mb-2 block">
+        <Label htmlFor={`teaching_hours-${indexRow}`} value={`Synthesis/Evaluating ${Evaluating}%`} />
+      </div>
+    {lessonsData[indexRow]['evaluating']}
+    </div>
+
+    <div className="mb-4">
+      <div className="mb-2 block">
+        <Label htmlFor={`teaching_hours-${indexRow}`} value={`Evaluation/Creating ${Creating}%`} />
+      </div>
+    {lessonsData[indexRow]['creating']}
+    </div>
+
+    <div className="mb-4">
+      <div className="mb-2 block">
+        <Label htmlFor={`teaching_hours-${indexRow}`} value="Total" />
+      </div>
+    {lessonsData[indexRow]['total']}
+    </div>
+
+    <div className="mb-4">
+      <div className="mb-2 block">
+        <Label htmlFor={`teaching_hours-${indexRow}`} value="Placement" />
+      </div>
+    {lessonsData[indexRow]['placement']}
+    </div>
+    
+    </div>
+    }
+  }
+
+
+  
+  const [Title,setTitle] = useState('');
+  const [Semester,setSemester] = useState('1st Semester');
+  const [AlumniYear,setAlumniYear] = useState('');
+  const [CourseCode,setCourseCode] = useState('');
+  const [Campus,setCampus] = useState('');
+  const [Department,setDepartment] = useState('');
+  const [ExaminationType,setExaminationType] = useState('');
+  const [CourseType,setCourseType] = useState('');
+  const [ExaminationDate,setExaminationDate] = useState('');
+  const [Faculty,setFaculty] = useState('');
+  const [Chairperson,setChairperson] = useState('');
+  const [Dean,setDean] = useState('');
+  const [Director,setDirector] = useState('');
+
+
+// Event handlers for each field
+const handleTitle = (event) => {
+  setTitle(event.target.value);
+  saveDataToLocalStorage();
+};
+
+const handleSemester = (event) => {
+  setSemester(event.target.value);
+  saveDataToLocalStorage();
+};
+
+const handleAlumniYear = (event) => {
+  setAlumniYear(event.target.value)
+  saveDataToLocalStorage();;
+};
+
+const handleCampus = (event) => {
+  setCampus(event.target.value)
+  saveDataToLocalStorage();;
+};
+
+const handleCourseCode = (event) => {
+  setCourseCode(event.target.value);
+  saveDataToLocalStorage();
+};
+
+const handleDepartment = (event) => {
+  setDepartment(event.target.value);
+  saveDataToLocalStorage();
+};
+
+const handleExaminationType = (event) => {
+  setExaminationType(event.target.value);
+  saveDataToLocalStorage();
+};
+
+const handleCourseType = (event) => {
+  setCourseType(event.target.value);
+  saveDataToLocalStorage();
+};
+
+const handleExaminationDate = (event) => {
+  setExaminationDate(event.target.value);
+  saveDataToLocalStorage();
+};
+
+const handleFaculty = (event) => {
+  setFaculty(event.target.value);
+  saveDataToLocalStorage();
+};
+
+const handleChairperson = (event) => {
+  setChairperson(event.target.value);
+  saveDataToLocalStorage();
+};
+
+const handleDean = (event) => {
+  setDean(event.target.value);
+  saveDataToLocalStorage();
+};
+
+const handleDirector = (event) => {
+  setDirector(event.target.value);
+  saveDataToLocalStorage();
+};
+
+// Function to save all data to local storage
+const saveDataToLocalStorage = () => {
+  const data = {
+    Title,
+    Semester,
+    AlumniYear,
+    Campus,
+    CourseCode,
+    Department,
+    ExaminationType,
+    CourseType,
+    ExaminationDate,
+    Faculty,
+    Chairperson,
+    Dean,
+    Director,
+  };
+
+  localStorage.setItem('formData', JSON.stringify(data));
+};
+
+// Call this function to load data from local storage when the component mounts
+const loadDataFromLocalStorage = () => {
+  const storedData = localStorage.getItem('formData');
+  if (storedData) {
+    const data = JSON.parse(storedData);
+    setTitle(data.Title || '');
+    setSemester(data.Semester || '');
+    setAlumniYear(data.AlumniYear || '');
+    setCampus(data.Campus || '');
+    setCourseCode(data.CourseCode || '');
+    setDepartment(data.Department || '');
+    setExaminationType(data.ExaminationType || '');
+    setCourseType(data.CourseType || '');
+    setExaminationDate(data.ExaminationDate || '');
+    setFaculty(data.Faculty || '');
+    setChairperson(data.Chairperson || '');
+    setDean(data.Dean || '');
+    setDirector(data.Director || '');
+
+  }
+};
+
+// Use the effect hook to load data when the component mounts
+useEffect(() => {
+  loadDataFromLocalStorage();
+ 
+}, []);
+
+// Example of how to call saveDataToLocalStorage when a form is submitted
+// const handleSubmit = (event) => {
+//   event.preventDefault();
+//   saveDataToLocalStorage();
+//   // Handle form submission logic
+// };
+
+for (let i = 0; i < localStorage.length; i++) {
+  const key = localStorage.key(i);
+  const value = localStorage.getItem(key);
+  console.log(`${key}: ${value}`);
+}
+
+
+
+ 
+// const handleSubmit =  (e) => {
+//   setLoading(true);
+//   const lessonsDataJson = JSON.stringify(lessonsData)
+//   console.log(lessonsDataJson)
+//   e.preventDefault();
+//   api
+//     .post("/api/tos-content/", { lessonsDataJson })
+//     .then((res) => {
+//       if (res.status === 201){
+//           alert("Note created!");  
+//           setLoading(false);
+//           setToast(true);
+//           localStorage.removeItem('lessonsData');
+//       } 
+//       else alert("Failed to make note.");
+  
+//     })
+//     .catch((err) => alert(err));
+// };
+
+const formDataStorage = localStorage.getItem('formData');
+const formData = formDataStorage ? JSON.parse(formDataStorage) : null;
+const handleSubmit = (e) => {
+  setLoading(true);
+  const formDataJson = JSON.stringify(formData);
+  const lessonsDataJson = JSON.stringify(lessonsData);
+  console.log(lessonsDataJson);
+  e.preventDefault();
+
+  api.post("/api/tos-info/", { formDataJson })
+    .then((firstRes) => {
+      console.log(firstRes);  // Log the entire response to see its structure
+      if (firstRes.status === 201) {
+        const id = firstRes.data[0].id;  // Assuming the ID is in the data of the response
+        alert("First request successful!");
+        console.log("ID of the first request: " + id);
+
+        const updatedLessonsData = lessonsData.map((lesson) => {
+          // Update the lesson object as needed, for example:
+          lesson.teacher_tos = id; // or any other modification
+          return lesson;
+        });
+      
+        const lessonsDataJson = JSON.stringify(updatedLessonsData);
+
+        return api.post("/api/tos-content/", { lessonsDataJson });
+      } else {
+        throw new Error("First request failed.");
+      }
+    }).catch((err) => alert(err))
+    .finally(() => setLoading(false));
+};
+
+
   return (
     <div>
+<form onSubmit={handleSubmit}>
+<div className='mb-5'> 
+
+   <h1 className='text-3xl'>Course Information</h1>
+   {/* <Progress progress={33} /> */}
+   <hr />
+   <br />
+   <Card className='max-w-3xl mx-auto'>
+    
+     <div className='w-full gap-4'>
+
+
+       {/* Title and Semester */}
+       <div className='w-full gap-4 flex flex-col sm:flex-row'>
+         <div className='w-full'>
+           <div className="mb-2 block">
+             <Label htmlFor="title" value="Title" />
+           </div>
+           <TextInput id="title" type="text" value={Title} onChange={handleTitle} />
+         </div>
+         <div className="w-full">
+           <div className="mb-2 block">
+             <Label htmlFor="semester" value="Semester" />
+           </div>
+           <Select id="semester" value={Semester} onChange={handleSemester} required>
+         
+             <option value="1st Semester">1st Semester</option>
+             <option value="2nd Semester">2nd Semester</option>
+         
+           </Select>
+         </div>
+       </div>
+   
+
+       {/* Alumni Year and Campus */}
+       <div className='w-full gap-4 flex flex-col sm:flex-row'>
+         <div className="w-full">
+           <div className="mb-2 block">
+             <Label htmlFor="alumni-year" value="Alumni Year" />
+           </div>
+           <TextInput id="title" type="text" value={AlumniYear} onChange={handleAlumniYear} />
+         </div>
+     
+         <div className="w-full">
+           <div className="mb-2 block">
+             <Label htmlFor="campus" value="Campus" />
+           </div>
+           <Select id="campus" value={Campus} onChange={handleCampus} required>
+             <option value="Main Campus">Main Campus</option>
+             <option value="Satellite Campus">Satellite Campus</option>
+           </Select>
+         </div>
+       </div>
+
+       {/* Course Code and Department */}
+       <div className='w-full gap-4 flex flex-col sm:flex-row'>
+         <div className='w-full'>
+           <div className="mb-2 block">
+             <Label htmlFor="course-code" value="Course Code" />
+           </div>
+           <TextInput id="course-code" type="text" value={CourseCode} onChange={handleCourseCode} />
+         </div>
+         <div className="w-full">
+           <div className="mb-2 block">
+             <Label htmlFor="department" value="Department" />
+           </div>
+           <Select id="department" value={Department} onChange={handleDepartment} required>
+             <option value="Computer Science">Computer Science</option>
+             <option value="Mathematics">Mathematics</option>
+             <option value="Physics">Physics</option>
+             <option value="Chemistry">Chemistry</option>
+           </Select>
+         </div>
+       </div>
+
+       {/* Type of Examination and Course Type */}
+       <div className='w-full gap-4 flex flex-col sm:flex-row'>
+         <div className="w-full">
+           <div className="mb-2 block">
+             <Label htmlFor="exam-type" value="Type of Examination" />
+           </div>
+           <Select id="exam-type" value={ExaminationType} onChange={handleExaminationType} required>
+             <option value="Written">Written</option>
+             <option value="Oral">Oral</option>
+             <option value="Practical">Practical</option>
+           </Select>
+         </div>
+         <div className='w-full'>
+           <div className="mb-2 block">
+             <Label htmlFor="course-type" value="Course Type" />
+           </div>
+           <TextInput id="course-type" type="text" value={CourseType} onChange={handleCourseType} />
+         </div>
+       </div>
+
+       {/* Date of Examination */}
+       <div className='w-full'>
+         <div className="mb-2 block">
+           <Label htmlFor="exam-date" value="Date of Examination" />
+         </div>
+         <TextInput id="exam-date" type="date" value={ExaminationDate} onChange={handleExaminationDate} />
+       </div>
+
+       {/* Faculty */}
+       <div className='w-full'>
+         <div className="mb-2 block">
+           <Label htmlFor="faculty" value="Faculty" />
+         </div>
+         <TextInput id="faculty" type="text" value={Faculty} onChange={handleFaculty} />
+       </div>
+
+       {/* Department Chairperson */}
+       <div className='w-full'>
+         <div className="mb-2 block">
+           <Label htmlFor="chairperson" value="Department Chairperson" />
+         </div>
+         <TextInput id="chairperson" type="text" value={Chairperson} onChange={handleChairperson} />
+       </div>
+
+       {/* College Dean */}
+       <div className='w-full'>
+         <div className="mb-2 block">
+           <Label htmlFor="dean" value="College Dean" />
+         </div>
+         <TextInput id="dean" type="text" value={Dean} onChange={handleDean} />
+       </div>
+
+       {/* Campus Executive Director */}
+       <div className='w-full'>
+         <div className="mb-2 block">
+           <Label htmlFor="executive-director" value="Campus Executive Director" />
+         </div>
+         <TextInput id="executive-director" type="text" value={Director} onChange={handleDirector} />
+       </div>
+     </div>
+     {/* <button className='bg-blue-950 hover:bg-blue-800 py-2 text-white rounded-lg'>Next</button> */}
+
+  
+   </Card>
+
+</div>
+
+    <Modal show={openModal} onClose={() => setOpenModal(false)}>
+         <Modal.Header>Lesson {indexRow+1}</Modal.Header>
+         <Modal.Body>
+           <div className="space-y-6">
+             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+              
+
+        {inputModal(indexRow,lessonsData)}
+         
+       
+             </p>
+           
+           </div>
+         </Modal.Body>
+         <Modal.Footer>
+          <div className=" w-full">
+           <Button onClick={() => setOpenModal(false)} className="mx-auto">Done</Button>
+           </div>
+         </Modal.Footer>
+       </Modal>
+       {Toast  && <ToastMessage message = "Table successfully Created!"/>}
+      {loading  && <LoadingPage/>}
+      
       <h1 className="text-3xl">Course content</h1>
+      {/* <Progress progress={66} /> */}
       <hr />
       <br />
+      <Card>
+       
+<div className="flex gap-3"> 
+        <div className=" max-w-md">
       <div>
         <div className="mb-2 block">
           <Label htmlFor="totalItems" value="Total of Items" />
         </div>
         <TextInput id="totalItems" type="number" required value={totalItems} onChange={handleTotalItemsChange} />
       </div>
-      {placements}
+      {/* {placements} */}
 
-      <div className="mb-3">
+      {/* <div className="mb-3">
         <div className="mb-2 block">
           <Label htmlFor="numLesson" value="Number of Lesson" />
         </div>
         <TextInput id="numLesson" type="number" required value={lesson} onChange={handleLessonChange} />
+      </div> */}
       </div>
 
-      <div className="flex gap-4 ">
+      <Card className=" gap-4 mb-5  w-full p-3"> 
       <div>
-        <div className="mb-2 block">
-          <Label htmlFor="Remembering" value="Remembering" />
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Remembering" />
         </div>
-        <TextInput id="Remembering" type="number" required value={Remembering} onChange={handleRememberingChange} />
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={Remembering} onChange={handleRememberingChange} />
+        <div className="flex">
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Remembering}  onChange={handleRememberingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
       </div>
+
+
       <div>
-        <div className="mb-2 block">
-          <Label htmlFor="Understanding" value="Understanding" />
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Understanding" />
         </div>
-        <TextInput id="Understanding" type="number" required value={Understanding} onChange={handleUnderstandingChange} />
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={Understanding} onChange={handleUnderstandingChange} />
+        <div className="flex">
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Understanding}  onChange={handleUnderstandingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
       </div>
+
+
       <div>
-        <div className="mb-2 block">
-          <Label htmlFor="Applying" value="Applying" />
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Applying" />
         </div>
-        <TextInput id="Applying" type="number" required value={Applying} onChange={handleApplyingChange} />
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={Applying} onChange={handleApplyingChange} />
+        <div className="flex">
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Applying}  onChange={handleApplyingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
       </div>
+
+
       <div>
-        <div className="mb-2 block">
-          <Label htmlFor="Analyzing" value="Analyzing" />
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Analyzing" />
         </div>
-        <TextInput id="Analyzing" type="number" required value={Analyzing} onChange={handleAnalyzingChange} />
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={Analyzing} onChange={handleAnalyzingChange} />
+        <div className="flex">
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Analyzing}  onChange={handleAnalyzingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
       </div>
+
+
+
       <div>
-        <div className="mb-2 block">
-          <Label htmlFor="Evaluating" value="Evaluating" />
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Evaluating" />
         </div>
-        <TextInput id="Evaluating" type="number" required value={Evaluating} onChange={handleEvaluatingChange} />
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={Evaluating} onChange={handleEvaluatingChange} />
+        <div className="flex">
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Evaluating}  onChange={handleEvaluatingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
       </div>
+
+
       <div>
-        <div className="mb-2 block">
-          <Label htmlFor="Creating" value="Creating" />
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Creating" />
         </div>
-        <TextInput id="Creating" type="number" required value={Creating} onChange={handleCreatingChange} />
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={Creating} onChange={handleCreatingChange} />
+        <div className="flex">
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Creating}  onChange={handleCreatingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
       </div>
+      <hr  />
+      <div className=" flex justify-between"> 
+      <span className="max-w-96 mr-20">Total:</span>
+      <span className="w-full text-center">
+      <Progress
+      
+      progress={getTotalTaxonomy}
+      progressLabelPosition="inside"
+  
+    
+      size="lg"
+     
+    
+    />
+   
+      {checkTaxonomy(getTotalTaxonomy)} </span>
+      <span className="max-w-96 ml-6 flex justify-end ">
+        <div className="w-10 font-bold">
+        {getTotalTaxonomy}%</div></span> 
+      
       </div>
+      </Card>
+
+      </div>
+
+    
 
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
         <TableContainer>
@@ -484,12 +1146,12 @@ const handleLessonDataChange = (index, field, value) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+              {rows.map((row,index) => (
+                <TableRow hover role="checkbox" tabIndex={-1} key={index} onClick={(event) => handleModalRow(event, index)} className="cursor-pointer ">
                   {columns.map((column) => {
                     const value = row[column.id];
                     return (
-                      <TableCell key={column.id} align={column.align}>
+                      <TableCell key={column.id} align={column.align} > 
                         {column.format && typeof value === "number"
                           ? column.format(value)
                           : value}
@@ -501,16 +1163,44 @@ const handleLessonDataChange = (index, field, value) => {
             </TableBody>
           </Table>
         </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+   
       </Paper>
+      <div className="w-full">
+        <div className="  w-full">
+     <div  className=" mt-3 flex gap-3">
+      <Button  onClick={() => addLesson({  
+        topic: '',
+      learning_outcomes: '',
+      teachingHours: 0,
+      allocation: 0,
+      items: 0,
+      remembering: 0,
+      understanding: 0,
+      applying: 0,
+      analyzing: 0,
+      evaluating: 0,
+      creating: 0,
+      total: 0,
+      placement: '',
+      totalItems:0,})}> <AddCircleOutlineIcon className="mr-2 "/>Add Lesson</Button>
+
+      <Button color="failure" onClick={() => removeLesson(lessonsData)}><RemoveCircleOutlineIcon className="mr-2"/>Decrease Lesson</Button>
+
+      <Button color="failure" ><VisibilityIcon className="mr-2"/>Preview</Button>
+      </div>
+      </div>
+      </div>
+
+      
+      
+      </Card>
+
+      <div className="mt-3">
+      <Button className="mx-auto" type="submit" color="success">Submit</Button>
+      </div>
+      </form>
     </div>
   );
 }
+
+export default TOS

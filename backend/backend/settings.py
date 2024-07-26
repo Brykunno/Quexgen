@@ -101,7 +101,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'quexgen_db',
+        'NAME': 'capstone_quexgen',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
