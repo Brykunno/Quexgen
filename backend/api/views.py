@@ -1,14 +1,14 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics
-from .serializers import UserSerializer,ExamSerializer,TOSContentSerializer,TOSInfoSerializer
+from .serializers import *
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
-from .models import Exam,TOS_Content,TOS_info
+from .models import *
 import json
 
 
@@ -43,28 +43,8 @@ class TeacherRetrieve(generics.ListCreateAPIView):
         user = self.request.user
         return User.objects.filter(is_staff=1)
 
-class ExamListCreate(generics.ListCreateAPIView):
-    serializer_class = ExamSerializer
-    permission_classes = [IsAuthenticated]
-    
-    def get_queryset(self):
-        user = self.request.user
-        return Exam.objects.filter(teacher=user)
-    
-    def perform_create(self, serializer):
-        if serializer.is_valid():
-            serializer.save(teacher=self.request.user)
-        else:
-            print(serializer.error)
-        return super().perform_create(serializer)
 
-class ExamDelete(generics.DestroyAPIView):
-    serializer_class = ExamSerializer
-    permission_classes = [IsAuthenticated]
-    
-    def get_queryset(self):
-        user = self.request.user
-        return Exam.objects.filter(teacher=user)
+
 
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -152,6 +132,120 @@ class TOSInfoCreateView(generics.ListCreateAPIView):
             
         if serializer.is_valid():
                 serializer.save(teacher_tos_info=user)
+                response_data.append(serializer.data)
+        else:
+                print("Validation errors:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(response_data, status=status.HTTP_201_CREATED)
+    
+    
+
+
+class ExamCreateView(generics.ListCreateAPIView):
+    serializer_class = ExamSerializer
+    permission_classes = [AllowAny]  # Update as per your permission requirements
+    
+    def get_queryset(self):
+        user = self.request.user
+        return Exam.objects.filter(tos_id=user.id)
+
+    def post(self, request):
+        json_string = request.data.get('examDataJson', '[]')
+        
+        try:
+            # Convert the JSON string to a Python list of dictionaries
+            lessons_data = json.loads(json_string)
+        except json.JSONDecodeError:
+            return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Print lessons_data for debugging purposes
+        print("Exam Data:", lessons_data)
+        
+     
+        response_data = []
+
+        
+        print("Processing exam:", lessons_data)
+        serializer = ExamSerializer(data=lessons_data)
+            
+        if serializer.is_valid():
+                serializer.save()
+                response_data.append(serializer.data)
+        else:
+                print("Validation errors:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(response_data, status=status.HTTP_201_CREATED)
+    
+    
+
+class QuestionsCreateView(generics.ListCreateAPIView):
+    serializer_class = QuestionsSerializer
+    permission_classes = [AllowAny]  # Update as per your permission requirements
+    
+    def get_queryset(self):
+        user = self.request.user
+        return Questions.objects.filter(exam_id=user.id)
+
+    def post(self, request):
+        json_string = request.data.get('formDataJson', '[]')
+        
+        try:
+            # Convert the JSON string to a Python list of dictionaries
+            lessons_data = json.loads(json_string)
+        except json.JSONDecodeError:
+            return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Print lessons_data for debugging purposes
+        print("Lessons Data:", lessons_data)
+        
+     
+        response_data = []
+
+        
+        print("Processing lesson:", lessons_data)
+        serializer = ExamSerializer(data=lessons_data)
+            
+        if serializer.is_valid():
+                serializer.save()
+                response_data.append(serializer.data)
+        else:
+                print("Validation errors:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(response_data, status=status.HTTP_201_CREATED)
+
+
+class AnswersCreateView(generics.ListCreateAPIView):
+    serializer_class = AnswersSerializer
+    permission_classes = [AllowAny]  # Update as per your permission requirements
+    
+    def get_queryset(self):
+        user = self.request.user
+        return Answers.objects.filter(question_id=user.id)
+
+    def post(self, request):
+        json_string = request.data.get('formDataJson', '[]')
+        
+        try:
+            # Convert the JSON string to a Python list of dictionaries
+            lessons_data = json.loads(json_string)
+        except json.JSONDecodeError:
+            return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Print lessons_data for debugging purposes
+        print("Lessons Data:", lessons_data)
+        
+     
+        response_data = []
+
+        
+        print("Processing lesson:", lessons_data)
+        serializer = ExamSerializer(data=lessons_data)
+            
+        if serializer.is_valid():
+                serializer.save()
                 response_data.append(serializer.data)
         else:
                 print("Validation errors:", serializer.errors)

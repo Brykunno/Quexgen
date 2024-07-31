@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Exam,TOS_Content,TOS_info
+from .models import *
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -31,11 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
     
     
-class ExamSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Exam
-        fields = ["id", "exam_title", "exam_instruction", "date_added", "teacher"]
-        extra_kwargs = {"teacher": {"read_only": True}}
+
 
 class TOSContentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -63,3 +59,20 @@ class TOSInfoSerializer(serializers.ModelSerializer):
             'Dean',
             'Director',
         ]
+        
+class ExamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Exam
+        fields = ["id", "exam_title", "exam_instruction", "date_added", "tos_id"]
+        
+        
+class QuestionsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Questions
+        fields = ["id", "question", "answer", "exam_id"]
+        
+class AnswersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Answers
+        fields = ["id", "answer_text", "choices", "question_id"]
+        

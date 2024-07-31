@@ -18,6 +18,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 
 import { useState,useEffect } from "react";
 import ToastMessage from "./Toast";
+import Exam from "./Exam";
 
 
 function createData(
@@ -78,7 +79,8 @@ tos_teacher: 0,
 }]));
   } 
 
-
+  let tos_id = 0
+  let exam_id = 0
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [lesson, setLesson] = React.useState(0);
@@ -107,6 +109,34 @@ tos_teacher: 0,
   React.useEffect(() => {
     // Retrieve lessons data from local storage on component mount
     const storedLessonsString = localStorage.getItem('lessonsData');
+    const remember = localStorage.getItem('Remembering');
+    const understand = localStorage.getItem('Understanding');
+    const apply = localStorage.getItem('Applying');
+    const analyze = localStorage.getItem('Analyzing');
+    const evaluate = localStorage.getItem('Evaluating');
+    const create = localStorage.getItem('Creating');
+    const totalitems = localStorage.getItem('totalItems');
+    if(remember){
+      setRemembering(remember)
+    }
+    if(understand){
+      setUnderstanding(understand)
+    }
+    if(apply){
+      setApplying(apply)
+    }
+    if(analyze){
+      setAnalyzing(analyze)
+    }
+    if(evaluate){
+      setEvaluating(evaluate)
+    }
+    if(create){
+      setCreating(create)
+    }
+    if(totalitems){
+      setTotalItems(totalitems)
+    }
     if (storedLessonsString) {
       setLessonsDatainitial(JSON.parse(storedLessonsString));
     }
@@ -270,6 +300,7 @@ const columns = [
 
   const handleTotalItemsChange = (event) => {
     setTotalItems(event.target.value);
+    localStorage.setItem('totalItems', event.target.value);
   };
 
   let getTotalTaxonomy = Number(Remembering) + Number(Understanding) + Number(Applying) + Number(Analyzing) + Number(Evaluating) + Number(Creating)
@@ -277,32 +308,39 @@ const columns = [
 
     setRemembering(hundred(event.target.value));
     setTotalTaxonomy(getTotalTaxonomy)
+    localStorage.setItem('Remembering', event.target.value);
   };
+
 
 
   const handleUnderstandingChange = (event) => {
     setUnderstanding(hundred(event.target.value));
     setTotalTaxonomy(getTotalTaxonomy)
+    localStorage.setItem('Understanding', event.target.value);
   };
 
   const handleApplyingChange = (event) => {
     setApplying(hundred(event.target.value));
     setTotalTaxonomy(getTotalTaxonomy)
+    localStorage.setItem('Applying',event.target.value);
   };
 
   const handleAnalyzingChange = (event) => {
     setAnalyzing(hundred(event.target.value));
     setTotalTaxonomy(getTotalTaxonomy)
+    localStorage.setItem('Analyzing', event.target.value);
   };
 
   const handleEvaluatingChange = (event) => {
     setEvaluating(hundred(event.target.value));
     setTotalTaxonomy(getTotalTaxonomy)
+    localStorage.setItem('Evaluating', event.target.value);
   };
 
   const handleCreatingChange = (event) => {
     setCreating(hundred(event.target.value));
     setTotalTaxonomy(getTotalTaxonomy)
+    localStorage.setItem('Creating', event.target.value);
   };
 
   const handleLessconClick = (event) => {
@@ -363,29 +401,29 @@ function getNumItems(totalItems,allocation){
 
 function getRemembering(remembering,items){
 
-  return (remembering/100)*items
+  return Math.round((remembering/100)*items)
 }
 
 function getUnderstanding(Understanding,items){
 
-  return (Understanding/100)*items
+  return Math.round((Understanding/100)*items)
 }
 
 function getApplying(Applying,items){
 
-  return (Applying/100)*items
+  return Math.round((Applying/100)*items)
 }
 function getAnalyzing(Analyzing,items){
 
-  return (Analyzing/100)*items
+  return Math.round((Analyzing/100)*items)
 }
 function getEvaluating(Evaluating,items){
 
-  return (Evaluating/100)*items
+  return Math.round((Evaluating/100)*items)
 }
 function getCreating(Creating,items){
 
-  return (Creating/100)*items
+  return Math.round((Creating/100)*items)
 }
 
 function getTotal(remembering,understanding,applying,analyzing,evaluating,creating){
@@ -767,12 +805,39 @@ useEffect(() => {
  
 }, []);
 
-// Example of how to call saveDataToLocalStorage when a form is submitted
-// const handleSubmit = (event) => {
-//   event.preventDefault();
-//   saveDataToLocalStorage();
-//   // Handle form submission logic
-// };
+
+
+
+
+
+// Function to save all data to local storage
+const saveDataToLocalStorageExam = () => {
+  const data = {
+    ExamTitle,
+    Instruction,
+    tos_id:0
+  };
+
+  localStorage.setItem('examData', JSON.stringify(data));
+};
+
+// Call this function to load data from local storage when the component mounts
+const loadDataFromLocalStorageExam = () => {
+  const storedData = localStorage.getItem('examData');
+  if (storedData) {
+    const data = JSON.parse(storedData);
+    setExamTitle(data.ExamTitle || '');
+    setInstruction(data.Instruction || '');
+  
+  }
+};
+
+// Use the effect hook to load data when the component mounts
+useEffect(() => {
+  loadDataFromLocalStorageExam();
+ 
+}, []);
+
 
 for (let i = 0; i < localStorage.length; i++) {
   const key = localStorage.key(i);
@@ -803,13 +868,114 @@ for (let i = 0; i < localStorage.length; i++) {
 //     .catch((err) => alert(err));
 // };
 
+
+const [examStates, setExamStates] = useState([]);
+const [ExamTitle, setExamTitle] = useState('');
+const [Instruction, setInstruction] = useState('');
+
+// let examDetails = [{
+//   exam_title: ExamTitle,
+//   exam_instruction: Instruction,
+//   tos_id: 0
+// }]
+
+
+const handleExamTitleChange = (event) => {
+  setExamTitle(event.target.value)
+  saveDataToLocalStorageExam()
+}
+
+const handleInstructionChange = (event) => {
+  setInstruction(event.target.value)
+  saveDataToLocalStorageExam()
+}
+console.log('examData: ',localStorage.getItem('examData'))
+
+
+
+const handleStateChange = (index, type, value) => {
+  const newStates = [...examStates];
+  if (type === 'question') {
+    newStates[index]['question'] = value;
+  } else {
+    
+    newStates[index]['choices'][type] = value;
+  }
+  setExamStates(newStates);
+  saveDataToLocalStorageQuestion()
+
+};
+
+useEffect(() => {
+ 
+  setExamStates(
+    Array.from({ length:totalItems }, () => ({
+      question: '',
+      choices: ['', '', '', ''],
+      exam_id: exam_id
+    }))
+  );
+
+    loadDataFromLocalStorageQuestion()
+  
+ 
+
+}, [totalItems, exam_id]);
+
+
+
+
+
+
+const saveDataToLocalStorageQuestion = () => {
+  const data = examStates
+ 
+
+  localStorage.setItem('questionData', JSON.stringify(data));
+};
+
+// Call this function to load data from local storage when the component mounts
+const loadDataFromLocalStorageQuestion = () => {
+  const storedData = localStorage.getItem('questionData');
+  console.log('storedData: ',storedData)
+  if (storedData) {
+    const data = JSON.parse(storedData);
+   
+    setExamStates(data || []);
+    
+  
+  }
+};
+
+console.log('examState:',localStorage.getItem('questionData'))
+console.log('Examsss2:',examStates)
+
+
+
+
+
+let examDetails = [{
+  exam_title: ExamTitle,
+  exam_instruction: Instruction,
+  tos_id: 0
+}];
+
+
+
+
+
 const formDataStorage = localStorage.getItem('formData');
 const formData = formDataStorage ? JSON.parse(formDataStorage) : null;
+
+const examDataStorage = localStorage.getItem('examData');
+const examData = examDataStorage ? JSON.parse(examDataStorage) : null;
 const handleSubmit = (e) => {
   setLoading(true);
   const formDataJson = JSON.stringify(formData);
   const lessonsDataJson = JSON.stringify(lessonsData);
-  console.log(lessonsDataJson);
+
+  let id_tos = 0
+ 
   e.preventDefault();
 
   api.post("/api/tos-info/", { formDataJson })
@@ -817,22 +983,43 @@ const handleSubmit = (e) => {
       console.log(firstRes);  // Log the entire response to see its structure
       if (firstRes.status === 201) {
         const id = firstRes.data[0].id;  // Assuming the ID is in the data of the response
+        id_tos = id
         alert("First request successful!");
         console.log("ID of the first request: " + id);
-
+        
         const updatedLessonsData = lessonsData.map((lesson) => {
           // Update the lesson object as needed, for example:
           lesson.teacher_tos = id; // or any other modification
           return lesson;
         });
-      
         const lessonsDataJson = JSON.stringify(updatedLessonsData);
 
-        return api.post("/api/tos-content/", { lessonsDataJson });
-      } else {
-        throw new Error("First request failed.");
-      }
-    }).catch((err) => alert(err))
+
+return api.post("/api/tos-content/", { lessonsDataJson })
+  .then((secondRes) => {
+    console.log(secondRes);
+    if (secondRes.status === 201) {
+      alert("Second request successful!");
+      console.log("Second request data:", secondRes.data);
+
+      // Third request example
+      const examData =  {
+        exam_title: ExamTitle,
+        exam_instruction: Instruction,
+        tos_id: id_tos
+      };
+
+      const examDataJson = JSON.stringify(examData)
+      console.log('examrequest:', examDataJson)
+      return api.post("/api/create-exams/", {examDataJson});
+    } else {
+      throw new Error("Second request failed.");
+    }
+  });
+} else {
+throw new Error("First request failed.");
+}
+}).catch((err) => alert(err))
     .finally(() => setLoading(false));
 };
 
@@ -846,7 +1033,7 @@ const handleSubmit = (e) => {
    {/* <Progress progress={33} /> */}
    <hr />
    <br />
-   <Card className='max-w-3xl mx-auto'>
+   <Card className='max-w-3xl mx-auto ' >
     
      <div className='w-full gap-4'>
 
@@ -1166,8 +1353,8 @@ const handleSubmit = (e) => {
    
       </Paper>
       <div className="w-full">
-        <div className="  w-full">
-     <div  className=" mt-3 flex gap-3">
+        <div className="  w-full flex flex-wrap ">
+     <div  className=" mt-3 flex gap-3   mx-auto">
       <Button  onClick={() => addLesson({  
         topic: '',
       learning_outcomes: '',
@@ -1194,6 +1381,11 @@ const handleSubmit = (e) => {
       
       
       </Card>
+
+      <Exam items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} Instruction={Instruction} handleInstructionChange={handleInstructionChange}  />
+
+
+    
 
       <div className="mt-3">
       <Button className="mx-auto" type="submit" color="success">Submit</Button>

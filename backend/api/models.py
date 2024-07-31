@@ -3,17 +3,6 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-class Exam(models.Model):
-    exam_title = models.CharField(max_length=100)
-    exam_instruction = models.TextField()
-    date_added = models.DateTimeField(auto_now_add=True)
-    teacher = models.ForeignKey(User, on_delete=models.CASCADE,related_name="exams")
-
-    def __str__(self):
-       
-        return self.title
-    class Meta:
-        db_table = 'exam'
         
 
 class TOS_info(models.Model):
@@ -34,7 +23,7 @@ class TOS_info(models.Model):
     teacher_tos_info = models.ForeignKey(User, on_delete=models.CASCADE, related_name="teacher_tos_info", null=True)
 
     def __str__(self):
-        return self.topic
+        return self.Title
 
     class Meta:
         db_table = 'tos_info'
@@ -62,5 +51,41 @@ class TOS_Content(models.Model):
 
     class Meta:
         db_table = 'tos_content'
+        
+
+
+class Exam(models.Model):
+    exam_title = models.CharField(max_length=100)
+    exam_instruction = models.TextField()
+    date_added = models.DateTimeField(auto_now_add=True)
+    tos_id = models.ForeignKey(TOS_info, on_delete=models.CASCADE,related_name="tos_id",null=True)
+
+    def __str__(self):
+       
+        return self.exam_title
+    class Meta:
+        db_table = 'exam'
+      
+class Questions(models.Model):
+    question =  models.TextField()
+    answer =  models.TextField()
+    exam_id = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name="exam_id", null=True)
+    
+    def __str__(self):
+        return self.question
+
+    class Meta:
+        db_table = 'questions'
+        
+class Answers(models.Model):
+    answer_text =  models.TextField()
+    choices =  models.TextField()
+    question_id = models.ForeignKey(Questions, on_delete=models.CASCADE, related_name="question_id", null=True)
+    
+    def __str__(self):
+        return self.answer_text
+
+    class Meta:
+        db_table = 'answers'
         
 

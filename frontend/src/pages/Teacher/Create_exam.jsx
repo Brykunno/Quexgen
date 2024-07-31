@@ -11,14 +11,13 @@ function Create_exam() {
   return (
     <div className='content'>
   
-  <Card>
+ 
         {/* <TOSform /> */}
 
         
  
       <TOS />
-    
-      </Card>
+  
     </div>
   );
 }
