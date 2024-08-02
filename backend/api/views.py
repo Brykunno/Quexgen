@@ -189,7 +189,7 @@ class QuestionsCreateView(generics.ListCreateAPIView):
         return Questions.objects.filter(exam_id=user.id)
 
     def post(self, request):
-        json_string = request.data.get('formDataJson', '[]')
+        json_string = request.data.get('itemQuestionJson', '[]')
         
         try:
             # Convert the JSON string to a Python list of dictionaries
@@ -203,14 +203,14 @@ class QuestionsCreateView(generics.ListCreateAPIView):
      
         response_data = []
 
-        
-        print("Processing lesson:", lessons_data)
-        serializer = ExamSerializer(data=lessons_data)
+        for lesson in lessons_data:
+         print("Processing lesson:", lesson)
+         serializer = QuestionsSerializer(data=lesson)
             
-        if serializer.is_valid():
+         if serializer.is_valid():
                 serializer.save()
                 response_data.append(serializer.data)
-        else:
+         else:
                 print("Validation errors:", serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
@@ -226,7 +226,7 @@ class AnswersCreateView(generics.ListCreateAPIView):
         return Answers.objects.filter(question_id=user.id)
 
     def post(self, request):
-        json_string = request.data.get('formDataJson', '[]')
+        json_string = request.data.get('itemAnswersJson', '[]')
         
         try:
             # Convert the JSON string to a Python list of dictionaries
@@ -241,13 +241,14 @@ class AnswersCreateView(generics.ListCreateAPIView):
         response_data = []
 
         
-        print("Processing lesson:", lessons_data)
-        serializer = ExamSerializer(data=lessons_data)
+        for lesson in lessons_data:
+         print("Processing lesson:", lesson)
+         serializer = AnswersSerializer(data=lesson)
             
-        if serializer.is_valid():
+         if serializer.is_valid():
                 serializer.save()
                 response_data.append(serializer.data)
-        else:
+         else:
                 print("Validation errors:", serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         

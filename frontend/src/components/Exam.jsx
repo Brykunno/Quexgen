@@ -1,10 +1,15 @@
 import React, { useState,useEffect } from 'react';
-import { Progress, Card, Textarea, Button, TextInput, Label } from "flowbite-react";
+import { Progress, Card, Textarea, Button, TextInput, Label,Radio } from "flowbite-react";
 
-function Exam ({ items, tos_id, lessonsData,handleStateChange,examStates,ExamTitle,handleExamTitleChange,Instruction,handleInstructionChange }) {
+function Exam ({ items, tos_id, lessonsData,handleStateChange,examStates,ExamTitle,handleExamTitleChange,Instruction,handleInstructionChange,handleRadioAnswer }) {
 
 
-
+function checkAnswer(localStore, answer){
+  if (localStore == answer)
+  {
+    return true
+  }
+}
 
   const categories = lessonsData.reduce((acc, cat,index) => {
     const start = stringToIntegerStart(String(cat.placement));
@@ -90,7 +95,11 @@ function Exam ({ items, tos_id, lessonsData,handleStateChange,examStates,ExamTit
             <div className='flex flex-wrap gap-10 mx-auto'>
               <div>
                 <div className='flex gap-3 w-80 mb-3'>
-                  <span className='mt-2'>a.</span>
+                <Radio   name={`answers-${index}`} value="A" className='mt-3' onChange={(e) => handleRadioAnswer(index, e.target.value) }
+                
+                checked={checkAnswer(item.answer,"A")}
+                />
+                  <span className='mt-2'>A.</span>
                   <Textarea
                     value={item.choices[0]}
                     onChange={(e) => handleStateChange(index, 0, e.target.value)}
@@ -98,7 +107,8 @@ function Exam ({ items, tos_id, lessonsData,handleStateChange,examStates,ExamTit
                 </div>
 
                 <div className='flex gap-3 w-80 mb-3'>
-                  <span className='mt-2'>b.</span>
+                <Radio  name={`answers-${index}`} value="B" className='mt-3' onChange={(e) => handleRadioAnswer(index, e.target.value)} checked={checkAnswer(item.answer,"B")}/>
+                  <span className='mt-2'>B.</span>
                   <Textarea
                     value={item.choices[1]}
                     onChange={(e) => handleStateChange(index, 1, e.target.value)}
@@ -107,7 +117,8 @@ function Exam ({ items, tos_id, lessonsData,handleStateChange,examStates,ExamTit
               </div>
               <div>
                 <div className='flex gap-3 w-80 mb-3'>
-                  <span className='mt-2'>c.</span>
+                <Radio  name={`answers-${index}`} value="C" className='mt-3' onChange={(e) => handleRadioAnswer(index, e.target.value)} checked={checkAnswer(item.answer,"C")}/>
+                  <span className='mt-2'>C.</span>
                   <Textarea
                     value={item.choices[2]}
                     onChange={(e) => handleStateChange(index, 2, e.target.value)}
@@ -115,7 +126,8 @@ function Exam ({ items, tos_id, lessonsData,handleStateChange,examStates,ExamTit
                 </div>
 
                 <div className='flex gap-3 w-80 mb-3'>
-                  <span className='mt-2'>d.</span>
+                <Radio  name={`answers-${index}`} value="D" className='mt-3' onChange={(e) => handleRadioAnswer(index, e.target.value)} checked={checkAnswer(item.answer,"D")}/>
+                  <span className='mt-2'>D.</span>
                   <Textarea
                     value={item.choices[3]}
                     onChange={(e) => handleStateChange(index, 3, e.target.value)}

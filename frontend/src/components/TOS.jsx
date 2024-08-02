@@ -906,13 +906,26 @@ const handleStateChange = (index, type, value) => {
 
 };
 
+const handleRadioAnswer = (index, value) => {
+  const newStates = [...examStates];
+ 
+    newStates[index]['answer'] = value;
+
+  setExamStates(newStates);
+  saveDataToLocalStorageQuestion()
+
+};
+
+
+
+
 useEffect(() => {
  
   setExamStates(
     Array.from({ length:totalItems }, () => ({
       question: '',
       choices: ['', '', '', ''],
-      exam_id: exam_id
+      answer: ''
     }))
   );
 
@@ -937,7 +950,7 @@ const saveDataToLocalStorageQuestion = () => {
 // Call this function to load data from local storage when the component mounts
 const loadDataFromLocalStorageQuestion = () => {
   const storedData = localStorage.getItem('questionData');
-  console.log('storedData: ',storedData)
+ 
   if (storedData) {
     const data = JSON.parse(storedData);
    
@@ -999,6 +1012,8 @@ return api.post("/api/tos-content/", { lessonsDataJson })
   .then((secondRes) => {
     console.log(secondRes);
     if (secondRes.status === 201) {
+
+ 
       alert("Second request successful!");
       console.log("Second request data:", secondRes.data);
 
@@ -1011,7 +1026,96 @@ return api.post("/api/tos-content/", { lessonsDataJson })
 
       const examDataJson = JSON.stringify(examData)
       console.log('examrequest:', examDataJson)
-      return api.post("/api/create-exams/", {examDataJson});
+      return api.post("/api/create-exams/", {examDataJson})
+      .then((thirdRes) => {
+        console.log(thirdRes);
+        if (thirdRes.status === 201) {
+    
+     
+          alert("third request successful!");
+          console.log("third request data:", thirdRes.data);
+          const exam_id = thirdRes.data[0].id
+          console.log("exam_id: ",exam_id)
+    
+          // Third request example
+          const itemQuestion = examStates.reduce((acc,data,index) =>{
+
+            if(data.question != '' && data.answer != ''){
+              acc.push( {
+                'question': data.question,
+                'answer': data.answer,
+                'exam_id': exam_id
+              })
+            }
+          
+            return acc
+          }, [])
+    
+          const itemQuestionJson = JSON.stringify(itemQuestion)
+          console.log('examrequest:', itemQuestionJson)
+          return api.post("/api/create-questions/", {itemQuestionJson})
+          .then((fourthRes) => {
+            console.log(fourthRes);
+            if (fourthRes.status === 201) {
+        
+         
+              alert("fourth request successful!");
+              console.log("fourth request data:", fourthRes.data);
+              const question_data = fourthRes.data
+              console.log("question_id: ",question_data)
+
+              const ques_len = question_data.length;
+              console.log('lengthques', ques_len);
+
+                let ques_ids = question_data.reduce((accu, data) => {
+                  accu.push(data.id);
+                  return accu;
+                }, []);
+              console.log('quesids',ques_ids)
+
+              let itemAnswers =  examStates.reduce((acc,data,index) =>{
+
+                 
+                  const answers = ['A','B','C','D']
+                  
+                  for(let i = 0; i< 4; i++){
+                    if(data.choices[i] != '' && data.answer != ''){
+                      acc.push({
+                        'answer_text': data.choices[i],
+                        'choices': answers[i],
+                        'question_id': ques_ids[index]
+                      });
+                    }
+                  }
+             
+                  return acc
+                }, [])
+
+              
+
+               
+          
+
+              console.log('itemAnswers: ',itemAnswers)
+        
+              // fourth request example
+         
+        
+              const itemAnswersJson = JSON.stringify(itemAnswers)
+      
+              return api.post("/api/create-answers/", {itemAnswersJson})
+              
+            } else {
+              throw new Error("fourth request failed.");
+            }
+          });
+    
+          
+        } else {
+          throw new Error("Third request failed.");
+        }
+      });
+
     } else {
       throw new Error("Second request failed.");
     }
@@ -1382,7 +1486,7 @@ throw new Error("First request failed.");
       
       </Card>
 
-      <Exam items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} Instruction={Instruction} handleInstructionChange={handleInstructionChange}  />
+      <Exam items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} Instruction={Instruction} handleInstructionChange={handleInstructionChange} handleRadioAnswer={handleRadioAnswer}  />
 
 
     
