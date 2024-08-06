@@ -20,6 +20,10 @@ import { useState,useEffect } from "react";
 import ToastMessage from "./Toast";
 import Exam from "./Exam";
 
+import ReactDOM from 'react-dom';
+import { PDFViewer } from '@react-pdf/renderer';
+import PdfFile from "./PdfFile";
+
 
 function createData(
   topic,
@@ -94,16 +98,16 @@ tos_teacher: 0,
   const [Evaluating, setEvaluating] = React.useState(0);
   const [Creating, setCreating] = React.useState(0);
   const [TotalTaxonomy, setTotalTaxonomy] = React.useState(0);
+  const [PdfModal, setPdfModal] = useState(false);
 
   const [indexRow, setIndexRow] = React.useState(0);
   
   const [loading, setLoading] = useState(false);
   const [Toast, setToast] = useState(false);
-  const navigate = useNavigate();
+
 
   const [openModal, setOpenModal] = useState(false);
 
-  const [sample, setSample] = useState([]);
 
 
   React.useEffect(() => {
@@ -808,6 +812,10 @@ useEffect(() => {
 
 
 
+const [examStates, setExamStates] = useState([]);
+const [ExamTitle, setExamTitle] = useState('');
+const [Instruction, setInstruction] = useState('');
+
 
 
 // Function to save all data to local storage
@@ -869,10 +877,6 @@ for (let i = 0; i < localStorage.length; i++) {
 // };
 
 
-const [examStates, setExamStates] = useState([]);
-const [ExamTitle, setExamTitle] = useState('');
-const [Instruction, setInstruction] = useState('');
-
 // let examDetails = [{
 //   exam_title: ExamTitle,
 //   exam_instruction: Instruction,
@@ -925,6 +929,7 @@ useEffect(() => {
     Array.from({ length:totalItems }, () => ({
       question: '',
       choices: ['', '', '', ''],
+      question_type:'',
       answer: ''
     }))
   );
@@ -997,7 +1002,7 @@ const handleSubmit = (e) => {
       if (firstRes.status === 201) {
         const id = firstRes.data[0].id;  // Assuming the ID is in the data of the response
         id_tos = id
-        alert("First request successful!");
+        
         console.log("ID of the first request: " + id);
         
         const updatedLessonsData = lessonsData.map((lesson) => {
@@ -1012,9 +1017,8 @@ return api.post("/api/tos-content/", { lessonsDataJson })
   .then((secondRes) => {
     console.log(secondRes);
     if (secondRes.status === 201) {
-
+     
  
-      alert("Second request successful!");
       console.log("Second request data:", secondRes.data);
 
       // Third request example
@@ -1030,9 +1034,9 @@ return api.post("/api/tos-content/", { lessonsDataJson })
       .then((thirdRes) => {
         console.log(thirdRes);
         if (thirdRes.status === 201) {
-    
+          
      
-          alert("third request successful!");
+         
           console.log("third request data:", thirdRes.data);
           const exam_id = thirdRes.data[0].id
           console.log("exam_id: ",exam_id)
@@ -1044,6 +1048,7 @@ return api.post("/api/tos-content/", { lessonsDataJson })
               acc.push( {
                 'question': data.question,
                 'answer': data.answer,
+                'question_type': 'mcq',
                 'exam_id': exam_id
               })
             }
@@ -1058,8 +1063,8 @@ return api.post("/api/tos-content/", { lessonsDataJson })
             console.log(fourthRes);
             if (fourthRes.status === 201) {
         
-         
-              alert("fourth request successful!");
+              
+           
               console.log("fourth request data:", fourthRes.data);
               const question_data = fourthRes.data
               console.log("question_id: ",question_data)
@@ -1103,7 +1108,69 @@ return api.post("/api/tos-content/", { lessonsDataJson })
         
               const itemAnswersJson = JSON.stringify(itemAnswers)
       
-              return api.post("/api/create-answers/", {itemAnswersJson})
+              return api.post("/api/create-answers/", {itemAnswersJson}).then(()=>{
+
+                localStorage.setItem('lessonsData',JSON.stringify([{  
+                  topic: '',
+                learning_outcomes: '',
+                teachingHours: 0,
+                allocation: 0,
+                items: 0,
+                remembering: 0,
+                understanding: 0,
+                applying: 0,
+                analyzing: 0,
+                evaluating: 0,
+                creating: 0,
+                total: 0,
+                placement: '',
+                totalItems:0,
+                tos_teacher: 0,
+                }]));
+                  
+                
+                setTotalItems(0)
+                localStorage.setItem('totalItems', 0);
+                setRemembering(0)
+                setUnderstanding(0)
+                setAnalyzing(0)
+                setApplying(0)
+                setEvaluating(0)
+                setCreating(0)
+                setExamTitle('')
+                setInstruction('')
+                setExamStates([])
+                localStorage.removeItem('Remembering')
+                localStorage.removeItem('Understanding')
+                localStorage.removeItem('Analyzing')
+                localStorage.removeItem('Applying')
+                localStorage.removeItem('Evaluating')
+                localStorage.removeItem('Creating')
+                localStorage.removeItem('formData')
+                loadDataFromLocalStorage()
+                localStorage.removeItem('examData')
+                loadDataFromLocalStorageExam()
+                localStorage.removeItem('questionData')
+                loadDataFromLocalStorageQuestion()
+
+                setTitle( '');
+                setSemester( '');
+                setAlumniYear('');
+                setCampus('');
+                setCourseCode('');
+                setDepartment('');
+                setExaminationType('');
+                setCourseType( '');
+                setExaminationDate('');
+                setFaculty('');
+                setChairperson( '');
+                setDean('');
+                setDirector('');
+
+
+
+               setToast(true)
+              })
               
             } else {
               throw new Error("fourth request failed.");
@@ -1292,7 +1359,7 @@ throw new Error("First request failed.");
            </div>
          </Modal.Footer>
        </Modal>
-       {Toast  && <ToastMessage message = "Table successfully Created!"/>}
+       {Toast  && <ToastMessage  message = "Exam successfully Created!"/>}
       {loading  && <LoadingPage/>}
       
       <h1 className="text-3xl">Course content</h1>
@@ -1477,12 +1544,31 @@ throw new Error("First request failed.");
 
       <Button color="failure" onClick={() => removeLesson(lessonsData)}><RemoveCircleOutlineIcon className="mr-2"/>Decrease Lesson</Button>
 
-      <Button color="failure" ><VisibilityIcon className="mr-2"/>Preview</Button>
+      <Button color="failure" onClick={() => setPdfModal(true)}><VisibilityIcon className="mr-2"/>Preview</Button>
+
+ 
       </div>
       </div>
       </div>
 
+      <Modal show={PdfModal} size={'7xl'}  onClose={() => setPdfModal(false)} className="h-screen">
+        <Modal.Header>Table of Specification</Modal.Header>
+        <Modal.Body  className="p-0">
+          <div className="min-h-96 "  style={{height:'575px'}}>
+          <PDFViewer className="h-full w-full">
+    <PdfFile lessonsData={lessonsDataInitial} Remembering={Remembering}  Analyzing={Analyzing} Understanding={Understanding} Applying={Applying} Evaluating={Evaluating} Creating={Creating} />
+  </PDFViewer>
       
+          </div>
+        </Modal.Body>
+        {/* <Modal.Footer>
+          <Button onClick={() => setPdfModal(false)}>Print</Button>
+          <Button color="gray" onClick={() => setPdfModal(false)}>
+            Close
+          </Button>
+        </Modal.Footer> */}
+      </Modal>
+
       
       </Card>
 
@@ -1499,4 +1585,5 @@ throw new Error("First request failed.");
   );
 }
 
+ReactDOM.render(<TOS />, document.getElementById('root'));
 export default TOS

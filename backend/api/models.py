@@ -69,6 +69,7 @@ class Exam(models.Model):
 class Questions(models.Model):
     question =  models.TextField()
     answer =  models.TextField()
+    question_type = models.TextField( null=True)
     exam_id = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name="exam_id", null=True)
     
     def __str__(self):

@@ -69,7 +69,7 @@ class ExamSerializer(serializers.ModelSerializer):
 class QuestionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Questions
-        fields = ["id", "question", "answer", "exam_id"]
+        fields = ["id", "question", "answer","question_type", "exam_id"]
         
 class AnswersSerializer(serializers.ModelSerializer):
     class Meta:
