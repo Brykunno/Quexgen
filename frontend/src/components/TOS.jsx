@@ -696,74 +696,12 @@ if (myArray && myArray.length > 0) {
 
 // Event handlers for each field
 const handleTitle = (event) => {
+ 
   setTitle(event.target.value);
-  saveDataToLocalStorage();
-};
+ 
 
-const handleSemester = (event) => {
-  setSemester(event.target.value);
-  saveDataToLocalStorage();
-};
-
-const handleAlumniYear = (event) => {
-  setAlumniYear(event.target.value)
-  saveDataToLocalStorage();;
-};
-
-const handleCampus = (event) => {
-  setCampus(event.target.value)
-  saveDataToLocalStorage();;
-};
-
-const handleCourseCode = (event) => {
-  setCourseCode(event.target.value);
-  saveDataToLocalStorage();
-};
-
-const handleDepartment = (event) => {
-  setDepartment(event.target.value);
-  saveDataToLocalStorage();
-};
-
-const handleExaminationType = (event) => {
-  setExaminationType(event.target.value);
-  saveDataToLocalStorage();
-};
-
-const handleCourseType = (event) => {
-  setCourseType(event.target.value);
-  saveDataToLocalStorage();
-};
-
-const handleExaminationDate = (event) => {
-  setExaminationDate(event.target.value);
-  saveDataToLocalStorage();
-};
-
-const handleFaculty = (event) => {
-  setFaculty(event.target.value);
-  saveDataToLocalStorage();
-};
-
-const handleChairperson = (event) => {
-  setChairperson(event.target.value);
-  saveDataToLocalStorage();
-};
-
-const handleDean = (event) => {
-  setDean(event.target.value);
-  saveDataToLocalStorage();
-};
-
-const handleDirector = (event) => {
-  setDirector(event.target.value);
-  saveDataToLocalStorage();
-};
-
-// Function to save all data to local storage
-const saveDataToLocalStorage = () => {
   const data = {
-    Title,
+    Title: event.target.value,
     Semester,
     AlumniYear,
     Campus,
@@ -779,33 +717,53 @@ const saveDataToLocalStorage = () => {
   };
 
   localStorage.setItem('formData', JSON.stringify(data));
+  
+  
 };
+
+
+  const [formData, setFormData] = useState({
+    Title: '',
+    Semester: '',
+    AlumniYear: '',
+    Campus: '',
+    CourseCode: '',
+    Department: '',
+    ExaminationType: '',
+    CourseType: '',
+    ExaminationDate: '',
+    Faculty: '',
+    Chairperson: '',
+    Dean: '',
+    Director: ''
+  });
+
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    const updatedFormData = {
+      ...formData,
+      [name]: value
+    };
+    setFormData(updatedFormData);
+    localStorage.setItem('formData', JSON.stringify(updatedFormData));
+  };
+
+
+// Function to save all data to local storage
 
 // Call this function to load data from local storage when the component mounts
 const loadDataFromLocalStorage = () => {
   const storedData = localStorage.getItem('formData');
   if (storedData) {
     const data = JSON.parse(storedData);
-    setTitle(data.Title || '');
-    setSemester(data.Semester || '');
-    setAlumniYear(data.AlumniYear || '');
-    setCampus(data.Campus || '');
-    setCourseCode(data.CourseCode || '');
-    setDepartment(data.Department || '');
-    setExaminationType(data.ExaminationType || '');
-    setCourseType(data.CourseType || '');
-    setExaminationDate(data.ExaminationDate || '');
-    setFaculty(data.Faculty || '');
-    setChairperson(data.Chairperson || '');
-    setDean(data.Dean || '');
-    setDirector(data.Director || '');
-
+    setFormData(data);
   }
 };
-
 // Use the effect hook to load data when the component mounts
 useEffect(() => {
   loadDataFromLocalStorage();
+ 
  
 }, []);
 
@@ -983,13 +941,13 @@ let examDetails = [{
 
 
 const formDataStorage = localStorage.getItem('formData');
-const formData = formDataStorage ? JSON.parse(formDataStorage) : null;
+const formData1 = formDataStorage ? JSON.parse(formDataStorage) : null;
 
 const examDataStorage = localStorage.getItem('examData');
 const examData = examDataStorage ? JSON.parse(examDataStorage) : null;
 const handleSubmit = (e) => {
   setLoading(true);
-  const formDataJson = JSON.stringify(formData);
+  const formDataJson = JSON.stringify(formData1);
   const lessonsDataJson = JSON.stringify(lessonsData);
 
   let id_tos = 0
@@ -1215,13 +1173,14 @@ throw new Error("First request failed.");
            <div className="mb-2 block">
              <Label htmlFor="title" value="Title" />
            </div>
-           <TextInput id="title" type="text" value={Title} onChange={handleTitle} />
+           <TextInput id="title" type="text" name="Title" value={formData.Title} onChange={handleChange} />
+           
          </div>
          <div className="w-full">
            <div className="mb-2 block">
              <Label htmlFor="semester" value="Semester" />
            </div>
-           <Select id="semester" value={Semester} onChange={handleSemester} required>
+           <Select id="semester" name="Semester" value={formData.Semester} onChange={handleChange} required>
          
              <option value="1st Semester">1st Semester</option>
              <option value="2nd Semester">2nd Semester</option>
@@ -1237,14 +1196,14 @@ throw new Error("First request failed.");
            <div className="mb-2 block">
              <Label htmlFor="alumni-year" value="Alumni Year" />
            </div>
-           <TextInput id="title" type="text" value={AlumniYear} onChange={handleAlumniYear} />
+           <TextInput id="title" type="text" name="AlumniYear" value={formData.AlumniYear} onChange={handleChange} />
          </div>
      
          <div className="w-full">
            <div className="mb-2 block">
              <Label htmlFor="campus" value="Campus" />
            </div>
-           <Select id="campus" value={Campus} onChange={handleCampus} required>
+           <Select id="campus" name="Campus" value={formData.Campus} onChange={handleChange} required>
              <option value="Main Campus">Main Campus</option>
              <option value="Satellite Campus">Satellite Campus</option>
            </Select>
@@ -1257,13 +1216,13 @@ throw new Error("First request failed.");
            <div className="mb-2 block">
              <Label htmlFor="course-code" value="Course Code" />
            </div>
-           <TextInput id="course-code" type="text" value={CourseCode} onChange={handleCourseCode} />
+           <TextInput id="course-code" type="text" name="CourseCode" value={formData.CourseCode} onChange={handleChange} />
          </div>
          <div className="w-full">
            <div className="mb-2 block">
              <Label htmlFor="department" value="Department" />
            </div>
-           <Select id="department" value={Department} onChange={handleDepartment} required>
+           <Select id="department" name="Department" value={formData.Department} onChange={handleChange} required>
              <option value="Computer Science">Computer Science</option>
              <option value="Mathematics">Mathematics</option>
              <option value="Physics">Physics</option>
@@ -1278,7 +1237,7 @@ throw new Error("First request failed.");
            <div className="mb-2 block">
              <Label htmlFor="exam-type" value="Type of Examination" />
            </div>
-           <Select id="exam-type" value={ExaminationType} onChange={handleExaminationType} required>
+           <Select id="exam-type" name="ExaminationType" value={formData.ExaminationType} onChange={handleChange} required>
              <option value="Written">Written</option>
              <option value="Oral">Oral</option>
              <option value="Practical">Practical</option>
@@ -1288,7 +1247,7 @@ throw new Error("First request failed.");
            <div className="mb-2 block">
              <Label htmlFor="course-type" value="Course Type" />
            </div>
-           <TextInput id="course-type" type="text" value={CourseType} onChange={handleCourseType} />
+           <TextInput id="course-type" type="text" name="CourseType" value={formData.CourseType} onChange={handleChange} />
          </div>
        </div>
 
@@ -1297,7 +1256,7 @@ throw new Error("First request failed.");
          <div className="mb-2 block">
            <Label htmlFor="exam-date" value="Date of Examination" />
          </div>
-         <TextInput id="exam-date" type="date" value={ExaminationDate} onChange={handleExaminationDate} />
+         <TextInput id="exam-date" type="date" name="ExaminationDate" value={formData.ExaminationDate} onChange={handleChange} />
        </div>
 
        {/* Faculty */}
@@ -1305,7 +1264,7 @@ throw new Error("First request failed.");
          <div className="mb-2 block">
            <Label htmlFor="faculty" value="Faculty" />
          </div>
-         <TextInput id="faculty" type="text" value={Faculty} onChange={handleFaculty} />
+         <TextInput id="faculty" type="text" name="Faculty" value={formData.Faculty} onChange={handleChange} />
        </div>
 
        {/* Department Chairperson */}
@@ -1313,7 +1272,7 @@ throw new Error("First request failed.");
          <div className="mb-2 block">
            <Label htmlFor="chairperson" value="Department Chairperson" />
          </div>
-         <TextInput id="chairperson" type="text" value={Chairperson} onChange={handleChairperson} />
+         <TextInput id="chairperson" type="text" name="Chairperson" value={formData.Chairperson} onChange={handleChange} />
        </div>
 
        {/* College Dean */}
@@ -1321,7 +1280,7 @@ throw new Error("First request failed.");
          <div className="mb-2 block">
            <Label htmlFor="dean" value="College Dean" />
          </div>
-         <TextInput id="dean" type="text" value={Dean} onChange={handleDean} />
+         <TextInput id="dean" type="text" name="Dean" value={formData.Dean} onChange={handleChange} />
        </div>
 
        {/* Campus Executive Director */}
@@ -1329,7 +1288,7 @@ throw new Error("First request failed.");
          <div className="mb-2 block">
            <Label htmlFor="executive-director" value="Campus Executive Director" />
          </div>
-         <TextInput id="executive-director" type="text" value={Director} onChange={handleDirector} />
+         <TextInput id="executive-director" type="text" name="Director" value={formData.Director} onChange={handleChange} />
        </div>
      </div>
      {/* <button className='bg-blue-950 hover:bg-blue-800 py-2 text-white rounded-lg'>Next</button> */}
@@ -1556,7 +1515,7 @@ throw new Error("First request failed.");
         <Modal.Body  className="p-0">
           <div className="min-h-96 "  style={{height:'575px'}}>
           <PDFViewer className="h-full w-full">
-    <PdfFile lessonsData={lessonsDataInitial} Remembering={Remembering}  Analyzing={Analyzing} Understanding={Understanding} Applying={Applying} Evaluating={Evaluating} Creating={Creating} />
+    <PdfFile lessonsData={lessonsDataInitial} Remembering={Remembering}  Analyzing={Analyzing} Understanding={Understanding} Applying={Applying} Evaluating={Evaluating} Creating={Creating}  formData={formData}/>
   </PDFViewer>
       
           </div>
