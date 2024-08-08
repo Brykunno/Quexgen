@@ -566,30 +566,38 @@ if (myArray && myArray.length > 0) {
       return 0
     }
     else{
-      return <div>   <div className="mb-4">
+      return <div className="flex gap-5">  
+         <div style={{flex:1}} className="flex flex-col">
+          <Card className="h-full">
+        <div className="mb-3 flex-1">
+       
       <div className="mb-2 block">
         <Label htmlFor={`topic-${indexRow}`} value="Lesson/Topic" />
       </div>
       <Textarea
         id={`topic-${indexRow}`}
         value={lessonsData[indexRow]['topic']}
-        className="min-h-44"
+       style={{height:'90%'}}
         onChange={(e) => handleLessonDataChange(indexRow, 'topic', e.target.value)}
         required
       />
     </div>
-    <div className="mb-4">
+    <div className="mb-3 flex-1">
       <div className="mb-2 block">
         <Label htmlFor={`learning_outcomes-${indexRow}`} value="Learning Outcomes" />
       </div>
       <Textarea
         id={`learning_outcomes-${indexRow}`}
         value={lessonsData[indexRow]['learning_outcomes']}
-         className="min-h-44"
+        style={{height:'90%'}}
         onChange={(e) => handleLessonDataChange(indexRow, 'learning_outcomes', e.target.value)}
         required
       />
     </div>
+    </Card>
+    </div>
+    <div style={{flex:1}}>
+      <Card>
     <div className="mb-4">
       <div className="mb-2 block">
         <Label htmlFor={`teaching_hours-${indexRow}`} value="No. of Teaching Hours" />
@@ -597,80 +605,136 @@ if (myArray && myArray.length > 0) {
       <TextInput
         id={`teaching_hours-${indexRow}`}
         type="number"
+        style={{maxWidth:'200px'}}
         value={lessonsData[indexRow]['teachingHours']}
         onChange={(e) => handleLessonDataChange(indexRow, 'teachingHours', e.target.value)}
         required
       />
     </div>
 
-    <div className="mb-4">
-      <div className="mb-2 block">
-        <Label htmlFor={`teaching_hours-${indexRow}`} value="% of Allocation" />
-      </div>
+    <div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
+  <div className="mb-2 block flex-1">
+    <Label htmlFor={`teaching_hours-${indexRow}`} value="% of Allocation" />
+  </div>
+  <span className="text-center flex-1 text-right text-black">
     {lessonsData[indexRow]['allocation']}%
-    </div>
+  </span>
+  <span className="text-right text-black font-bold" style={{flex: 0.2}}>
+    {/* Additional data if needed */}
+  </span>
+</div>
 
-    <div className="mb-4">
-      <div className="mb-2 block">
-        <Label htmlFor={`teaching_hours-${indexRow}`} value="Number of Items" />
-      </div>
+<div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
+  <div className="mb-2 block flex-1">
+    <Label htmlFor={`teaching_hours-${indexRow}`} value="Number of Items" />
+  </div>
+  <span className="text-center flex-1 text-right text-black">
+    {/* Additional percentage or related info if needed */}
+  </span>
+  <span className="text-right text-black font-bold" style={{flex: 0.2}}>
     {lessonsData[indexRow]['items']}
-    </div>
+  </span>
+</div>
 
-    <div className="mb-4">
-      <div className="mb-2 block">
-        <Label htmlFor={`teaching_hours-${indexRow}`} value={`Knowledge/Remembering ${Remembering}%`} />
+
+    <div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
+      <div className="mb-2 block flex-1">
+        <Label htmlFor={`teaching_hours-${indexRow}`} value={`Knowledge/Remembering `} />
+        
       </div>
+      <span className="text-center flex-1 text-right text-black">
+        {Remembering}%
+      </span>
+      <span className=" text-right text-black font-bold" style={{flex:0.2}}>
     {lessonsData[indexRow]['remembering']}
+    </span>
     </div>
 
-    <div className="mb-4">
-      <div className="mb-2 block">
-        <Label htmlFor={`teaching_hours-${indexRow}`} value={`Comprehension/Understanding ${Understanding}%`} />
-      </div>
+    <div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
+  <div className="mb-2 block flex-1">
+    <Label htmlFor={`teaching_hours-${indexRow}`} value={`Comprehension/Understanding`} />
+  </div>
+  <span className="text-center flex-1 text-right text-black">
+    {Understanding}%
+  </span>
+  <span className="text-right text-black font-bold" style={{flex: 0.2}}>
     {lessonsData[indexRow]['understanding']}
-    </div>
+  </span>
+</div>
 
-    <div className="mb-4">
-      <div className="mb-2 block">
-        <Label htmlFor={`teaching_hours-${indexRow}`} value={`Application/Applying ${Applying}%`} />
-      </div>
+<div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
+  <div className="mb-2 block flex-1">
+    <Label htmlFor={`teaching_hours-${indexRow}`} value={`Application/Applying`} />
+  </div>
+  <span className="text-center flex-1 text-right text-black">
+    {Applying}%
+  </span>
+  <span className="text-right text-black font-bold" style={{flex: 0.2}}>
     {lessonsData[indexRow]['applying']}
-    </div>
-    
-    <div className="mb-4">
-      <div className="mb-2 block">
-        <Label htmlFor={`teaching_hours-${indexRow}`} value={`Analysis/Analyzing ${Analyzing}%`} />
-      </div>
+  </span>
+</div>
+
+<div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
+  <div className="mb-2 block flex-1">
+    <Label htmlFor={`teaching_hours-${indexRow}`} value={`Analysis/Analyzing`} />
+  </div>
+  <span className="text-center flex-1 text-right text-black">
+    {Analyzing}%
+  </span>
+  <span className="text-right text-black font-bold" style={{flex: 0.2}}>
     {lessonsData[indexRow]['analyzing']}
-    </div>
+  </span>
+</div>
 
-    <div className="mb-4">
-      <div className="mb-2 block">
-        <Label htmlFor={`teaching_hours-${indexRow}`} value={`Synthesis/Evaluating ${Evaluating}%`} />
-      </div>
+<div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
+  <div className="mb-2 block flex-1">
+    <Label htmlFor={`teaching_hours-${indexRow}`} value={`Synthesis/Evaluating`} />
+  </div>
+  <span className="text-center flex-1 text-right text-black">
+    {Evaluating}%
+  </span>
+  <span className="text-right text-black font-bold" style={{flex: 0.2}}>
     {lessonsData[indexRow]['evaluating']}
-    </div>
+  </span>
+</div>
 
-    <div className="mb-4">
-      <div className="mb-2 block">
-        <Label htmlFor={`teaching_hours-${indexRow}`} value={`Evaluation/Creating ${Creating}%`} />
-      </div>
+<div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
+  <div className="mb-2 block flex-1">
+    <Label htmlFor={`teaching_hours-${indexRow}`} value={`Evaluation/Creating`} />
+  </div>
+  <span className="text-center flex-1 text-right text-black">
+    {Creating}%
+  </span>
+  <span className="text-right text-black font-bold" style={{flex: 0.2}}>
     {lessonsData[indexRow]['creating']}
-    </div>
+  </span>
+</div>
 
-    <div className="mb-4">
-      <div className="mb-2 block">
-        <Label htmlFor={`teaching_hours-${indexRow}`} value="Total" />
-      </div>
+
+<div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
+  <div className="mb-2 block flex-1">
+    <Label htmlFor={`teaching_hours-${indexRow}`} value="Total" />
+  </div>
+  <span className="text-center flex-1 text-right text-black">
+    {/* If there's a percentage or similar value, you can place it here */}
+  </span>
+  <span className="text-right text-black font-bold" style={{flex: 0.2}}>
     {lessonsData[indexRow]['total']}
-    </div>
+  </span>
+</div>
 
-    <div className="mb-4">
-      <div className="mb-2 block">
-        <Label htmlFor={`teaching_hours-${indexRow}`} value="Placement" />
-      </div>
+<div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
+  <div className="mb-2 block flex-1">
+    <Label htmlFor={`teaching_hours-${indexRow}`} value="Placement" />
+  </div>
+  <span className="text-center flex-1 text-right text-black">
+    {/* If there's a percentage or similar value, you can place it here */}
+  </span>
+  <span className="text-right text-black font-bold" style={{flex: 0.2}}>
     {lessonsData[indexRow]['placement']}
+  </span>
+</div>
+</Card>
     </div>
     
     </div>
@@ -681,7 +745,7 @@ if (myArray && myArray.length > 0) {
   
   const [Title,setTitle] = useState('');
   const [Semester,setSemester] = useState('1st Semester');
-  const [AlumniYear,setAlumniYear] = useState('');
+  const [AcademicYear,setAcademicYear] = useState('');
   const [CourseCode,setCourseCode] = useState('');
   const [Campus,setCampus] = useState('');
   const [Department,setDepartment] = useState('');
@@ -703,7 +767,7 @@ const handleTitle = (event) => {
   const data = {
     Title: event.target.value,
     Semester,
-    AlumniYear,
+    AcademicYear,
     Campus,
     CourseCode,
     Department,
@@ -724,8 +788,8 @@ const handleTitle = (event) => {
 
   const [formData, setFormData] = useState({
     Title: '',
-    Semester: '',
-    AlumniYear: '',
+    Semester: '1st Semester',
+    AcademicYear: '',
     Campus: '',
     CourseCode: '',
     Department: '',
@@ -844,12 +908,24 @@ for (let i = 0; i < localStorage.length; i++) {
 
 const handleExamTitleChange = (event) => {
   setExamTitle(event.target.value)
-  saveDataToLocalStorageExam()
+  const data = {
+    ExamTitle: event.target.value,
+    Instruction,
+    tos_id:0
+  };
+
+  localStorage.setItem('examData', JSON.stringify(data));
 }
 
 const handleInstructionChange = (event) => {
   setInstruction(event.target.value)
-  saveDataToLocalStorageExam()
+  const data = {
+    ExamTitle,
+    Instruction: event.target.value,
+    tos_id:0
+  };
+
+  localStorage.setItem('examData', JSON.stringify(data));
 }
 console.log('examData: ',localStorage.getItem('examData'))
 
@@ -1113,7 +1189,7 @@ return api.post("/api/tos-content/", { lessonsDataJson })
 
                 setTitle( '');
                 setSemester( '');
-                setAlumniYear('');
+                setAcademicYear('');
                 setCampus('');
                 setCourseCode('');
                 setDepartment('');
@@ -1128,6 +1204,7 @@ return api.post("/api/tos-content/", { lessonsDataJson })
 
 
                setToast(true)
+              //  window.location.reload();
               })
               
             } else {
@@ -1190,13 +1267,13 @@ throw new Error("First request failed.");
        </div>
    
 
-       {/* Alumni Year and Campus */}
+       {/* Academic Year and Campus */}
        <div className='w-full gap-4 flex flex-col sm:flex-row'>
          <div className="w-full">
            <div className="mb-2 block">
-             <Label htmlFor="alumni-year" value="Alumni Year" />
+             <Label htmlFor="Academic-year" value="Academic Year" />
            </div>
-           <TextInput id="title" type="text" name="AlumniYear" value={formData.AlumniYear} onChange={handleChange} />
+           <TextInput id="title" type="text" name="AcademicYear" value={formData.AcademicYear} onChange={handleChange} />
          </div>
      
          <div className="w-full">
@@ -1298,10 +1375,10 @@ throw new Error("First request failed.");
 
 </div>
 
-    <Modal show={openModal} onClose={() => setOpenModal(false)}>
+    <Modal size={'7xl'} show={openModal} onClose={() => setOpenModal(false)}>
          <Modal.Header>Lesson {indexRow+1}</Modal.Header>
          <Modal.Body>
-           <div className="space-y-6">
+           <div className="space-y-6 " >
              <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
               
 
@@ -1314,7 +1391,7 @@ throw new Error("First request failed.");
          </Modal.Body>
          <Modal.Footer>
           <div className=" w-full">
-           <Button onClick={() => setOpenModal(false)} className="mx-auto">Done</Button>
+           <Button onClick={() => setOpenModal(false)} className="mx-auto" color={'success'}>Done</Button>
            </div>
          </Modal.Footer>
        </Modal>

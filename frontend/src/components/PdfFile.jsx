@@ -1,14 +1,28 @@
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet,Image } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet,Image,Font } from '@react-pdf/renderer';
 
 
+Font.register({
+  family: 'Arial',
+  fonts: [
+    {
+      src: `fonts/Arial.ttf`,
+      
+    },
+    {
+      src: 'fonts/Arial_Bold.ttf',
+      fontWeight: 'bold'
+    }
 
+  ]
+})
 
 // Create styles
 const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
     backgroundColor: 'white',
+    fontFamily: 'Arial'
 
   },
   section: {
@@ -60,7 +74,7 @@ const styles = StyleSheet.create({
 function PdfFile(props) {
   return (
     <Document>
-      <Page size={{ width: 1000, height: 612 }} style={styles.page}>
+      <Page size={{ width: 963, height: 612 }} style={styles.page}>
         <View style={styles.section}>
           
           <View style={styles.table}>
@@ -77,7 +91,7 @@ function PdfFile(props) {
   </View>
 
   <View style={[styles.tableCol,{flex:11}]}>
-    <Text style={[styles.tableCell,{fontSize:16,margin:'auto',fontWeight: 'ultrabold'}]}>TABLE OF SPECIFICATIONS</Text>
+    <Text style={[styles.tableCell,{fontSize:'16px',margin:'auto',fontWeight:'bold'}]}>TABLE OF SPECIFICATIONS</Text>
     <Text style={[styles.tableCell,{fontSize:7,margin:'auto',marginTop: '-10'}]}>PANGASINAN STATE UNIVERSITY</Text>
   </View>
 
@@ -91,8 +105,8 @@ function PdfFile(props) {
               <View style={styles.tableRow}>
 
 <View style={[styles.tableCol,{padding:5}]}>
-    <Text style={[styles.tableCell,{fontSize:8,margin:'auto',fontWeight: 'extrabold'}]}>{props.formData.Title}</Text>
-    <Text style={[styles.tableCell,{fontSize:8,margin:'auto',fontWeight: 'extrabold'}]}>{props.formData.AlumniYear}</Text>
+    <Text style={[styles.tableCell,{fontSize:10,margin:'auto',fontWeight: 'extrabold'}]}>{props.formData.Title}</Text>
+    <Text style={[styles.tableCell,{fontSize:10,margin:'auto',fontWeight: 'extrabold'}]}>{props.formData.Semester} AY {props.formData.AlumniYear}</Text>
   </View>
 
 
@@ -107,8 +121,8 @@ function PdfFile(props) {
               {/* Row */}
               <View style={styles.tableRow}>
 
-<View style={[styles.tableCol,{flex:0.99}]}>
-    <Text style={[styles.tableCell,{fontSize:8,margin:'auto'}]}>CAMPUS</Text>
+<View style={[styles.tableCol,{flex:1.07}]}>
+    <Text style={[styles.tableCell,{fontSize:8,margin:'auto',fontWeight:'bold'}]}>CAMPUS</Text>
   </View>
 
   <View style={[styles.tableCol,{flex:5.5}]}>
@@ -116,7 +130,7 @@ function PdfFile(props) {
   </View>
 
   <View style={[styles.tableCol,{flex:1.5}]}>
-    <Text style={[styles.tableCell,{fontSize:8,margin:'auto'}]}>DEPARTMENT</Text>
+    <Text style={[styles.tableCell,{fontSize:8,margin:'auto',fontWeight:'bold'}]}>DEPARTMENT</Text>
   </View>
 
   <View style={[styles.tableCol,{flex:5}]}>
@@ -131,8 +145,8 @@ function PdfFile(props) {
 
               <View style={styles.tableRow}>
 
-<View style={[styles.tableCol,{flex:0.99}]}>
-    <Text style={[styles.tableCell,{fontSize:8,margin:'auto'}]}>COURSE CODE</Text>
+<View style={[styles.tableCol,{flex:1.07}]}>
+    <Text style={[styles.tableCell,{fontSize:8,margin:'auto',fontWeight:'bold'}]}>COURSE CODE</Text>
   </View>
 
   <View style={[styles.tableCol,{flex:5.5}]}>
@@ -140,7 +154,7 @@ function PdfFile(props) {
   </View>
 
   <View style={[styles.tableCol,{flex:1.5}]}>
-    <Text style={[styles.tableCell,{fontSize:8,margin:'auto'}]}>TYPE OF EXAMINATION</Text>
+    <Text style={[styles.tableCell,{fontSize:8,margin:'auto',fontWeight:'bold'}]}>TYPE OF EXAMINATION</Text>
   </View>
 
   <View style={[styles.tableCol,{flex:5}]}>
@@ -156,8 +170,8 @@ function PdfFile(props) {
               {/* Row */}
             <View style={styles.tableRow}>
 
-            <View style={[styles.tableCol,{flex:0.99}]}>
-                <Text style={[styles.tableCell,{fontSize:8,margin:'auto'}]}>COURSE TYPE</Text>
+            <View style={[styles.tableCol,{flex:1.07}]}>
+                <Text style={[styles.tableCell,{fontSize:8,margin:'auto',fontWeight:'bold'}]}>COURSE TYPE</Text>
               </View>
 
               <View style={[styles.tableCol,{flex:5.5}]}>
@@ -165,7 +179,7 @@ function PdfFile(props) {
               </View>
 
               <View style={[styles.tableCol,{flex:1.5}]}>
-                <Text style={[styles.tableCell,{fontSize:8,margin:'auto'}]}>DATE OF EXAMINATION</Text>
+                <Text style={[styles.tableCell,{fontSize:8,margin:'auto',fontWeight:'bold'}]}>DATE OF EXAMINATION</Text>
               </View>
 
               <View style={[styles.tableCol,{flex:5}]}>
@@ -180,7 +194,7 @@ function PdfFile(props) {
 
             <View style={styles.tableRow}>
               <View style={styles.tableCol}>
-                <Text style={[styles.tableCell,{fontSize:8,margin:'auto'}]}>LESSON /{'\n'} TOPIC</Text>
+                <Text style={[styles.tableCell,{fontSize:8,margin:'auto'}]}>LESSON /{'\n'}TOPIC</Text>
               </View>
               <View style={styles.tableCol}>
                 <Text style={[styles.tableCell,{fontSize:8,margin:'auto'}]}>LEARNING {'\n'}OUTCOMES</Text>
@@ -198,31 +212,31 @@ function PdfFile(props) {
                 <Text style={styles.tableCellCenter}>ITEM SPECIFICATION PER TAXONOMY OF LEARNING</Text>
                 <View style={{ flexDirection: 'row' }}>
                   <View style={[styles.tableCol,{borderBottomWidth:0}]}>
-                    <Text style={[styles.tableCell,{fontSize:8}]}>KNOWLEDGE /{'\n'} REMEMBERING</Text>
+                    <Text style={[styles.tableCell,{fontSize:8}]}>KNOWLEDGE /{'\n'}REMEMBERING</Text>
                     <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Remembering}%</Text>
                   </View>
                   <View style={[styles.tableCol,{borderBottomWidth:0,flex:1.2}]}>
-                    <Text style={[styles.tableCell,{fontSize:8}]}>COMPREHENSION /{'\n'} UNDERSTANDING</Text>
+                    <Text style={[styles.tableCell,{fontSize:8}]}>COMPREHENSION /{'\n'}UNDERSTANDING</Text>
                     <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Understanding}%</Text>
                   </View>
                   <View style={[styles.tableCol,{borderBottomWidth:0}]}>
-                    <Text style={[styles.tableCell,{fontSize:8}]}>APPLICATION /{'\n'} APPLYING</Text>
+                    <Text style={[styles.tableCell,{fontSize:8}]}>APPLICATION /{'\n'}APPLYING</Text>
                     <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Applying}%</Text>
                   </View>
                   <View style={[styles.tableCol,{borderBottomWidth:0}]}>
-                    <Text style={[styles.tableCell,{fontSize:8}]}>ANALYSIS /{'\n'} ANALYZING</Text>
+                    <Text style={[styles.tableCell,{fontSize:8}]}>ANALYSIS /{'\n'}ANALYZING</Text>
                     <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Analyzing}%</Text>
                   </View>
                   <View style={[styles.tableCol,{borderBottomWidth:0}]}>
-                    <Text style={[styles.tableCell,{fontSize:8}]}>SYNTHESIS /{'\n'} EVALUATING</Text>
+                    <Text style={[styles.tableCell,{fontSize:8}]}>SYNTHESIS /{'\n'}EVALUATING</Text>
                     <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Evaluating}%</Text>
                   </View>
                   <View style={[styles.tableCol,{borderBottomWidth:0}]}>
-                    <Text style={[styles.tableCell,{fontSize:8}]}>EVALUATION /{'\n'} CREATING</Text>
+                    <Text style={[styles.tableCell,{fontSize:8}]}>EVALUATION /{'\n'}CREATING</Text>
                     <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Creating}%</Text>
                   </View>
                   <View style={[styles.tableCol,{borderBottomWidth:0,borderRightWidth:0,flex:0.8}]}>
-                    <Text style={[styles.tableCell,{fontSize:8,margin: 'auto'}]}>TOTAL</Text>
+                    <Text style={[styles.tableCell,{fontSize:8,margin: 'auto', padding:0}]}>TOTAL</Text>
                   </View>
                 </View>
               </View>
@@ -284,6 +298,33 @@ function PdfFile(props) {
                 
               </View>
             </View>
+
+            <View style={styles.tableRow}>
+            <View style={[styles.tableCol]}>
+            <Text style={[styles.tableCell,{padding:0,margin:0,marginLeft:'20px',fontSize:'10px',marginTop:'5px'}]}>Prepared by:</Text>
+            <Text style={[styles.tableCellCenter,{fontSize:'9px',marginHorizontal:'auto', width:'190px',borderBottomStyle:'solid',borderBottomWidth:1,fontWeight:'bold'}]}>{props.formData.Faculty}</Text>
+            <Text style={[styles.tableCellCenter,{fontSize:'9px',marginHorizontal:'auto', width:'190px',margin:'5px'}]}>Faculty</Text>
+              </View>
+
+              <View style={[styles.tableCol]}>
+            <Text style={[styles.tableCell,{padding:0,margin:0,marginLeft:'20px',fontSize:'10px',marginTop:'5px'}]}>Reviewed by:</Text>
+            <Text style={[styles.tableCellCenter,{fontSize:'9px',marginHorizontal:'auto', width:'190px',borderBottomStyle:'solid',borderBottomWidth:1,fontWeight:'bold'}]}>{props.formData.Chairperson}</Text>
+            <Text style={[styles.tableCellCenter,{fontSize:'9px',marginHorizontal:'auto', width:'190px',margin:'5px'}]}>Department Chairperson</Text>
+              </View>
+
+              <View style={[styles.tableCol]}>
+            <Text style={[styles.tableCell,{padding:0,margin:0,marginLeft:'20px',fontSize:'10px',marginTop:'5px',height:'10px' }]}></Text>
+            <Text style={[styles.tableCellCenter,{fontSize:'9px',marginHorizontal:'auto', width:'190px',borderBottomStyle:'solid',borderBottomWidth:1,fontWeight:'bold'}]}>{props.formData.Dean}</Text>
+            <Text style={[styles.tableCellCenter,{fontSize:'9px',marginHorizontal:'auto', width:'190px',margin:'5px'}]}>College Dean</Text>
+              </View>
+
+              <View style={[styles.tableCol]}>
+            <Text style={[styles.tableCell,{padding:0,margin:0,marginLeft:'20px',fontSize:'10px',marginTop:'5px'}]}>Approved by:</Text>
+            <Text style={[styles.tableCellCenter,{fontSize:'9px',marginHorizontal:'auto', width:'190px',borderBottomStyle:'solid',borderBottomWidth:1,fontWeight:'bold'}]}>{props.formData.Director}</Text>
+            <Text style={[styles.tableCellCenter,{fontSize:'9px',marginHorizontal:'auto', width:'190px',margin:'5px'}]}>Campus Executive Director</Text>
+              </View>
+
+              </View>
           </View>
         </View>
       </Page>

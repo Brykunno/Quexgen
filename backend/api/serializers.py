@@ -47,7 +47,7 @@ class TOSInfoSerializer(serializers.ModelSerializer):
         model = TOS_info
         fields = [
             'id', 'Title', 'Semester',
-            'AlumniYear',
+            'AcademicYear',
             'Campus',
             'CourseCode',
             'Department',

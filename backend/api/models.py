@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 class TOS_info(models.Model):
     Title = models.TextField()
     Semester = models.TextField()
-    AlumniYear = models.TextField()
+    AcademicYear = models.TextField()
     Campus = models.TextField()
     CourseCode = models.TextField()
     Department = models.TextField()
