@@ -52,7 +52,10 @@ const styles = StyleSheet.create({
   tableCell: {
     margin: 5,
     padding:2,
-    fontSize: 9
+    fontSize: 9,
+    wordWrap: 'break-word', // Ensure text wraps within the cell
+    wordBreak: 'break-all', // Allow breaking long words or URLs
+    whiteSpace: 'normal', // Allow text to wrap normally
   },
   tableCellCenter: {
    

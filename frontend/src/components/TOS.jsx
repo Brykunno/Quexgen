@@ -15,6 +15,8 @@ import api from "../api";
 import { useNavigate } from "react-router-dom";
 import LoadingPage from "./LoadingPage";
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 import { useState,useEffect } from "react";
 import ToastMessage from "./Toast";
@@ -398,36 +400,36 @@ function getTotalHours(){
 
 function getNumItems(totalItems,allocation){
   const allocationDecimal = allocation / 100;
-  return Math.round(totalItems * allocationDecimal);
+  return totalItems * allocationDecimal
  
 
 }
 
 function getRemembering(remembering,items){
 
-  return Math.round((remembering/100)*items)
+  return (remembering/100)*items
 }
 
 function getUnderstanding(Understanding,items){
 
-  return Math.round((Understanding/100)*items)
+  return (Understanding/100)*items
 }
 
 function getApplying(Applying,items){
 
-  return Math.round((Applying/100)*items)
+  return (Applying/100)*items
 }
 function getAnalyzing(Analyzing,items){
 
-  return Math.round((Analyzing/100)*items)
+  return (Analyzing/100)*items
 }
 function getEvaluating(Evaluating,items){
 
-  return Math.round((Evaluating/100)*items)
+  return (Evaluating/100)*items
 }
 function getCreating(Creating,items){
 
-  return Math.round((Creating/100)*items)
+  return (Creating/100)*items
 }
 
 function getTotal(remembering,understanding,applying,analyzing,evaluating,creating){
@@ -506,6 +508,40 @@ const handleLessonDataChange = (index, field, value) => {
 
 
 
+const handleReset = (i, field) => {
+  // Clone the lessonsData array to avoid direct mutation
+  const newData = [...lessonsData];
+
+
+      // Recalculate fields based on the updated teachingHours
+      newData[i]['allocation'] = getAllocation(Number(newData[i]['teachingHours']), getTotalHours());
+      newData[i]['items'] = getNumItems(totalItems, newData[i]['allocation']);
+      newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
+      newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
+      newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
+      newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+      newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+      newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+      newData[i]['total'] = getTotal(
+        newData[i]['remembering'],
+        newData[i]['understanding'],
+        newData[i]['applying'],
+        newData[i]['analyzing'],
+        newData[i]['evaluating'],
+        newData[i]['creating']
+      );
+
+   
+      newData[i]['totalItems'] = totalItems;
+  
+  // Update the state with the new data
+  setLessonsDatainitial(newData);
+
+  // Save the updated lessonsData to localStorage
+  localStorage.setItem('lessonsData', JSON.stringify(newData));
+};
+
+
 
 
 
@@ -560,6 +596,595 @@ if (myArray && myArray.length > 0) {
 }
 
 
+
+const handleFloor = (index, field, value) => {
+  // Clone the lessonsData array to avoid direct mutation
+  const newData = [...lessonsData];
+
+  // Update the specific field in the corresponding lesson object
+  newData[index][field] = value;
+
+
+
+  if (field === 'items' ) {
+    for (let i = 0; i < newData.length; i++) {
+      // Recalculate fields based on the updated teachingHours
+      newData[i]['allocation'] = getAllocation(Number(newData[i]['teachingHours']), getTotalHours());
+      if(i == index){
+        newData[i]['items'] = Math.floor(getNumItems(totalItems, newData[i]['allocation']));
+      }
+      else{
+        if(newData[i]['items']%1 != 0){
+        newData[i]['items'] = getNumItems(totalItems, newData[i]['allocation']);
+      }
+      if (newData[i]['remembering'] % 1 !== 0) {
+        newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
+      }
+      
+      if (newData[i]['understanding'] % 1 !== 0) {
+        newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
+      }
+      
+      if (newData[i]['applying'] % 1 !== 0) {
+        newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
+      }
+      
+      if (newData[i]['analyzing'] % 1 !== 0) {
+        newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+      }
+      
+      if (newData[i]['evaluating'] % 1 !== 0) {
+        newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+      }
+      
+      if (newData[i]['creating'] % 1 !== 0) {
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+      }
+      newData[i]['total'] = getTotal(
+        newData[i]['remembering'],
+        newData[i]['understanding'],
+        newData[i]['applying'],
+        newData[i]['analyzing'],
+        newData[i]['evaluating'],
+        newData[i]['creating']
+      );
+
+      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+      newData[i]['totalItems'] = totalItems;
+    }
+  }
+}
+
+  if (field === 'remembering' ) {
+    for (let i = 0; i < newData.length; i++) {
+      // Recalculate fields based on the updated teachingHours
+      if(i == index){
+        newData[i]['remembering'] = Math.floor(getRemembering(Remembering, newData[i]['items']));
+     
+      }
+      else{
+        if (newData[i]['remembering'] % 1 !== 0) {
+          newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
+        }
+        
+      }
+     
+      if (newData[i]['understanding'] % 1 !== 0) {
+        newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
+      }
+      
+      if (newData[i]['applying'] % 1 !== 0) {
+        newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
+      }
+      
+      if (newData[i]['analyzing'] % 1 !== 0) {
+        newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+      }
+      
+      if (newData[i]['evaluating'] % 1 !== 0) {
+        newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+      }
+      
+      if (newData[i]['creating'] % 1 !== 0) {
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+      }
+      newData[i]['total'] = getTotal(
+        newData[i]['remembering'],
+        newData[i]['understanding'],
+        newData[i]['applying'],
+        newData[i]['analyzing'],
+        newData[i]['evaluating'],
+        newData[i]['creating']
+      );
+
+      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+      newData[i]['totalItems'] = totalItems;
+    }
+  }
+
+  
+  if (field === 'understanding' ) {
+    for (let i = 0; i < newData.length; i++) {
+      // Recalculate fields based on the updated teachingHours
+      if(i == index){
+        newData[i]['understanding'] = Math.floor(getUnderstanding(Understanding, newData[i]['items']));
+     
+      }
+      else{
+        if (newData[i]['understanding'] % 1 !== 0) {
+          newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
+        }
+      }
+      
+    
+     
+      
+      if (newData[i]['applying'] % 1 !== 0) {
+        newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
+      }
+      
+      if (newData[i]['analyzing'] % 1 !== 0) {
+        newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+      }
+      
+      if (newData[i]['evaluating'] % 1 !== 0) {
+        newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+      }
+      
+      if (newData[i]['creating'] % 1 !== 0) {
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+      }
+      newData[i]['total'] = getTotal(
+        newData[i]['remembering'],
+        newData[i]['understanding'],
+        newData[i]['applying'],
+        newData[i]['analyzing'],
+        newData[i]['evaluating'],
+        newData[i]['creating']
+      );
+
+      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+      newData[i]['totalItems'] = totalItems;
+    }
+  }
+
+  if (field === 'applying' ) {
+    for (let i = 0; i < newData.length; i++) {
+      // Recalculate fields based on the updated teachingHours
+      if(i == index){
+        newData[i]['applying'] = Math.floor(getApplying(Applying, newData[i]['items']));
+     
+      }
+      else{
+        if (newData[i]['applying'] % 1 !== 0) {
+          newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
+        }
+      }
+      
+   
+      
+      if (newData[i]['analyzing'] % 1 !== 0) {
+        newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+      }
+      
+      if (newData[i]['evaluating'] % 1 !== 0) {
+        newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+      }
+      
+      if (newData[i]['creating'] % 1 !== 0) {
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+      }
+      newData[i]['total'] = getTotal(
+        newData[i]['remembering'],
+        newData[i]['understanding'],
+        newData[i]['applying'],
+        newData[i]['analyzing'],
+        newData[i]['evaluating'],
+        newData[i]['creating']
+      );
+
+      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+      newData[i]['totalItems'] = totalItems;
+    }
+  }
+
+  if (field === 'analyzing' ) {
+    for (let i = 0; i < newData.length; i++) {
+      // Recalculate fields based on the updated teachingHours
+      if(i == index){
+        newData[i]['analyzing'] = Math.floor(getAnalyzing(Analyzing, newData[i]['items']));
+     
+      }
+      else{
+        if (newData[i]['analyzing'] % 1 !== 0) {
+          newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+        }
+      }
+         
+     
+      
+      if (newData[i]['evaluating'] % 1 !== 0) {
+        newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+      }
+      
+      if (newData[i]['creating'] % 1 !== 0) {
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+      }
+      newData[i]['total'] = getTotal(
+        newData[i]['remembering'],
+        newData[i]['understanding'],
+        newData[i]['applying'],
+        newData[i]['analyzing'],
+        newData[i]['evaluating'],
+        newData[i]['creating']
+      );
+
+      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+      newData[i]['totalItems'] = totalItems;
+    }
+  }
+
+
+  if (field === 'evaluating' ) {
+    for (let i = 0; i < newData.length; i++) {
+      // Recalculate fields based on the updated teachingHours
+      if(i == index){
+        newData[i]['evaluating'] = Math.floor(getEvaluating(Evaluating, newData[i]['items']));
+     
+      }
+      else{
+        if (newData[i]['evaluating'] % 1 !== 0) {
+          newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+        }
+      }
+       
+    
+      
+      if (newData[i]['creating'] % 1 !== 0) {
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+      }
+      newData[i]['total'] = getTotal(
+        newData[i]['remembering'],
+        newData[i]['understanding'],
+        newData[i]['applying'],
+        newData[i]['analyzing'],
+        newData[i]['evaluating'],
+        newData[i]['creating']
+      );
+
+      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+      newData[i]['totalItems'] = totalItems;
+    }
+  }
+
+  if (field === 'creating' ) {
+    for (let i = 0; i < newData.length; i++) {
+      // Recalculate fields based on the updated teachingHours
+      if(i == index){
+        newData[i]['creating'] = Math.floor(getCreating(Creating, newData[i]['items']));
+     
+      }
+      else{
+        if (newData[i]['creating'] % 1 !== 0) {
+          newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+        }
+      }
+      newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+      newData[i]['total'] = getTotal(
+        newData[i]['remembering'],
+        newData[i]['understanding'],
+        newData[i]['applying'],
+        newData[i]['analyzing'],
+        newData[i]['evaluating'],
+        newData[i]['creating']
+      );
+
+      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+      newData[i]['totalItems'] = totalItems;
+    }
+  }
+
+
+  // Update the state with the new data
+  setLessonsDatainitial(newData);
+
+  // Save the updated lessonsData to localStorage
+  localStorage.setItem('lessonsData', JSON.stringify(newData));
+};
+const handleCeil = (index, field, value) => {
+  // Clone the lessonsData array to avoid direct mutation
+  const newData = [...lessonsData];
+
+  // Update the specific field in the corresponding lesson object
+  newData[index][field] = value;
+
+
+
+  if (field === 'items' ) {
+    for (let i = 0; i < newData.length; i++) {
+      // Recalculate fields based on the updated teachingHours
+      newData[i]['allocation'] = getAllocation(Number(newData[i]['teachingHours']), getTotalHours());
+      if(i == index){
+        newData[i]['items'] = Math.ceil(getNumItems(totalItems, newData[i]['allocation']));
+      }
+      else{
+        if(newData[i]['items']%1 != 0){
+        newData[i]['items'] = getNumItems(totalItems, newData[i]['allocation']);
+      }
+      if (newData[i]['remembering'] % 1 !== 0) {
+        newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
+      }
+      
+      if (newData[i]['understanding'] % 1 !== 0) {
+        newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
+      }
+      
+      if (newData[i]['applying'] % 1 !== 0) {
+        newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
+      }
+      
+      if (newData[i]['analyzing'] % 1 !== 0) {
+        newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+      }
+      
+      if (newData[i]['evaluating'] % 1 !== 0) {
+        newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+      }
+      
+      if (newData[i]['creating'] % 1 !== 0) {
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+      }
+      newData[i]['total'] = getTotal(
+        newData[i]['remembering'],
+        newData[i]['understanding'],
+        newData[i]['applying'],
+        newData[i]['analyzing'],
+        newData[i]['evaluating'],
+        newData[i]['creating']
+      );
+
+      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+      newData[i]['totalItems'] = totalItems;
+    }
+  }
+}
+
+  if (field === 'remembering' ) {
+    for (let i = 0; i < newData.length; i++) {
+      // Recalculate fields based on the updated teachingHours
+      if(i == index){
+        newData[i]['remembering'] = Math.ceil(getRemembering(Remembering, newData[i]['items']));
+     
+      }
+      else{
+        if (newData[i]['remembering'] % 1 !== 0) {
+          newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
+        }
+        
+      }
+     
+      if (newData[i]['understanding'] % 1 !== 0) {
+        newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
+      }
+      
+      if (newData[i]['applying'] % 1 !== 0) {
+        newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
+      }
+      
+      if (newData[i]['analyzing'] % 1 !== 0) {
+        newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+      }
+      
+      if (newData[i]['evaluating'] % 1 !== 0) {
+        newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+      }
+      
+      if (newData[i]['creating'] % 1 !== 0) {
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+      }
+      newData[i]['total'] = getTotal(
+        newData[i]['remembering'],
+        newData[i]['understanding'],
+        newData[i]['applying'],
+        newData[i]['analyzing'],
+        newData[i]['evaluating'],
+        newData[i]['creating']
+      );
+
+      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+      newData[i]['totalItems'] = totalItems;
+    }
+  }
+
+  
+  if (field === 'understanding' ) {
+    for (let i = 0; i < newData.length; i++) {
+      // Recalculate fields based on the updated teachingHours
+      if(i == index){
+        newData[i]['understanding'] = Math.ceil(getUnderstanding(Understanding, newData[i]['items']));
+     
+      }
+      else{
+        if (newData[i]['understanding'] % 1 !== 0) {
+          newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
+        }
+      }
+      
+    
+     
+      
+      if (newData[i]['applying'] % 1 !== 0) {
+        newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
+      }
+      
+      if (newData[i]['analyzing'] % 1 !== 0) {
+        newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+      }
+      
+      if (newData[i]['evaluating'] % 1 !== 0) {
+        newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+      }
+      
+      if (newData[i]['creating'] % 1 !== 0) {
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+      }
+      newData[i]['total'] = getTotal(
+        newData[i]['remembering'],
+        newData[i]['understanding'],
+        newData[i]['applying'],
+        newData[i]['analyzing'],
+        newData[i]['evaluating'],
+        newData[i]['creating']
+      );
+
+      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+      newData[i]['totalItems'] = totalItems;
+    }
+  }
+
+  if (field === 'applying' ) {
+    for (let i = 0; i < newData.length; i++) {
+      // Recalculate fields based on the updated teachingHours
+      if(i == index){
+        newData[i]['applying'] = Math.ceil(getApplying(Applying, newData[i]['items']));
+     
+      }
+      else{
+        if (newData[i]['applying'] % 1 !== 0) {
+          newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
+        }
+      }
+      
+   
+      
+      if (newData[i]['analyzing'] % 1 !== 0) {
+        newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+      }
+      
+      if (newData[i]['evaluating'] % 1 !== 0) {
+        newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+      }
+      
+      if (newData[i]['creating'] % 1 !== 0) {
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+      }
+      newData[i]['total'] = getTotal(
+        newData[i]['remembering'],
+        newData[i]['understanding'],
+        newData[i]['applying'],
+        newData[i]['analyzing'],
+        newData[i]['evaluating'],
+        newData[i]['creating']
+      );
+
+      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+      newData[i]['totalItems'] = totalItems;
+    }
+  }
+
+  if (field === 'analyzing' ) {
+    for (let i = 0; i < newData.length; i++) {
+      // Recalculate fields based on the updated teachingHours
+      if(i == index){
+        newData[i]['analyzing'] = Math.ceil(getAnalyzing(Analyzing, newData[i]['items']));
+     
+      }
+      else{
+        if (newData[i]['analyzing'] % 1 !== 0) {
+          newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+        }
+      }
+         
+     
+      
+      if (newData[i]['evaluating'] % 1 !== 0) {
+        newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+      }
+      
+      if (newData[i]['creating'] % 1 !== 0) {
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+      }
+      newData[i]['total'] = getTotal(
+        newData[i]['remembering'],
+        newData[i]['understanding'],
+        newData[i]['applying'],
+        newData[i]['analyzing'],
+        newData[i]['evaluating'],
+        newData[i]['creating']
+      );
+
+      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+      newData[i]['totalItems'] = totalItems;
+    }
+  }
+
+
+  if (field === 'evaluating' ) {
+    for (let i = 0; i < newData.length; i++) {
+      // Recalculate fields based on the updated teachingHours
+      if(i == index){
+        newData[i]['evaluating'] = Math.ceil(getEvaluating(Evaluating, newData[i]['items']));
+     
+      }
+      else{
+        if (newData[i]['evaluating'] % 1 !== 0) {
+          newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+        }
+      }
+       
+    
+      
+      if (newData[i]['creating'] % 1 !== 0) {
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+      }
+      newData[i]['total'] = getTotal(
+        newData[i]['remembering'],
+        newData[i]['understanding'],
+        newData[i]['applying'],
+        newData[i]['analyzing'],
+        newData[i]['evaluating'],
+        newData[i]['creating']
+      );
+
+      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+      newData[i]['totalItems'] = totalItems;
+    }
+  }
+
+  if (field === 'creating' ) {
+    for (let i = 0; i < newData.length; i++) {
+      // Recalculate fields based on the updated teachingHours
+      if(i == index){
+        newData[i]['creating'] = Math.ceil(getCreating(Creating, newData[i]['items']));
+     
+      }
+      else{
+        if (newData[i]['creating'] % 1 !== 0) {
+          newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+        }
+      }
+      newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+      newData[i]['total'] = getTotal(
+        newData[i]['remembering'],
+        newData[i]['understanding'],
+        newData[i]['applying'],
+        newData[i]['analyzing'],
+        newData[i]['evaluating'],
+        newData[i]['creating']
+      );
+
+      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+      newData[i]['totalItems'] = totalItems;
+    }
+  }
+
+
+  // Update the state with the new data
+  setLessonsDatainitial(newData);
+
+  // Save the updated lessonsData to localStorage
+  localStorage.setItem('lessonsData', JSON.stringify(newData));
+};
 
   function inputModal(indexRow,lessonsData){
     if(lessonsData[indexRow] === undefined){
@@ -627,6 +1252,11 @@ if (myArray && myArray.length > 0) {
 <div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
   <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value="Number of Items" />
+    <div className="flex gap-3 px-3">
+      <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'items', lessonsData[indexRow]['items'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+      <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'items', lessonsData[indexRow]['items'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+
+    </div>
   </div>
   <span className="text-center flex-1 text-right text-black">
     {/* Additional percentage or related info if needed */}
@@ -640,6 +1270,11 @@ if (myArray && myArray.length > 0) {
     <div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
       <div className="mb-2 block flex-1">
         <Label htmlFor={`teaching_hours-${indexRow}`} value={`Knowledge/Remembering `} />
+        <div className="flex gap-3 px-3">
+        <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'remembering', lessonsData[indexRow]['remembering'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+        <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'remembering', lessonsData[indexRow]['remembering'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+
+    </div>
         
       </div>
       <span className="text-center flex-1 text-right text-black">
@@ -648,11 +1283,17 @@ if (myArray && myArray.length > 0) {
       <span className=" text-right text-black font-bold" style={{flex:0.2}}>
     {lessonsData[indexRow]['remembering']}
     </span>
+   
     </div>
 
     <div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
   <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value={`Comprehension/Understanding`} />
+    <div className="flex gap-3 px-3">
+        <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'understanding', lessonsData[indexRow]['understanding'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+        <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'understanding', lessonsData[indexRow]['understanding'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+
+    </div>
   </div>
   <span className="text-center flex-1 text-right text-black">
     {Understanding}%
@@ -665,6 +1306,11 @@ if (myArray && myArray.length > 0) {
 <div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
   <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value={`Application/Applying`} />
+    <div className="flex gap-3 px-3">
+        <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'applying', lessonsData[indexRow]['applying'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+        <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'applying', lessonsData[indexRow]['applying'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+
+    </div>
   </div>
   <span className="text-center flex-1 text-right text-black">
     {Applying}%
@@ -677,6 +1323,11 @@ if (myArray && myArray.length > 0) {
 <div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
   <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value={`Analysis/Analyzing`} />
+    <div className="flex gap-3 px-3">
+        <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'analyzing', lessonsData[indexRow]['analyzing'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+        <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'analyzing', lessonsData[indexRow]['analyzing'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+
+    </div>
   </div>
   <span className="text-center flex-1 text-right text-black">
     {Analyzing}%
@@ -689,6 +1340,11 @@ if (myArray && myArray.length > 0) {
 <div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
   <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value={`Synthesis/Evaluating`} />
+    <div className="flex gap-3 px-3">
+        <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'evaluating', lessonsData[indexRow]['evaluating'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+        <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'evaluating', lessonsData[indexRow]['evaluating'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+
+    </div>
   </div>
   <span className="text-center flex-1 text-right text-black">
     {Evaluating}%
@@ -701,6 +1357,11 @@ if (myArray && myArray.length > 0) {
 <div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
   <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value={`Evaluation/Creating`} />
+    <div className="flex gap-3 px-3">
+        <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'creating', lessonsData[indexRow]['creating'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+        <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'creating', lessonsData[indexRow]['creating'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+
+    </div>
   </div>
   <span className="text-center flex-1 text-right text-black">
     {Creating}%
@@ -734,6 +1395,7 @@ if (myArray && myArray.length > 0) {
     {lessonsData[indexRow]['placement']}
   </span>
 </div>
+<Button color={'failure'} size={'xs'} onClick={(e) => handleReset(indexRow, 'reset')}><ArrowUpwardIcon/> <span className="mt-1">Reset</span></Button>
 </Card>
     </div>
     
@@ -790,7 +1452,7 @@ const handleTitle = (event) => {
     Title: '',
     Semester: '1st Semester',
     AcademicYear: '',
-    Campus: '',
+    Campus: 'San Carlos Campus',
     CourseCode: '',
     Department: '',
     ExaminationType: '',
@@ -1281,8 +1943,8 @@ throw new Error("First request failed.");
              <Label htmlFor="campus" value="Campus" />
            </div>
            <Select id="campus" name="Campus" value={formData.Campus} onChange={handleChange} required>
-             <option value="Main Campus">Main Campus</option>
-             <option value="Satellite Campus">Satellite Campus</option>
+             <option value="San Carlos Campus">San Carlos Campus</option>
+             <option value="Lingayen Campus">Lingayen Campus</option>
            </Select>
          </div>
        </div>
@@ -1580,7 +2242,7 @@ throw new Error("First request failed.");
 
       <Button color="failure" onClick={() => removeLesson(lessonsData)}><RemoveCircleOutlineIcon className="mr-2"/>Decrease Lesson</Button>
 
-      <Button color="failure" onClick={() => setPdfModal(true)}><VisibilityIcon className="mr-2"/>Preview</Button>
+      <Button color="blue" onClick={() => setPdfModal(true)}><VisibilityIcon className="mr-2"/>Preview</Button>
 
  
       </div>
