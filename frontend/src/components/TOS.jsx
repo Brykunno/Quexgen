@@ -14,6 +14,7 @@ import TOSmodal from "./TOSmodal";
 import api from "../api";
 import { useNavigate } from "react-router-dom";
 import LoadingPage from "./LoadingPage";
+import LoadingSubmit from "./LoadingSubmit";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -25,6 +26,7 @@ import Exam from "./Exam";
 import ReactDOM from 'react-dom';
 import { PDFViewer } from '@react-pdf/renderer';
 import PdfFile from "./PdfFile";
+import Examtest from "./Examtest";
 
 
 function createData(
@@ -106,6 +108,7 @@ tos_teacher: 0,
   
   const [loading, setLoading] = useState(false);
   const [Toast, setToast] = useState(false);
+
 
 
   const [openModal, setOpenModal] = useState(false);
@@ -1454,8 +1457,8 @@ const handleTitle = (event) => {
     AcademicYear: '',
     Campus: 'San Carlos Campus',
     CourseCode: '',
-    Department: '',
-    ExaminationType: '',
+    Department: 'Business and Office Administration',
+    ExaminationType: 'Multiple choices',
     CourseType: '',
     ExaminationDate: '',
     Faculty: '',
@@ -1495,7 +1498,7 @@ useEffect(() => {
 
 
 
-
+const [TestPart, setTestPart] = useState([]);
 const [examStates, setExamStates] = useState([]);
 const [ExamTitle, setExamTitle] = useState('');
 const [Instruction, setInstruction] = useState('');
@@ -1606,6 +1609,21 @@ const handleStateChange = (index, type, value) => {
 
 };
 
+
+
+const handleTestPartChange = (index,type, value) => {
+  const newStates = [...TestPart];
+  if (type === 'test_type') {
+    newStates[index]['test_type'] = value;
+  } else {
+    
+    newStates[index]['test_instruction'] = value;
+  }
+  setTestPart(newStates);
+  saveDataToLocalStorageTestPart()
+
+};
+
 const handleRadioAnswer = (index, value) => {
   const newStates = [...examStates];
  
@@ -1622,7 +1640,7 @@ const handleRadioAnswer = (index, value) => {
 useEffect(() => {
  
   setExamStates(
-    Array.from({ length:totalItems }, () => ({
+    Array.from({ length:examStates.length }, () => ({
       question: '',
       choices: ['', '', '', ''],
       question_type:'',
@@ -1630,7 +1648,17 @@ useEffect(() => {
     }))
   );
 
+
+  setTestPart(
+    Array.from({ length:TestPart.length }, () => ({
+      test_type: '',
+      test_instruction: '',
+      test_part_num:'',
+    }))
+  );
+
     loadDataFromLocalStorageQuestion()
+    loadDataFromLocalStorageTestPart()
   
  
 
@@ -1643,9 +1671,15 @@ useEffect(() => {
 
 const saveDataToLocalStorageQuestion = () => {
   const data = examStates
- 
 
   localStorage.setItem('questionData', JSON.stringify(data));
+};
+
+
+const saveDataToLocalStorageTestPart = () => {
+  const data = TestPart
+
+  localStorage.setItem('testpartData', JSON.stringify(data));
 };
 
 // Call this function to load data from local storage when the component mounts
@@ -1661,8 +1695,24 @@ const loadDataFromLocalStorageQuestion = () => {
   }
 };
 
+const loadDataFromLocalStorageTestPart = () => {
+  const storedData = localStorage.getItem('testpartData');
+ 
+  if (storedData) {
+    const data = JSON.parse(storedData);
+   
+    setTestPart(data || []);
+    
+  
+  }
+};
+
 console.log('examState:',localStorage.getItem('questionData'))
 console.log('Examsss2:',examStates)
+
+
+console.log('TestPart:',localStorage.getItem('testpartData'))
+console.log('Partsss:',TestPart)
 
 
 
@@ -1727,7 +1777,36 @@ return api.post("/api/tos-content/", { lessonsDataJson })
       const examDataJson = JSON.stringify(examData)
       console.log('examrequest:', examDataJson)
       return api.post("/api/create-exams/", {examDataJson})
-      .then((thirdRes) => {
+      .then((TestPartRes) => { //third
+        console.log(TestPartRes);
+        if (TestPartRes.status === 201) {
+          
+     
+         
+          console.log("testpart request data:", TestPartRes.data);
+          const exam_id = TestPartRes.data[0].id
+          console.log("exam_id: ",exam_id)
+    
+          // Third request example
+          const itemTestPart = examStates.reduce((acc,data,index) =>{
+
+            if(data.question != '' && data.answer != ''){
+              acc.push( {
+                'test_type': data.test_type,
+                'test_instruction': data.test_instruction,
+                'test_part_num': data.test_part_num,
+                'exam_id': exam_id
+              })
+            }
+          
+            return acc
+          }, [])
+    
+          const itemTestPartJson = JSON.stringify(itemTestPart)
+          console.log('examrequest:', itemTestPartJson)
+          return api.post("/api/create-testpart/", {itemTestPartJson})
+          
+      .then((thirdRes) => { //third
         console.log(thirdRes);
         if (thirdRes.status === 201) {
           
@@ -1744,7 +1823,7 @@ return api.post("/api/tos-content/", { lessonsDataJson })
               acc.push( {
                 'question': data.question,
                 'answer': data.answer,
-                'question_type': 'mcq',
+                'question_type': data.question_type,
                 'exam_id': exam_id
               })
             }
@@ -1863,10 +1942,9 @@ return api.post("/api/tos-content/", { lessonsDataJson })
                 setDean('');
                 setDirector('');
 
+                setToast(true)
 
-
-               setToast(true)
-              //  window.location.reload();
+            
               })
               
             } else {
@@ -1878,7 +1956,12 @@ return api.post("/api/tos-content/", { lessonsDataJson })
         } else {
           throw new Error("Third request failed.");
         }
-      });
+      });//third
+
+    } else {
+      throw new Error("Third request failed.");
+    }
+  });//third
 
     } else {
       throw new Error("Second request failed.");
@@ -1893,7 +1976,7 @@ throw new Error("First request failed.");
 
 
   return (
-    <div>
+    <div >
 <form onSubmit={handleSubmit}>
 <div className='mb-5'> 
 
@@ -1962,7 +2045,7 @@ throw new Error("First request failed.");
              <Label htmlFor="department" value="Department" />
            </div>
            <Select id="department" name="Department" value={formData.Department} onChange={handleChange} required>
-             <option value="Computer Science">Computer Science</option>
+             <option value=" Business and Office Administration"> Business and Office Administration</option>
              <option value="Mathematics">Mathematics</option>
              <option value="Physics">Physics</option>
              <option value="Chemistry">Chemistry</option>
@@ -1977,9 +2060,9 @@ throw new Error("First request failed.");
              <Label htmlFor="exam-type" value="Type of Examination" />
            </div>
            <Select id="exam-type" name="ExaminationType" value={formData.ExaminationType} onChange={handleChange} required>
-             <option value="Written">Written</option>
-             <option value="Oral">Oral</option>
-             <option value="Practical">Practical</option>
+             <option value="Multiple choices">Multiple choices</option>
+             <option value="Identification">Identification</option>
+             <option value="True or false">True or false</option>
            </Select>
          </div>
          <div className='w-full'>
@@ -2057,8 +2140,7 @@ throw new Error("First request failed.");
            </div>
          </Modal.Footer>
        </Modal>
-       {Toast  && <ToastMessage  message = "Exam successfully Created!"/>}
-      {loading  && <LoadingPage/>}
+       
       
       <h1 className="text-3xl">Course content</h1>
       {/* <Progress progress={66} /> */}
@@ -2270,15 +2352,17 @@ throw new Error("First request failed.");
       
       </Card>
 
-      <Exam items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} Instruction={Instruction} handleInstructionChange={handleInstructionChange} handleRadioAnswer={handleRadioAnswer}  />
+      <Examtest items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} Instruction={Instruction} handleInstructionChange={handleInstructionChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} />
 
 
     
 
       <div className="mt-3">
-      <Button className="mx-auto" type="submit" color="success">Submit</Button>
+      <Button className="mx-auto" type="submit" color="success">Save</Button>
       </div>
       </form>
+      {Toast  && <ToastMessage  message = "Exam successfully Created!"/>}
+      {loading  && <LoadingSubmit/>}
     </div>
   );
 }

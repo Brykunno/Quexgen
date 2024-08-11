@@ -89,11 +89,21 @@ function getFullNames(users) {
     return fname + " " + lname
   }
 
+  function getEmail(users) {
+    let email;
+  
+    users.map(user => {email = user.email });
+
+    return email
+  }
+
 
 console.log(admin_account(user));
 console.log(getFullNames(user));
 const admin = admin_account(user);
 const full_name = getFullNames(user);
+const email = getEmail(user);
+
 
 
 let data;
@@ -146,13 +156,13 @@ else{
         >
           <DropdownHeader>
             <span className="block text-sm">{full_name}</span>
-            <span className="block truncate text-sm font-medium">name@flowbite.com</span>
+            <span className="block truncate text-sm font-medium">{email}</span>
           </DropdownHeader>
           <DropdownItem>Dashboard</DropdownItem>
           <DropdownItem>Settings</DropdownItem>
           <DropdownItem>Earnings</DropdownItem>
           <DropdownDivider />
-          <DropdownItem>Sign out</DropdownItem>
+          <DropdownItem href="/logout">Sign out</DropdownItem>
         </Dropdown>
         <NavbarToggle />
       </div>

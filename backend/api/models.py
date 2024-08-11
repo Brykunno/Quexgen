@@ -65,12 +65,25 @@ class Exam(models.Model):
         return self.exam_title
     class Meta:
         db_table = 'exam'
+
+class TestPart(models.Model):
+    test_type =  models.TextField()
+    test_instruction =  models.TextField()
+    test_part_num =  models.IntegerField()
+    exam_id = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name="test_exam_id", null=True)
+    
+    def __str__(self):
+        return self.test_type
+
+    class Meta:
+        db_table = 'test_part'
       
 class Questions(models.Model):
     question =  models.TextField()
     answer =  models.TextField()
     question_type = models.TextField( null=True)
     exam_id = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name="exam_id", null=True)
+    test_part_id = models.ForeignKey(TestPart, on_delete=models.CASCADE, related_name="test_part_id", null=True)
     
     def __str__(self):
         return self.question
@@ -88,5 +101,8 @@ class Answers(models.Model):
 
     class Meta:
         db_table = 'answers'
+        
+        
+
         
 

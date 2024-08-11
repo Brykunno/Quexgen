@@ -109,7 +109,7 @@ function PdfFile(props) {
 
 <View style={[styles.tableCol,{padding:5}]}>
     <Text style={[styles.tableCell,{fontSize:10,margin:'auto',fontWeight: 'extrabold'}]}>{props.formData.Title}</Text>
-    <Text style={[styles.tableCell,{fontSize:10,margin:'auto',fontWeight: 'extrabold'}]}>{props.formData.Semester} AY {props.formData.AlumniYear}</Text>
+    <Text style={[styles.tableCell,{fontSize:10,margin:'auto',fontWeight: 'extrabold'}]}>{props.formData.Semester} AY {props.formData.AcademicYear}</Text>
   </View>
 
 

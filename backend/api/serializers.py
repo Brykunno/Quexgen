@@ -65,14 +65,21 @@ class ExamSerializer(serializers.ModelSerializer):
         model = Exam
         fields = ["id", "exam_title", "exam_instruction", "date_added", "tos_id"]
         
+class TestPartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TestPart
+        fields = ["id", "test_type","test_instruction", "test_part_num", "exam_id"]
+        
         
 class QuestionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Questions
-        fields = ["id", "question", "answer","question_type", "exam_id"]
+        fields = ["id", "question", "answer","question_type", "exam_id","test_part_id"]
         
 class AnswersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answers
         fields = ["id", "answer_text", "choices", "question_id"]
+        
+
         

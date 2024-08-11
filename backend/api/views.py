@@ -204,7 +204,7 @@ class QuestionsCreateView(generics.ListCreateAPIView):
         response_data = []
 
         for lesson in lessons_data:
-         print("Processing lesson:", lesson)
+         print("Processing questions:", lesson)
          serializer = QuestionsSerializer(data=lesson)
             
          if serializer.is_valid():
@@ -242,8 +242,47 @@ class AnswersCreateView(generics.ListCreateAPIView):
 
         
         for lesson in lessons_data:
-         print("Processing lesson:", lesson)
+         print("Processing answers:", lesson)
          serializer = AnswersSerializer(data=lesson)
+            
+         if serializer.is_valid():
+                serializer.save()
+                response_data.append(serializer.data)
+         else:
+                print("Validation errors:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(response_data, status=status.HTTP_201_CREATED)
+    
+    
+
+class TestPartCreateView(generics.ListCreateAPIView):
+    serializer_class = TestPartSerializer
+    permission_classes = [AllowAny]  # Update as per your permission requirements
+    
+    def get_queryset(self):
+        user = self.request.user
+        return TestPart.objects.filter(exam_id=user.id)
+
+    def post(self, request):
+        json_string = request.data.get('itemTestPartJson', '[]')
+        
+        try:
+            # Convert the JSON string to a Python list of dictionaries
+            lessons_data = json.loads(json_string)
+        except json.JSONDecodeError:
+            return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Print lessons_data for debugging purposes
+        print("Testpart Data:", lessons_data)
+        
+     
+        response_data = []
+
+        
+        for lesson in lessons_data:
+         print(" Processing TestPart:", lesson)
+         serializer = TestPartSerializer(data=lesson)
             
          if serializer.is_valid():
                 serializer.save()

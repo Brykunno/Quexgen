@@ -2,12 +2,20 @@ import React, { useState,useEffect } from 'react';
 import { Progress, Card, Textarea, Button, TextInput, Label,Radio,Modal } from "flowbite-react";
 
 
-function Exam ({ items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,Instruction,handleInstructionChange,handleRadioAnswer }) {
+function Examtest ({ items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,Instruction,handleInstructionChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange }) {
 
 
 
   const [disableAdd,setDisableAdd] = useState(false)
   const [disableRemove,setDisableRemove] = useState(false)
+  const [disableRemoveTest,setDisableRemoveTest] = useState(false)
+  const [uniqueTestPartNums,setuniqueTestPartNums] = useState([])
+  const [Test1,setTest1] = useState(0)
+  const [Test2,setTest2] = useState(0)
+  const [Test3,setTest3] = useState(0)
+ 
+
+
 function checkAnswer(localStore, answer){
   if (localStore == answer)
   {
@@ -68,6 +76,9 @@ function checkAnswer(localStore, answer){
     return acc;
   }, {});
 
+
+
+
   console.log('categories: ',categories[1])
 
   function stringToIntegerStart(placement) {
@@ -81,8 +92,30 @@ function checkAnswer(localStore, answer){
   }
 
 
+  const getQuestionNumber = (item, examStates) => {
+    const filteredQuestions = examStates.filter(q => q.test_part_num === item.test_part_num);
+    return filteredQuestions.indexOf(item) + 1;
+  };
+
   const mcq = (item, index) => {
     return (
+        <Card key={index} className='m-5'>
+        <div>
+          <div className='flex gap-3'>
+          <span className='mt-2'>
+            {item.test_part_num === 1 && getQuestionNumber(item, examStates)}
+            {item.test_part_num === 2 && getQuestionNumber(item, examStates)+Test1}
+            {item.test_part_num === 3 && getQuestionNumber(item, examStates)+Test1+Test2}.
+            
+            
+            </span>
+          
+            <Textarea
+              value={item.question}
+              onChange={(e) => handleStateChange(index, 'question', e.target.value)}
+            />
+          </div>
+
       <div className='mt-3'>
         <div className='flex flex-wrap gap-10 mx-auto'>
           <div>
@@ -149,12 +182,26 @@ function checkAnswer(localStore, answer){
           </div>
         </div>
       </div>
+      <Button>Generate {categories[index + 1] ? categories[index + 1] : ''} question</Button>
+        </div>
+      </Card>
     );
   }
   
 
   const identification = (item, index) => {
     return (
+        <Card key={index} className='m-5'>
+        <div>
+          <div className='flex gap-3'>
+          <span className='mt-2'> {item.test_part_num === 1 && getQuestionNumber(item, examStates)}
+            {item.test_part_num === 2 && getQuestionNumber(item, examStates)+Test1}
+            {item.test_part_num === 3 && getQuestionNumber(item, examStates)+Test1+Test2}.</span>
+            <Textarea
+              value={item.question}
+              onChange={(e) => handleStateChange(index, 'question', e.target.value)}
+            />
+          </div>
       <div className='mt-3'>
         <div className='flex flex-wrap gap-10 mx-auto'>
           <div>
@@ -175,11 +222,25 @@ function checkAnswer(localStore, answer){
           </div>
         </div>
       </div>
+      <Button>Generate {categories[index + 1] ? categories[index + 1] : ''} question</Button>
+        </div>
+      </Card>
     );
   }
 
   const trueOrFalse = (item, index) => {
     return (
+        <Card key={index} className='m-5'>
+        <div>
+          <div className='flex gap-3'>
+          <span className='mt-2'> {item.test_part_num === 1 && getQuestionNumber(item, examStates)}
+            {item.test_part_num === 2 && getQuestionNumber(item, examStates)+Test1}
+            {item.test_part_num === 3 && getQuestionNumber(item, examStates)+Test1+Test2}.</span>
+            <Textarea
+              value={item.question}
+              onChange={(e) => handleStateChange(index, 'question', e.target.value)}
+            />
+          </div>
       <div className='mt-3'>
         <div className='flex flex-wrap gap-5 mx-auto'>
          
@@ -209,6 +270,9 @@ function checkAnswer(localStore, answer){
         
         </div>
       </div>
+      <Button>Generate {categories[index + 1] ? categories[index + 1] : ''} question</Button>
+        </div>
+      </Card>
     );
   }
 
@@ -234,6 +298,43 @@ function checkAnswer(localStore, answer){
     ));
   };
 
+
+  const examPart = (categories) => {
+
+
+
+
+
+    return TestPart.map((itemtest, index) => (
+      <Card key={index}>
+        <div>
+          <div className='flex gap-3'>
+            <span className='mt-2'>Test {index + 1}: Instruction</span>
+            <Textarea
+              value={itemtest.test_instruction}
+              onChange={(e) => handleTestPartChange(index, 'test_instruction', e.target.value)}
+            />
+          </div>
+
+          {examStates.map((item, idx) => (
+          <div key={idx}>
+            {item.question_type === 'mcq' && itemtest.test_type === 'mcq' && mcq(item, examStates)}
+            {item.question_type === 'identification' && itemtest.test_type === 'identification' && identification(item, examStates)}
+            {item.question_type === 'trueOrFalse' && itemtest.test_type === 'trueOrFalse' && trueOrFalse(item, examStates)}
+          </div>
+        ))}
+
+
+  <div className='flex gap-5 mt-5 justify-center'>
+
+        <Button onClick={()=>{handleAddItem(itemtest.test_type,itemtest.test_part_num)}} disabled={disableAdd}> Add Item </Button>
+        <Button onClick={() => {handleRemoveLastItem(itemtest.test_type)}} disabled={disableRemove}>Remove Item</Button>
+        </div>
+        </div>
+      </Card>
+    ));
+  };
+
   
   useEffect(() =>{
     if(examStates.length == items){
@@ -250,22 +351,75 @@ function checkAnswer(localStore, answer){
       setDisableRemove(false)
     }
 
+    if(TestPart.length == 0){
+        setDisableRemoveTest(true)
+      
+      } else{
+        setDisableRemoveTest(false)
+      }
+      setuniqueTestPartNums(examStates.reduce((acc, item) => {
+        acc[item.test_part_num] = (acc[item.test_part_num] || 0) + 1;
+        return acc;
+      }, {}));
+    console.log(`Unique test_part_num values: ${uniqueTestPartNums}`);
+
+
+      setTest1(examStates.filter(item => item.test_part_num === 1).length);
+      setTest2(examStates.filter(item => item.test_part_num === 2).length);
+      setTest3(examStates.filter(item => item.test_part_num === 3).length);
+
+  
+
 
   },[examStates,items])
 
-  const handleAddItem = (itemtype) => {
+  const handleAddItem = (itemtype, test_part_num) => {
+    
     setExamStates([...examStates, 
       {
         question: '',
         choices: ['', '', '', ''],
         question_type: itemtype,
-        answer: ''
+        answer: '',
+        test_part_num: test_part_num
       }
     ]);
   };
 
-  const handleRemoveLastItem = () => {
-    setExamStates(examStates.slice(0, -1));
+
+
+  const handleAddTest = (itemtype) => {
+    setTestPart([...TestPart, 
+      {
+        test_type: itemtype,
+        test_instruction: '',
+        test_part_num: TestPart.length+1,
+      }
+    ]);
+
+    console.log("TestPart: ",TestPart)
+  };
+
+  const handleRemoveLastItem = (question_type) => {
+    setExamStates((prevExamStates) => {
+      // Find the index of the last item with the given question_type
+      const lastIndex = prevExamStates.slice().reverse().findIndex(item => item.question_type === question_type);
+  
+      if (lastIndex === -1) {
+        // If no item with the given question_type is found, return the array as is
+        return prevExamStates;
+      }
+  
+      // Calculate the actual index from the original array
+      const indexToRemove = prevExamStates.length - 1 - lastIndex;
+  
+      // Remove the item at the calculated index
+      return [...prevExamStates.slice(0, indexToRemove), ...prevExamStates.slice(indexToRemove + 1)];
+    });
+  };
+
+  const handleRemoveLastTest = () => {
+    setTestPart(examStates.slice(0, -1));
   };
 
   const [openModal, setOpenModal] = useState(false);
@@ -289,19 +443,25 @@ function checkAnswer(localStore, answer){
         </div>
         <br />
         
-        {examItems(categories)}
+      
+        {examPart(categories)}
+        {String(TestPart)}
         
         <div className='flex gap-5'>
       
-        <Button onClick={()=>{handleAddItem('mcq')}} disabled={disableAdd}>Add Multiple Choice Test</Button>
-        <Button onClick={()=>{handleAddItem('identification')}} disabled={disableAdd}>Add Identification Test</Button>
-        <Button onClick={()=>{handleAddItem('trueOrFalse')}} disabled={disableAdd}>Add True or False Test</Button>
-        <Button onClick={handleRemoveLastItem} disabled={disableRemove}>Remove Item</Button>
-       
+        <Button onClick={()=>{handleAddTest('mcq')}} disabled={disableAdd}>Add Multiple Choice Test</Button>
+        <Button onClick={()=>{handleAddTest('identification')}} disabled={disableAdd}>Add Identification Test</Button>
+        <Button onClick={()=>{handleAddTest('trueOrFalse')}} disabled={disableAdd}>Add True or False Test</Button>
+        <Button onClick={handleRemoveLastTest} disabled={disableRemoveTest}>Remove Test</Button>
+
+
+        {Test1}
+        {Test2}
+        {Test3}
         </div>
       </Card>
     </div>
   );
 };
 
-export default Exam;
+export default Examtest;
