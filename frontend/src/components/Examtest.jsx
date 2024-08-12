@@ -1,12 +1,17 @@
 import React, { useState,useEffect } from 'react';
 import { Progress, Card, Textarea, Button, TextInput, Label,Radio,Modal } from "flowbite-react";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 
-function Examtest ({ items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,Instruction,handleInstructionChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange }) {
+function Examtest ({ items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,Instruction,handleInstructionChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange}) {
 
 
 
   const [disableAdd,setDisableAdd] = useState(false)
+  const [disableAddTestMcq,setDisableAddTestMcq] = useState(false)
+  const [disableAddTestIdentification,setDisableAddTestIdentification] = useState(false)
+  const [disableAddTestTrueorFalse,setDisableAddTestTrueorFalse] = useState(false)
+
   const [disableRemove,setDisableRemove] = useState(false)
   const [disableRemoveTest,setDisableRemoveTest] = useState(false)
   const [uniqueTestPartNums,setuniqueTestPartNums] = useState([])
@@ -97,19 +102,31 @@ function checkAnswer(localStore, answer){
     return filteredQuestions.indexOf(item) + 1;
   };
 
-  const mcq = (item, index) => {
+  const mcq = (item, index,examStates) => {
+
+    let catindex = 0
+
+    if(item.test_part_num === 1){
+      catindex = getQuestionNumber(item, examStates)
+    }
+    else if(item.test_part_num === 2){
+      catindex = getQuestionNumber(item, examStates)+Test1
+    }
+    else{
+     catindex = getQuestionNumber(item, examStates)+Test1+Test2
+    }
+
+
     return (
         <Card key={index} className='m-5'>
         <div>
           <div className='flex gap-3'>
           <span className='mt-2'>
-            {item.test_part_num === 1 && getQuestionNumber(item, examStates)}
-            {item.test_part_num === 2 && getQuestionNumber(item, examStates)+Test1}
-            {item.test_part_num === 3 && getQuestionNumber(item, examStates)+Test1+Test2}.
+            {catindex}.
             
             
             </span>
-          
+ 
             <Textarea
               value={item.question}
               onChange={(e) => handleStateChange(index, 'question', e.target.value)}
@@ -182,21 +199,35 @@ function checkAnswer(localStore, answer){
           </div>
         </div>
       </div>
-      <Button>Generate {categories[index + 1] ? categories[index + 1] : ''} question</Button>
+      <div className='flex gap-5'>
+      <Button>Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
+      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex('mcq',index)}} ><DeleteIcon/></Button>
+      </div>
         </div>
       </Card>
     );
   }
   
 
-  const identification = (item, index) => {
+  const identification = (item, index,examStates) => {
+    
+    let catindex = 0
+
+    if(item.test_part_num === 1){
+      catindex = getQuestionNumber(item, examStates)
+    }
+    else if(item.test_part_num === 2){
+      catindex = getQuestionNumber(item, examStates)+Test1
+    }
+    else{
+     catindex = getQuestionNumber(item, examStates)+Test1+Test2
+    }
+
     return (
         <Card key={index} className='m-5'>
         <div>
           <div className='flex gap-3'>
-          <span className='mt-2'> {item.test_part_num === 1 && getQuestionNumber(item, examStates)}
-            {item.test_part_num === 2 && getQuestionNumber(item, examStates)+Test1}
-            {item.test_part_num === 3 && getQuestionNumber(item, examStates)+Test1+Test2}.</span>
+          <span className='mt-2'> {catindex}.</span>
             <Textarea
               value={item.question}
               onChange={(e) => handleStateChange(index, 'question', e.target.value)}
@@ -222,20 +253,34 @@ function checkAnswer(localStore, answer){
           </div>
         </div>
       </div>
-      <Button>Generate {categories[index + 1] ? categories[index + 1] : ''} question</Button>
+      <div className='flex gap-5'>
+      <Button>Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
+      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex('mcq',index)}} ><DeleteIcon/></Button>
+      </div>
         </div>
       </Card>
     );
   }
 
-  const trueOrFalse = (item, index) => {
+  const trueOrFalse = (item, index,examStates) => {
+    
+    let catindex = 0
+
+    if(item.test_part_num === 1){
+      catindex = getQuestionNumber(item, examStates)
+    }
+    else if(item.test_part_num === 2){
+      catindex = getQuestionNumber(item, examStates)+Test1
+    }
+    else{
+     catindex = getQuestionNumber(item, examStates)+Test1+Test2
+    }
+
     return (
         <Card key={index} className='m-5'>
         <div>
           <div className='flex gap-3'>
-          <span className='mt-2'> {item.test_part_num === 1 && getQuestionNumber(item, examStates)}
-            {item.test_part_num === 2 && getQuestionNumber(item, examStates)+Test1}
-            {item.test_part_num === 3 && getQuestionNumber(item, examStates)+Test1+Test2}.</span>
+          <span className='mt-2'> {catindex}.</span>
             <Textarea
               value={item.question}
               onChange={(e) => handleStateChange(index, 'question', e.target.value)}
@@ -270,7 +315,10 @@ function checkAnswer(localStore, answer){
         
         </div>
       </div>
-      <Button>Generate {categories[index + 1] ? categories[index + 1] : ''} question</Button>
+      <div className='flex gap-5'>
+      <Button>Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
+      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex('mcq',index)}} ><DeleteIcon/></Button>
+      </div>
         </div>
       </Card>
     );
@@ -305,11 +353,23 @@ function checkAnswer(localStore, answer){
 
 
 
-    return TestPart.map((itemtest, index) => (
+    return TestPart.map((itemtest, index) => {
+
+      let type = ''
+      if(itemtest.test_type === 'mcq'){
+        type = 'Multiple Choice Question'
+      }
+      else if(itemtest.test_type === 'identification'){
+        type = 'Identification'
+      }else{
+        type = 'True or False'
+      }
+
+      return(
       <Card key={index}>
         <div>
           <div className='flex gap-3'>
-            <span className='mt-2'>Test {index + 1}: Instruction</span>
+            <span className='mt-2'> {type}  Test {index + 1}: Instruction</span>
             <Textarea
               value={itemtest.test_instruction}
               onChange={(e) => handleTestPartChange(index, 'test_instruction', e.target.value)}
@@ -318,9 +378,9 @@ function checkAnswer(localStore, answer){
 
           {examStates.map((item, idx) => (
           <div key={idx}>
-            {item.question_type === 'mcq' && itemtest.test_type === 'mcq' && mcq(item, examStates)}
-            {item.question_type === 'identification' && itemtest.test_type === 'identification' && identification(item, examStates)}
-            {item.question_type === 'trueOrFalse' && itemtest.test_type === 'trueOrFalse' && trueOrFalse(item, examStates)}
+            {item.question_type === 'mcq' && itemtest.test_type === 'mcq' && mcq(item,idx, examStates)}
+            {item.question_type === 'identification' && itemtest.test_type === 'identification' && identification(item,idx, examStates)}
+            {item.question_type === 'trueOrFalse' && itemtest.test_type === 'trueOrFalse' && trueOrFalse(item, idx, examStates)}
           </div>
         ))}
 
@@ -328,11 +388,12 @@ function checkAnswer(localStore, answer){
   <div className='flex gap-5 mt-5 justify-center'>
 
         <Button onClick={()=>{handleAddItem(itemtest.test_type,itemtest.test_part_num)}} disabled={disableAdd}> Add Item </Button>
-        <Button onClick={() => {handleRemoveLastItem(itemtest.test_type)}} disabled={disableRemove}>Remove Item</Button>
+
         </div>
         </div>
-      </Card>
-    ));
+        <Button color={'failure'} onClick={() =>{handleRemoveLastItemTest(index)}} ><DeleteIcon/></Button>
+      </Card>)
+  });
   };
 
   
@@ -368,10 +429,30 @@ function checkAnswer(localStore, answer){
       setTest2(examStates.filter(item => item.test_part_num === 2).length);
       setTest3(examStates.filter(item => item.test_part_num === 3).length);
 
-  
+
+   
+      disableBtn();
+
+  },[examStates,items,TestPart])
+
+  const disableBtn = () =>{
+   // Count how many 'mcq' test types are in TestPart
+const mcqCount = TestPart.filter(test => test.test_type === 'mcq').length;
+
+// Count how many 'identification' test types are in TestPart
+const identificationCount = TestPart.filter(test => test.test_type === 'identification').length;
+
+// Count how many 'trueOrFalse' test types are in TestPart
+const trueOrFalseCount = TestPart.filter(test => test.test_type === 'trueOrFalse').length;
 
 
-  },[examStates,items])
+// Set disable states based on counts
+setDisableAddTestMcq(mcqCount > 0);
+setDisableAddTestIdentification(identificationCount > 0);
+setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
+
+ 
+  }
 
   const handleAddItem = (itemtype, test_part_num) => {
     
@@ -400,26 +481,63 @@ function checkAnswer(localStore, answer){
     console.log("TestPart: ",TestPart)
   };
 
-  const handleRemoveLastItem = (question_type) => {
+
+
+  const handleRemoveLastItemIndex = (question_type, index) => {
     setExamStates((prevExamStates) => {
-      // Find the index of the last item with the given question_type
-      const lastIndex = prevExamStates.slice().reverse().findIndex(item => item.question_type === question_type);
-  
-      if (lastIndex === -1) {
-        // If no item with the given question_type is found, return the array as is
+      // Validate the index to ensure it is within the array bounds
+      if (index < 0 || index >= prevExamStates.length) {
+        // If the index is out of bounds, return the array as is
         return prevExamStates;
       }
   
-      // Calculate the actual index from the original array
-      const indexToRemove = prevExamStates.length - 1 - lastIndex;
+      // Update localStorage with the modified array
+      const updatedStates = [
+        ...prevExamStates.slice(0, index),
+        ...prevExamStates.slice(index + 1),
+      ];
+      localStorage.setItem('questionData', JSON.stringify(updatedStates));
   
-      // Remove the item at the calculated index
-      return [...prevExamStates.slice(0, indexToRemove), ...prevExamStates.slice(indexToRemove + 1)];
+      // Return the modified array, removing the item at the specified index
+      return updatedStates;
     });
   };
 
+  const handleRemoveLastItemTest = ( index) => {
+    setTestPart((prevTestPart) => {
+      // Validate the index to ensure it is within the array bounds
+      if (index < 0 || index >= prevTestPart.length) {
+        // If the index is out of bounds, return the array as is
+        return prevTestPart;
+      }
+  
+      // Update localStorage with the modified array
+      const updatedStates = [
+        ...prevTestPart.slice(0, index),
+        ...prevTestPart.slice(index + 1),
+      ];
+
+
+
+
+      localStorage.setItem('testpartData', JSON.stringify(updatedStates));
+      
+  
+      // Return the modified array, removing the item at the specified index
+      return updatedStates;
+    });
+   
+  };
+
+
+
+  
+
   const handleRemoveLastTest = () => {
     setTestPart(examStates.slice(0, -1));
+
+    
+
   };
 
   const [openModal, setOpenModal] = useState(false);
@@ -445,19 +563,16 @@ function checkAnswer(localStore, answer){
         
       
         {examPart(categories)}
-        {String(TestPart)}
+  
         
         <div className='flex gap-5'>
       
-        <Button onClick={()=>{handleAddTest('mcq')}} disabled={disableAdd}>Add Multiple Choice Test</Button>
-        <Button onClick={()=>{handleAddTest('identification')}} disabled={disableAdd}>Add Identification Test</Button>
-        <Button onClick={()=>{handleAddTest('trueOrFalse')}} disabled={disableAdd}>Add True or False Test</Button>
-        <Button onClick={handleRemoveLastTest} disabled={disableRemoveTest}>Remove Test</Button>
+        <Button onClick={()=>{handleAddTest('mcq')}} disabled={disableAddTestMcq}>Add Multiple Choice Test</Button>
+        <Button onClick={()=>{handleAddTest('identification')}} disabled={disableAddTestIdentification}>Add Identification Test</Button>
+        <Button onClick={()=>{handleAddTest('trueOrFalse')}} disabled={disableAddTestTrueorFalse}>Add True or False Test</Button>
+     
 
-
-        {Test1}
-        {Test2}
-        {Test3}
+     
         </div>
       </Card>
     </div>

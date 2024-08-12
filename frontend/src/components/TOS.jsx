@@ -582,21 +582,24 @@ const handleReset = (i, field) => {
  
   
 
-const removeLesson = (lessonsData) =>{
-  let myArray = lessonsData;
-
-// Check if the array is not null and has elements
-if (myArray && myArray.length > 0) {
-  // Remove the last item from the array
-  myArray.pop();
-
-  setLessonsDatainitial(myArray)
-  // Save the updated array back to local storage
-  localStorage.setItem('lessonsData', JSON.stringify(myArray));
-} else {
-  console.log('Array is empty or does not exist.');
-}
-}
+  const removeLesson = (lessonsData, index) => {
+    let myArray = lessonsData.slice(); // Create a shallow copy of the array
+  
+    // Check if the index is valid and the array is not empty
+    if (myArray && myArray.length > 0 && index >= 0 && index < myArray.length) {
+      // Remove the item at the specified index
+      myArray.splice(index, 1);
+  
+      // Update the state with the modified array
+      setLessonsDatainitial(myArray);
+  
+      // Save the updated array back to local storage
+      localStorage.setItem('lessonsData', JSON.stringify(myArray));
+    } else {
+      console.log('Invalid index or array is empty.');
+    }
+  };
+  
 
 
 
@@ -1194,7 +1197,15 @@ const handleCeil = (index, field, value) => {
       return 0
     }
     else{
-      return <div className="flex gap-5">  
+      return(
+      <Modal size={'7xl'} show={openModal} onClose={() => setOpenModal(false)}>
+      <Modal.Header>Lesson {indexRow+1}</Modal.Header>
+      <Modal.Body>
+        <div className="space-y-6 " >
+          <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+           
+
+      <div className="flex gap-5">  
          <div style={{flex:1}} className="flex flex-col">
           <Card className="h-full">
         <div className="mb-3 flex-1">
@@ -1401,8 +1412,26 @@ const handleCeil = (index, field, value) => {
 <Button color={'failure'} size={'xs'} onClick={(e) => handleReset(indexRow, 'reset')}><ArrowUpwardIcon/> <span className="mt-1">Reset</span></Button>
 </Card>
     </div>
+
+  
     
     </div>
+    
+    </p>
+           
+           </div>
+         </Modal.Body>
+         <Modal.Footer>
+          <div className=" w-full ">
+            <div className="mx-auto flex gap-5 justify-center">
+            <Button color="failure" onClick={() => removeLesson(lessonsData,indexRow)}><RemoveCircleOutlineIcon className="mr-2"/>Remove Lesson</Button>
+           <Button onClick={() => setOpenModal(false)}  color={'success'}>Done</Button>
+           
+           </div>
+           </div>
+         </Modal.Footer>
+       </Modal>)
+       
     }
   }
 
@@ -1788,7 +1817,7 @@ return api.post("/api/tos-content/", { lessonsDataJson })
           console.log("exam_id: ",exam_id)
     
           // Third request example
-          const itemTestPart = examStates.reduce((acc,data,index) =>{
+          const itemTestPart = TestPart.reduce((acc,data,index) =>{
 
             if(data.question != '' && data.answer != ''){
               acc.push( {
@@ -1813,18 +1842,38 @@ return api.post("/api/tos-content/", { lessonsDataJson })
      
          
           console.log("third request data:", thirdRes.data);
-          const exam_id = thirdRes.data[0].id
+          const exam_id = thirdRes.data[0].exam_id
+         
+
+          console.log('testpartid: ', thirdRes)
           console.log("exam_id: ",exam_id)
     
+          let test_part_id = 0
           // Third request example
           const itemQuestion = examStates.reduce((acc,data,index) =>{
+
+
+           
+            console.log("partnum: ",data.test_part_num)
+            console.log("partnum2: ",thirdRes.data[0].test_part_num)
+            for(let i = 0; i<thirdRes.data.length;i++){
+              if(thirdRes.data[i].test_part_num === data.test_part_num){
+                test_part_id = thirdRes.data[i].id
+                console.log("testpartidd: ",test_part_id,' : ' ,thirdRes.data[i].id)
+                
+              }
+              
+            }
+
+            
 
             if(data.question != '' && data.answer != ''){
               acc.push( {
                 'question': data.question,
                 'answer': data.answer,
                 'question_type': data.question_type,
-                'exam_id': exam_id
+                'exam_id': exam_id,
+                'test_part_id': test_part_id
               })
             }
           
@@ -1915,6 +1964,7 @@ return api.post("/api/tos-content/", { lessonsDataJson })
                 setExamTitle('')
                 setInstruction('')
                 setExamStates([])
+                setTestPart([])
                 localStorage.removeItem('Remembering')
                 localStorage.removeItem('Understanding')
                 localStorage.removeItem('Analyzing')
@@ -1922,6 +1972,7 @@ return api.post("/api/tos-content/", { lessonsDataJson })
                 localStorage.removeItem('Evaluating')
                 localStorage.removeItem('Creating')
                 localStorage.removeItem('formData')
+                localStorage.removeItem('testpartData')
                 loadDataFromLocalStorage()
                 localStorage.removeItem('examData')
                 loadDataFromLocalStorageExam()
@@ -2120,26 +2171,9 @@ throw new Error("First request failed.");
 
 </div>
 
-    <Modal size={'7xl'} show={openModal} onClose={() => setOpenModal(false)}>
-         <Modal.Header>Lesson {indexRow+1}</Modal.Header>
-         <Modal.Body>
-           <div className="space-y-6 " >
-             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              
-
+  
         {inputModal(indexRow,lessonsData)}
          
-       
-             </p>
-           
-           </div>
-         </Modal.Body>
-         <Modal.Footer>
-          <div className=" w-full">
-           <Button onClick={() => setOpenModal(false)} className="mx-auto" color={'success'}>Done</Button>
-           </div>
-         </Modal.Footer>
-       </Modal>
        
       
       <h1 className="text-3xl">Course content</h1>
@@ -2322,7 +2356,7 @@ throw new Error("First request failed.");
       placement: '',
       totalItems:0,})}> <AddCircleOutlineIcon className="mr-2 "/>Add Lesson</Button>
 
-      <Button color="failure" onClick={() => removeLesson(lessonsData)}><RemoveCircleOutlineIcon className="mr-2"/>Decrease Lesson</Button>
+     
 
       <Button color="blue" onClick={() => setPdfModal(true)}><VisibilityIcon className="mr-2"/>Preview</Button>
 
@@ -2352,7 +2386,7 @@ throw new Error("First request failed.");
       
       </Card>
 
-      <Examtest items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} Instruction={Instruction} handleInstructionChange={handleInstructionChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} />
+      <Examtest items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} Instruction={Instruction} handleInstructionChange={handleInstructionChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} />
 
 
     
