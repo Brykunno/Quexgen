@@ -11,8 +11,7 @@ import Sidebar from "./components/Sidebar";
 
 import "./styles/App.css";
 
-import Admin_routes from './Routes/Admin_routes';
-import Teacher_routes from './Routes/Teacher_routes';
+
 import { Teacher_routes_data } from "./Routes/Teacher_routes_data";
 import { Admin_routes_data } from "./Routes/Admin_routes_data";
 

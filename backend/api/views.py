@@ -50,6 +50,21 @@ class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
+    
+    
+class TOSContentRetrieve(generics.ListAPIView):
+    serializer_class = TOSContentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Get the 'pk' from the URL, which will represent the foreign key (e.g., teacher_tos_id)
+        teacher_tos_id = self.kwargs['pk']
+        
+        print(teacher_tos_id)
+        
+        # Filter the TOS_info objects based on the foreign key (teacher_tos_id) and the authenticated user
+        user = self.request.user
+        return TOS_Content.objects.filter(teacher_tos=teacher_tos_id)
 
 
 class TOSContentCreateView(generics.ListCreateAPIView):
@@ -100,7 +115,14 @@ def assign_permission_to_user(username, permission_codename):
     except Permission.DoesNotExist:
         return False
     
-    
+
+class TOSInfoRetrieve(generics.ListCreateAPIView):
+    serializer_class = TOSInfoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return TOS_info.objects.filter(teacher_tos_info=user.id)
     
 
 class TOSInfoCreateView(generics.ListCreateAPIView):

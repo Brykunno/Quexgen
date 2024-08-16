@@ -63,7 +63,7 @@ class TOSInfoSerializer(serializers.ModelSerializer):
 class ExamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Exam
-        fields = ["id", "exam_title", "exam_instruction", "date_added", "tos_id"]
+        fields = ["id", "exam_title", "date_added", "tos_id"]
         
 class TestPartSerializer(serializers.ModelSerializer):
     class Meta:

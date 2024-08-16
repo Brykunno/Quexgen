@@ -1,2 +1,2 @@
-modulo = 12.2 % 1
+modulo = 3 % 3
 print(modulo)

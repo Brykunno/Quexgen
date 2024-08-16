@@ -56,7 +56,6 @@ class TOS_Content(models.Model):
 
 class Exam(models.Model):
     exam_title = models.CharField(max_length=100)
-    exam_instruction = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
     tos_id = models.ForeignKey(TOS_info, on_delete=models.CASCADE,related_name="tos_id",null=True)
 

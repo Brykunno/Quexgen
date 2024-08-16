@@ -4,6 +4,8 @@ import React from 'react'
 import Exam_bank from '../pages/Teacher/Exam_bank';
 import Create_exam from '../pages/Teacher/Create_exam';
 
+import TosView from '../pages/Teacher/TosView';
+
 
 
 export const Teacher_routes_data = [
@@ -18,6 +20,10 @@ export const Teacher_routes_data = [
         element: <Create_exam />
     },
 
+    {
+        path: "/tos_view",
+        element: <TosView />
+    },
    
 
 

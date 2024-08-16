@@ -24,6 +24,11 @@ export const SidebarData_teacher = [
         link: "/exam_bank",
     },
     {
+        title: "TOS",
+        icon: <FolderCopyIcon />,
+        link: "/tos_view",
+    },
+    {
         title: "Profile",
         icon: <ManageAccountsIcon />,
         link: "/",

@@ -1,9 +1,13 @@
 import React, { useState,useEffect } from 'react';
 import { Progress, Card, Textarea, Button, TextInput, Label,Radio,Modal } from "flowbite-react";
 import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
+import ReactDOM from 'react-dom';
+import { PDFViewer } from '@react-pdf/renderer';
+import Exampdf from "./Exampdf";
 
-function Examtest ({ items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,Instruction,handleInstructionChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange}) {
+function Examtest ({ items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange}) {
 
 
 
@@ -18,6 +22,8 @@ function Examtest ({ items, tos_id, lessonsData,handleStateChange,examStates,set
   const [Test1,setTest1] = useState(0)
   const [Test2,setTest2] = useState(0)
   const [Test3,setTest3] = useState(0)
+  const [PdfModal,setPdfModal] = useState(false)
+
  
 
 
@@ -503,44 +509,53 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
     });
   };
 
-  const handleRemoveLastItemTest = ( index) => {
+
+  const handleRemoveLastItemTest = (index, test_type) => {
     setTestPart((prevTestPart) => {
-      // Validate the index to ensure it is within the array bounds
       if (index < 0 || index >= prevTestPart.length) {
-        // If the index is out of bounds, return the array as is
         return prevTestPart;
       }
   
-      // Update localStorage with the modified array
-      const updatedStates = [
+      // Remove the item at the specified index and update the array
+      const updatedTestPart = [
         ...prevTestPart.slice(0, index),
         ...prevTestPart.slice(index + 1),
       ];
-
-
-
-
-      localStorage.setItem('testpartData', JSON.stringify(updatedStates));
-      
   
-      // Return the modified array, removing the item at the specified index
-      return updatedStates;
+      // Reassign test_part_num sequentially
+      updatedTestPart.forEach((item, i) => {
+        item.test_part_num = i + 1;
+      });
+  
+      localStorage.setItem('testpartData', JSON.stringify(updatedTestPart));
+      return updatedTestPart;
     });
-   
+  
+    setExamStates((prevExamStates) => {
+      if (index < 0 || index >= prevExamStates.length) {
+        return prevExamStates;
+      }
+  
+      // Remove the exam state that matches the test_part_num being deleted
+      const deletedPartNum = index + 1; // because `index` starts at 0, but `test_part_num` starts at 1
+      const filteredExamStates = prevExamStates.filter(
+        (state) => state.test_part_num !== deletedPartNum
+      );
+  
+      // Reassign test_part_num sequentially for remaining items
+      const updatedExamStates = filteredExamStates.map((item, i) => ({
+        ...item,
+        test_part_num: i + 1, // reorder sequentially
+      }));
+  
+      localStorage.setItem('questionData', JSON.stringify(updatedExamStates));
+  
+      return updatedExamStates;
+    });
   };
-
-
-
   
 
-  const handleRemoveLastTest = () => {
-    setTestPart(examStates.slice(0, -1));
 
-    
-
-  };
-
-  const [openModal, setOpenModal] = useState(false);
   return (
     <div className='mt-3'>
       <Card>
@@ -553,12 +568,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
           </div>
           <TextInput id="title" type="text" value={ExamTitle}  onChange={handleExamTitleChange}/>
         </div>
-        <div className='w-full'>
-          <div className="mb-2 block">
-            <Label htmlFor="instructions" value="Instruction" />
-          </div>
-          <Textarea id="instructions" type="text" value={Instruction} onChange={handleInstructionChange}/>
-        </div>
+       
         <br />
         
       
@@ -574,9 +584,24 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
 
      
         </div>
+        <Button color="blue" onClick={() => setPdfModal(true)}><VisibilityIcon className="mr-2"/>Preview</Button>
+        <Modal show={PdfModal} size={'7xl'}  onClose={() => setPdfModal(false)} className="h-screen">
+        <Modal.Header>Table of Specification</Modal.Header>
+        <Modal.Body  className="p-0">
+          <div className="min-h-96 "  style={{height:'575px'}}>
+          <PDFViewer className="h-full w-full">
+    <Exampdf TestPart={TestPart} examStates={examStates} />
+  </PDFViewer>
+      
+          </div>
+        </Modal.Body>
+      </Modal>
+   
       </Card>
     </div>
   );
 };
+
+
 
 export default Examtest;

@@ -1530,7 +1530,7 @@ useEffect(() => {
 const [TestPart, setTestPart] = useState([]);
 const [examStates, setExamStates] = useState([]);
 const [ExamTitle, setExamTitle] = useState('');
-const [Instruction, setInstruction] = useState('');
+
 
 
 
@@ -1538,7 +1538,7 @@ const [Instruction, setInstruction] = useState('');
 const saveDataToLocalStorageExam = () => {
   const data = {
     ExamTitle,
-    Instruction,
+
     tos_id:0
   };
 
@@ -1551,7 +1551,7 @@ const loadDataFromLocalStorageExam = () => {
   if (storedData) {
     const data = JSON.parse(storedData);
     setExamTitle(data.ExamTitle || '');
-    setInstruction(data.Instruction || '');
+
   
   }
 };
@@ -1604,23 +1604,13 @@ const handleExamTitleChange = (event) => {
   setExamTitle(event.target.value)
   const data = {
     ExamTitle: event.target.value,
-    Instruction,
     tos_id:0
   };
 
   localStorage.setItem('examData', JSON.stringify(data));
 }
 
-const handleInstructionChange = (event) => {
-  setInstruction(event.target.value)
-  const data = {
-    ExamTitle,
-    Instruction: event.target.value,
-    tos_id:0
-  };
 
-  localStorage.setItem('examData', JSON.stringify(data));
-}
 console.log('examData: ',localStorage.getItem('examData'))
 
 
@@ -1747,12 +1737,6 @@ console.log('Partsss:',TestPart)
 
 
 
-let examDetails = [{
-  exam_title: ExamTitle,
-  exam_instruction: Instruction,
-  tos_id: 0
-}];
-
 
 
 
@@ -1799,7 +1783,6 @@ return api.post("/api/tos-content/", { lessonsDataJson })
       // Third request example
       const examData =  {
         exam_title: ExamTitle,
-        exam_instruction: Instruction,
         tos_id: id_tos
       };
 
@@ -1962,7 +1945,7 @@ return api.post("/api/tos-content/", { lessonsDataJson })
                 setEvaluating(0)
                 setCreating(0)
                 setExamTitle('')
-                setInstruction('')
+             
                 setExamStates([])
                 setTestPart([])
                 localStorage.removeItem('Remembering')
@@ -2375,18 +2358,12 @@ throw new Error("First request failed.");
       
           </div>
         </Modal.Body>
-        {/* <Modal.Footer>
-          <Button onClick={() => setPdfModal(false)}>Print</Button>
-          <Button color="gray" onClick={() => setPdfModal(false)}>
-            Close
-          </Button>
-        </Modal.Footer> */}
       </Modal>
 
       
       </Card>
 
-      <Examtest items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} Instruction={Instruction} handleInstructionChange={handleInstructionChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} />
+      <Examtest items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} />
 
 
     
