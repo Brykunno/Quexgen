@@ -35,23 +35,25 @@ background-color: #dee8f7;
  }
 
  .Sidebar{
+    padding-top: 20px;
     height: 100%;
     width: 250px;
-    background-color: #001D3D;
+    background-color: #02022a;
     position: fixed;
  }
 
-/* .content{
+.content{
     margin-left: 260px; 
     padding: 16px; 
-} */
-
+    /* padding-top: 100px ; */
+}
+/* 
 .content{
 
     padding: 16px; 
     padding-left: 30px;
     padding-right: 30px;
-}
+} */
 
 
 .SidebarList{

@@ -21,7 +21,7 @@ export const Teacher_routes_data = [
     },
 
     {
-        path: "/tos_view",
+        path: "/tos_view/:id",
         element: <TosView />
     },
    

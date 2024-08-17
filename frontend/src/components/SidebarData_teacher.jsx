@@ -19,15 +19,15 @@ export const SidebarData_teacher = [
         link: "/create_exam",
     },
     {
-        title: "Exam Bank",
+        title: "Exams",
         icon: <FolderCopyIcon />,
         link: "/exam_bank",
     },
-    {
-        title: "TOS",
-        icon: <FolderCopyIcon />,
-        link: "/tos_view",
-    },
+    // {
+    //     title: "TOS",
+    //     icon: <FolderCopyIcon />,
+    //     link: "/tos_view/:id",
+    // },
     {
         title: "Profile",
         icon: <ManageAccountsIcon />,

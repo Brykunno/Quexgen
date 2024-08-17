@@ -6,6 +6,7 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoutes";
 import Add_user from "./pages/Admin/Add_user";
 import Topnavbar from './components/Topnavbar';
+import Topnavbarcomp from './components/topnavbarcomp';
 
 import Sidebar from "./components/Sidebar";
 
@@ -27,7 +28,8 @@ function Add_userlogout() {
 
 const ProtectedLayout = ({ children }) => (
   <>
-    <Topnavbar />
+    <Sidebar />
+    {/* <Topnavbarcomp /> */}
     {children}
   </>
 );

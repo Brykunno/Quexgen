@@ -7,6 +7,8 @@ urlpatterns = [
 
     path('teachers/', views.TeacherRetrieve.as_view(), name='user-detail'),
     path('tos-content/<int:pk>/detail/', views.TOSContentRetrieve.as_view(), name='tos-content-list-detail'),
+    path('tos-info/<int:pk>/detail/', views.TOSInfoRetrieveDetail.as_view(), name='tos-info-list-retrieve-detail'),
+    path('tos-info/<int:pk>/update/', views.TOSInfoUpdate.as_view(), name='tos-info-list-retrieve-update'),
     path('tos-content/', views.TOSContentCreateView.as_view(), name='tos-content-list-create'),
     path('tos-info/', views.TOSInfoCreateView.as_view(), name='tos-info-list-create'),
     path('tos-info/detail/', views.TOSInfoRetrieve.as_view(), name='tos-info-list-detail'),

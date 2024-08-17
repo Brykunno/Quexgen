@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { Progress, Card, Textarea, Button, TextInput, Label,Radio,Modal } from "flowbite-react";
+import { Breadcrumb,Progress, Card, Textarea, Button, TextInput, Label,Radio,Modal } from "flowbite-react";
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
@@ -125,6 +125,7 @@ function checkAnswer(localStore, answer){
 
     return (
         <Card key={index} className='m-5'>
+          
         <div>
           <div className='flex gap-3'>
           <span className='mt-2'>
@@ -557,11 +558,28 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
 
 
   return (
-    <div className='mt-3'>
+    <div >
       <Card>
-        <h1 className='text-3xl'>Exam</h1>
-        <hr />
-        <br />
+        
+      <Breadcrumb aria-label="Default breadcrumb example">
+      <Breadcrumb.Item >
+      Course Information
+      </Breadcrumb.Item>
+      <Breadcrumb.Item >
+      Taxonomy Allocation
+      </Breadcrumb.Item>
+      <Breadcrumb.Item >
+      Table of Specification
+      </Breadcrumb.Item>
+      <Breadcrumb.Item >
+      Create Exam
+      </Breadcrumb.Item>
+      
+    </Breadcrumb>
+   
+   <Progress progress={100} size={'sm'} />
+       
+       
         <div className='w-full'>
           <div className="mb-2 block">
             <Label htmlFor="title" value="Title" />

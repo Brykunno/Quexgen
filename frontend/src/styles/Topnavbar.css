@@ -4,11 +4,12 @@
     background-color: #000814!important;
     z-index: 100;
 
-    width: 100%;
-    position: sticky;
-    border-radius: 0px!important;
-
- 
-  
+    width: 82%;
+    position:absolute;
+    border-radius: 20px!important;
+   
+    margin: 20px;
+    margin-left: 260px;
+    right: 0px;
 }
 

@@ -124,6 +124,29 @@ class TOSInfoRetrieve(generics.ListCreateAPIView):
         user = self.request.user
         return TOS_info.objects.filter(teacher_tos_info=user.id)
     
+class TOSInfoRetrieveDetail(generics.ListCreateAPIView):
+    serializer_class = TOSInfoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        id = self.kwargs['pk']
+        return TOS_info.objects.filter(id=id)
+    
+class TOSInfoUpdate(generics.UpdateAPIView):
+    queryset = TOS_info.objects.all()
+    serializer_class = TOSInfoSerializer
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_update(self, serializer):
+        serializer.save()
+    
 
 class TOSInfoCreateView(generics.ListCreateAPIView):
     serializer_class = TOSInfoSerializer

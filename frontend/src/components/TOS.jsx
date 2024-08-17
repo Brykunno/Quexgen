@@ -8,7 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import TableRow from "@mui/material/TableRow";
-import { Card,Progress,Label, Textarea, TextInput,Button,RangeSlider,Modal,Select } from "flowbite-react";
+import { Breadcrumb,Card,Progress,Label, Textarea, TextInput,Button,RangeSlider,Modal,Select } from "flowbite-react";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import TOSmodal from "./TOSmodal";
 import api from "../api";
@@ -170,8 +170,8 @@ tos_teacher: 0,
 
   
 const columns = [
-  { id: "topic", label: "Lesson/Topic", minWidth: 170 },
-  { id: "learning_outcomes", label: "Learning Outcomes", minWidth: 170 },
+  { id: "topic", label: "Lesson/Topic", minWidth: 170  },
+  // { id: "learning_outcomes", label: "Learning Outcomes", minWidth: 170 },
   {
     id: "teaching_hours",
     label: "No. of teaching hours",
@@ -553,8 +553,8 @@ const handleReset = (i, field) => {
 
   const rows = lessonsData.map((data, index) =>
     createData(
-    <div className="max-w-36  overflow-hidden" key={index}> {data.topic}</div>,
-    <div className="max-w-36  overflow-hidden" key={index}> {data.learning_outcomes}</div>,
+    <div className="max-w-36  max-h-10  overflow-hidden" style={{maxHeight:'100'}} key={index}> {data.topic}</div>,
+    <div className="max-w-36  overflow-hidden" style={{maxHeight:'100'}} key={index}> {data.learning_outcomes}</div>,
      data.teachingHours,
      
      data.allocation,
@@ -1194,7 +1194,7 @@ const handleCeil = (index, field, value) => {
 
   function inputModal(indexRow,lessonsData){
     if(lessonsData[indexRow] === undefined){
-      return 0
+      return ''
     }
     else{
       return(
@@ -1436,20 +1436,7 @@ const handleCeil = (index, field, value) => {
   }
 
 
-  
-  const [Title,setTitle] = useState('');
-  const [Semester,setSemester] = useState('1st Semester');
-  const [AcademicYear,setAcademicYear] = useState('');
-  const [CourseCode,setCourseCode] = useState('');
-  const [Campus,setCampus] = useState('');
-  const [Department,setDepartment] = useState('');
-  const [ExaminationType,setExaminationType] = useState('');
-  const [CourseType,setCourseType] = useState('');
-  const [ExaminationDate,setExaminationDate] = useState('');
-  const [Faculty,setFaculty] = useState('');
-  const [Chairperson,setChairperson] = useState('');
-  const [Dean,setDean] = useState('');
-  const [Director,setDirector] = useState('');
+
 
 
 // Event handlers for each field
@@ -1570,34 +1557,6 @@ for (let i = 0; i < localStorage.length; i++) {
 }
 
 
-
- 
-// const handleSubmit =  (e) => {
-//   setLoading(true);
-//   const lessonsDataJson = JSON.stringify(lessonsData)
-//   console.log(lessonsDataJson)
-//   e.preventDefault();
-//   api
-//     .post("/api/tos-content/", { lessonsDataJson })
-//     .then((res) => {
-//       if (res.status === 201){
-//           alert("Note created!");  
-//           setLoading(false);
-//           setToast(true);
-//           localStorage.removeItem('lessonsData');
-//       } 
-//       else alert("Failed to make note.");
-  
-//     })
-//     .catch((err) => alert(err));
-// };
-
-
-// let examDetails = [{
-//   exam_title: ExamTitle,
-//   exam_instruction: Instruction,
-//   tos_id: 0
-// }]
 
 
 const handleExamTitleChange = (event) => {
@@ -1957,26 +1916,30 @@ return api.post("/api/tos-content/", { lessonsDataJson })
                 localStorage.removeItem('formData')
                 localStorage.removeItem('testpartData')
                 loadDataFromLocalStorage()
+                setFormData({
+                  Title: '',
+                  Semester: '1st Semester',
+                  AcademicYear: '',
+                  Campus: 'San Carlos Campus',
+                  CourseCode: '',
+                  Department: 'Business and Office Administration',
+                  ExaminationType: 'Multiple choices',
+                  CourseType: '',
+                  ExaminationDate: '',
+                  Faculty: '',
+                  Chairperson: '',
+                  Dean: '',
+                  Director: ''
+                })
                 localStorage.removeItem('examData')
                 loadDataFromLocalStorageExam()
                 localStorage.removeItem('questionData')
                 loadDataFromLocalStorageQuestion()
 
-                setTitle( '');
-                setSemester( '');
-                setAcademicYear('');
-                setCampus('');
-                setCourseCode('');
-                setDepartment('');
-                setExaminationType('');
-                setCourseType( '');
-                setExaminationDate('');
-                setFaculty('');
-                setChairperson( '');
-                setDean('');
-                setDirector('');
+        
 
                 setToast(true)
+                setStep(1)
 
             
               })
@@ -2007,18 +1970,72 @@ throw new Error("First request failed.");
 }).catch((err) => alert(err))
     .finally(() => setLoading(false));
 };
+const [step, setStep] = useState(1);
+
+const [disableNext, setDisableNext] = useState(false);
+
+const [disableBack, setDisableBack] = useState(false);
+
+const handleNext = () => {
+  setStep(step + 1);
+};
+
+const handleBack = () => {
+  setStep(step - 1);
+};
+
+
+ useEffect (() =>{
+  if(step === 1){
+    setDisableBack(true)
+  } 
+  else{
+    setDisableBack(false)
+  }
+
+  if(step === 4){
+    setDisableNext(true)
+  } 
+  else{
+    setDisableNext(false)
+  }
+
+  switch(step){
+    case 1:
+      if(formData.Title == '' || formData.AcademicYear == '' || formData.CourseCode == '' || formData.Faculty == ''|| formData.Chairperson == ''|| formData.Dean == ''|| formData.Director == ''){
+        setDisableNext(true)
+      }
+      break
+    case 2:
+      if(getTotalTaxonomy!=100 || totalItems<10){
+        setDisableNext(true)
+      }
+    
+      break
+  }
+ 
+
+
+
+},[step,formData,getTotalTaxonomy,totalItems])
 
 
   return (
     <div >
 <form onSubmit={handleSubmit}>
-<div className='mb-5'> 
+  
+<Card className={`mb-5 ${step == 1? 'show':'hidden'}`} > 
 
-   <h1 className='text-3xl'>Course Information</h1>
-   {/* <Progress progress={33} /> */}
-   <hr />
-   <br />
-   <Card className='max-w-3xl mx-auto ' >
+<Breadcrumb aria-label="Default breadcrumb example">
+      <Breadcrumb.Item >
+      Course Information
+      </Breadcrumb.Item>
+      
+    </Breadcrumb>
+   
+   <Progress progress={25} size={'sm'} />
+   
+   <Card className=' mx-auto ' >
     
      <div className='w-full gap-4'>
 
@@ -2036,7 +2053,7 @@ throw new Error("First request failed.");
            <div className="mb-2 block">
              <Label htmlFor="semester" value="Semester" />
            </div>
-           <Select id="semester" name="Semester" value={formData.Semester} onChange={handleChange} required>
+           <Select id="semester" name="Semester" value={formData.Semester} onChange={handleChange} color={'gray'} required>
          
              <option value="1st Semester">1st Semester</option>
              <option value="2nd Semester">2nd Semester</option>
@@ -2107,6 +2124,7 @@ throw new Error("First request failed.");
          </div>
        </div>
 
+       <div className='w-full gap-4 flex flex-col sm:flex-row'>
        {/* Date of Examination */}
        <div className='w-full'>
          <div className="mb-2 block">
@@ -2122,7 +2140,9 @@ throw new Error("First request failed.");
          </div>
          <TextInput id="faculty" type="text" name="Faculty" value={formData.Faculty} onChange={handleChange} />
        </div>
+       </div>
 
+       <div className='w-full gap-4 flex flex-col sm:flex-row'>
        {/* Department Chairperson */}
        <div className='w-full'>
          <div className="mb-2 block">
@@ -2138,9 +2158,10 @@ throw new Error("First request failed.");
          </div>
          <TextInput id="dean" type="text" name="Dean" value={formData.Dean} onChange={handleChange} />
        </div>
+       </div>
 
        {/* Campus Executive Director */}
-       <div className='w-full'>
+       <div className='w-2/4'>
          <div className="mb-2 block">
            <Label htmlFor="executive-director" value="Campus Executive Director" />
          </div>
@@ -2151,19 +2172,29 @@ throw new Error("First request failed.");
 
   
    </Card>
-
-</div>
+   {inputModal(indexRow,lessonsData)}
+</Card>
 
   
-        {inputModal(indexRow,lessonsData)}
+       
          
        
+
+  
+      <Card className={`mb-5 ${step == 2? 'show':'hidden'}`}>
+      <Breadcrumb aria-label="Default breadcrumb example">
+      <Breadcrumb.Item >
+      Course Information
+      </Breadcrumb.Item>
+      <Breadcrumb.Item >
+      Taxonomy Allocation
+      </Breadcrumb.Item>
       
-      <h1 className="text-3xl">Course content</h1>
-      {/* <Progress progress={66} /> */}
-      <hr />
-      <br />
-      <Card>
+    </Breadcrumb>
+   
+   <Progress progress={50} size={'sm'} />
+   
+   <br />
        
 <div className="flex gap-3"> 
         <div className=" max-w-md">
@@ -2286,7 +2317,26 @@ throw new Error("First request failed.");
 
       </div>
 
-    
+       
+      </Card>
+
+      <Card className={`mb-5 ${step == 3? 'show':'hidden'}`}>
+      <Breadcrumb aria-label="Default breadcrumb example">
+      <Breadcrumb.Item >
+      Course Information
+      </Breadcrumb.Item>
+      <Breadcrumb.Item >
+      Taxonomy Allocation
+      </Breadcrumb.Item>
+      <Breadcrumb.Item >
+      Table of Specification
+      </Breadcrumb.Item>
+      
+    </Breadcrumb>
+   
+   <Progress progress={75} size={'sm'} />
+ 
+   <br />
 
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
         <TableContainer>
@@ -2306,7 +2356,7 @@ throw new Error("First request failed.");
                   {columns.map((column) => {
                     const value = row[column.id];
                     return (
-                      <TableCell key={column.id} align={column.align} > 
+                      <TableCell key={column.id} align={column.align}  >
                         {column.format && typeof value === "number"
                           ? column.format(value)
                           : value}
@@ -2359,10 +2409,9 @@ throw new Error("First request failed.");
           </div>
         </Modal.Body>
       </Modal>
-
-      
       </Card>
 
+        <div className={`mb-5 ${step == 4? 'show':'hidden'}`}>
       <Examtest items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} />
 
 
@@ -2371,12 +2420,19 @@ throw new Error("First request failed.");
       <div className="mt-3">
       <Button className="mx-auto" type="submit" color="success">Save</Button>
       </div>
+      </div>
       </form>
       {Toast  && <ToastMessage  message = "Exam successfully Created!"/>}
       {loading  && <LoadingSubmit/>}
+<div className="w-full justify-center mx-auto flex gap-14">
+<Button onClick={handleBack} disabled={disableBack} >Back</Button>
+      <Button onClick={handleNext} disabled={disableNext}>Next</Button>
+     
+      </div>
     </div>
   );
+  
+ReactDOM.render(<TOS />, document.getElementById('root'));
 }
 
-ReactDOM.render(<TOS />, document.getElementById('root'));
 export default TOS
