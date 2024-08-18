@@ -875,7 +875,7 @@ const handleFloor = (index, field, value) => {
           newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
         }
       }
-      newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+ 
       newData[i]['total'] = getTotal(
         newData[i]['remembering'],
         newData[i]['understanding'],
@@ -960,6 +960,7 @@ const handleCeil = (index, field, value) => {
       // Recalculate fields based on the updated teachingHours
       if(i == index){
         newData[i]['remembering'] = Math.ceil(getRemembering(Remembering, newData[i]['items']));
+        console.log('indexremember: ',index)
      
       }
       else{
@@ -1143,6 +1144,7 @@ const handleCeil = (index, field, value) => {
       if (newData[i]['creating'] % 1 !== 0) {
         newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
       }
+      
       newData[i]['total'] = getTotal(
         newData[i]['remembering'],
         newData[i]['understanding'],
@@ -1162,14 +1164,16 @@ const handleCeil = (index, field, value) => {
       // Recalculate fields based on the updated teachingHours
       if(i == index){
         newData[i]['creating'] = Math.ceil(getCreating(Creating, newData[i]['items']));
+        console.log('indexcreate: ',index,' : ', Math.ceil(getCreating(Creating, newData[i]['items'])),' : ', newData[i]['creating'])
      
       }
       else{
         if (newData[i]['creating'] % 1 !== 0) {
+          console.log('olddatacreate: ',newData[i]['creating']);
           newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
         }
       }
-      newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+  
       newData[i]['total'] = getTotal(
         newData[i]['remembering'],
         newData[i]['understanding'],
@@ -1202,7 +1206,7 @@ const handleCeil = (index, field, value) => {
       <Modal.Header>Lesson {indexRow+1}</Modal.Header>
       <Modal.Body>
         <div className="space-y-6 " >
-          <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+          <div className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
            
 
       <div className="flex gap-5">  
@@ -1255,7 +1259,7 @@ const handleCeil = (index, field, value) => {
   <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value="% of Allocation" />
   </div>
-  <span className="text-center flex-1 text-right text-black">
+  <span className=" flex-1 text-right text-black">
     {lessonsData[indexRow]['allocation']}%
   </span>
   <span className="text-right text-black font-bold" style={{flex: 0.2}}>
@@ -1272,7 +1276,7 @@ const handleCeil = (index, field, value) => {
 
     </div>
   </div>
-  <span className="text-center flex-1 text-right text-black">
+  <span className=" flex-1 text-right text-black">
     {/* Additional percentage or related info if needed */}
   </span>
   <span className="text-right text-black font-bold" style={{flex: 0.2}}>
@@ -1291,7 +1295,7 @@ const handleCeil = (index, field, value) => {
     </div>
         
       </div>
-      <span className="text-center flex-1 text-right text-black">
+      <span className=" flex-1 text-right text-black">
         {Remembering}%
       </span>
       <span className=" text-right text-black font-bold" style={{flex:0.2}}>
@@ -1309,7 +1313,7 @@ const handleCeil = (index, field, value) => {
 
     </div>
   </div>
-  <span className="text-center flex-1 text-right text-black">
+  <span className=" flex-1 text-right text-black">
     {Understanding}%
   </span>
   <span className="text-right text-black font-bold" style={{flex: 0.2}}>
@@ -1326,7 +1330,7 @@ const handleCeil = (index, field, value) => {
 
     </div>
   </div>
-  <span className="text-center flex-1 text-right text-black">
+  <span className=" flex-1 text-right text-black">
     {Applying}%
   </span>
   <span className="text-right text-black font-bold" style={{flex: 0.2}}>
@@ -1343,7 +1347,7 @@ const handleCeil = (index, field, value) => {
 
     </div>
   </div>
-  <span className="text-center flex-1 text-right text-black">
+  <span className=" flex-1 text-right text-black">
     {Analyzing}%
   </span>
   <span className="text-right text-black font-bold" style={{flex: 0.2}}>
@@ -1360,7 +1364,7 @@ const handleCeil = (index, field, value) => {
 
     </div>
   </div>
-  <span className="text-center flex-1 text-right text-black">
+  <span className=" flex-1 text-right text-black">
     {Evaluating}%
   </span>
   <span className="text-right text-black font-bold" style={{flex: 0.2}}>
@@ -1377,7 +1381,7 @@ const handleCeil = (index, field, value) => {
 
     </div>
   </div>
-  <span className="text-center flex-1 text-right text-black">
+  <span className=" flex-1 text-right text-black">
     {Creating}%
   </span>
   <span className="text-right text-black font-bold" style={{flex: 0.2}}>
@@ -1390,7 +1394,7 @@ const handleCeil = (index, field, value) => {
   <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value="Total" />
   </div>
-  <span className="text-center flex-1 text-right text-black">
+  <span className=" flex-1 text-right text-black">
     {/* If there's a percentage or similar value, you can place it here */}
   </span>
   <span className="text-right text-black font-bold" style={{flex: 0.2}}>
@@ -1402,7 +1406,7 @@ const handleCeil = (index, field, value) => {
   <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value="Placement" />
   </div>
-  <span className="text-center flex-1 text-right text-black">
+  <span className=" flex-1 text-right text-black">
     {/* If there's a percentage or similar value, you can place it here */}
   </span>
   <span className="text-right text-black font-bold" style={{flex: 0.2}}>
@@ -1417,7 +1421,7 @@ const handleCeil = (index, field, value) => {
     
     </div>
     
-    </p>
+    </div>
            
            </div>
          </Modal.Body>

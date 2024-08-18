@@ -16,4 +16,11 @@ urlpatterns = [
     path('create-questions/', views.QuestionsCreateView.as_view(), name='questions-list-create'),
     path('create-answers/', views.AnswersCreateView.as_view(), name='answers-list-create'),
     path('create-testpart/', views.TestPartCreateView.as_view(), name='testpart-list-create'),
+    
+    path('exam/<int:pk>/detail/', views.ExamRetrieve.as_view(), name='exam-list-retrieve-detail'),
+    
+    path('test-part/<int:pk>/detail/', views.TestPartRetrieve.as_view(), name='test-part-list-retrieve-detail'),
+    path('questions/<int:pk>/detail/', views.QuestionRetrieve.as_view(), name='questions-list-retrieve-detail'),
+    path('answers/<int:pk>/detail/', views.AnswerRetrieve.as_view(), name='answer-list-retrieve-detail'),
+
 ]

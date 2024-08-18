@@ -72,9 +72,14 @@ class TestPartSerializer(serializers.ModelSerializer):
         
         
 class QuestionsSerializer(serializers.ModelSerializer):
+    # This will include the related TestPart data in the serialized output for GET requests
+    test_part = TestPartSerializer(read_only=True, source='test_part_id')
+
     class Meta:
         model = Questions
-        fields = ["id", "question", "answer","question_type", "exam_id","test_part_id"]
+        fields = ["id", "question", "answer", "question_type", "exam_id", "test_part", "test_part_id"]
+
+    
         
 class AnswersSerializer(serializers.ModelSerializer):
     class Meta:

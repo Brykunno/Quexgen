@@ -338,3 +338,63 @@ class TestPartCreateView(generics.ListCreateAPIView):
         
         return Response(response_data, status=status.HTTP_201_CREATED)
     
+    
+    
+class ExamRetrieve(generics.ListAPIView):
+    serializer_class = ExamSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Get the 'pk' from the URL, which will represent the foreign key (e.g., teacher_tos_id)
+        tos_id = self.kwargs['pk']
+        
+       
+        
+        # Filter the TOS_info objects based on the foreign key (teacher_tos_id) and the authenticated user
+        return Exam.objects.filter(tos_id=tos_id)
+    
+    
+class TestPartRetrieve(generics.ListAPIView):
+    serializer_class = TestPartSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Get the 'pk' from the URL, which will represent the foreign key (e.g., teacher_tos_id)
+        exam_id = self.kwargs['pk']
+        
+       
+        print(f'exam_id: {exam_id}')
+        # Filter the TOS_info objects based on the foreign key (teacher_tos_id) and the authenticated user
+        return TestPart.objects.filter(exam_id=exam_id)
+    
+class QuestionRetrieve(generics.ListAPIView):
+    serializer_class = QuestionsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Get the 'pk' from the URL, which will represent the foreign key (e.g., teacher_tos_id)
+        exam_id = self.kwargs['pk']
+        questions = Questions.objects.filter(exam_id=exam_id).select_related('test_part_id')
+
+        for question in questions:
+            print("Question Text:", question.question)
+            print("Test Part type:", question.test_part_id.test_type)
+            print("Test Part Num: ", question.test_part_id.test_part_num)
+       
+        print(f'exam_id questions: {exam_id}')
+        # Filter the TOS_info objects based on the foreign key (teacher_tos_id) and the authenticated user
+        return Questions.objects.filter(exam_id=exam_id).select_related('test_part_id')
+    
+class AnswerRetrieve(generics.ListAPIView):
+    serializer_class = AnswersSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Get the 'pk' from the URL, which will represent the foreign key (e.g., teacher_tos_id)
+        question_id = self.kwargs['pk']
+        
+       
+        print(f'question_id Answers: {question_id}')
+        # Filter the TOS_info objects based on the foreign key (teacher_tos_id) and the authenticated user
+        return Answers.objects.filter(question_id=question_id)
+    
