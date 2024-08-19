@@ -57,6 +57,9 @@ function TOSview() {
   const [TOSContent, setTOSContent] = useState([]);
   const [TOSInfo, setTOSInfo] = useState([]);
 
+  const [answerChoices, setAnswerChoices] = useState([]);
+  
+
   const [TotalItems, setTotalItems] = useState(0);
   const [formData, setFormData] = useState({
     Title: '',
@@ -89,7 +92,7 @@ function TOSview() {
   total: 0,
   placement: '',
   TotalItems:0,
-  tos_teacher: 0,
+  teacher_tos: 0,
   }])
   const [getTestPart, setGetTestPart] = useState([]);
   const [TestPart, setTestPart] = useState([]);
@@ -103,7 +106,8 @@ function TOSview() {
 
 
   const { id } = useParams();
-
+  
+  const[exam_id,setExam_ID] = useState([]);
   useEffect(() => {
     if (id) {
       getTOSContent();
@@ -135,6 +139,7 @@ function TOSview() {
     if (TOSContent.length) {
       // Map over TOSContent to update lessonData
       const updatedLessonData = TOSContent.map((content) => ({
+        id:content.id,
         topic: content.topic,
         learning_outcomes: content.learning_outcomes || '',
         teachingHours: content.teachingHours || 0,
@@ -149,7 +154,7 @@ function TOSview() {
         total: content.total || 0,
         placement: content.placement || '',
         TotalItems: content.TotalItems || 0,
-        tos_teacher: content.tos_teacher || 0,
+        teacher_tos: content.teacher_tos || 0,
        
       }));
 
@@ -188,13 +193,16 @@ setCreating(updateCreating);
 
 if(exam.length){
   setExamTitle(exam[0].exam_title)
+  setExam_ID(exam[0].id)
  
 }
 
 if(getTestPart.length){
 
   const updatedTestPart = getTestPart.map((content) => (
-    {  test_type: content.test_type,
+    {  
+      id: content.id,
+      test_type: content.test_type,
       test_instruction: content.test_instruction,
       test_part_num: content.test_part_num,
       exam_id: content.exam_id
@@ -214,11 +222,16 @@ if (getQuestion.length && getAnswer.length) {
 
     // Initialize choices array
     const choices = ['', '', '', ''];
-
+    
+    const answerid = []
     // If there are corresponding answers, map them to choices
     if (correspondingAnswers && correspondingAnswers.length) {
       correspondingAnswers.forEach((answer) => {
         // Match the choices A, B, C, D to the answer_text
+        
+        console.log('answerdebug',answer.id)
+        answerid.push(answer.id)
+      
         switch (answer.choices) {
           case 'A':
             choices[0] = answer.answer_text;
@@ -238,16 +251,41 @@ if (getQuestion.length && getAnswer.length) {
       });
     }
 
-    return {  
+    return { 
+      question_id: content.id,
       question: content.question,
+      answer_id: answerid,
       choices: choices,  // Insert the updated choices here
       question_type: content.question_type,
+      exam_id:content.exam_id,
       answer: content.answer,
-      test_part_num: content.test_part.test_part_num
+      test_part_num: content.test_part.test_part_num,
+      test_part_id: content.test_part_id
     };
   });
 
   setExamStates(updatedExamStates);
+
+  setAnswerChoices( examStates.reduce((acc,data,index) =>{
+
+                 
+    const answers = ['A','B','C','D']
+    
+    for(let i = 0; i< 4; i++){
+      if(data.choices[i] != '' && data.answer != ''){
+        acc.push({
+          'answer_id': data.answer_id[i],
+          'answer_text': data.choices[i],
+          'choices': answers[i],
+          'question_id': data.question_id
+        });
+      }
+    }
+
+    return acc
+  }, [])
+
+)
   
 }
 
@@ -329,11 +367,147 @@ if (getQuestion.length && getAnswer.length) {
 
   const updateTOSinfo = async () => {
     try {
-      const response = await api.put(`/api/tos-info/${id}/update/`, formData);
-      setTOSInfo(response.data);
-     alert('Updated TOSInfo: ', response.data);
+      await api.put(`/api/tos-info/${id}/update/`, formData);
+      
+
+          // Send all requests in parallel
+          const updatePromises = lessonData.map((data) => 
+            api.put(`/api/tos-content/${data.id}/update/`, data)
+          );
+      
+          // Await the completion of all the requests
+         await Promise.all(updatePromises);
+
+         await api.put(`/api/exam/${exam_id}/update/`, {
+          'exam_title':ExamTitle,
+          'tos_id': id
+         });
+
+         const updatePromisesTestPart = TestPart.map((data) => 
+          api.put(`/api/test-part/${data.id}/update/`, data)
+        );
+
+        await Promise.all(updatePromisesTestPart);
+
+        const updatePromisesExamStates = examStates.map(async (data) => {
+          try {
+            // Attempt to update the question
+            const ques = await api.put(`/api/questions/${data.question_id}/update/`, data);
+            return ques; // Return the successful update response
+          } catch (error) {
+            // If there's an error (e.g., question doesn't exist), proceed to create a new question
+            if (error.response && error.response.status === 404) {
+              const itemQuestionJson = JSON.stringify([
+                {
+                  'question': data.question,
+                  'answer': data.answer,
+                  'question_type': data.question_type,
+                  'exam_id': data.exam_id,
+                  'test_part_id': data.test_part_id
+                }
+              ]
+              );
+              console.log('createques: ',itemQuestionJson)
+              return api.post("/api/create-questions/", {itemQuestionJson})
+              .then((fourthRes)=>{
+                if (fourthRes.status === 201) {
+                  
+             
+              const question_data = fourthRes.data
+         
+
+          
+          
+
+                let ques_ids = question_data.reduce((accu, data) => {
+                  accu.push(data.id);
+                  return accu;
+                }, []);
+              console.log('quesids',ques_ids)
+
+              let itemAnswers =  examStates.reduce((acc,data,index) =>{
+
+                 
+                  const answers = ['A','B','C','D']
+                  
+                  for(let i = 0; i< 4; i++){
+                    if(data.choices[i] != '' && data.answer != ''){
+                      acc.push({
+                        'answer_text': data.choices[i],
+                        'choices': answers[i],
+                        'question_id': ques_ids[index]
+                      });
+                    }
+                  }
+             
+                  return acc
+                }, [])
+
+              
+
+               
+          
+
+     
+        
+              // fourth request example
+         
+        
+              const itemAnswersJson = JSON.stringify(itemAnswers)
+      
+              return api.post("/api/create-answers/", {itemAnswersJson})
+
+                }else {
+                  throw new Error("fourth request failed.");
+                }
+                
+              }); // Create the new question
+            } else {
+              // If there's another type of error, throw it again
+              throw error;
+            }
+          }
+        });
+        
+        // Await all the promises to complete
+        try {
+          const results = await Promise.all(updatePromisesExamStates);
+          console.log('Responses:', results); // Array of responses for each operation
+        } catch (error) {
+          console.error('Error in updating or creating questions:', error);
+        }
+        
+
+        const updatePromisesAnswerChoices = answerChoices.map((data) => 
+          api.put(`/api/answers/${data.answer_id}/update/`, data)
+        );
+
+      const ans = await Promise.all(updatePromisesAnswerChoices);
+       console.log("ansdebug :", ans)
+
+
+          alert('All TOSContent updated successfully');
     } catch (error) {
       console.error('Error updating TOSInfo:', error);
+      // Optional: Show a more user-friendly message or use a toast notification
+    }
+  };
+
+  const updateTOSContent = async () => {
+    try {
+      // Send all requests in parallel
+      const updatePromises = lessonData.map((data) => 
+        api.put(`/api/tos-content/${data.id}/update/`, data)
+      );
+  
+      // Await the completion of all the requests
+      const results = await Promise.all(updatePromises);
+  
+      // Optionally handle the results here
+      console.log("Promises: ", results)
+      alert('All TOSContent updated successfully');
+    } catch (error) {
+      console.error('Error updating TOSContent:', error);
       // Optional: Show a more user-friendly message or use a toast notification
     }
   };
@@ -1608,6 +1782,25 @@ const handleStateChange = (index, type, value) => {
   }
   setExamStates(newStates);
 
+  setAnswerChoices( newStates.reduce((acc,data,index) =>{
+
+                 
+    const answers = ['A','B','C','D']
+    
+    for(let i = 0; i< 4; i++){
+      if(data.choices[i] != '' && data.answer != ''){
+        acc.push({
+          'answer_id': data.answer_id[i],
+          'answer_text': data.choices[i],
+          'choices': answers[i],
+          'question_id': data.question_id
+        });
+      }
+    }
+
+    return acc
+  }, []))
+
 
 };
 
@@ -1888,8 +2081,9 @@ const handleTestPartChange = (index,type, value) => {
    
       </div>
 
-   {/* <Button onClick={updateTOSinfo}> Update</Button> */}
-
+   <Button onClick={updateTOSinfo}> Update</Button>
+   
+     
       {/* <Button href='/exam_bank'> Back to list</Button> */}
     </div>
   );

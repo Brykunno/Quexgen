@@ -2,6 +2,7 @@ import React, { useState,useEffect } from 'react';
 import { Breadcrumb,Progress, Card, Textarea, Button, TextInput, Label,Radio,Modal } from "flowbite-react";
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import api from "../api";
 
 import ReactDOM from 'react-dom';
 import { PDFViewer } from '@react-pdf/renderer';
@@ -398,7 +399,7 @@ function checkAnswer(localStore, answer){
 
   <div className='flex gap-5 mt-5 justify-center'>
 
-        <Button onClick={()=>{handleAddItem(itemtest.test_type,itemtest.test_part_num)}} disabled={disableAdd}> Add Item </Button>
+        <Button onClick={()=>{handleAddItem(itemtest.test_type,itemtest.test_part_num,itemtest.exam_id,itemtest.id)}} disabled={disableAdd}> Add Item </Button>
 
         </div>
         </div>
@@ -465,7 +466,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
  
   }
 
-  const handleAddItem = (itemtype, test_part_num) => {
+  const handleAddItem = (itemtype, test_part_num,exam_id,test_part_id) => {
     
     setExamStates([...examStates, 
       {
@@ -473,7 +474,10 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         choices: ['', '', '', ''],
         question_type: itemtype,
         answer: '',
-        test_part_num: test_part_num
+        test_part_num: test_part_num,
+        exam_id: exam_id,
+        test_part_id : test_part_id
+        
       }
     ]);
   };
@@ -501,6 +505,19 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         // If the index is out of bounds, return the array as is
         return prevExamStates;
       }
+
+      console.log('deleteitem: ',prevExamStates[index].test_part_id)
+
+
+      
+    api
+    .delete(`api/questions/delete/${prevExamStates[index].test_part_id}/${prevExamStates[index].question_id}/`)
+    .then((res) => {
+      if (res.status === 204) alert("Question deleted!");
+      else alert("Failed to delete question.");
+     
+    })
+    .catch((error) => alert(error));
   
       // Update localStorage with the modified array
       const updatedStates = [

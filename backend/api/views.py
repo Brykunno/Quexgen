@@ -397,4 +397,110 @@ class AnswerRetrieve(generics.ListAPIView):
         print(f'question_id Answers: {question_id}')
         # Filter the TOS_info objects based on the foreign key (teacher_tos_id) and the authenticated user
         return Answers.objects.filter(question_id=question_id)
-    
+
+
+class TOSContentUpdate(generics.UpdateAPIView):
+    queryset = TOS_Content.objects.all()
+    serializer_class = TOSContentSerializer
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        else:
+                print("Validation errors:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_update(self, serializer):
+        serializer.save()
+        
+class ExamUpdate(generics.UpdateAPIView):
+    queryset = Exam.objects.all()
+    serializer_class = ExamSerializer
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        else:
+                print("Validation errors:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_update(self, serializer):
+        serializer.save()
+
+class TestPartUpdate(generics.UpdateAPIView):
+    queryset = TestPart.objects.all()
+    serializer_class = TestPartSerializer
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        else:
+                print("Validation errors:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_update(self, serializer):
+        serializer.save()
+
+class QuestionUpdate(generics.UpdateAPIView):
+    queryset = Questions.objects.all()
+    serializer_class = QuestionsSerializer
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        else:
+                print("Validation errors:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_update(self, serializer):
+        serializer.save()
+
+class AnswerUpdate(generics.UpdateAPIView):
+    queryset = Answers.objects.all()
+    serializer_class = AnswersSerializer
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        id = self.kwargs['pk']
+        print(f'Attempting to update Answer with id: {id}')
+        
+        # Serialize the incoming data with partial update
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            
+            # Confirm update by re-fetching from database
+            instance.refresh_from_db()
+            updated_data = self.get_serializer(instance).data
+            
+            # Return the updated data
+            print(f'Updated Answer data: {updated_data}')
+            return Response({"message": "Update successful", "data": updated_data}, status=status.HTTP_200_OK)
+        else:
+            print("Validation errors:", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_update(self, serializer):
+        serializer.save()
+        
+        
+class QuestionDelete(generics.DestroyAPIView):
+    serializer_class = QuestionsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        test_part_id = self.kwargs['test_part_id']
+        return Questions.objects.filter(test_part_id=test_part_id)
