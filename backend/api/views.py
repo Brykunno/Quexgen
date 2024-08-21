@@ -374,7 +374,7 @@ class QuestionRetrieve(generics.ListAPIView):
     def get_queryset(self):
         # Get the 'pk' from the URL, which will represent the foreign key (e.g., teacher_tos_id)
         exam_id = self.kwargs['pk']
-        questions = Questions.objects.filter(exam_id=exam_id).select_related('test_part_id')
+        questions = Questions.objects.filter(exam_id=exam_id).select_related('test_part_id').order_by('test_part_id__test_part_num')
 
         for question in questions:
             print("Question Text:", question.question)
@@ -504,3 +504,20 @@ class QuestionDelete(generics.DestroyAPIView):
     def get_queryset(self):
         test_part_id = self.kwargs['test_part_id']
         return Questions.objects.filter(test_part_id=test_part_id)
+
+class TestPartDelete(generics.DestroyAPIView):
+    serializer_class = TestPartSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        exam_id = self.kwargs['exam_id']
+        return TestPart.objects.filter(exam_id=exam_id)
+    
+
+class TOSContentDelete(generics.DestroyAPIView):
+    serializer_class = TOSContentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        teacher_tos = self.kwargs['teacher_tos']
+        return TOS_Content.objects.filter(teacher_tos=teacher_tos)

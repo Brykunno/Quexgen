@@ -28,5 +28,6 @@ urlpatterns = [
     path('answers/<int:pk>/detail/', views.AnswerRetrieve.as_view(), name='answer-list-retrieve-detail'),
     path('answers/<int:pk>/update/', views.AnswerUpdate.as_view(), name='answer-list-retrieve-update'),
 
-    path('questions/delete/<int:test_part_id>/<int:pk>/', views.QuestionDelete.as_view(), name='question-delete')
+    path('questions/delete/<int:test_part_id>/<int:pk>/', views.QuestionDelete.as_view(), name='question-delete'),
+    path('test-part/delete/<int:exam_id>/<int:pk>/', views.TestPartDelete.as_view(), name='test-part-delete')
 ]

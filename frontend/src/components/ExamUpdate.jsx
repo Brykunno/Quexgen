@@ -8,7 +8,7 @@ import ReactDOM from 'react-dom';
 import { PDFViewer } from '@react-pdf/renderer';
 import ExampdfUpdate from "./ExampdfUpdate";
 
-function Examtest ({ items, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,exam}) {
+function Examtest ({ items, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,exam_id}) {
 
 
 
@@ -362,10 +362,10 @@ function checkAnswer(localStore, answer){
   const examPart = (categories) => {
 
 
+    const sortedTestParts = TestPart.sort((a, b) => a.test_part_num - b.test_part_num);
 
 
-
-    return TestPart.map((itemtest, index) => {
+    return sortedTestParts.map((itemtest, index) => {
 
       let type = ''
       if(itemtest.test_type === 'mcq'){
@@ -467,6 +467,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
   }
 
   const handleAddItem = (itemtype, test_part_num,exam_id,test_part_id) => {
+
     
     setExamStates([...examStates, 
       {
@@ -480,16 +481,19 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         
       }
     ]);
+
+
   };
 
 
 
-  const handleAddTest = (itemtype) => {
+  const handleAddTest = (itemtype,exam_id) => {
     setTestPart([...TestPart, 
       {
         test_type: itemtype,
         test_instruction: '',
         test_part_num: TestPart.length+1,
+        exam_id:exam_id
       }
     ]);
 
@@ -537,6 +541,15 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       if (index < 0 || index >= prevTestPart.length) {
         return prevTestPart;
       }
+
+      api
+      .delete(`api/test-part/delete/${prevTestPart[index].exam_id}/${prevTestPart[index].id}/`)
+      .then((res) => {
+        if (res.status === 204) alert("part deleted!");
+        else alert("Failed to delete part.");
+       
+      })
+      .catch((error) => alert(error));
   
       // Remove the item at the specified index and update the array
       const updatedTestPart = [
@@ -619,9 +632,9 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         
         <div className='flex gap-5'>
       
-        <Button onClick={()=>{handleAddTest('mcq')}} disabled={disableAddTestMcq}>Add Multiple Choice Test</Button>
-        <Button onClick={()=>{handleAddTest('identification')}} disabled={disableAddTestIdentification}>Add Identification Test</Button>
-        <Button onClick={()=>{handleAddTest('trueOrFalse')}} disabled={disableAddTestTrueorFalse}>Add True or False Test</Button>
+        <Button onClick={()=>{handleAddTest('mcq',exam_id)}} disabled={disableAddTestMcq}>Add Multiple Choice Test</Button>
+        <Button onClick={()=>{handleAddTest('identification',exam_id)}} disabled={disableAddTestIdentification}>Add Identification Test</Button>
+        <Button onClick={()=>{handleAddTest('trueOrFalse',exam_id)}} disabled={disableAddTestTrueorFalse}>Add True or False Test</Button>
      
 
      
@@ -638,6 +651,8 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
           </div>
         </Modal.Body>
       </Modal>
+
+    
    
       </Card>
     </div>

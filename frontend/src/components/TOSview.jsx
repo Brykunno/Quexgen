@@ -318,6 +318,7 @@ if (getQuestion.length && getAnswer.length) {
         return api.get(`/api/test-part/${data[0].id}/detail/`);
       })
       .then((testPart) => {
+        
         // Handle the result of the second query
         console.log('TOS data: ', testPart.data);
         setGetTestPart(testPart.data)
@@ -383,20 +384,110 @@ if (getQuestion.length && getAnswer.length) {
           'tos_id': id
          });
 
-         const updatePromisesTestPart = TestPart.map((data) => 
-          api.put(`/api/test-part/${data.id}/update/`, data)
-        );
+         const updateOrCreateTestPart = async (data) => {
+          try {
+            // Attempt to update the test part
+            const testpart = await api.put(`/api/test-part/${data.id}/update/`, data);
+            return testpart; // Return the successful update response
+          } catch (error) {
+            if (error.response && error.response.status === 404) {
+              // If the test part doesn't exist, create a new one
+              const itemTestPartJson = JSON.stringify([{
+                'test_type': data.test_type,
+                'test_instruction': data.test_instruction,
+                'test_part_num': data.test_part_num,
+                'exam_id': data.exam_id
+              }]);
+        
+              try {
+                const testPartRes = await api.post("/api/create-testpart/", { itemTestPartJson });
+                if (testPartRes.status === 201) {
+                  const createdTestPart = Array.isArray(testPartRes.data) ? testPartRes.data[0] : testPartRes.data;
+                  console.log('createdtestpartid:', createdTestPart.id);
+        
+                  // Accumulate related questions based on the created test part's type
+                  const itemsQues = examStates.reduce((acc, dataques) => {
+                    if (dataques.question_type === createdTestPart.test_type) {
+                      acc.push({
+                        'question': dataques.question,
+                        'answer': dataques.answer,
+                        'question_type': dataques.question_type,
+                        'choices':dataques.choices,
+                        'exam_id': data.exam_id,
+                        'test_part_id': createdTestPart.id // Use the newly created test part ID
+                      });
+                    }
+                    return acc;
+                  }, []);
+        
+                  if (itemsQues.length > 0) {
+                    // Now handle related questions and answers creation
+                    const itemQuestionJson = JSON.stringify(itemsQues);
+        
+                    const questionRes = await api.post("/api/create-questions/", { itemQuestionJson });
+                    if (questionRes.status === 201) {
+                      const question_data = questionRes.data;
+        
+                      let ques_ids = question_data.map(q => q.id);
+        
+                      let itemAnswers = itemsQues.flatMap((dataques,dataIndex) => {
+                        return dataques.choices.map((choice, index) => {
+                          const answers = ['A', 'B', 'C', 'D'];
+        
+                          return {
+                            'answer_text': choice,
+                            'choices': answers[index],
+                            'question_id': ques_ids[dataIndex] // Assuming all choices relate to the same question ID
+                          };
+                        }).filter(answer => answer.answer_text !== '');
+                      });
+        
+                      const itemAnswersJson = JSON.stringify(itemAnswers);
+                      return await api.post("/api/create-answers/", { itemAnswersJson });
+                    } else {
+                      throw new Error("Failed to create questions.");
+                    }
+                  } else {
+                    console.log('No matching questions for the created test part.');
+                  }
+                } else {
+                  throw new Error("Failed to create test part.");
+                }
+              } catch (error) {
+                console.error('Error in creating test part or related questions:', error);
+                throw error;
+              }
+            } else {
+              // If it's another type of error, rethrow it
+              throw error;
+            }
+          }
+        };
+        
+        const updatePromisesTestPart = TestPart.map(updateOrCreateTestPart);
+        
+        // Await all the promises to complete
+        try {
+          const resulttest = await Promise.all(updatePromisesTestPart);
+          console.log('Responses:', resulttest); // Array of responses for each operation
+        } catch (error) {
+          console.error('Error in updating or creating test parts:', error);
+        }
+        
+        
 
-        await Promise.all(updatePromisesTestPart);
 
-        const updatePromisesExamStates = examStates.map(async (data) => {
+        const updateOrCreateQuestion = async (data) => {
           try {
             // Attempt to update the question
             const ques = await api.put(`/api/questions/${data.question_id}/update/`, data);
             return ques; // Return the successful update response
           } catch (error) {
-            // If there's an error (e.g., question doesn't exist), proceed to create a new question
             if (error.response && error.response.status === 404) {
+              // If there's an error (e.g., question doesn't exist), create a new question
+              if(data.test_part_id === undefined){
+                return null
+              }
               const itemQuestionJson = JSON.stringify([
                 {
                   'question': data.question,
@@ -405,69 +496,43 @@ if (getQuestion.length && getAnswer.length) {
                   'exam_id': data.exam_id,
                   'test_part_id': data.test_part_id
                 }
-              ]
-              );
-              console.log('createques: ',itemQuestionJson)
-              return api.post("/api/create-questions/", {itemQuestionJson})
-              .then((fourthRes)=>{
+              ]);
+        
+              try {
+                const fourthRes = await api.post("/api/create-questions/", { itemQuestionJson });
                 if (fourthRes.status === 201) {
-                  
-             
-              const question_data = fourthRes.data
-         
-
-          
-          
-
-                let ques_ids = question_data.reduce((accu, data) => {
-                  accu.push(data.id);
-                  return accu;
-                }, []);
-              console.log('quesids',ques_ids)
-
-              let itemAnswers =  examStates.reduce((acc,data,index) =>{
-
-                 
-                  const answers = ['A','B','C','D']
-                  
-                  for(let i = 0; i< 4; i++){
-                    if(data.choices[i] != '' && data.answer != ''){
-                      acc.push({
-                        'answer_text': data.choices[i],
-                        'choices': answers[i],
-                        'question_id': ques_ids[index]
-                      });
-                    }
-                  }
-             
-                  return acc
-                }, [])
-
-              
-
-               
-          
-
-     
+                  const question_data = fourthRes.data;
         
-              // fourth request example
-         
+                  let ques_ids = question_data.map(q => q.id);
         
-              const itemAnswersJson = JSON.stringify(itemAnswers)
-      
-              return api.post("/api/create-answers/", {itemAnswersJson})
-
-                }else {
-                  throw new Error("fourth request failed.");
+                  let itemAnswers = data.choices.map((choice, index) => {
+                    const answers = ['A', 'B', 'C', 'D'];
+        
+                    return {
+                      'answer_text': choice,
+                      'choices': answers[index],
+                      'question_id': ques_ids[0] // Assuming all choices relate to the same question ID
+                    };
+                  }).filter(answer => answer.answer_text !== '');
+        
+                  const itemAnswersJson = JSON.stringify(itemAnswers);
+                  return await api.post("/api/create-answers/", { itemAnswersJson });
+        
+                } else {
+                  throw new Error("Failed to create question.");
                 }
-                
-              }); // Create the new question
+              } catch (error) {
+                console.error('Error creating new question:', error);
+                throw error;
+              }
             } else {
               // If there's another type of error, throw it again
               throw error;
             }
           }
-        });
+        };
+        
+        const updatePromisesExamStates = examStates.map(updateOrCreateQuestion);
         
         // Await all the promises to complete
         try {
@@ -476,14 +541,49 @@ if (getQuestion.length && getAnswer.length) {
         } catch (error) {
           console.error('Error in updating or creating questions:', error);
         }
+        const updatePromisesAnswerChoices = answerChoices.map(async (data) => {
+          try {
+            const ans = await api.put(`/api/answers/${data.answer_id}/update/`, data);
+            return ans; // Return the successful update response
+          } catch (error) {
+            if (error.response && error.response.status === 404) {
+
+              const itemAnswers = answerChoices.reduce((acc,data) =>{
+                if(data.answer_id === undefined && data.question_id != null){
+                  acc.push({
+                    'answer_text': data.answer_text,
+                    'choices': data.choices,
+                    'question_id': data.question_id
+                  });
+                }
+                return acc
+              },[])
+              const itemAnswersJson = JSON.stringify(itemAnswers);
+              const createdAnswer = await api.post("/api/create-answers/", { itemAnswersJson });
+              return createdAnswer; // Return the successful creation response
+            } else {
+              // If it's another type of error, rethrow it
+              throw error;
+            }
+          }
+        });
+        
+        try {
+          const resultsans = await Promise.all(updatePromisesAnswerChoices);
+          console.log('Responses:', resultsans); // Array of responses for each operation
+        } catch (error) {
+          console.error('Error in updating or creating answers:', error);
+        }
         
 
-        const updatePromisesAnswerChoices = answerChoices.map((data) => 
-          api.put(`/api/answers/${data.answer_id}/update/`, data)
-        );
+      //   const updatePromisesAnswerChoices = answerChoices.map((data) => 
+      //     api.put(`/api/answers/${data.answer_id}/update/`, data)
+      //   );
 
-      const ans = await Promise.all(updatePromisesAnswerChoices);
-       console.log("ansdebug :", ans)
+      // const ans = await Promise.all(updatePromisesAnswerChoices);
+      //  console.log("ansdebug :", ans)
+
+
 
 
           alert('All TOSContent updated successfully');
@@ -493,24 +593,6 @@ if (getQuestion.length && getAnswer.length) {
     }
   };
 
-  const updateTOSContent = async () => {
-    try {
-      // Send all requests in parallel
-      const updatePromises = lessonData.map((data) => 
-        api.put(`/api/tos-content/${data.id}/update/`, data)
-      );
-  
-      // Await the completion of all the requests
-      const results = await Promise.all(updatePromises);
-  
-      // Optionally handle the results here
-      console.log("Promises: ", results)
-      alert('All TOSContent updated successfully');
-    } catch (error) {
-      console.error('Error updating TOSContent:', error);
-      // Optional: Show a more user-friendly message or use a toast notification
-    }
-  };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -1787,8 +1869,11 @@ const handleStateChange = (index, type, value) => {
                  
     const answers = ['A','B','C','D']
     
+
+      if(data.answer_id != undefined){
     for(let i = 0; i< 4; i++){
       if(data.choices[i] != '' && data.answer != ''){
+      
         acc.push({
           'answer_id': data.answer_id[i],
           'answer_text': data.choices[i],
@@ -1796,7 +1881,23 @@ const handleStateChange = (index, type, value) => {
           'question_id': data.question_id
         });
       }
+      
     }
+
+    
+  }
+  else{
+    for(let i = 0; i< 4; i++){
+      if(data.choices[i] != '' && data.answer != ''){
+        acc.push({
+          'answer_text': data.choices[i],
+          'choices': answers[i],
+          'question_id': data.question_id
+        });
+      }
+    }
+    
+  }
 
     return acc
   }, []))
@@ -2070,7 +2171,7 @@ const handleTestPartChange = (index,type, value) => {
    </div>
 
    <div className={`mb-5 ${step == 4? 'show':'hidden'}`}>
-   <ExamUpdate items={TotalItems} lessonsData={lessonData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} exam={exam}  />
+   <ExamUpdate items={TotalItems} lessonsData={lessonData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} exam_id={exam_id}  />
 
     </div>
 
@@ -2082,8 +2183,9 @@ const handleTestPartChange = (index,type, value) => {
       </div>
 
    <Button onClick={updateTOSinfo}> Update</Button>
-   
-     
+   {JSON.stringify(TestPart)}
+   {JSON.stringify(examStates)}
+    
       {/* <Button href='/exam_bank'> Back to list</Button> */}
     </div>
   );
