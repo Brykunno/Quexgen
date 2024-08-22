@@ -120,6 +120,7 @@ function TOSview() {
   useEffect(() => {
     if (TOSInfo.length) {
       setFormData({
+ 
         Title: TOSInfo[0].Title,
         Semester: TOSInfo[0].Semester,
         AcademicYear: TOSInfo[0].AcademicYear,
@@ -371,13 +372,57 @@ if (getQuestion.length && getAnswer.length) {
       await api.put(`/api/tos-info/${id}/update/`, formData);
       
 
-          // Send all requests in parallel
-          const updatePromises = lessonData.map((data) => 
-            api.put(`/api/tos-content/${data.id}/update/`, data)
-          );
-      
-          // Await the completion of all the requests
-         await Promise.all(updatePromises);
+
+
+
+         const updateOrCreateTOScontent = async (data) =>{
+          try{
+            const content = await api.put(`/api/tos-content/${data.id}/update/`, data);
+            return content; // Return the successful update response
+          }
+          catch(error) {
+            if (error.response && error.response.status === 404) {
+              const lessonsDataJson = JSON.stringify([
+                {
+                  topic: data.topic,
+                  learning_outcomes: data.learning_outcomes,
+                  teachingHours: data.teachingHours,
+                  allocation: data.allocation ,
+                  items: data.items,
+                  remembering: data.remembering,
+                  understanding: data.understanding,
+                  applying: data.applying,
+                  analyzing: data.analyzing,
+                  evaluating: data.evaluating,
+                  creating: data.creating,
+                  total: data.total,
+                  placement: data.placement,
+                  TotalItems: data.TotalItems,
+                  teacher_tos: id,
+                }
+              ]);
+
+              return await api.post("/api/tos-content/", { lessonsDataJson })
+        
+            }
+            else {
+              throw new Error("Failed to create toscontent.");
+            }
+          }
+
+         }
+
+         const updatePromisesTOScontent = lessonData.map(updateOrCreateTOScontent);
+        
+         // Await all the promises to complete
+         try {
+           const results = await Promise.all(updatePromisesTOScontent);
+           console.log('Responses:', results); // Array of responses for each operation
+         } catch (error) {
+           console.error('Error in updating or creating tos content:', error);
+         }
+
+         
 
          await api.put(`/api/exam/${exam_id}/update/`, {
           'exam_title':ExamTitle,
@@ -868,6 +913,18 @@ const removeLesson = (lessonsData, index) => {
     // Remove the item at the specified index
     myArray.splice(index, 1);
 
+    if(lessonData[index].id!==undefined){
+
+      api.delete(`api/toscontent/delete/${lessonData[index].teacher_tos}/${lessonData[index].id}/`).then((res) => {
+        if (res.status === 204) alert("table of specification deleted!");
+        else alert("Failed to delete table of specification.");
+       
+      })
+      .catch((error) => alert(error));
+    }
+
+   
+
     // Update the state with the modified array
     setLessonData(myArray);
 
@@ -899,7 +956,7 @@ function inputModal(indexRow,lessonData){
     <Modal.Header>Lesson {indexRow+1}</Modal.Header>
     <Modal.Body>
       <div className="space-y-6 " >
-        <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+        <div className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
          
 
     <div className="flex gap-5">  
@@ -1114,7 +1171,7 @@ function inputModal(indexRow,lessonData){
   
   </div>
   
-  </p>
+  </div>
          
          </div>
        </Modal.Body>
@@ -2183,8 +2240,7 @@ const handleTestPartChange = (index,type, value) => {
       </div>
 
    <Button onClick={updateTOSinfo}> Update</Button>
-   {JSON.stringify(TestPart)}
-   {JSON.stringify(examStates)}
+
     
       {/* <Button href='/exam_bank'> Back to list</Button> */}
     </div>

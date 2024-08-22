@@ -513,7 +513,9 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       console.log('deleteitem: ',prevExamStates[index].test_part_id)
 
 
-      
+      if(prevExamStates[index].question_id !== undefined){
+
+     
     api
     .delete(`api/questions/delete/${prevExamStates[index].test_part_id}/${prevExamStates[index].question_id}/`)
     .then((res) => {
@@ -522,6 +524,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
      
     })
     .catch((error) => alert(error));
+  }
   
       // Update localStorage with the modified array
       const updatedStates = [
@@ -542,6 +545,9 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         return prevTestPart;
       }
 
+      if(prevTestPart[index].id !== undefined){
+
+   
       api
       .delete(`api/test-part/delete/${prevTestPart[index].exam_id}/${prevTestPart[index].id}/`)
       .then((res) => {
@@ -550,6 +556,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
        
       })
       .catch((error) => alert(error));
+    }
   
       // Remove the item at the specified index and update the array
       const updatedTestPart = [
