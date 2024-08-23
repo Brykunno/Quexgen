@@ -12,6 +12,8 @@ import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ExamUpdate from './ExamUpdate';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 
 
 import ReactDOM from 'react-dom';
@@ -1998,14 +2000,51 @@ const handleTestPartChange = (index,type, value) => {
 
 
 
+ useEffect (() =>{
+  if(step === 1){
+    setDisableBack(true)
+  } 
+  else{
+    setDisableBack(false)
+  }
+
+  if(step === 4){
+    setDisableNext(true)
+  } 
+  else{
+    setDisableNext(false)
+  }
+
+  switch(step){
+    case 1:
+      if(formData.Title == '' || formData.AcademicYear == '' || formData.CourseCode == '' || formData.Faculty == ''|| formData.Chairperson == ''|| formData.Dean == ''|| formData.Director == ''){
+        setDisableNext(true)
+      }
+      break
+    case 2:
+      if(getTotalTaxonomy!=100){
+        setDisableNext(true)
+      }
+    
+      break
+  }
+ 
+
+
+
+},[step,formData,getTotalTaxonomy,TotalItems])
+
+
+
+
   return (
     <div className='content'>
    <Card className={`mb-5 ${step == 1? 'show':'hidden'}`}>
   <Breadcrumb aria-label="Default breadcrumb example">
-      <Breadcrumb.Item href="/exam_bank" icon={HiHome}>
-       Exam Bank
+      <Breadcrumb.Item >
+       Exams
       </Breadcrumb.Item>
-      <Breadcrumb.Item >TOS view</Breadcrumb.Item>
+      <Breadcrumb.Item >Course Information</Breadcrumb.Item>
 
     </Breadcrumb>
 
@@ -2228,18 +2267,20 @@ const handleTestPartChange = (index,type, value) => {
    </div>
 
    <div className={`mb-5 ${step == 4? 'show':'hidden'}`}>
-   <ExamUpdate items={TotalItems} lessonsData={lessonData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} exam_id={exam_id}  />
+   <ExamUpdate items={TotalItems} lessonsData={lessonData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} exam_id={exam_id} updateTOSinfo={updateTOSinfo} />
 
     </div>
 
-   <div className="w-full justify-center mx-auto flex gap-14">
-<Button onClick={handleBack} disabled={disableBack} >Back</Button>
-      <Button onClick={handleNext} disabled={disableNext}>Next</Button>
- 
-   
+    <div className="w-full justify-center mx-auto flex gap-14">
+  <div>
+<Button size={'sm'} color={'primary'} onClick={handleBack} disabled={disableBack} className="px-3"><NavigateBeforeIcon/> <p style={{marginTop:'0.5px'}}>Previous</p></Button>
+</div>
+<div>
+      <Button size={'sm'}  color={'primary'} onClick={handleNext} disabled={disableNext} className="px-4" > <p style={{marginTop:'0.5px'}}>Next</p> <NavigateNextIcon  /></Button>
+      </div>
       </div>
 
-   <Button onClick={updateTOSinfo}> Update</Button>
+ 
 
     
       {/* <Button href='/exam_bank'> Back to list</Button> */}

@@ -26,7 +26,21 @@ function Form({ route, method }) {
       if (method === "login") {
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
         localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-        navigate("/");
+
+        console.log('usersdata: ',res.data)
+        api
+        .get(`/api/user/account/`)
+        .then((res) => res.data)
+        .then((data) => {
+          
+         if(data[0].is_superuser ===true){
+          navigate("/");
+         }
+         else{
+          navigate("/profile");
+         }
+        })
+        .catch((err) => alert(err));
       } else {
         navigate("/login");
       }

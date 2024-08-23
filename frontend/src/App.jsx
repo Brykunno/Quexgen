@@ -16,6 +16,25 @@ import "./styles/App.css";
 import { Teacher_routes_data } from "./Routes/Teacher_routes_data";
 import { Admin_routes_data } from "./Routes/Admin_routes_data";
 
+import { Flowbite } from 'flowbite-react';
+import { colors } from '@mui/material';
+
+const customTheme = {
+  button: {
+    color: {
+      primary: "border border-transparent bg-blue-800 text-white focus:ring-4 focus:ring-blue-300 enabled:hover:bg-blue-900 dark:border-blue-700 dark:bg-blue-800 dark:focus:ring-blue-800 dark:enabled:hover:bg-blue-700 flex items-stretch justify-center p-0.5 text-center",
+    },
+
+  },
+
+  progress: {
+    color:{
+      primary:'bg-blue-800 dark:bg-blue-700',
+    },
+  },
+};
+
+
 function Logout() {
   localStorage.clear();
   return <Navigate to="/login" />;
@@ -41,7 +60,8 @@ function App() {
 
   return (
 
-<div>
+
+<Flowbite theme={{ theme: customTheme }}>
 
 <BrowserRouter>
     <Routes>
@@ -86,7 +106,7 @@ function App() {
   </BrowserRouter>
 
    
-   </div>
+   </Flowbite>
   );
 }
 

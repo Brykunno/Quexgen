@@ -18,6 +18,10 @@ import LoadingSubmit from "./LoadingSubmit";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 import { useState,useEffect } from "react";
 import ToastMessage from "./Toast";
@@ -2031,13 +2035,13 @@ const handleBack = () => {
 <Card className={`mb-5 ${step == 1? 'show':'hidden'}`} > 
 
 <Breadcrumb aria-label="Default breadcrumb example">
-      <Breadcrumb.Item >
+      <Breadcrumb.Item onClick={()=>{setStep(1)}}>
       Course Information
       </Breadcrumb.Item>
       
     </Breadcrumb>
    
-   <Progress progress={25} size={'sm'} />
+   <Progress progress={25} size={'sm'} color={'primary'}/>
    
    <Card className=' mx-auto ' >
     
@@ -2187,7 +2191,7 @@ const handleBack = () => {
   
       <Card className={`mb-5 ${step == 2? 'show':'hidden'}`}>
       <Breadcrumb aria-label="Default breadcrumb example">
-      <Breadcrumb.Item >
+      <Breadcrumb.Item onClick={()=>{setStep(1)}} className="cursor-pointer">
       Course Information
       </Breadcrumb.Item>
       <Breadcrumb.Item >
@@ -2196,7 +2200,7 @@ const handleBack = () => {
       
     </Breadcrumb>
    
-   <Progress progress={50} size={'sm'} />
+   <Progress progress={50} size={'sm'} color={'primary'} />
    
    <br />
        
@@ -2305,10 +2309,10 @@ const handleBack = () => {
       progress={getTotalTaxonomy}
       progressLabelPosition="inside"
   
+      color={'primary'}
     
       size="lg"
      
-    
     />
    
       {checkTaxonomy(getTotalTaxonomy)} </span>
@@ -2338,7 +2342,7 @@ const handleBack = () => {
       
     </Breadcrumb>
    
-   <Progress progress={75} size={'sm'} />
+   <Progress progress={75} size={'sm'} color={'primary'}/>
  
    <br />
 
@@ -2422,16 +2426,19 @@ const handleBack = () => {
     
 
       <div className="mt-3">
-      <Button className="mx-auto" type="submit" color="success">Save</Button>
+
       </div>
       </div>
       </form>
       {Toast  && <ToastMessage  message = "Exam successfully Created!"/>}
       {loading  && <LoadingSubmit/>}
 <div className="w-full justify-center mx-auto flex gap-14">
-<Button onClick={handleBack} disabled={disableBack} >Back</Button>
-      <Button onClick={handleNext} disabled={disableNext}>Next</Button>
-     
+  <div>
+<Button size={'sm'} color={'primary'} onClick={handleBack} disabled={disableBack} className="px-3"><NavigateBeforeIcon/> <p style={{marginTop:'0.5px'}}>Previous</p></Button>
+</div>
+<div>
+      <Button size={'sm'}  color={'primary'} onClick={handleNext} disabled={disableNext} className="px-4" > <p style={{marginTop:'0.5px'}}>Next</p> <NavigateNextIcon  /></Button>
+      </div>
       </div>
     </div>
   );

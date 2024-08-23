@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from "../../api";
-import { Card, Button, Table } from "flowbite-react";
+import { Card, Button, Table, Pagination } from "flowbite-react";
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 function Exam_bank() {
   const [exam, setExam] = useState([]);
@@ -48,8 +49,7 @@ function Exam_bank() {
 
   return (
     <div className="content">
-     
-      <h1>Exam Bank</h1>
+      
 
       {/* Search Bar (real-time filtering) */}
       <div className="flex items-center mb-5">
@@ -83,7 +83,7 @@ function Exam_bank() {
                 <Table.Cell>{exam.AcademicYear}</Table.Cell>
                 <Table.Cell>
                   <a href={`/tos_view/${exam.id}`} className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
-                    View
+                  <Button color={'primary'} size={'xs'} className='flex gap-3'><VisibilityIcon /> <p className='mt-1 ml-1'>View</p></Button>  
                   </a>
                 </Table.Cell>
                 <Table.Cell>pending</Table.Cell>
@@ -93,26 +93,18 @@ function Exam_bank() {
             <Table.Row>  
               <Table.Cell colSpan={'5'} ><p className='text-center '>No exams found for "{searchTerm}".</p></Table.Cell>
              </Table.Row>
-          
           )}
         </Table.Body>
       </Table>
 
       {/* Pagination Controls */}
       <div className="flex justify-center mt-4">
-        <Button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </Button>
-        <span className="mx-2">{`Page ${currentPage} of ${totalPages}`}</span>
-        <Button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </Button>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          showIcons
+        />
       </div>
     </div>
   );

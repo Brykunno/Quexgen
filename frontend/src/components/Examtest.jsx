@@ -1,7 +1,13 @@
 import React, { useState,useEffect } from 'react';
-import { Breadcrumb,Progress, Card, Textarea, Button, TextInput, Label,Radio,Modal } from "flowbite-react";
+import { Tooltip,Breadcrumb,Progress, Card, Textarea, Button, TextInput, Label,Radio,Modal } from "flowbite-react";
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import CloseIcon from '@mui/icons-material/Close';
+import UpdateIcon from '@mui/icons-material/Update';
+import PreviewIcon from '@mui/icons-material/Preview';
+import PostAddIcon from '@mui/icons-material/PostAdd';
+import SaveIcon from '@mui/icons-material/Save';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 import ReactDOM from 'react-dom';
 import { PDFViewer } from '@react-pdf/renderer';
@@ -23,6 +29,10 @@ function Examtest ({ items, tos_id, lessonsData,handleStateChange,examStates,set
   const [Test2,setTest2] = useState(0)
   const [Test3,setTest3] = useState(0)
   const [PdfModal,setPdfModal] = useState(false)
+  const [showPart,setShowPart] = useState(1)
+  const [disableShowPart1,setDisableShowPart1] = useState('false')
+  const [disableShowPart2,setDisableShowPart2] = useState('false')
+  const [disableShowPart3,setDisableShowPart3] = useState('false')
 
  
 
@@ -124,94 +134,101 @@ function checkAnswer(localStore, answer){
 
 
     return (
-        <Card key={index} className='m-5'>
+      <Card key={index} className='m-5'>
+
+
+
+
           
+      <div>
+        <div className='flex gap-3'>
+        <span className='mt-2'>
+          {catindex}.
+          
+          
+          </span>
+
+          <Textarea
+            value={item.question}
+            onChange={(e) => handleStateChange(index, 'question', e.target.value)}
+          />
+        </div>
+
+    <div className='mt-3'>
+      <div className='flex flex-wrap gap-3 mx-auto'>
         <div>
-          <div className='flex gap-3'>
-          <span className='mt-2'>
-            {catindex}.
-            
-            
-            </span>
- 
+          <div className='flex gap-3 w-80 mb-3'>
+            <Radio
+              name={`answers-${index}`}
+              value="A"
+              className='mt-3'
+              onChange={(e) => handleRadioAnswer(index, e.target.value)}
+              checked={checkAnswer(item.answer, "A")}
+            />
+            <span className='mt-2'>A.</span>
             <Textarea
-              value={item.question}
-              onChange={(e) => handleStateChange(index, 'question', e.target.value)}
+              value={item.choices[0]}
+              onChange={(e) => handleStateChange(index, 0, e.target.value)}
             />
           </div>
 
-      <div className='mt-3'>
-        <div className='flex flex-wrap gap-10 mx-auto'>
-          <div>
-            <div className='flex gap-3 w-80 mb-3'>
-              <Radio
-                name={`answers-${index}`}
-                value="A"
-                className='mt-3'
-                onChange={(e) => handleRadioAnswer(index, e.target.value)}
-                checked={checkAnswer(item.answer, "A")}
-              />
-              <span className='mt-2'>A.</span>
-              <Textarea
-                value={item.choices[0]}
-                onChange={(e) => handleStateChange(index, 0, e.target.value)}
-              />
-            </div>
-  
-            <div className='flex gap-3 w-80 mb-3'>
-              <Radio
-                name={`answers-${index}`}
-                value="B"
-                className='mt-3'
-                onChange={(e) => handleRadioAnswer(index, e.target.value)}
-                checked={checkAnswer(item.answer, "B")}
-              />
-              <span className='mt-2'>B.</span>
-              <Textarea
-                value={item.choices[1]}
-                onChange={(e) => handleStateChange(index, 1, e.target.value)}
-              />
-            </div>
+          <div className='flex gap-3 w-80 mb-3'>
+            <Radio
+              name={`answers-${index}`}
+              value="B"
+              className='mt-3'
+              onChange={(e) => handleRadioAnswer(index, e.target.value)}
+              checked={checkAnswer(item.answer, "B")}
+            />
+            <span className='mt-2'>B.</span>
+            <Textarea
+              value={item.choices[1]}
+              onChange={(e) => handleStateChange(index, 1, e.target.value)}
+            />
           </div>
-          <div>
-            <div className='flex gap-3 w-80 mb-3'>
-              <Radio
-                name={`answers-${index}`}
-                value="C"
-                className='mt-3'
-                onChange={(e) => handleRadioAnswer(index, e.target.value)}
-                checked={checkAnswer(item.answer, "C")}
-              />
-              <span className='mt-2'>C.</span>
-              <Textarea
-                value={item.choices[2]}
-                onChange={(e) => handleStateChange(index, 2, e.target.value)}
-              />
-            </div>
-  
-            <div className='flex gap-3 w-80 mb-3'>
-              <Radio
-                name={`answers-${index}`}
-                value="D"
-                className='mt-3'
-                onChange={(e) => handleRadioAnswer(index, e.target.value)}
-                checked={checkAnswer(item.answer, "D")}
-              />
-              <span className='mt-2'>D.</span>
-              <Textarea
-                value={item.choices[3]}
-                onChange={(e) => handleStateChange(index, 3, e.target.value)}
-              />
-            </div>
+        </div>
+        <div>
+          <div className='flex gap-3 w-80 mb-3'>
+            <Radio
+              name={`answers-${index}`}
+              value="C"
+              className='mt-3'
+              onChange={(e) => handleRadioAnswer(index, e.target.value)}
+              checked={checkAnswer(item.answer, "C")}
+            />
+            <span className='mt-2'>C.</span>
+            <Textarea
+              value={item.choices[2]}
+              onChange={(e) => handleStateChange(index, 2, e.target.value)}
+            />
+          </div>
+
+          <div className='flex gap-3 w-80 mb-3'>
+            <Radio
+              name={`answers-${index}`}
+              value="D"
+              className='mt-3'
+              onChange={(e) => handleRadioAnswer(index, e.target.value)}
+              checked={checkAnswer(item.answer, "D")}
+            />
+            <span className='mt-2'>D.</span>
+            <Textarea
+              value={item.choices[3]}
+              onChange={(e) => handleStateChange(index, 3, e.target.value)}
+            />
           </div>
         </div>
       </div>
-      <div className='flex gap-5'>
-      <Button>Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
-      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex('mcq',index)}} ><DeleteIcon/></Button>
+    </div>
+    <div className='flex gap-5 justify-center mt-3'>
+    
+    <Button color={'primary'} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
+    <Tooltip content="Delete Question" style="dark">
+    <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} ><DeleteIcon/></Button>
+    </Tooltip>
+    </div>
       </div>
-        </div>
-      </Card>
+    </Card>
     );
   }
   
@@ -245,7 +262,7 @@ function checkAnswer(localStore, answer){
           <div>
             <div className='flex gap-3 w-80 mb-3'>
 
-              <span className='mt-2'>Answer</span>
+              <span className='mt-2 font-bold'>Answer:</span>
               <Textarea
                 value={item.choices[0]}
                 onChange={(e) => 
@@ -254,15 +271,19 @@ function checkAnswer(localStore, answer){
                   handleRadioAnswer(index, e.target.value)
                 
                 }}
+                className='h-10'
               />
             </div>
   
           </div>
         </div>
       </div>
-      <div className='flex gap-5'>
-      <Button>Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
-      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex('mcq',index)}} ><DeleteIcon/></Button>
+      <div className='flex gap-5 justify-center mt-3'>
+      
+      <Button color={'primary'} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
+      <Tooltip content="Delete Question" style="dark">
+      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} ><DeleteIcon/></Button>
+      </Tooltip>
       </div>
         </div>
       </Card>
@@ -322,45 +343,27 @@ function checkAnswer(localStore, answer){
         
         </div>
       </div>
-      <div className='flex gap-5'>
-      <Button>Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
-      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex('mcq',index)}} ><DeleteIcon/></Button>
+      <div className='flex gap-5 justify-center mt-3'>
+      
+      <Button color={'primary'} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
+      <Tooltip content="Delete Question" style="dark">
+      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} ><DeleteIcon/></Button>
+      </Tooltip>
       </div>
         </div>
       </Card>
     );
   }
 
-  const examItems = (categories) => {
-    return examStates.map((item, index) => (
-      <Card key={index}>
-        <div>
-          <div className='flex gap-3'>
-            <span className='mt-2'>{index + 1}.</span>
-            <Textarea
-              value={item.question}
-              onChange={(e) => handleStateChange(index, 'question', e.target.value)}
-            />
-          </div>
-  
-          {item.question_type === 'mcq' && mcq(item, index)}
-          {item.question_type === 'identification' && identification(item, index)}
-          {item.question_type === 'trueOrFalse' && trueOrFalse(item, index)}
-  
-          <Button>Generate {categories[index + 1] ? categories[index + 1] : ''} question</Button>
-        </div>
-      </Card>
-    ));
-  };
 
 
   const examPart = (categories) => {
 
 
+    const sortedTestParts = TestPart.sort((a, b) => a.test_part_num - b.test_part_num);
 
 
-
-    return TestPart.map((itemtest, index) => {
+    return sortedTestParts.map((itemtest, index) => {
 
       let type = ''
       if(itemtest.test_type === 'mcq'){
@@ -373,33 +376,55 @@ function checkAnswer(localStore, answer){
       }
 
       return(
-      <Card key={index}>
-        <div>
-          <div className='flex gap-3'>
-            <span className='mt-2'> {type}  Test {index + 1}: Instruction</span>
+        <Card key={index} className={itemtest.test_part_num === showPart?'show relative':'hidden'} > {/* Make the Card a relative container */}
+        {/* Delete Button at the Top Right Corner */}
+        <Button
+        
+          size={'xs'}
+          color={'failure'}
+          onClick={() => { handleRemoveLastItemTest(index); }} 
+          className="absolute top-2 right-2" // Position the button absolutely
+        >
+          <CloseIcon />
+        </Button>
+
+          <div >
+            <div className='mb-5 text-center'><p className='font-bold text-lg'>Test {index + 1}  : {type} </p></div> 
             <Textarea
+            placeholder={` Test ${index + 1} : ${type} Instruction`}
               value={itemtest.test_instruction}
               onChange={(e) => handleTestPartChange(index, 'test_instruction', e.target.value)}
+              style={{width:'97%',height:'40px'}}
+              className='mx-auto'
             />
           </div>
-
+        
+        <div className='overflow-y-scroll py-5' style={{ height: '400px', direction: 'rtl', overflow: 'auto' }}>
+          <div style={{ direction: 'ltr' }}>
+        
+      
           {examStates.map((item, idx) => (
-          <div key={idx}>
-            {item.question_type === 'mcq' && itemtest.test_type === 'mcq' && mcq(item,idx, examStates)}
-            {item.question_type === 'identification' && itemtest.test_type === 'identification' && identification(item,idx, examStates)}
-            {item.question_type === 'trueOrFalse' && itemtest.test_type === 'trueOrFalse' && trueOrFalse(item, idx, examStates)}
+            <div key={idx}>
+              {item.question_type === 'mcq' && itemtest.test_type === 'mcq' && mcq(item, idx, examStates)}
+              {item.question_type === 'identification' && itemtest.test_type === 'identification' && identification(item, idx, examStates)}
+              {item.question_type === 'trueOrFalse' && itemtest.test_type === 'trueOrFalse' && trueOrFalse(item, idx, examStates)}
+            </div>
+          ))}
+      
+          <div className='flex gap-5 mt-5 justify-center'>
+            <Button 
+            outline
+            color={'success'}
+              onClick={() => { handleAddItem(itemtest.test_type, itemtest.test_part_num, itemtest.exam_id, itemtest.id); }} 
+              disabled={disableAdd}
+            >
+            <AddCircleOutlineIcon className='mr-2'/>  Add Item
+            </Button>
           </div>
-        ))}
-
-
-  <div className='flex gap-5 mt-5 justify-center'>
-
-        <Button onClick={()=>{handleAddItem(itemtest.test_type,itemtest.test_part_num)}} disabled={disableAdd}> Add Item </Button>
-
+          </div>
         </div>
-        </div>
-        <Button color={'failure'} onClick={() =>{handleRemoveLastItemTest(index)}} ><DeleteIcon/></Button>
-      </Card>)
+      </Card>
+      )
   });
   };
 
@@ -439,6 +464,7 @@ function checkAnswer(localStore, answer){
 
    
       disableBtn();
+      disableBtnShowPart();
 
   },[examStates,items,TestPart])
 
@@ -460,6 +486,26 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
 
  
   }
+
+  
+  const disableBtnShowPart = () =>{
+    // Count how many 'mcq' test types are in TestPart
+ const test1 = TestPart.filter(test => test.test_part_num === 1).length;
+ 
+ // Count how many 'identification' test types are in TestPart
+ const test2 = TestPart.filter(test => test.test_part_num === 2).length;
+ 
+ // Count how many 'trueOrFalse' test types are in TestPart
+ const test3 = TestPart.filter(test => test.test_part_num === 3).length;
+ 
+ 
+ // Set disable states based on counts
+ setDisableShowPart1(test1 <= 0);
+ setDisableShowPart2(test2 <= 0);
+ setDisableShowPart3(test3 <= 0);
+ 
+  
+   }
 
   const handleAddItem = (itemtype, test_part_num) => {
     
@@ -490,7 +536,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
 
 
 
-  const handleRemoveLastItemIndex = (question_type, index) => {
+  const handleRemoveLastItemIndex = (index) => {
     setExamStates((prevExamStates) => {
       // Validate the index to ensure it is within the array bounds
       if (index < 0 || index >= prevExamStates.length) {
@@ -577,12 +623,43 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       
     </Breadcrumb>
    
-   <Progress progress={100} size={'sm'} />
+   <Progress progress={100} size={'sm'} color={'primary'}/>
        
-       
+         <div className='flex gap-5'>
+       <div style={{flex:0.4}}>
+
+       <div className=' w-full'>
+        <Card  className='w-full'> 
+      
+      <Button color={'primary'} onClick={()=>{handleAddTest('mcq',exam_id)}} disabled={disableAddTestMcq}><PostAddIcon className="mr-2"/> Add Multiple Choice Test</Button>
+      <Button color={'primary'} onClick={()=>{handleAddTest('identification',exam_id)}} disabled={disableAddTestIdentification}><PostAddIcon className="mr-2"/> Add Identification Test</Button>
+      <Button color={'primary'} onClick={()=>{handleAddTest('trueOrFalse',exam_id)}} disabled={disableAddTestTrueorFalse}><PostAddIcon className="mr-2"/> Add True or False Test</Button>
+     
+   
+      </Card>
+
+      <Card  className='w-full mt-5'> 
+      
+      <Button  onClick={()=>{setShowPart(1)}} disabled={disableShowPart1}><VisibilityIcon className="mr-2"/> View Test 1</Button>
+      <Button  onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
+      <Button  onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
+      <Button  color="blue" onClick={() => setPdfModal(true)}><PreviewIcon className="mr-2"/> Exam Preview</Button>
+     
+      <Button  type="submit" color="success"><SaveIcon className='mr-2'/>Save Exam</Button>
+    
+    
+   
+      </Card>
+   
+      </div>
+      
+       </div>
+   
+   <div className='flex-1'>
+
         <div className='w-full'>
           <div className="mb-2 block">
-            <Label htmlFor="title" value="Title" />
+            <Label htmlFor="title" value="Exam Title" />
           </div>
           <TextInput id="title" type="text" value={ExamTitle}  onChange={handleExamTitleChange}/>
         </div>
@@ -593,16 +670,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         {examPart(categories)}
   
         
-        <div className='flex gap-5'>
-      
-        <Button onClick={()=>{handleAddTest('mcq')}} disabled={disableAddTestMcq}>Add Multiple Choice Test</Button>
-        <Button onClick={()=>{handleAddTest('identification')}} disabled={disableAddTestIdentification}>Add Identification Test</Button>
-        <Button onClick={()=>{handleAddTest('trueOrFalse')}} disabled={disableAddTestTrueorFalse}>Add True or False Test</Button>
-     
-
-     
-        </div>
-        <Button color="blue" onClick={() => setPdfModal(true)}><VisibilityIcon className="mr-2"/>Preview</Button>
+        
         <Modal show={PdfModal} size={'7xl'}  onClose={() => setPdfModal(false)} className="h-screen">
         <Modal.Header>Table of Specification</Modal.Header>
         <Modal.Body  className="p-0">
@@ -614,7 +682,9 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
           </div>
         </Modal.Body>
       </Modal>
-   
+
+      </div>
+      </div>
       </Card>
     </div>
   );
