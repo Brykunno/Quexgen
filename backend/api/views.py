@@ -35,6 +35,40 @@ class UserRetrieve(generics.ListCreateAPIView):
         user = self.request.user
         return User.objects.filter(id=user.id)
     
+class UserUpdateView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        # Get the user instance to be updated
+        instance = self.get_object()
+        user_id = self.kwargs['pk']
+        print(f'Attempting to update User with id: {user_id}')
+        
+        # Serialize the incoming data with partial update
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            
+            # Confirm update by re-fetching from the database
+            instance.refresh_from_db()
+            updated_data = self.get_serializer(instance).data
+            
+            # Return the updated data
+            print(f'Updated User data: {updated_data}')
+            return Response({"message": "Update successful", "data": updated_data}, status=status.HTTP_200_OK)
+        else:
+            # Print detailed validation errors
+            print("Validation errors:", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_update(self, serializer):
+        # Save the updated user data
+        serializer.save()
+
+    
 class TeacherRetrieve(generics.ListCreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]

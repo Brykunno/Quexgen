@@ -44,7 +44,7 @@ background-color: #dee8f7;
 
 .content{
     margin-left: 260px; 
-    padding: 16px; 
+    padding: 32px; 
     /* padding-top: 100px ; */
 }
 /* 
@@ -102,5 +102,9 @@ background-color: #dee8f7;
 
 #active{
 
-   color: #ffffff;
+   color: #fffafa;
+   background: #e5ad06;
+   border-top-right-radius: 30px;
+   border-bottom-right-radius: 30px;
+   width: 98%;
 }

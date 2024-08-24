@@ -6,27 +6,37 @@ from .models import *
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = [ "id",
+        fields = [
+            "id",
             "username",
             "password",
             "first_name",
             "last_name",
             "email",
             "is_staff",
-            "is_superuser"]
+            "is_superuser",
+            "is_active"  # Include is_active in the fields
+        ]
         extra_kwargs = {"password": {"write_only": True}}
-        
+
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
-    
+
     def update(self, instance, validated_data):
         # Update the password correctly if it is provided
         password = validated_data.pop('password', None)
+        is_active = validated_data.pop('is_active', None)
+        
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
+        
         if password:
             instance.set_password(password)
+        
+        if is_active is not None:
+            instance.is_active = is_active
+        
         instance.save()
         return instance
     

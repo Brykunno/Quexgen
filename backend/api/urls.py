@@ -30,5 +30,7 @@ urlpatterns = [
 
     path('questions/delete/<int:test_part_id>/<int:pk>/', views.QuestionDelete.as_view(), name='question-delete'),
     path('test-part/delete/<int:exam_id>/<int:pk>/', views.TestPartDelete.as_view(), name='test-part-delete'),
-    path('toscontent/delete/<int:teacher_tos>/<int:pk>/', views.TOSContentDelete.as_view(), name='testcontent-delete')
+    path('toscontent/delete/<int:teacher_tos>/<int:pk>/', views.TOSContentDelete.as_view(), name='testcontent-delete'),
+    path('users/<int:pk>/', views.UserUpdateView.as_view(), name='user-update'),
+    
 ]

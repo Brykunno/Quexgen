@@ -40,10 +40,7 @@ function Logout() {
   return <Navigate to="/login" />;
 }
 
-function Add_userlogout() {
-  localStorage.clear();
-  return <Add_user />;
-}
+
 
 const ProtectedLayout = ({ children }) => (
   <>
@@ -99,7 +96,7 @@ function App() {
       
  
     <Route path="/login" element={<Login />} />
-    <Route path="/add_user" element={<Add_userlogout />} />
+
     <Route path="/logout" element={<Logout />} />
     <Route path="*" element={<NotFound />} />
     </Routes>

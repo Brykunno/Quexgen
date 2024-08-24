@@ -16,6 +16,7 @@ export const SidebarData = [
         icon: <AccountCircleIcon />,
         link: "/teachers",
     },
+
     {
         title: "Exams",
         icon: <ArticleIcon />,
