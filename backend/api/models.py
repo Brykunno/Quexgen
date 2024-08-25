@@ -6,6 +6,14 @@ from django.contrib.auth.models import User
         
 
 class TOS_info(models.Model):
+    
+    STATUS_CHOICES = (
+        (0, 'Saved'),
+        (1, 'Submitted'),
+        (2, 'Approved'),
+        (3, 'Needs Revision'),
+    )
+    
     Title = models.TextField()
     Semester = models.TextField()
     AcademicYear = models.TextField()
@@ -21,6 +29,7 @@ class TOS_info(models.Model):
     Director = models.TextField()
     tos_info_date_added = models.DateTimeField(auto_now_add=True,null=True)
     teacher_tos_info = models.ForeignKey(User, on_delete=models.CASCADE, related_name="teacher_tos_info", null=True)
+    Status = models.IntegerField(choices=STATUS_CHOICES, default=0, null=True)
 
     def __str__(self):
         return self.Title
@@ -100,6 +109,18 @@ class Answers(models.Model):
 
     class Meta:
         db_table = 'answers'
+        
+class Admin_Comment(models.Model):
+    
+    comment =  models.TextField()
+    reviewed = models.DateTimeField(auto_now_add=True,null=True)
+    tos = models.ForeignKey(TOS_info, on_delete=models.CASCADE, related_name="tos_info_approval", null=True)
+    
+    def __str__(self):
+        return self.comment
+    
+    class Meta:
+        db_table = 'comments'
         
         
 

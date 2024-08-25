@@ -4,6 +4,8 @@ import Add_user from './Add_user';
 import { Table, Pagination, Button, Modal, Radio, Label, TextInput } from 'flowbite-react';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import SearchIcon from '@mui/icons-material/Search';
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
+import HideSourceIcon from '@mui/icons-material/HideSource';
 
 function Teachers() {
   const [user, setUser] = useState([]);
@@ -28,7 +30,7 @@ function Teachers() {
   }, []);
 
   const getUser = () => {
-    api.get(`/api/teachers/`)
+    api.get(`/api/user/account/admin/`)
       .then((res) => {
         setUser(res.data);
         setLoading(false);
@@ -85,7 +87,7 @@ function Teachers() {
     user.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleUserArchive = () => {
+  const handleUserArchive = (selectedUserId) => {
     const updatedUser = {
       is_active: false
     };
@@ -101,6 +103,25 @@ function Teachers() {
         console.error('Error archiving user:', err);
       });
   };
+
+  
+  const handleUserActivate = (selectedUserId) => {
+    const updatedUser = {
+      is_active: true
+    };
+    
+    api
+      .patch(`/api/users/${selectedUserId}/`, updatedUser)
+      .then((res) => {
+        console.log('User archived successfully', res.data);
+        getUser(); // Refresh the user list
+        setOpenModal(false); // Close the modal
+      })
+      .catch((err) => {
+        console.error('Error archiving user:', err);
+      });
+  };
+
 
   const indexOfLastUser = currentPage * itemsPerPage;
   const indexOfFirstUser = indexOfLastUser - itemsPerPage;
@@ -147,7 +168,7 @@ function Teachers() {
                     <Table.Cell>{user.first_name}</Table.Cell>
                     <Table.Cell>{user.last_name}</Table.Cell>
                     <Table.Cell>{user.is_staff ? 'Teacher' : 'Admin'}</Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell className='flex gap-3'>
                       <Button
                         color={'primary'}
                         size={'xs'}
@@ -157,6 +178,8 @@ function Teachers() {
                         <VisibilityIcon />
                         <p className='mt-1 ml-1'>View</p>
                       </Button>
+                     
+                      {user.is_active!==true? <Button size={'xs'} color={'success'} onClick={()=>{handleUserActivate(user.id)}}><PowerSettingsNewIcon/><p className='mt-1 ml-1'>Activate</p></Button>:  <Button size={'xs'} color={'failure'} onClick={()=>{handleUserArchive(user.id)}}><HideSourceIcon/><p className='mt-1 ml-1'>Deactivate</p></Button>}
                     </Table.Cell>
                     <Table.Cell>{user.is_active ? 'Active' : 'Inactive'}</Table.Cell>
                   </Table.Row>
@@ -244,7 +267,7 @@ function Teachers() {
             </Modal.Body>
             <Modal.Footer>
               <Button onClick={handleUserUpdate}>Update</Button>
-              <Button color={'failure'} onClick={handleUserArchive}>Archive</Button>
+              
               <Button color="gray" onClick={() => setOpenModal(false)}>
                 Cancel
               </Button>

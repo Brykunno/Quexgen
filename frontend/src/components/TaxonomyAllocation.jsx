@@ -117,7 +117,7 @@ function TaxonomyAllocation(props) {
       progress={props.getTotalTaxonomy}
       progressLabelPosition="inside"
   
-    
+      color={'primary'}
       size="lg"
      
     

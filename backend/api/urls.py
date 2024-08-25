@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import admin_views
 urlpatterns = [
     path("user/", views.UserListCreate.as_view(),name="user-list"),
     path('user/account/', views.UserRetrieve.as_view(), name='user-detail'),
@@ -32,5 +33,13 @@ urlpatterns = [
     path('test-part/delete/<int:exam_id>/<int:pk>/', views.TestPartDelete.as_view(), name='test-part-delete'),
     path('toscontent/delete/<int:teacher_tos>/<int:pk>/', views.TOSContentDelete.as_view(), name='testcontent-delete'),
     path('users/<int:pk>/', views.UserUpdateView.as_view(), name='user-update'),
+    
+    
+    path('user/account/admin/', admin_views.AdminUserRetrieve.as_view(), name='user-detail-admin'),
+    path('tos-info/detail/admin/', admin_views.TOSInfoRetrieve.as_view(), name='tos-info-list-detail'),
+    path('tos-info/<int:pk>/detail/admin/', admin_views.TOSInfoRetrieveDetail.as_view(), name='tos-info-list-retrieve-detail-admin'),
+    path('create-comment/', admin_views.CommentsCreateView.as_view(), name='comments-list-create'),
+    path('comments/<int:pk>/update/', admin_views.CommentsUpdate.as_view(), name='comments-list-update'),
+    path('comments/<int:pk>/detail/admin/', admin_views.CommentsRetrieveDetail.as_view(), name='comment-list-retrieve-detail-admin'),
     
 ]

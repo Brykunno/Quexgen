@@ -53,6 +53,9 @@ class TOSContentSerializer(serializers.ModelSerializer):
         ]
         
 class TOSInfoSerializer(serializers.ModelSerializer):
+    
+    Status_display = serializers.CharField(source='get_Status_display', read_only=True)
+    user = UserSerializer(read_only=True, source='teacher_tos_info')
     class Meta:
         model = TOS_info
         fields = [
@@ -68,6 +71,9 @@ class TOSInfoSerializer(serializers.ModelSerializer):
             'Chairperson',
             'Dean',
             'Director',
+            'user',
+            'Status',
+            'Status_display'
         ]
         
 class ExamSerializer(serializers.ModelSerializer):
@@ -95,6 +101,12 @@ class AnswersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answers
         fields = ["id", "answer_text", "choices", "question_id"]
+        
+
+class CommentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Admin_Comment
+        fields = ["id", "comment", "tos"]
         
 
         
