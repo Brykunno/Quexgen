@@ -1,6 +1,7 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/joy/CircularProgress';
+import { Spinner } from "flowbite-react";
 
 const LoadingSubmit = () => {
   return (
@@ -18,7 +19,7 @@ const LoadingSubmit = () => {
         zIndex: 9999, // Ensure it appears above other elements
       }}
     >
-      <span className='text-white'>Loading... </span> &nbsp; <CircularProgress variant="soft" />
+      <span className='text-white'>Loading... </span> &nbsp; <Spinner color={'primary'} aria-label="Extra large spinner example" size="xl" />
     </Box>
   );
 };

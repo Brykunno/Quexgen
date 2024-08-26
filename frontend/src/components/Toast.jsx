@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { HiCheck } from 'react-icons/hi';
 import { Toast } from 'flowbite-react'; // Assuming you're using Flowbite for the Toast component
 
-function ToastMessage({ message, duration = 5000 }) {
+function ToastMessage({ message, duration = 5000,setToast }) {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(false);
+      setToast(false)
+     
     }, duration);
 
     return () => clearTimeout(timer);

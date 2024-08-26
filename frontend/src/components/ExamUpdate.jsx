@@ -13,13 +13,14 @@ import ReactDOM from 'react-dom';
 import { PDFViewer } from '@react-pdf/renderer';
 import ExampdfUpdate from "./ExampdfUpdate";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import SendIcon from '@mui/icons-material/Send';
 
 
 
 
 
 
-function Examtest ({ items, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,exam_id,updateTOSinfo,handleSubmitExam}) {
+function Examtest ({ items, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,exam_id,updateTOSinfo,handleSubmitExam,setSubmit}) {
 
 
 
@@ -721,8 +722,8 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       <Button  onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
       <Button  onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
       <Button  color="blue" onClick={() => setPdfModal(true)}><PreviewIcon className="mr-2"/> Exam Preview</Button>
-      <Button color={'success'} onClick={updateTOSinfo} ><UpdateIcon className='mr-2'/>Update Exam</Button>
-      <Button  onClick={handleSubmitExam} color="success"><UpdateIcon className='mr-2'/>Submit Exam</Button>
+      <Button type='submit'   color={'success'}  ><UpdateIcon className='mr-2'/>Update Exam</Button>
+      <Button type='submit' onClick={() => setSubmit(true)} color="success"><SendIcon className='mr-2'/>Submit Exam</Button>
     
     
    

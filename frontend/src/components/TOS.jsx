@@ -117,6 +117,8 @@ tos_teacher: 0,
 
   const [openModal, setOpenModal] = useState(false);
 
+  const [submitToast,setSubmitToast] = useState(false);
+
 
 
   React.useEffect(() => {
@@ -285,26 +287,6 @@ const columns = [
   },
 ];
 
-  // React.useEffect(() => {
-  //   const initialData = Array.from({ length: lesson }, () => ({
-  //     topic: '',
-  //     learning_outcomes: '',
-  //     teachingHours: 0,
-  //     allocation: 0,
-  //     items: 0,
-  //     remembering: 0,
-  //     understanding: 0,
-  //     applying: 0,
-  //     analyzing: 0,
-  //     evaluating: 0,
-  //     creating: 0,
-  //     total: 0,
-  //     placement: '',
-  //     totalItems:0,
-   
-  //   }));
-  //   setLessonsData(initialData);
-  // }, [lesson]);
 
   
   const handleLessonChange = (event) => {
@@ -389,9 +371,7 @@ const columns = [
     return Math.round((hours / totalHours) * 100);
   }
 
-// let getTotalHours = lessonsData.reduce((acc, data) => {
-//   return acc + Number(data.teachingHours);
-// }, 0);
+
 
 
 function getTotalHours(){
@@ -1953,7 +1933,9 @@ return api.post("/api/tos-content/", { lessonsDataJson })
 
         
 
-                setToast(true)
+           
+                Submit===true?setSubmitToast(true):setToast(true)
+                
                 setStep(1)
 
             
@@ -2456,7 +2438,8 @@ const handleSubmitExam = () =>{
       </div>
       </div>
       </form>
-      {Toast  && <ToastMessage  message = "Exam successfully Created!"/>}
+      {submitToast  && <ToastMessage  message = "Exam created and submitted successfully!" setToast={setSubmitToast}/>}
+      {Toast  && <ToastMessage  message = "Exam successfully created!" setToast={setToast} />}
       {loading  && <LoadingSubmit/>}
 <div className="w-full justify-center mx-auto flex gap-14">
   <div>

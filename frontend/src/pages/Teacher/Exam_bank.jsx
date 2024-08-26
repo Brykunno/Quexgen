@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import api from "../../api";
 import { Card, Button, Table, Pagination } from "flowbite-react";
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import SearchIcon from '@mui/icons-material/Search';
 
 function Exam_bank() {
   const [exam, setExam] = useState([]);
   const [filteredExams, setFilteredExams] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10); // Number of items per page
+  const [itemsPerPage] = useState(8); // Number of items per page
 
   useEffect(() => {
     getExam();
@@ -53,14 +54,19 @@ function Exam_bank() {
 
       {/* Search Bar (real-time filtering) */}
       <div className="flex items-center mb-5">
-        <input
-          type="text"
-          placeholder="Search by title"
-          className="p-2 border border-gray-300 rounded w-full text-sm"
-          value={searchTerm}
-          onChange={handleSearch} // Real-time search here
-        />
-      </div>
+            <div className="relative shadow-lg">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <SearchIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+              </span>
+              <input
+                type="text"
+                placeholder="Search by username"
+                className="p-2 pl-10 border border-gray-300 rounded w-full text-sm"
+                value={searchTerm}
+                onChange={handleSearch} // Real-time search here
+              />
+            </div>
+          </div>
 
       <Table striped>
         <Table.Head>

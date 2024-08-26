@@ -8,6 +8,7 @@ import PreviewIcon from '@mui/icons-material/Preview';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import SaveIcon from '@mui/icons-material/Save';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import SendIcon from '@mui/icons-material/Send';
 
 import ReactDOM from 'react-dom';
 import { PDFViewer } from '@react-pdf/renderer';
@@ -645,8 +646,8 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       <Button  onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
       <Button  color="blue" onClick={() => setPdfModal(true)}><PreviewIcon className="mr-2"/> Exam Preview</Button>
      
-      <Button  type="submit" color="success"><SaveIcon className='mr-2'/>Save Exam</Button>
-      <Button  type="submit" onClick={()=>{setSubmit(true)}} color="success"><SaveIcon className='mr-2'/>Submit Exam</Button>
+      <Button  type="submit" onClick={()=>{setSubmit(false)}} color="success"><SaveIcon className='mr-2'/>Save Exam</Button>
+      <Button  type="submit" onClick={()=>{setSubmit(true)}} color="success"><SendIcon className='mr-2'/>Submit Exam</Button>
     
     
    

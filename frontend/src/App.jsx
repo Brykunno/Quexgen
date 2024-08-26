@@ -32,6 +32,13 @@ const customTheme = {
       primary:'bg-blue-800 dark:bg-blue-700',
     },
   },
+
+  spinner: {
+    color:{
+      primary:'fill-blue-800 dark:fill-blue-700',
+    },
+  },
+  
 };
 
 

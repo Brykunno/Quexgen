@@ -20,7 +20,8 @@ import ReactDOM from 'react-dom';
 import { PDFViewer } from '@react-pdf/renderer';
 import PdfUpdate from "./PdfUpdate";
 import Examtest from "./Examtest";
-
+import LoadingSubmit from "./LoadingSubmit";
+import ToastMessage from "./Toast";
 
 
 function createData(
@@ -60,8 +61,12 @@ function TOSview() {
   const [TOSInfo, setTOSInfo] = useState([]);
 
   const [answerChoices, setAnswerChoices] = useState([]);
-  
+  const [submitToast,setSubmitToast] = useState(false);
+  const [Submit,setSubmit] = useState(false);
 
+  
+  const [loading, setLoading] = useState(false);
+  const [Toast, setToast] = useState(false);
   const [TotalItems, setTotalItems] = useState(0);
   const [formData, setFormData] = useState({
     Title: '',
@@ -369,10 +374,16 @@ if (getQuestion.length && getAnswer.length) {
       .catch((err) => alert(err));
   };
 
-  const updateTOSinfo = async () => {
+  const updateTOSinfo = async (e) => {
+    e.preventDefault();
     try {
+
+      formData.Status = Submit===true?1:0
+
       await api.put(`/api/tos-info/${id}/update/`, formData);
       
+
+      setLoading(true);
 
 
 
@@ -632,8 +643,9 @@ if (getQuestion.length && getAnswer.length) {
 
 
 
-
-          alert('All TOSContent updated successfully');
+      setLoading(false);
+      Submit===true?setSubmitToast(true):setToast(true)
+        
     } catch (error) {
       console.error('Error updating TOSInfo:', error);
       // Optional: Show a more user-friendly message or use a toast notification
@@ -2042,17 +2054,19 @@ const handleSubmitExam = () =>{
   const updateStatus = {
     Status: 1
   };
-  
+  setLoading(true);
   api
     .patch(`/api/tos-info/${id}/update/`, updateStatus)
     .then((res) => {
       console.log('Status updated', res.data);
-      getUser(); // Refresh the user list
+     
       setOpenModal(false); // Close the modal
+      setLoading(false);
     })
     .catch((err) => {
       console.error('Error status:', err);
     });
+    setSubmit(true)
 }
 
 
@@ -2061,6 +2075,7 @@ const handleSubmitExam = () =>{
 
   return (
     <div className='content'>
+      <form  onSubmit={updateTOSinfo}>
    <Card className={`mb-5 ${step == 1? 'show':'hidden'}`}>
   <Breadcrumb aria-label="Default breadcrumb example">
       <Breadcrumb.Item >
@@ -2289,12 +2304,14 @@ const handleSubmitExam = () =>{
    </div>
 
    <div className={`mb-5 ${step == 4? 'show':'hidden'}`}>
-   <ExamUpdate items={TotalItems} lessonsData={lessonData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} exam_id={exam_id} updateTOSinfo={updateTOSinfo} handleSubmitExam={handleSubmitExam}/>
+   <ExamUpdate items={TotalItems} lessonsData={lessonData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} exam_id={exam_id} updateTOSinfo={updateTOSinfo} handleSubmitExam={handleSubmitExam} setSubmit={setSubmit}/>
 
     </div>
 
     <div className="w-full justify-center mx-auto flex gap-14">
   <div>
+  {String(submitToast)}
+  {String(Toast)}
 <Button size={'sm'} color={'primary'} onClick={handleBack} disabled={disableBack} className="px-3"><NavigateBeforeIcon/> <p style={{marginTop:'0.5px'}}>Previous</p></Button>
 </div>
 <div>
@@ -2304,8 +2321,13 @@ const handleSubmitExam = () =>{
 
  
 
+      {loading  && <LoadingSubmit/>}
+      {Toast  && <ToastMessage  message = "Exam successfully updated!" setToast={setToast}/>}
+      {submitToast  && <ToastMessage  message = "Exam successfully submitted!" setToast={setSubmitToast}/>}
     
+
       {/* <Button href='/exam_bank'> Back to list</Button> */}
+      </form>
     </div>
   );
   ReactDOM.render(<TOSview />, document.getElementById('root'));
