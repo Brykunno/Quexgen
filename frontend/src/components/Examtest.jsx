@@ -13,7 +13,7 @@ import ReactDOM from 'react-dom';
 import { PDFViewer } from '@react-pdf/renderer';
 import Exampdf from "./Exampdf";
 
-function Examtest ({ items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange}) {
+function Examtest ({ items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit}) {
 
 
 
@@ -631,9 +631,9 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
        <div className=' w-full'>
         <Card  className='w-full'> 
       
-      <Button color={'primary'} onClick={()=>{handleAddTest('mcq',exam_id)}} disabled={disableAddTestMcq}><PostAddIcon className="mr-2"/> Add Multiple Choice Test</Button>
-      <Button color={'primary'} onClick={()=>{handleAddTest('identification',exam_id)}} disabled={disableAddTestIdentification}><PostAddIcon className="mr-2"/> Add Identification Test</Button>
-      <Button color={'primary'} onClick={()=>{handleAddTest('trueOrFalse',exam_id)}} disabled={disableAddTestTrueorFalse}><PostAddIcon className="mr-2"/> Add True or False Test</Button>
+      <Button color={'primary'} onClick={()=>{handleAddTest('mcq')}} disabled={disableAddTestMcq}><PostAddIcon className="mr-2"/> Add Multiple Choice Test</Button>
+      <Button color={'primary'} onClick={()=>{handleAddTest('identification')}} disabled={disableAddTestIdentification}><PostAddIcon className="mr-2"/> Add Identification Test</Button>
+      <Button color={'primary'} onClick={()=>{handleAddTest('trueOrFalse')}} disabled={disableAddTestTrueorFalse}><PostAddIcon className="mr-2"/> Add True or False Test</Button>
      
    
       </Card>
@@ -646,6 +646,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       <Button  color="blue" onClick={() => setPdfModal(true)}><PreviewIcon className="mr-2"/> Exam Preview</Button>
      
       <Button  type="submit" color="success"><SaveIcon className='mr-2'/>Save Exam</Button>
+      <Button  type="submit" onClick={()=>{setSubmit(true)}} color="success"><SaveIcon className='mr-2'/>Submit Exam</Button>
     
     
    
@@ -672,7 +673,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         
         
         <Modal show={PdfModal} size={'7xl'}  onClose={() => setPdfModal(false)} className="h-screen">
-        <Modal.Header>Table of Specification</Modal.Header>
+        <Modal.Header>Exam</Modal.Header>
         <Modal.Body  className="p-0">
           <div className="min-h-96 "  style={{height:'575px'}}>
           <PDFViewer className="h-full w-full">

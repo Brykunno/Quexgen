@@ -1713,10 +1713,16 @@ const formData1 = formDataStorage ? JSON.parse(formDataStorage) : null;
 
 const examDataStorage = localStorage.getItem('examData');
 const examData = examDataStorage ? JSON.parse(examDataStorage) : null;
+
+
+const [Submit,setSubmit] = useState(false);
 const handleSubmit = (e) => {
   setLoading(true);
+  formData1.Status = Submit===true?1:0
   const formDataJson = JSON.stringify(formData1);
   const lessonsDataJson = JSON.stringify(lessonsData);
+
+  console.log('formSubmit: ',formDataJson)
 
   let id_tos = 0
  
@@ -1734,6 +1740,7 @@ const handleSubmit = (e) => {
         const updatedLessonsData = lessonsData.map((lesson) => {
           // Update the lesson object as needed, for example:
           lesson.teacher_tos = id; // or any other modification
+          
           return lesson;
         });
         const lessonsDataJson = JSON.stringify(updatedLessonsData);
@@ -2026,6 +2033,25 @@ const handleBack = () => {
 
 
 },[step,formData,getTotalTaxonomy,totalItems])
+
+
+const handleSubmitExam = () =>{
+  
+  const updateStatus = {
+    Status: 1
+  };
+  
+  api
+    .patch(`/api/tos-info/${id}/update/`, updateStatus)
+    .then((res) => {
+      console.log('Status updated', res.data);
+      getUser(); // Refresh the user list
+      setOpenModal(false); // Close the modal
+    })
+    .catch((err) => {
+      console.error('Error status:', err);
+    });
+}
 
 
   return (
@@ -2420,7 +2446,7 @@ const handleBack = () => {
       </Card>
 
         <div className={`mb-5 ${step == 4? 'show':'hidden'}`}>
-      <Examtest items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} />
+      <Examtest items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} />
 
 
     

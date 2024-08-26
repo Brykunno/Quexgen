@@ -39,7 +39,7 @@ urlpatterns = [
     path('tos-info/detail/admin/', admin_views.TOSInfoRetrieve.as_view(), name='tos-info-list-detail'),
     path('tos-info/<int:pk>/detail/admin/', admin_views.TOSInfoRetrieveDetail.as_view(), name='tos-info-list-retrieve-detail-admin'),
     path('create-comment/', admin_views.CommentsCreateView.as_view(), name='comments-list-create'),
-    path('comments/<int:pk>/update/', admin_views.CommentsUpdate.as_view(), name='comments-list-update'),
+    path('comments/<int:tos>/update/', admin_views.CommentsUpdate.as_view(), name='comments-list-update'),
     path('comments/<int:pk>/detail/admin/', admin_views.CommentsRetrieveDetail.as_view(), name='comment-list-retrieve-detail-admin'),
     
 ]

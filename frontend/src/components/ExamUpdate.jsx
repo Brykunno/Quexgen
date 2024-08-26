@@ -19,7 +19,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 
 
-function Examtest ({ items, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,exam_id,updateTOSinfo}) {
+function Examtest ({ items, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,exam_id,updateTOSinfo,handleSubmitExam}) {
 
 
 
@@ -722,6 +722,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       <Button  onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
       <Button  color="blue" onClick={() => setPdfModal(true)}><PreviewIcon className="mr-2"/> Exam Preview</Button>
       <Button color={'success'} onClick={updateTOSinfo} ><UpdateIcon className='mr-2'/>Update Exam</Button>
+      <Button  onClick={handleSubmitExam} color="success"><UpdateIcon className='mr-2'/>Submit Exam</Button>
     
     
    

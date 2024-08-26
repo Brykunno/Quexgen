@@ -17,10 +17,10 @@ function Exam_review() {
   const [TOSContent, setTOSContent] = useState([]);
   const [TOSInfo, setTOSInfo] = useState([]);
 
-  const [Comment,setComment] = useState({
+  const [Comment,setComment] = useState([{
     comment:'',
     tos: 0
-  });
+  }]);
 
   const [CommentData,setCommentData] =useState([])
 
@@ -312,7 +312,7 @@ if (getQuestion.length && getAnswer.length) {
         console.log('examcontent: ', data);
        
   
-        // Assuming we want to make a second API call based on tos_id
+        // Assuming we want to make a second API call based on tos
         return api.get(`/api/test-part/${data[0].id}/detail/`);
       })
       .then((testPart) => {
@@ -399,14 +399,14 @@ if (getQuestion.length && getAnswer.length) {
     const updateOrCreateComment = async (data) => {
       try {
         // Attempt to update the comment using a PUT request
-        const content = await api.put(`/api/comments/${data.id}/update/`, data);
+        const content = await api.put(`/api/comments/${data.tos}/update/`, data);
         return content; // Return the successful update response
       } catch (error) {
         if (error.response && error.response.status === 404) {
           // If the comment does not exist (404), create a new one using POST
           const commentData = {
             'comment': data.comment,
-            'tos': data.tos_id,
+            'tos': data.tos,
           };
   
           const commentDataJson = JSON.stringify(commentData);
@@ -429,9 +429,47 @@ if (getQuestion.length && getAnswer.length) {
     } catch (error) {
       console.error("Error in updating or creating comments:", error);
     }
+
+
+    const updateStatus = {
+      Status: 3
+    };
+    
+    api
+      .patch(`/api/tos-info/${id}/update/`, updateStatus)
+      .then((res) => {
+        console.log('Status updated', res.data);
+        getUser(); // Refresh the user list
+        setOpenModal(false); // Close the modal
+      })
+      .catch((err) => {
+        console.error('Error status:', err);
+      });
+
+
+
+
+
   };
   
   const handleApprove = () => {
+
+    
+    const updateStatus = {
+      Status: 2
+    };
+    
+    api
+      .patch(`/api/tos-info/${id}/update/`, updateStatus)
+      .then((res) => {
+        console.log('Status updated', res.data);
+        getUser(); // Refresh the user list
+        setOpenModal(false); // Close the modal
+      })
+      .catch((err) => {
+        console.error('Error status:', err);
+      });
+
 
   }
 
@@ -439,7 +477,7 @@ if (getQuestion.length && getAnswer.length) {
     
     setComment([{
       'comment':e.target.value,
-      'tos_id': id
+      'tos': id
     }])
   }
   return (
@@ -470,7 +508,7 @@ if (getQuestion.length && getAnswer.length) {
       <div className="mb-2 block  text-center">
         <Label htmlFor="comment" value="Recommendation" />
       </div>
-      <Textarea style={{height:'150px'}} id="comment" value={Comment.comment} onChange={handleCommentChange} placeholder="Leave a comment..." required rows={4} />
+      <Textarea style={{height:'150px'}} id="comment" value={Comment[0].comment} onChange={handleCommentChange} placeholder="Leave a comment..." required rows={4} />
 
 <div className='flex gap-5 justify-center'>
 <Button color={'primary'} onClick={handleComment} ><CommentIcon className='mr-2'/> Comment </Button>
@@ -553,7 +591,6 @@ if (getQuestion.length && getAnswer.length) {
           </div>
         </Modal.Body>
       </Modal>
-  {JSON.stringify(CommentData)}
     </div>
   )
   ReactDOM.render(<TOSview />, document.getElementById('root'));

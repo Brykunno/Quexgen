@@ -86,7 +86,7 @@ function Exam_bank() {
                   <Button color={'primary'} size={'xs'} className='flex gap-3'><VisibilityIcon /> <p className='mt-1 ml-1'>View</p></Button>  
                   </a>
                 </Table.Cell>
-                <Table.Cell>pending</Table.Cell>
+                <Table.Cell>{exam.Status_display}</Table.Cell>
               </Table.Row>
             ))
           ) : (

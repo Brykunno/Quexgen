@@ -2037,6 +2037,28 @@ const handleTestPartChange = (index,type, value) => {
 
 
 
+const handleSubmitExam = () =>{
+  
+  const updateStatus = {
+    Status: 1
+  };
+  
+  api
+    .patch(`/api/tos-info/${id}/update/`, updateStatus)
+    .then((res) => {
+      console.log('Status updated', res.data);
+      getUser(); // Refresh the user list
+      setOpenModal(false); // Close the modal
+    })
+    .catch((err) => {
+      console.error('Error status:', err);
+    });
+}
+
+
+
+
+
   return (
     <div className='content'>
    <Card className={`mb-5 ${step == 1? 'show':'hidden'}`}>
@@ -2267,7 +2289,7 @@ const handleTestPartChange = (index,type, value) => {
    </div>
 
    <div className={`mb-5 ${step == 4? 'show':'hidden'}`}>
-   <ExamUpdate items={TotalItems} lessonsData={lessonData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} exam_id={exam_id} updateTOSinfo={updateTOSinfo} />
+   <ExamUpdate items={TotalItems} lessonsData={lessonData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} exam_id={exam_id} updateTOSinfo={updateTOSinfo} handleSubmitExam={handleSubmitExam}/>
 
     </div>
 

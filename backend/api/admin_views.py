@@ -78,9 +78,9 @@ class CommentsUpdate(generics.UpdateAPIView):
 
     def get_object(self):
         # Override get_object to filter by tos_id instead of the default id
-        tos_id = self.kwargs['pk']
+        tos_id = self.kwargs['tos']
         try:
-            return self.queryset.get(tos_id=tos_id)
+            return self.queryset.get(tos=tos_id)
         except Admin_Comment.DoesNotExist:
             print("Comment with this tos_id does not exist.")
 
