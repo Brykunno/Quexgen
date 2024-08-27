@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Card,TextInput,Label,Button } from 'flowbite-react';
 
 import api from "../../api";
 
@@ -27,18 +28,46 @@ function Profile() {
 
 
   return (
-    <div className='content'>
-      <h1>User Detail</h1>
+    <div className="flex items-center justify-center min-h-screen">
+    <Card style={{width:'500px'}}>
+    
       {user.map((user) => (
-           <div>
-           <p>Username: {user.username}</p>
-           <p>First Name: {user.first_name}</p>
-           <p>Last Name: {user.last_name}</p>
-           <p>Email: {user.email}</p>
+        
+           <div className='flex'>
+            <div style={{flex:0.5}}></div>
+
+            <div className='flex-1'>
+           <div className='mb-3 flex gap-3 justify-end'>
+              <Label value='Username:' className='mt-2 font-bold'></Label>
+          
+            <TextInput value={user.username}></TextInput>
+            </div>
+
+            <div className='mb-3 flex gap-3 justify-end'>
+              <Label value='First name:' className='mt-2 font-bold'></Label>
+          
+            <TextInput value={user.first_name}></TextInput>
+            </div>
+
+            <div className='mb-3 flex gap-3 justify-end'>
+              <Label value='Last name:' className='mt-2 font-bold'></Label>
+          
+            <TextInput value={user.last_name}></TextInput>
+            </div>
+
+            <div className='mb-3 flex gap-3 justify-end'>
+              <Label value='Email:' className='mt-2 font-bold'></Label>
+          
+            <TextInput value={user.email}></TextInput>
+            </div>
+            
+            </div>
          </div>
         ))}
-     
-    </div>
+
+<Button color={'primary'}>Update</Button>
+    </Card>
+  </div>
   );
 }
 

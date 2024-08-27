@@ -9,7 +9,7 @@ import {
   NavbarBrand,
   NavbarCollapse,
   NavbarLink,
-  NavbarToggle,
+  NavbarToggle,Card
 } from "flowbite-react";
 import Avatar from '@mui/material/Avatar';
 import React, { useState, useEffect } from 'react';
@@ -17,7 +17,8 @@ import { SidebarData } from "./SidebarData";
 import { SidebarData_teacher } from "./SidebarData_teacher";
 import api from "../api";
 import "../styles/Topnavbar.css"
-
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import Badge from '@mui/material/Badge';
 function stringToColor(string) {
   let hash = 0;
   let i;
@@ -121,6 +122,7 @@ if(admin == 1){
             {/* <div id="icon">{val.icon}</div> <div id="title">{val.title}</div> */}
            <div id="title">{val.title}</div>
           </NavbarLink>
+        
         );
       })
 }
@@ -137,6 +139,7 @@ else{
           >
            <div id="title">{val.title}</div>
           </NavbarLink>
+     
         );
       })
 }
@@ -146,13 +149,42 @@ else{
        
         <span className="self-center whitespace-nowrap text-xl font-semibold text-white">Quexgen</span>
       </NavbarBrand>
-      <div className="flex md:order-2">
+      <div className="flex md:order-2 gap-5">
+        <div className="text-white mt-2" >
+        
+
+        <Dropdown
+           arrowIcon={false}
+           inline
+           label={
+            <Badge badgeContent={2} color="info" >
+            <NotificationsActiveIcon color="white" className="text-4xl cursor-pointer"/>
+          </Badge>
+           }
+           >
+
+
+          <DropdownItem>
+            <div className="flex">
+              User submitted an exam
+              
+            </div>
+          </DropdownItem>
+          <DropdownDivider />
+          <DropdownItem>Settings</DropdownItem>
+
+          <DropdownDivider />
+          <DropdownItem >Sign out</DropdownItem>
+       
+      </Dropdown>
+        </div>
         <Dropdown
           arrowIcon={false}
           inline
           label={
             <Avatar {...stringAvatar(full_name)} size='large' />
           }
+        
         >
           <DropdownHeader>
             <span className="block text-sm">{full_name}</span>
@@ -160,13 +192,13 @@ else{
           </DropdownHeader>
           <DropdownItem>Dashboard</DropdownItem>
           <DropdownItem>Settings</DropdownItem>
-          <DropdownItem>Earnings</DropdownItem>
+
           <DropdownDivider />
           <DropdownItem href="/logout">Sign out</DropdownItem>
         </Dropdown>
         <NavbarToggle />
       </div>
-      <NavbarCollapse className="SidebarList">
+      <NavbarCollapse className="SidebarList md:hidden ">
       {data}
       </NavbarCollapse>
     </Navbar>

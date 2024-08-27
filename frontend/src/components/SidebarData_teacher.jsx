@@ -31,7 +31,7 @@ export const SidebarData_teacher = [
     {
         title: "Profile",
         icon: <ManageAccountsIcon />,
-        link: "/",
+        link: "/profile",
     },
     {
         title: "Logout",
