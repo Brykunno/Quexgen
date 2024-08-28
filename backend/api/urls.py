@@ -41,5 +41,12 @@ urlpatterns = [
     path('create-comment/', admin_views.CommentsCreateView.as_view(), name='comments-list-create'),
     path('comments/<int:tos>/update/', admin_views.CommentsUpdate.as_view(), name='comments-list-update'),
     path('comments/<int:pk>/detail/admin/', admin_views.CommentsRetrieveDetail.as_view(), name='comment-list-retrieve-detail-admin'),
+    path('notification/teacher/', views.TeacherNotifCreateView.as_view(), name='teacher-notif-list-create'),
+    path('notification/admin/', views.AdminNotifCreateView.as_view(), name='admin-notif-list-create'),
+    path('notification/detail/admin/', admin_views.AdminNotifRetrieveDetail.as_view(), name='admin-notif-list-detail'),
+    path('notification/update/admin/<int:pk>/', admin_views.AdminNotifUpdate.as_view(), name='admin-notif-list-update'),
+    
+    path('notification/detail/teacher/', admin_views.TeacherNotifRetrieveDetail.as_view(), name='teacher-notif-list-detail'),
+    path('notification/update/teacher/<int:pk>/', admin_views.TeacherNotifUpdate.as_view(), name='teacher-notif-list-update'),
     
 ]

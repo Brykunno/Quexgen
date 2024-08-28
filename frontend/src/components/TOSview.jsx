@@ -628,7 +628,16 @@ if (getQuestion.length && getAnswer.length) {
         
         try {
           const resultsans = await Promise.all(updatePromisesAnswerChoices);
+
           console.log('Responses:', resultsans); // Array of responses for each operation
+
+          const AdminNotifDataJson = JSON.stringify({
+            notification_text: "user updated this exam again",
+            tos: id,
+          })
+          await api.post(`api/notification/admin/`, {AdminNotifDataJson});
+
+
         } catch (error) {
           console.error('Error in updating or creating answers:', error);
         }

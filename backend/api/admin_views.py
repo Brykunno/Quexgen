@@ -106,4 +106,58 @@ class CommentsRetrieveDetail(generics.ListCreateAPIView):
         return Admin_Comment.objects.filter(tos=id)
 
 
+class AdminNotifRetrieveDetail(generics.ListCreateAPIView):
+    serializer_class = AdminNotifSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Admin_notification.objects.all().order_by('-notification_date')
+
+    
+
+class AdminNotifUpdate(generics.UpdateAPIView):
+    queryset = Admin_notification.objects.all()
+    serializer_class = AdminNotifSerializer
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        else:
+                print("Validation errors:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_update(self, serializer):
+        serializer.save()
+        
+
+class TeacherNotifRetrieveDetail(generics.ListCreateAPIView):
+    serializer_class = TeacherNotifSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user.id
+        print(Teacher_notification.objects.filter(tos__teacher_tos_info__id =user))
+        return Teacher_notification.objects.filter(tos__teacher_tos_info__id =user).order_by('-notification_date')
+    
+
+class TeacherNotifUpdate(generics.UpdateAPIView):
+    queryset = Teacher_notification.objects.all()
+    serializer_class = TeacherNotifSerializer
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        else:
+                print("Validation errors:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_update(self, serializer):
+        serializer.save()
+
 

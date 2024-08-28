@@ -109,4 +109,16 @@ class CommentsSerializer(serializers.ModelSerializer):
         fields = ["id", "comment", "tos"]
         
 
+class TeacherNotifSerializer(serializers.ModelSerializer):
+    tos_data = TOSInfoSerializer(read_only=True, source='tos')
+    class Meta:
+        model = Teacher_notification
+        fields = ["id", "notification_text","is_read", "tos","tos_data"]
+
+class AdminNotifSerializer(serializers.ModelSerializer):
+    tos_data = TOSInfoSerializer(read_only=True, source='tos')
+    class Meta:
+        model = Admin_notification
+        fields = ["id", "notification_text","is_read", "tos","tos_data"]
+
         

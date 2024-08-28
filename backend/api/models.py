@@ -124,5 +124,28 @@ class Admin_Comment(models.Model):
         
         
 
+class Teacher_notification(models.Model):
+    tos = models.ForeignKey(TOS_info, on_delete=models.CASCADE, related_name="tos_info_notif_teacher")
+    notification_text = models.TextField()
+    notification_date =  models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.notification_text
+    
+    class Meta:
+        db_table = 'notification_teacher'
+        
+class Admin_notification(models.Model):
+    tos = models.ForeignKey(TOS_info, on_delete=models.CASCADE, related_name="tos_info_notif_admin")
+    notification_text = models.TextField()
+    notification_date =  models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.notification_text
+    
+    class Meta:
+        db_table = 'notification_admin'
         
 

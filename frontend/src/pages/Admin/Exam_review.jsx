@@ -405,22 +405,21 @@ if (getQuestion.length && getAnswer.length) {
         if (error.response && error.response.status === 404) {
           // If the comment does not exist (404), create a new one using POST
           const commentData = {
-            'comment': data.comment,
-            'tos': data.tos,
+            comment: data.comment,
+            tos: data.tos,
           };
-  
-          const commentDataJson = JSON.stringify(commentData);
-          const content = await api.post("/api/create-comment/", {commentDataJson});
+          
+          const content = await api.post("/api/create-comment/", commentData);
           return content; // Return the successful creation response
         } else {
           // Re-throw other errors to be caught in the outer try-catch
-          throw new Error("Failed to create comment.");
+          throw new Error("Failed to update or create comment.");
         }
       }
     };
   
     try {
-      // Map over lessonData and execute updateOrCreateComment for each item
+      // Map over Comment and execute updateOrCreateComment for each item
       const updatePromisesComment = Comment.map(updateOrCreateComment);
       
       // Await all the promises to complete
@@ -429,29 +428,26 @@ if (getQuestion.length && getAnswer.length) {
     } catch (error) {
       console.error("Error in updating or creating comments:", error);
     }
-
-
-    const updateStatus = {
-      Status: 3
-    };
-    
-    api
-      .patch(`/api/tos-info/${id}/update/`, updateStatus)
-      .then((res) => {
-        console.log('Status updated', res.data);
-        getUser(); // Refresh the user list
-        setOpenModal(false); // Close the modal
-      })
-      .catch((err) => {
-        console.error('Error status:', err);
-      });
-
-
-
-
-
-  };
   
+    try {
+      const updateStatus = {
+        Status: 3,
+      };
+  
+      const res = await api.patch(`/api/tos-info/${id}/update/`, updateStatus);
+      console.log('Status updated', res.data);
+      const TeacherNotifDataJson = JSON.stringify({
+        notification_text: "This exam needs revision",
+        tos: id,
+      })
+      await api.post(`api/notification/teacher/`, {TeacherNotifDataJson});
+  
+      getUser(); // Refresh the user list
+      setOpenModal(false); // Close the modal
+    } catch (err) {
+      console.error('Error status:', err);
+    }
+  };
   const handleApprove = () => {
 
     
@@ -597,3 +593,4 @@ if (getQuestion.length && getAnswer.length) {
 }
 
 export default Exam_review
+

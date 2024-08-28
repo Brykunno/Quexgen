@@ -98,14 +98,31 @@ function getFullNames(users) {
     return email
   }
 
+  function getUserId(users) {
+    let user_id;
+  
+    users.map(user => {user_id = user.id });
+
+    return user_id
+  }
+
 
 console.log(admin_account(user));
 console.log(getFullNames(user));
 const admin = admin_account(user);
 const full_name = getFullNames(user);
 const email = getEmail(user);
+const user_id = getUserId(user);
 
+const [notifData,setNotifData] = useState([])
+const [notifnum,setNotifnum]=useState(0)
 
+useEffect(() => {
+  if (user_id) {
+
+  getNotifContent();
+  }
+}, [user_id]);
 
 let data;
 if(admin == 1){
@@ -125,6 +142,12 @@ if(admin == 1){
         
         );
       })
+
+
+
+
+
+
 }
 else{
     data =  SidebarData_teacher.map((val, key) => {
@@ -143,9 +166,74 @@ else{
         );
       })
 }
+
+const getNotifContent = () => {
+  if(admin === true){
+
+    api
+    .get(`api/notification/detail/admin/`)
+    .then((res) => res.data)
+    .then((data) => {setNotifData(data)
+      console.log('notification: ', data);
+      const unreadCount = data.filter(notification => notification.is_read === false).length;
+        
+        setNotifnum(unreadCount); // Set the count of unread notifications
+    })
+    .catch((err) => alert(err));
+  }
+  else{
+
+    api
+    .get(`api/notification/detail/teacher/`)
+    .then((res) => res.data)
+    .then((data) => {setNotifData(data)
+      console.log('notification: ', data);
+      const unreadCount = data.filter(notification => notification.is_read === false).length;
+        
+        setNotifnum(unreadCount); // Set the count of unread notifications
+    })
+    .catch((err) => alert(err));
+  }
+
+};
+
+const readNotif = (id) =>{
+  
+  const updateStatus = {
+    is_read: true
+  };
+
+
+  if(admin === true){
+
+    api
+    .patch(`api/notification/update/admin/${id}/`, updateStatus)
+    .then((res) => {
+      console.log('notif updated', res.data);
+    })
+    .catch((err) => {
+      console.error('Error status:', err);
+    });
+
+  }
+  else{
+    api
+    .patch(`api/notification/update/teacher/${id}/`, updateStatus)
+    .then((res) => {
+      console.log('notif updated', res.data);
+    })
+    .catch((err) => {
+      console.error('Error status:', err);
+    });
+  }
+
+}
+
+
   return (
     <Navbar fluid rounded className="topnavbar">
       <NavbarBrand href="https://flowbite-react.com">
+      
        
         <span className="self-center whitespace-nowrap text-xl font-semibold text-white">Quexgen</span>
       </NavbarBrand>
@@ -157,24 +245,31 @@ else{
            arrowIcon={false}
            inline
            label={
-            <Badge badgeContent={2} color="info" >
+            <Badge badgeContent={notifnum} color="info" >
             <NotificationsActiveIcon color="white" className="text-4xl cursor-pointer"/>
           </Badge>
            }
            >
 
 
-          <DropdownItem>
-            <div className="flex">
-              User submitted an exam
-              
-            </div>
-          </DropdownItem>
-          <DropdownDivider />
-          <DropdownItem>Settings</DropdownItem>
-
-          <DropdownDivider />
-          <DropdownItem >Sign out</DropdownItem>
+            {
+              notifData.map((data)=>{
+                return(
+                  <div key={data.id}>
+                 
+                <DropdownItem key={data.id} href={admin===true?`/exam_review/${data.tos}`:`/tos_view/${data.tos}`} className={`${data.is_read===false?'bg-gray-200':''}`} onClick={()=>{readNotif(data.id)}}>
+                <div className="flex">
+                  {data.notification_text}
+                  
+                </div>
+              </DropdownItem>
+              <DropdownDivider />
+              </div>
+                )
+              })
+            }
+        <DropdownItem className="text-center">See all</DropdownItem>
+         
        
       </Dropdown>
         </div>

@@ -555,3 +555,80 @@ class TOSContentDelete(generics.DestroyAPIView):
     def get_queryset(self):
         teacher_tos = self.kwargs['teacher_tos']
         return TOS_Content.objects.filter(teacher_tos=teacher_tos)
+    
+
+class TeacherNotifCreateView(generics.ListCreateAPIView):
+    serializer_class = TeacherNotifSerializer
+    permission_classes = [AllowAny]  # Update as per your permission requirements
+    
+    def get_queryset(self):
+        tos = self.kwargs['pk']
+        user = self.request.user
+        return Teacher_notification.objects.filter(tos=tos)
+
+    def post(self, request):
+        json_string = request.data.get('TeacherNotifDataJson', '[]')
+        
+        try:
+            # Convert the JSON string to a Python list of dictionaries
+            lessons_data = json.loads(json_string)
+        except json.JSONDecodeError:
+            return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Print lessons_data for debugging purposes
+        print("Teacher notification Data:", lessons_data)
+        
+     
+        response_data = []
+
+        
+        print("Processing teacher notification:", lessons_data)
+        serializer = TeacherNotifSerializer(data=lessons_data)
+            
+        if serializer.is_valid():
+                serializer.save()
+                response_data.append(serializer.data)
+        else:
+                print("Validation errors:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(response_data, status=status.HTTP_201_CREATED)
+    
+
+
+class AdminNotifCreateView(generics.ListCreateAPIView):
+    serializer_class = AdminNotifSerializer
+    permission_classes = [AllowAny]  # Update as per your permission requirements
+    
+    def get_queryset(self):
+        tos = self.kwargs['pk']
+        user = self.request.user
+        return Admin_notification.objects.filter(tos=tos)
+
+    def post(self, request):
+        json_string = request.data.get('AdminNotifDataJson', '[]')
+        
+        try:
+            # Convert the JSON string to a Python list of dictionaries
+            lessons_data = json.loads(json_string)
+        except json.JSONDecodeError:
+            return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Print lessons_data for debugging purposes
+        print("Admin notification Data:", lessons_data)
+        
+     
+        response_data = []
+
+        
+        print("Processing admin notification:", lessons_data)
+        serializer = AdminNotifSerializer(data=lessons_data)
+            
+        if serializer.is_valid():
+                serializer.save()
+                response_data.append(serializer.data)
+        else:
+                print("Validation errors:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(response_data, status=status.HTTP_201_CREATED)
