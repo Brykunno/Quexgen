@@ -121,4 +121,3 @@ class AdminNotifSerializer(serializers.ModelSerializer):
         model = Admin_notification
         fields = ["id", "notification_text","is_read", "tos","tos_data"]
 
-        

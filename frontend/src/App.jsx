@@ -52,7 +52,7 @@ function Logout() {
 const ProtectedLayout = ({ children }) => (
   <>
     <Sidebar />
-    <Topnavbar/>
+  <Topnavbar/>
     {/* <Topnavbarcomp /> */}
     {children}
   </>

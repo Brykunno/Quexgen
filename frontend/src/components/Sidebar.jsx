@@ -118,16 +118,7 @@ function Sidebar() {
   return (
     <div className="Sidebar">
      
-        <div className='w-full text-center'>
-          <div>
-            <ul>
-              <li className='px-24 mt-4'>     <Avatar {...stringAvatar(full_name)} size='large' /> </li>
-              <li className='text-white mb-3 mt-3'>   {full_name}</li>
-            </ul>
-   
-     
-        </div>
-        </div>
+
       <ul className="SidebarList">
         {data}
        

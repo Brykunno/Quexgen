@@ -50,7 +50,7 @@ function stringAvatar(name) {
 
 
 
-function Topnavbar() {
+function Topnavbar(props) {
 
   
 const [user, setUser] = useState([]);
@@ -237,7 +237,11 @@ const readNotif = (id) =>{
        
         <span className="self-center whitespace-nowrap text-xl font-semibold text-white">Quexgen</span>
       </NavbarBrand>
+      <div>
+        <p className="text-white font-semibold ">{props.title}</p>
+      </div>
       <div className="flex md:order-2 gap-5">
+        
         <div className="text-white mt-2" >
         
 
@@ -270,7 +274,7 @@ const readNotif = (id) =>{
             }
         <DropdownItem className="text-center">See all</DropdownItem>
          
-       
+ 
       </Dropdown>
         </div>
         <Dropdown
@@ -285,10 +289,8 @@ const readNotif = (id) =>{
             <span className="block text-sm">{full_name}</span>
             <span className="block truncate text-sm font-medium">{email}</span>
           </DropdownHeader>
-          <DropdownItem>Dashboard</DropdownItem>
-          <DropdownItem>Settings</DropdownItem>
+     
 
-          <DropdownDivider />
           <DropdownItem href="/logout">Sign out</DropdownItem>
         </Dropdown>
         <NavbarToggle />

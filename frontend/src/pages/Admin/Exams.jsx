@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import api from "../../api";
 import { Card, Button, Table, Pagination } from "flowbite-react";
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import RecommendIcon from '@mui/icons-material/Recommend';  
+import TurnedInIcon from '@mui/icons-material/TurnedIn';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
 function Exams() {
   const [exam, setExam] = useState([]);
@@ -47,6 +51,26 @@ function Exams() {
     setCurrentPage(pageNumber);
   };
 
+  function statusIcons(status,status_name){
+    if(status===0){
+      return <div className='border border-blue-700 rounded-full px-2 py-1 text-blue-700 font-bold'>{status_name} <CheckBoxIcon className='ml-2' /></div>
+    }
+    else if(status===1){
+      return <div className='border border-green-700 rounded-full px-2 py-1 text-green-700 font-bold'>{status_name} <TurnedInIcon className='ml-2'/></div>
+    }
+    else if(status===2){
+      return <div className='border border-green-800 rounded-full px-2 py-1 text-green-800 font-bold'>{status_name} <RecommendIcon className='ml-2'/></div>
+    }
+    else if(status===3){
+      return <div className='border border-orange-600 rounded-full px-2 py-1 text-orange-600 font-bold'>{status_name} <EditNoteIcon className='ml-2'/></div>
+    }
+    else {
+      return null
+    }
+
+  }
+
+
   return (
     <div className="content">
       
@@ -88,7 +112,7 @@ function Exams() {
                 <Button color={'primary'} size={'xs'} className='flex gap-3'><VisibilityIcon /> <p className='mt-1 ml-1'>View</p></Button>  
                 </a>
               </Table.Cell>
-              <Table.Cell>{exam.Status_display}</Table.Cell>
+              <Table.Cell className='flex flex-wrap'>{statusIcons(exam.Status, exam.Status_display)}</Table.Cell>
             </Table.Row>
           ))
         ) : (

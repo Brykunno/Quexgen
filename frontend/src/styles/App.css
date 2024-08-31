@@ -31,21 +31,33 @@ background-color: #dee8f7;
     font-family: 'Poppins';
     background-color: #f4f4f4;
 
+
    
  }
 
  .Sidebar{
-    padding-top: 20px;
+    padding-top: 70px;
     height: 100%;
     width: 250px;
     background-color: #02022a;
     position: fixed;
  }
 
+
+
 .content{
     margin-left: 260px; 
     padding: 32px; 
-    padding-top: 100px ;
+    padding-top: 80px ;
+}
+
+@media (max-width: 768px) {
+    .Sidebar {
+        display: none;
+    }
+    .content{
+        margin-left: 0px; 
+    }
 }
 /* 
 .content{

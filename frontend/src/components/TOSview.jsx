@@ -16,6 +16,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 
 
+
 import ReactDOM from 'react-dom';
 import { PDFViewer } from '@react-pdf/renderer';
 import PdfUpdate from "./PdfUpdate";
@@ -57,8 +58,13 @@ function createData(
 }
 
 function TOSview() {
+
+  const [modalComment,setModalComment]=useState(false)
+
+
   const [TOSContent, setTOSContent] = useState([]);
   const [TOSInfo, setTOSInfo] = useState([]);
+  const [Comment,setComment]=useState([]);
 
   const [answerChoices, setAnswerChoices] = useState([]);
   const [submitToast,setSubmitToast] = useState(false);
@@ -120,6 +126,7 @@ function TOSview() {
       getTOSContent();
       getTOSInfo();
       getExam();
+      getComment();
     
     }
   }, [id]);
@@ -310,6 +317,27 @@ if (getQuestion.length && getAnswer.length) {
       })
       .catch((err) => alert(err));
   };
+
+  function comment(Comment){
+    let comment_text;
+  
+    Comment.map(admin_comment => {comment_text = admin_comment.comment });
+
+    return comment_text
+
+  }
+  
+  let comment_text = comment(Comment)
+
+  const getComment =()=>{
+    api
+    .get(`api/comments/${id}/detail/admin/`)
+    .then((res) => res.data)
+    .then((data) => {setComment(data)
+      console.log('toscontent: ', data);
+    })
+    .catch((err) => alert(err));
+  }
 
  
 
@@ -2223,12 +2251,38 @@ const handleSubmitExam = () =>{
        </div>
 
        {/* Campus Executive Director */}
-       <div className='w-2/4'>
+       <div className='w-full gap-4 flex flex-col sm:flex-row'>
+         
+       <div className={comment_text!=null?'w-full ':'w-2/4'}>
          <div className="mb-2 block">
            <Label htmlFor="executive-director" value="Campus Executive Director" />
          </div>
          <TextInput id="executive-director" type="text" name="Director" value={formData.Director} onChange={handleChange} />
+         
        </div>
+       <div className={comment_text!=null?'w-full ':'w-full hidden'}>
+       <div className="mt-8 block ">
+           <Button color={'primary'} className='mx-auto' onClick={()=>{setModalComment(true)}}><VisibilityIcon className='mr-2'/>View comment</Button>
+         </div>
+
+         <Modal show={modalComment} onClose={() => setModalComment(false)}>
+
+         <Modal.Header>Comment</Modal.Header>
+        <Modal.Body>
+          <div className="space-y-6">
+
+            <p className='text-center'>{comment_text}</p>
+           
+          </div>
+        </Modal.Body>
+
+
+         </Modal>
+
+       </div>
+
+       </div>
+       
      </div>
      {/* <button className='bg-blue-950 hover:bg-blue-800 py-2 text-white rounded-lg'>Next</button> */}
 

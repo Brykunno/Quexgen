@@ -31,6 +31,7 @@ import ReactDOM from 'react-dom';
 import { PDFViewer } from '@react-pdf/renderer';
 import PdfFile from "./PdfFile";
 import Examtest from "./Examtest";
+import LoadingGenerate from "./LoadingGenerate";
 
 
 function createData(
@@ -118,6 +119,7 @@ tos_teacher: 0,
   const [openModal, setOpenModal] = useState(false);
 
   const [submitToast,setSubmitToast] = useState(false);
+  const[loadingGenerate,setLoadingGenerate] = useState(false)
 
 
 
@@ -131,6 +133,7 @@ tos_teacher: 0,
     const evaluate = localStorage.getItem('Evaluating');
     const create = localStorage.getItem('Creating');
     const totalitems = localStorage.getItem('totalItems');
+    
     if(remember){
       setRemembering(remember)
     }
@@ -2428,7 +2431,7 @@ const handleSubmitExam = () =>{
       </Card>
 
         <div className={`mb-5 ${step == 4? 'show':'hidden'}`}>
-      <Examtest items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} />
+      <Examtest items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} setLoading={setLoadingGenerate} />
 
 
     
@@ -2441,6 +2444,7 @@ const handleSubmitExam = () =>{
       {submitToast  && <ToastMessage  message = "Exam created and submitted successfully!" setToast={setSubmitToast}/>}
       {Toast  && <ToastMessage  message = "Exam successfully created!" setToast={setToast} />}
       {loading  && <LoadingSubmit/>}
+      {loadingGenerate  && <LoadingGenerate/>}
 <div className="w-full justify-center mx-auto flex gap-14">
   <div>
 <Button size={'sm'} color={'primary'} onClick={handleBack} disabled={disableBack} className="px-3"><NavigateBeforeIcon/> <p style={{marginTop:'0.5px'}}>Previous</p></Button>

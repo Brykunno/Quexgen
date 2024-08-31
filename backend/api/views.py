@@ -156,7 +156,7 @@ class TOSInfoRetrieve(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return TOS_info.objects.filter(teacher_tos_info=user.id)
+        return TOS_info.objects.filter(teacher_tos_info=user.id).order_by('-tos_info_date_added')
     
 class TOSInfoRetrieveDetail(generics.ListCreateAPIView):
     serializer_class = TOSInfoSerializer
@@ -164,7 +164,7 @@ class TOSInfoRetrieveDetail(generics.ListCreateAPIView):
 
     def get_queryset(self):
         id = self.kwargs['pk']
-        return TOS_info.objects.filter(id=id)
+        return TOS_info.objects.filter(id=id).order_by('-tos_info_date_added')
     
 class TOSInfoUpdate(generics.UpdateAPIView):
     queryset = TOS_info.objects.all()
