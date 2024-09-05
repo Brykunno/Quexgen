@@ -161,7 +161,7 @@ function PdfFile(props) {
   </View>
 
   <View style={[styles.tableCol,{flex:5}]}>
-    <Text style={[styles.tableCell,{fontSize:8,margin:'auto'}]}>{props.formData.ExaminationType}</Text>
+    <Text style={[styles.tableCell,{fontSize:8,margin:'auto'}]}>{props.formData.ExaminationType.join('/')}</Text>
   </View>
 
 </View>

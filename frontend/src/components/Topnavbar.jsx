@@ -9,7 +9,7 @@ import {
   NavbarBrand,
   NavbarCollapse,
   NavbarLink,
-  NavbarToggle,Card
+  NavbarToggle,Card,Modal,Button
 } from "flowbite-react";
 import Avatar from '@mui/material/Avatar';
 import React, { useState, useEffect } from 'react';
@@ -19,6 +19,27 @@ import api from "../api";
 import "../styles/Topnavbar.css"
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import Badge from '@mui/material/Badge';
+function formatDateTime(dateTimeString) {
+  // Convert the string to a JavaScript Date object
+  const date = new Date(dateTimeString);
+
+  // Define options for formatting the date and time
+  const options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+  };
+
+  // Format the date and time
+  const formattedDate = date.toLocaleDateString('en-US', options);
+  const formattedTime = date.toLocaleTimeString('en-US', options);
+
+  // Combine date and time into a single string
+  return `${formattedDate}`;
+}
 function stringToColor(string) {
   let hash = 0;
   let i;
@@ -48,6 +69,7 @@ function stringAvatar(name) {
   };
 }
 
+const img_dir = String(localStorage.getItem('img_dir'))
 
 
 function Topnavbar(props) {
@@ -57,6 +79,7 @@ const [user, setUser] = useState([]);
 const [loading, setLoading] = useState(true);
 
 
+const [openModal, setOpenModal] = useState(false);
 
 useEffect(() => {
 
@@ -106,6 +129,14 @@ function getFullNames(users) {
     return user_id
   }
 
+  function getprofile(users) {
+    let profile;
+  
+    users.map(user => {profile = user.profile_image_url });
+
+    return profile
+  }
+
 
 console.log(admin_account(user));
 console.log(getFullNames(user));
@@ -113,6 +144,7 @@ const admin = admin_account(user);
 const full_name = getFullNames(user);
 const email = getEmail(user);
 const user_id = getUserId(user);
+const profile = img_dir+getprofile(user);
 
 const [notifData,setNotifData] = useState([])
 const [notifnum,setNotifnum]=useState(0)
@@ -233,6 +265,7 @@ const readNotif = (id) =>{
   return (
     <Navbar fluid rounded className="topnavbar">
       <NavbarBrand href="https://flowbite-react.com">
+ 
       
        
         <span className="self-center whitespace-nowrap text-xl font-semibold text-white">Quexgen</span>
@@ -257,30 +290,84 @@ const readNotif = (id) =>{
 
 
             {
-              notifData.map((data)=>{
+              notifData.slice(0, 5).map((data)=>{
                 return(
                   <div key={data.id}>
                  
                 <DropdownItem key={data.id} href={admin===true?`/exam_review/${data.tos}`:`/tos_view/${data.tos}`} className={`${data.is_read===false?'bg-gray-200':''}`} onClick={()=>{readNotif(data.id)}}>
-                <div className="flex">
-                  {data.notification_text}
+                <div className="flex gap-5">
+                  <div>
                   
+                  {
+                      data.tos_data.user.profile_image!=='http://127.0.0.1:8000/apinull'? <img src={img_dir+data.tos_data.user.profile_image_url} style={{height:'40px',width:'40px', borderRadius:'50%'}}/>:
+
+                      <Avatar {...stringAvatar(data.tos_data.user.first_name+' '+data.tos_data.user.last_name)} size='large' />
+                  }
+                  </div>
+                  <div>
+              <span className="font-bold">{data.tos_data.user.first_name} {data.tos_data.user.last_name} </span><br/>  {data.notification_text} <span className="font-bold"> {data.tos_data.Title} {data.tos_data.Semester} </span><br/>
+              <p className="text-sm">{ formatDateTime(data.notification_date)}</p>
+              </div>
                 </div>
               </DropdownItem>
-              <DropdownDivider />
+       
               </div>
                 )
               })
             }
-        <DropdownItem className="text-center">See all</DropdownItem>
+      {notifData.length > 5 && (
+              <DropdownItem 
+                className="text-center" 
+                onClick={() => setOpenModal(true)} 
+              >
+                <span className="mx-auto font-semibold">See all</span>
+              </DropdownItem>
+            )}
          
  
       </Dropdown>
+
+      <Modal show={openModal} onClose={() => setOpenModal(false)} className="z-100">
+        <Modal.Header>Notification</Modal.Header>
+        <Modal.Body>
+          <div className="space-y-6">
+          {
+              notifData.map((data)=>{
+                return(
+                  <div key={data.id}>
+                 
+                <Card key={data.id} href={admin===true?`/exam_review/${data.tos}`:`/tos_view/${data.tos}`} className={`${data.is_read===false?'bg-gray-200':''}`} onClick={()=>{readNotif(data.id)}}>
+                <div className="flex gap-5">
+                  <div>
+                  
+                  {
+                      data.tos_data.user.profile_image!=='http://127.0.0.1:8000/apinull'? <img src={img_dir+data.tos_data.user.profile_image_url} style={{height:'40px',width:'40px', borderRadius:'50%'}}/>:
+
+                      <Avatar {...stringAvatar(data.tos_data.user.first_name+' '+data.tos_data.user.last_name)} size='large' />
+                  }
+                  </div>
+                  <div>
+              <span className="font-bold">{data.tos_data.user.first_name} {data.tos_data.user.last_name} </span><br/>  {data.notification_text} <span className="font-bold"> {data.tos_data.Title} {data.tos_data.Semester} </span>
+              <p className="text-sm mt-2">{ formatDateTime(data.notification_date)}</p>
+              </div>
+                </div>
+              </Card>
+             
+              </div>
+                )
+              })
+            }
+          </div>
+        </Modal.Body>
+        
+      </Modal>
         </div>
         <Dropdown
           arrowIcon={false}
           inline
           label={
+            profile!=='http://127.0.0.1:8000/apinull'? <img src={profile} style={{height:'40px',width:'40px', borderRadius:'50%'}}/>:
+
             <Avatar {...stringAvatar(full_name)} size='large' />
           }
         
@@ -290,7 +377,7 @@ const readNotif = (id) =>{
             <span className="block truncate text-sm font-medium">{email}</span>
           </DropdownHeader>
      
-
+          <DropdownItem href={admin===true?`/admin_profile`:`/profile`}>Profile </DropdownItem>
           <DropdownItem href="/logout">Sign out</DropdownItem>
         </Dropdown>
         <NavbarToggle />

@@ -1,7 +1,16 @@
-from django.urls import path
+from django.urls import path,include
 from . import views
 from . import admin_views
 from . import ai_views
+from django.conf.urls.static import static
+from django.conf import settings
+from rest_framework.routers import DefaultRouter
+router = DefaultRouter()
+router.register(r'users', views.UserViewSet)
+
+
+
+
 urlpatterns = [
     path("user/", views.UserListCreate.as_view(),name="user-list"),
     path('user/account/', views.UserRetrieve.as_view(), name='user-detail'),
@@ -50,5 +59,7 @@ urlpatterns = [
     path('notification/detail/teacher/', admin_views.TeacherNotifRetrieveDetail.as_view(), name='teacher-notif-list-detail'),
     path('notification/update/teacher/<int:pk>/', admin_views.TeacherNotifUpdate.as_view(), name='teacher-notif-list-update'),
  
-    path('generate-question/', ai_views.generate_question, name='generate_question'),   
-]
+    path('generate-question/', ai_views.generate_question, name='generate_question'),
+    path('user/',  include(router.urls)),     
+    
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

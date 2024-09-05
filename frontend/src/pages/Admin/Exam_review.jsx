@@ -4,6 +4,7 @@ import { PieChart } from '@mui/x-charts/PieChart';
 import { BarChart } from '@mui/x-charts';
 import { Card,Modal,Button,Label, Textarea ,Table,Pagination } from 'flowbite-react';
 import PdfUpdate from '../../components/PdfUpdate';
+import Swal from 'sweetalert2'
 import ReactDOM from 'react-dom';
 import { PDFViewer } from '@react-pdf/renderer';
 import api from "../../api";
@@ -11,11 +12,14 @@ import ExampdfUpdate from '../../components/ExampdfUpdate';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CommentIcon from '@mui/icons-material/Comment';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import LoadingSubmit from '../../components/LoadingSubmit';
 
 function Exam_review() {
   const { id } = useParams();
   const [TOSContent, setTOSContent] = useState([]);
   const [TOSInfo, setTOSInfo] = useState([]);
+  const [loading,setLoading] = useState(false)
+  const [swal,setSwal] =useState(false)
 
   const [Comment,setComment] = useState([{
     comment:'',
@@ -70,9 +74,24 @@ function Exam_review() {
   const [examStates, setExamStates] = useState([]);
   const [ExamTitle, setExamTitle] = useState('');
 
+  const [commentBtn,setCommentBtn] = useState(true)
 
 
 
+  const [approve,setApprove] = useState(false)
+  const showSwal = (message) => {
+    Swal.fire({
+      title: message,
+     
+      icon: "success",
+      confirmButtonText: "Proceed",
+      confirmButtonColor: '#2c5282',
+      preConfirm: () => {
+        setSwal(false); // This will be triggered when the confirm button is clicked
+        setApprove(false)
+      }
+    });
+  }
  
   
   const[exam_id,setExam_ID] = useState([]);
@@ -94,6 +113,8 @@ function Exam_review() {
         comment: CommentData[0].comment,
         tos: CommentData[0].tos
       }])
+      setCommentBtn(false)
+     
     }
 
     if (TOSInfo.length) {
@@ -111,7 +132,8 @@ function Exam_review() {
         Faculty: TOSInfo[0].Faculty,
         Chairperson: TOSInfo[0].Chairperson,
         Dean: TOSInfo[0].Dean,
-        Director: TOSInfo[0].Director
+        Director: TOSInfo[0].Director,
+        Status: TOSInfo[0].Status
       });
     }
   
@@ -396,6 +418,7 @@ if (getQuestion.length && getAnswer.length) {
   const displayedData = lessonData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
   const handleComment = async () => {
+  setLoading(true)
     const updateOrCreateComment = async (data) => {
       try {
         // Attempt to update the comment using a PUT request
@@ -424,6 +447,8 @@ if (getQuestion.length && getAnswer.length) {
       
       // Await all the promises to complete
       const results = await Promise.all(updatePromisesComment);
+      setLoading(false)
+      setSwal(true)
       console.log("Responses:", results); // Array of responses for each operation
     } catch (error) {
       console.error("Error in updating or creating comments:", error);
@@ -442,8 +467,9 @@ if (getQuestion.length && getAnswer.length) {
       })
       await api.post(`api/notification/teacher/`, {TeacherNotifDataJson});
   
-      getUser(); // Refresh the user list
-      setOpenModal(false); // Close the modal
+     
+   
+
     } catch (err) {
       console.error('Error status:', err);
     }
@@ -455,12 +481,20 @@ if (getQuestion.length && getAnswer.length) {
       Status: 2
     };
     
+    
     api
       .patch(`/api/tos-info/${id}/update/`, updateStatus)
       .then((res) => {
         console.log('Status updated', res.data);
-        getUser(); // Refresh the user list
-        setOpenModal(false); // Close the modal
+      
+        const TeacherNotifDataJson = JSON.stringify({
+          notification_text: "Admin approved ",
+          tos: id,
+        })
+     
+        setApprove(true)
+
+        return  api.post(`api/notification/teacher/`, {TeacherNotifDataJson})
       })
       .catch((err) => {
         console.error('Error status:', err);
@@ -475,7 +509,19 @@ if (getQuestion.length && getAnswer.length) {
       'comment':e.target.value,
       'tos': id
     }])
+
+    if(e.target.value == ''){
+
+      setCommentBtn(true)
+    }
+    else{
+      setCommentBtn(false)
+    }
+
+   
   }
+
+ 
   return (
     <div className='content flex gap-8'>
       <div >
@@ -507,10 +553,10 @@ if (getQuestion.length && getAnswer.length) {
       <Textarea style={{height:'150px'}} id="comment" value={Comment[0].comment} onChange={handleCommentChange} placeholder="Leave a comment..." required rows={4} />
 
 <div className='flex gap-5 justify-center'>
-<Button color={'primary'} onClick={handleComment} ><CommentIcon className='mr-2'/> Comment </Button>
-      <Button color={'success'} onClick={handleApprove} ><CheckCircleIcon className='mr-2'/> Approve </Button>
+<Button color={'primary'} onClick={handleComment} disabled={commentBtn || formData.Status === 2}  ><CommentIcon className='mr-2'/> Comment </Button>
+      <Button color={'success'} onClick={handleApprove} disabled={formData.Status===2} ><CheckCircleIcon className='mr-2'/> Approve </Button>
 </div>
-      
+     
     </Card>
  
    
@@ -560,7 +606,10 @@ if (getQuestion.length && getAnswer.length) {
 
 
     </div>
+{swal && showSwal("Updated")}
+{approve && showSwal("Aprroved")}
 
+{loading && <LoadingSubmit  />}
 
       </Card>
     </div>

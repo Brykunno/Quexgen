@@ -7,6 +7,8 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 import RecommendIcon from '@mui/icons-material/Recommend';  
 import TurnedInIcon from '@mui/icons-material/TurnedIn';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import DocViewerFile from '../../components/DocViewerFile';
+
 
 
 function Exam_bank() {
@@ -169,6 +171,7 @@ function Exam_bank() {
           showIcons
         />
       </div>
+      <DocViewerFile/>
     </div>
   );
 }

@@ -10,6 +10,7 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from .models import *
 import json
+from rest_framework import viewsets
 
 
 class UserListCreate(generics.ListCreateAPIView):
@@ -632,3 +633,8 @@ class AdminNotifCreateView(generics.ListCreateAPIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         return Response(response_data, status=status.HTTP_201_CREATED)
+    
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer

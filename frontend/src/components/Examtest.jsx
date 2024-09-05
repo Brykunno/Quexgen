@@ -930,7 +930,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
    
    <Progress progress={100} size={'sm'} color={'primary'}/>
        
-         <div className='flex gap-5'>
+         <div className='flex gap-5 '>
        <div style={{flex:0.4}}>
 
        <div className=' w-full'>

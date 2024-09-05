@@ -20,7 +20,7 @@ import SendIcon from '@mui/icons-material/Send';
 
 
 
-function Examtest ({ items, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,exam_id,updateTOSinfo,handleSubmitExam,setSubmit}) {
+function Examtest ({Status, items, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,exam_id,updateTOSinfo,handleSubmitExam,setSubmit,setLoading}) {
 
 
 
@@ -43,10 +43,67 @@ function Examtest ({ items, lessonsData,handleStateChange,examStates,setExamStat
   const [openModalDelete,setOpenModalDelete] = useState(false)
 
   
+  const [modalGenMcq, setModalGenMcq] = useState({});
+  const [modalGenIden, setModalGenIden] = useState({});
+  const [modalGenTorF, setModalGenTorF] = useState({});
 
+  const [data, setData] = useState(null);
+
+  const [context,setContext] = useState([])
 
  
 
+  const handleContextChange = (value, index, taxonomy_level) => {
+    setContext(prev => {
+      // Check if the context for the given index already exists
+      const existingIndex = prev.findIndex(item => item.index === index);
+  
+      if (existingIndex !== -1) {
+        // If it exists, update the existing context object
+        const updatedContext = [...prev];
+        updatedContext[existingIndex] = {
+          ...updatedContext[existingIndex],
+          context: value,
+          taxonomy_level: taxonomy_level
+        };
+        return updatedContext;
+      } else {
+        // If it doesn't exist, add a new context object
+        return [
+          ...prev,
+          {
+            context: value,
+            index: index,
+            taxonomy_level: taxonomy_level
+          }
+        ];
+      }
+    });
+  };
+    const generateQues = (index,test_type) =>{
+
+      setLoading(true)
+      api.post('/api/generate-question/', {
+        context: getContextValue(index),
+        index: index,
+        taxonomy_level: getTaxonomyValue(index),
+        test_type:test_type
+      }
+    )
+    .then(response => {
+      setData(response.data)
+      setLoading(false)
+      handleStateChange(response.data.index,'question',response.data.question)
+      handleRadioAnswer(response.data.index,response.data.answer)
+      for(let i = 0; i<response.data.choices.length;i++){
+        handleStateChange(response.data.index,i,response.data.choices[i])
+      }
+        console.log('Response data:', response.data.choices[0]);
+    })
+    .catch(error => {
+        console.error('There was an error!', error);
+    });
+    }
 
 function checkAnswer(localStore, answer){
   if (localStore == answer)
@@ -55,6 +112,12 @@ function checkAnswer(localStore, answer){
   }
 }
 
+
+
+const getTaxonomyValue = (index) => {
+  const contextItem = context.find(item => item.index === index);
+  return contextItem ? contextItem.taxonomy_level : ''; // Return the context value or an empty string if not found
+};
   const categories = lessonsData.reduce((acc, cat,index) => {
     const start = stringToIntegerStart(String(cat.placement));
     const end = stringToIntegerEnd(String(cat.placement));
@@ -69,33 +132,33 @@ function checkAnswer(localStore, answer){
 
     for (let i = start; i <= end; i++) {
       if (remembering) {
-        acc[i] = 'remembering'
+        acc[i] = 'Remembering'
         
                  
         
         remembering--;
       } else if (understanding) {
-        acc[i] = 'understanding'
+        acc[i] = 'Understanding'
          
 
         understanding--;
       } else if (applying) {
-        acc[i] =  'applying'
+        acc[i] =  'Applying'
          
 
         applying--;
       } else if (analyzing) {
-        acc[i] =  'analyzing'
+        acc[i] =  'Analyzing'
          
 
         analyzing--;
       } else if (evaluating) {
-        acc[i] =  'evaluating'
+        acc[i] =  'Evaluating'
          
 
         evaluating--;
       } else if (creating) {
-        acc[i] =  'creating'
+        acc[i] =  'Creating'
          
 
         creating--;
@@ -110,6 +173,10 @@ function checkAnswer(localStore, answer){
 
 
 
+  const getContextValue = (index) => {
+    const contextItem = context.find(item => item.index === index);
+    return contextItem ? contextItem.context : ''; // Return the context value or an empty string if not found
+  };
 
 
 
@@ -234,12 +301,121 @@ function checkAnswer(localStore, answer){
         </div>
       </div>
       <div className='flex gap-5 justify-center mt-3'>
-      
-      <Button color={'primary'} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
-      <Tooltip content="Delete Question" style="dark">
-      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} ><DeleteIcon/></Button>
-      </Tooltip>
+    
+    <Button color={'primary'} onClick={() => setModalGenMcq(prev => ({ ...prev, [index]: true }))} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
+
+<Modal key={index} size={'4xl'} show={modalGenMcq[index]} onClose={() => setModalGenMcq(prev => ({ ...prev, [index]: false }))}>
+        <Modal.Header>Generate {categories[catindex] ? categories[catindex] : ''} question</Modal.Header>
+        <Modal.Body>
+          <div className="  gap-3">
+            <div className='mb-4'>
+              Context:
+            <Textarea value={getContextValue(index)}  onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex])}} />
+            </div>
+            <div className=''>
+            <Card>
+
+          
+            <div className='flex gap-3'>
+        <span className='mt-2'>
+          {catindex}.
+          
+          
+          </span>
+
+          <Textarea
+            value={item.question}
+            onChange={(e) => handleStateChange(index, 'question', e.target.value)}
+          />
+        </div>
+
+              
+            <div className='mt-3'>
+      <div className='flex flex-wrap gap-3 mx-auto'>
+        <div>
+          <div className='flex gap-3 w-80 mb-3'>
+            <Radio
+              name={`answers-${index}`}
+              value="A"
+              className='mt-3'
+              onChange={(e) => handleRadioAnswer(index, e.target.value)}
+              checked={checkAnswer(item.answer, "A")}
+            />
+            <span className='mt-2'>A.</span>
+            <Textarea
+              value={item.choices[0]}
+              onChange={(e) => handleStateChange(index, 0, e.target.value)}
+            />
+          </div>
+
+          <div className='flex gap-3 w-80 mb-3'>
+            <Radio
+              name={`answers-${index}`}
+              value="B"
+              className='mt-3'
+              onChange={(e) => handleRadioAnswer(index, e.target.value)}
+              checked={checkAnswer(item.answer, "B")}
+            />
+            <span className='mt-2'>B.</span>
+            <Textarea
+              value={item.choices[1]}
+              onChange={(e) => handleStateChange(index, 1, e.target.value)}
+            />
+          </div>
+        </div>
+        <div>
+          <div className='flex gap-3 w-80 mb-3'>
+            <Radio
+              name={`answers-${index}`}
+              value="C"
+              className='mt-3'
+              onChange={(e) => handleRadioAnswer(index, e.target.value)}
+              checked={checkAnswer(item.answer, "C")}
+            />
+            <span className='mt-2'>C.</span>
+            <Textarea
+              value={item.choices[2]}
+              onChange={(e) => handleStateChange(index, 2, e.target.value)}
+            />
+          </div>
+
+          <div className='flex gap-3 w-80 mb-3'>
+            <Radio
+              name={`answers-${index}`}
+              value="D"
+              className='mt-3'
+              onChange={(e) => handleRadioAnswer(index, e.target.value)}
+              checked={checkAnswer(item.answer, "D")}
+            />
+            <span className='mt-2'>D.</span>
+            <Textarea
+              value={item.choices[3]}
+              onChange={(e) => handleStateChange(index, 3, e.target.value)}
+            />
+          </div>
+        </div>
       </div>
+    </div>
+            </Card>
+            </div>
+
+          
+            
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button color={'primary'} onClick={()=>{generateQues(index,"mcq")}} className='mx-auto'>Generate</Button>
+        
+        </Modal.Footer>
+      </Modal>
+
+
+
+
+    <Tooltip content="Delete Question" style="dark">
+    <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} ><DeleteIcon/></Button>
+    </Tooltip>
+    </div>
         </div>
       </Card>
     );
@@ -291,7 +467,67 @@ function checkAnswer(localStore, answer){
         </div>
       </div>
       <div className='flex gap-5 justify-center mt-3'>
-      <Button color={'primary'}>Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
+      
+      
+      <Button color={'primary'} onClick={() => setModalGenIden(prev => ({ ...prev, [index]: true }))} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
+
+<Modal key={index} size={'4xl'} show={modalGenIden[index]} onClose={() => setModalGenIden(prev => ({ ...prev, [index]: false }))}>
+       <Modal.Header>Generate {categories[catindex] ? categories[catindex] : ''} question</Modal.Header>
+       <Modal.Body>
+         <div className="  gap-3">
+           <div className='mb-4'>
+             Context:
+             <Textarea value={getContextValue(index)}  onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex])}} />
+           </div>
+           <div className=''>
+           <Card>
+
+           <div className='flex gap-3'>
+          <span className='mt-2'> {catindex}.</span>
+            <Textarea
+              value={item.question}
+              onChange={(e) => handleStateChange(index, 'question', e.target.value)}
+            />
+          </div>
+      <div className='mt-3'>
+        <div className='flex flex-wrap gap-10 mx-auto'>
+          <div>
+            <div className='flex gap-3 w-80 mb-3'>
+
+              <span className='mt-2 font-bold'>Answer:</span>
+              <Textarea
+                value={item.choices[0]}
+                onChange={(e) => 
+                {
+                  handleStateChange(index, 0, e.target.value)
+                  handleRadioAnswer(index, e.target.value)
+                
+                }}
+                className='h-10'
+              />
+            </div>
+  
+          </div>
+        </div>
+      </div>
+         
+
+       
+           </Card>
+           </div>
+
+         
+           
+         </div>
+       </Modal.Body>
+       <Modal.Footer>
+         <Button onClick={()=>{generateQues(index,"identification")}} className='mx-auto'>Generate</Button>
+       
+       </Modal.Footer>
+     </Modal>
+
+
+
       <Tooltip content="Delete Question" style="dark">
       <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} ><DeleteIcon/></Button>
       </Tooltip>
@@ -355,12 +591,74 @@ function checkAnswer(localStore, answer){
         </div>
       </div>
       <div className='flex gap-5 justify-center mt-3'>
-      <Button color={'primary'}>Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
-      <div className="flex gap-2">
+      
+      <Button color={'primary'} onClick={() => setModalGenTorF(prev => ({ ...prev, [index]: true }))} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
+
+            <Modal key={index} size={'4xl'} show={modalGenTorF[index]} onClose={() => setModalGenTorF(prev => ({ ...prev, [index]: false }))}>
+       <Modal.Header>Generate {categories[catindex] ? categories[catindex] : ''} question</Modal.Header>
+       <Modal.Body>
+         <div className="  gap-3">
+           <div className='mb-4'>
+             Context:
+             <Textarea value={getContextValue(index)}  onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex])}} />
+           </div>
+           <div className=''>
+           <Card>
+
+           <div className='flex gap-3'>
+          <span className='mt-2'> {catindex}.</span>
+            <Textarea
+              value={item.question}
+              onChange={(e) => handleStateChange(index, 'question', e.target.value)}
+            />
+          </div>
+          <div className='mt-3'>
+        <div className='flex flex-wrap gap-5 mx-auto'>
+         
+            <div className='flex gap-3 w-80 mb-3'>
+              <Radio
+                name={`answers-${index}`}
+                value="True"
+                className='mt-3'
+                onChange={(e) => handleRadioAnswer(index, e.target.value)}
+                checked={checkAnswer(item.answer, "True")}
+              />
+              <span className='mt-2'>True</span>
+         
+            </div>
+            <div className='flex gap-3 w-80 mb-3'>
+              <Radio
+                name={`answers-${index}`}
+                value="False"
+                className='mt-3'
+                onChange={(e) => handleRadioAnswer(index, e.target.value)}
+                checked={checkAnswer(item.answer, "False")}
+              />
+              <span className='mt-2'>False</span>
+         
+            </div>
+  
+        
+        </div>
+      </div>
+         
+
+       
+           </Card>
+           </div>
+
+         
+           
+         </div>
+       </Modal.Body>
+       <Modal.Footer>
+         <Button onClick={()=>{generateQues(index,"trueOrFalse")}} className='mx-auto'>Generate</Button>
+       
+       </Modal.Footer>
+     </Modal>
       <Tooltip content="Delete Question" style="dark">
       <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} ><DeleteIcon/></Button>
       </Tooltip>
-      </div>
       </div>
         </div>
       </Card>
@@ -722,8 +1020,8 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       <Button  onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
       <Button  onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
       <Button  color="blue" onClick={() => setPdfModal(true)}><PreviewIcon className="mr-2"/> Exam Preview</Button>
-      <Button type='submit'   color={'success'}  ><UpdateIcon className='mr-2'/>Update Exam</Button>
-      <Button type='submit' onClick={() => setSubmit(true)} color="success"><SendIcon className='mr-2'/>Submit Exam</Button>
+      <Button type='submit'   color={'success'} disabled={Status===2} ><UpdateIcon className='mr-2'/>Update Exam</Button>
+      <Button type='submit' onClick={() => setSubmit(true)} disabled={Status===3 || Status===2 || Status===1} color="success"><SendIcon className='mr-2'/>Submit Exam</Button>
     
     
    

@@ -20,6 +20,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import { Autocomplete, TextField, Chip } from '@mui/material';
 
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
@@ -121,7 +122,7 @@ tos_teacher: 0,
   const [submitToast,setSubmitToast] = useState(false);
   const[loadingGenerate,setLoadingGenerate] = useState(false)
 
-
+  const [selectedOptions, setSelectedOptions] = useState([]);
 
   React.useEffect(() => {
     // Retrieve lessons data from local storage on component mount
@@ -1224,6 +1225,9 @@ const handleCeil = (index, field, value) => {
         required
       />
     </div>
+    <div className="flex-1">
+      <Button>Upload Study Guide</Button>
+    </div>
     </Card>
     </div>
     <div style={{flex:1}}>
@@ -1457,6 +1461,8 @@ const handleTitle = (event) => {
   
 };
 
+const options = ['Multiple Choice ','Identification ','True or False'];
+
 
   const [formData, setFormData] = useState({
     Title: '',
@@ -1465,7 +1471,7 @@ const handleTitle = (event) => {
     Campus: 'San Carlos Campus',
     CourseCode: '',
     Department: 'Business and Office Administration',
-    ExaminationType: 'Multiple choices',
+    ExaminationType: [],
     CourseType: '',
     ExaminationDate: '',
     Faculty: '',
@@ -1700,10 +1706,11 @@ const examData = examDataStorage ? JSON.parse(examDataStorage) : null;
 
 const [Submit,setSubmit] = useState(false);
 const handleSubmit = (e) => {
+  formData1.ExaminationType = formData1.ExaminationType.join('/');
   setLoading(true);
   formData1.Status = Submit===true?1:0
   const formDataJson = JSON.stringify(formData1);
-  const lessonsDataJson = JSON.stringify(lessonsData);
+
 
   console.log('formSubmit: ',formDataJson)
 
@@ -1727,6 +1734,10 @@ const handleSubmit = (e) => {
           return lesson;
         });
         const lessonsDataJson = JSON.stringify(updatedLessonsData);
+
+        
+
+
 
 
 return api.post("/api/tos-content/", { lessonsDataJson })
@@ -1921,7 +1932,7 @@ return api.post("/api/tos-content/", { lessonsDataJson })
                   Campus: 'San Carlos Campus',
                   CourseCode: '',
                   Department: 'Business and Office Administration',
-                  ExaminationType: 'Multiple choices',
+                  ExaminationType: [],
                   CourseType: '',
                   ExaminationDate: '',
                   Faculty: '',
@@ -2129,6 +2140,31 @@ const handleSubmitExam = () =>{
            <div className="mb-2 block">
              <Label htmlFor="exam-type" value="Type of Examination" />
            </div>
+           <Autocomplete
+      multiple
+      id="chip-selection"
+      name="ExaminationType"
+      options={options} // List of options
+      value={formData.ExaminationType}
+      onChange={(event, newValue) => {
+        setFormData({ ...formData, ExaminationType: newValue });
+        localStorage.setItem('formData', JSON.stringify({ ...formData, ExaminationType: newValue }));
+      }}
+      renderTags={(value, getTagProps) =>
+        value.map((option, index) => (
+          <Chip
+            variant="outlined"
+            label={option}
+            {...getTagProps({ index })}
+            key={index}
+          />
+        ))
+      }
+      renderInput={(params) => (
+        <TextField {...params} variant="outlined" label="Select Options" />
+      )}
+    />
+    {formData.ExaminationType}
            <Select id="exam-type" name="ExaminationType" value={formData.ExaminationType} onChange={handleChange} required>
              <option value="Multiple choices">Multiple choices</option>
              <option value="Identification">Identification</option>

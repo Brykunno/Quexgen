@@ -14,6 +14,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import ExamUpdate from './ExamUpdate';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import { Autocomplete, TextField, Chip } from '@mui/material';
 
 
 
@@ -23,6 +24,7 @@ import PdfUpdate from "./PdfUpdate";
 import Examtest from "./Examtest";
 import LoadingSubmit from "./LoadingSubmit";
 import ToastMessage from "./Toast";
+import LoadingGenerate from "./LoadingGenerate";
 
 
 function createData(
@@ -69,6 +71,7 @@ function TOSview() {
   const [answerChoices, setAnswerChoices] = useState([]);
   const [submitToast,setSubmitToast] = useState(false);
   const [Submit,setSubmit] = useState(false);
+  const[loadingGenerate,setLoadingGenerate] = useState(false)
 
   
   const [loading, setLoading] = useState(false);
@@ -147,7 +150,8 @@ function TOSview() {
         Faculty: TOSInfo[0].Faculty,
         Chairperson: TOSInfo[0].Chairperson,
         Dean: TOSInfo[0].Dean,
-        Director: TOSInfo[0].Director
+        Director: TOSInfo[0].Director,
+        Status: TOSInfo[0].Status
       });
     }
   
@@ -660,7 +664,7 @@ if (getQuestion.length && getAnswer.length) {
           console.log('Responses:', resultsans); // Array of responses for each operation
 
           const AdminNotifDataJson = JSON.stringify({
-            notification_text: "user updated this exam again",
+            notification_text: " updated ",
             tos: id,
           })
           await api.post(`api/notification/admin/`, {AdminNotifDataJson});
@@ -2029,7 +2033,7 @@ const handleRadioAnswer = (index, value) => {
     newStates[index]['answer'] = value;
 
   setExamStates(newStates);
-  saveDataToLocalStorageQuestion()
+  
 
 };
 
@@ -2367,7 +2371,7 @@ const handleSubmitExam = () =>{
    </div>
 
    <div className={`mb-5 ${step == 4? 'show':'hidden'}`}>
-   <ExamUpdate items={TotalItems} lessonsData={lessonData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} exam_id={exam_id} updateTOSinfo={updateTOSinfo} handleSubmitExam={handleSubmitExam} setSubmit={setSubmit}/>
+   <ExamUpdate items={TotalItems} lessonsData={lessonData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} exam_id={exam_id} updateTOSinfo={updateTOSinfo} handleSubmitExam={handleSubmitExam} setSubmit={setSubmit} setLoading={setLoadingGenerate} Status={formData.Status}/>
 
     </div>
 
@@ -2382,7 +2386,7 @@ const handleSubmitExam = () =>{
       </div>
 
  
-
+      {loadingGenerate  && <LoadingGenerate/>}
       {loading  && <LoadingSubmit/>}
       {Toast  && <ToastMessage  message = "Exam successfully updated!" setToast={setToast}/>}
       {submitToast  && <ToastMessage  message = "Exam successfully submitted!" setToast={setSubmitToast}/>}

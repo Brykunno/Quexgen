@@ -28,16 +28,16 @@ export const SidebarData_teacher = [
     //     icon: <FolderCopyIcon />,
     //     link: "/tos_view/:id",
     // },
-    {
-        title: "Profile",
-        icon: <ManageAccountsIcon />,
-        link: "/profile",
-    },
-    {
-        title: "Logout",
-        icon: <LogoutIcon />,
-        link: "/logout",
-    },
+    // {
+    //     title: "Profile",
+    //     icon: <ManageAccountsIcon />,
+    //     link: "/profile",
+    // },
+    // {
+    //     title: "Logout",
+    //     icon: <LogoutIcon />,
+    //     link: "/logout",
+    // },
 
 
 

@@ -26,6 +26,7 @@ function Form({ route, method }) {
       if (method === "login") {
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
         localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
+        localStorage.setItem('img_dir',`${import.meta.env.VITE_API_URL}/api`)
 
         console.log('usersdata: ',res.data)
         api
@@ -34,7 +35,7 @@ function Form({ route, method }) {
         .then((data) => {
           
          if(data[0].is_superuser ===true){
-          navigate("/");
+          navigate("/admin_profile");
          }
          else{
           navigate("/profile");
@@ -57,7 +58,7 @@ function Form({ route, method }) {
   <form onSubmit={handleSubmit} className="flex max-w-md flex-col gap-4">
       <div>
         <div className="mb-2 block">
-          <Label htmlFor="username1" value="Your username" />
+          <Label htmlFor="username1" value="Username" />
         </div>
         <TextInput
           id="username1"
@@ -70,12 +71,13 @@ function Form({ route, method }) {
       </div>
       <div>
         <div className="mb-2 block">
-          <Label htmlFor="password1" value="Your password" />
+          <Label htmlFor="password1" value="Password" />
         </div>
         <TextInput
           id="password1"
           type="password"
           value={password}
+          placeholder="Password"
           onChange={(e) => setPassword(e.target.value)}
           required
         />
@@ -83,7 +85,7 @@ function Form({ route, method }) {
       <div className="text-center w-full">
       {loading && <LoadingIndicator/>}
       </div>
-      <Button type="submit" color="success">
+      <Button type="submit" color="primary">
         LOGIN 
       </Button>
     </form>

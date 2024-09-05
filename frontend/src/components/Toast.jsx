@@ -16,7 +16,7 @@ function ToastMessage({ message, duration = 5000,setToast }) {
   }, [duration]);
 
   return (
-    <div className={`fixed top-4 right-4 z-50 ${isVisible ? 'animate-fade-in' : 'animate-fade-out'}`}>
+    <div className={`fixed top-4 right-4 z-100 ${isVisible ? 'animate-fade-in' : 'animate-fade-out'}`}>
       {isVisible && (
         <Toast className="bg-black/60 backdrop-blur-md shadow-lg border border-white/20 rounded-lg p-4 flex items-center">
           <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
