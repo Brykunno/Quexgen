@@ -25,8 +25,9 @@ function Exams() {
       .get(`/api/tos-info/detail/admin/`)
       .then((res) => res.data)
       .then((data) => {
-        setExam(data);
-        setFilteredExams(data); // Initialize the filtered exams to show all exams
+        const filteredData = data.filter((exam) => exam.Status !== 0); // Filter out exams with Status of 0
+        setExam(filteredData);
+        setFilteredExams(filteredData); // Initialize filtered exams to show only the filtered exams
       })
       .catch((err) => alert(err));
   };

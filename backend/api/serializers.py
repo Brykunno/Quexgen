@@ -110,7 +110,7 @@ class QuestionsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Questions
-        fields = ["id", "question", "answer", "question_type", "exam_id", "test_part", "test_part_id"]
+        fields = ["id", "question", "answer", "question_type", "exam_id","context", "test_part", "test_part_id"]
 
     
         
@@ -137,4 +137,11 @@ class AdminNotifSerializer(serializers.ModelSerializer):
     class Meta:
         model = Admin_notification
         fields = ["id", "notification_text","notification_date","is_read", "tos","tos_data"]
+        
+        
+class ContextSerializer(serializers.ModelSerializer):
+    question_data = QuestionsSerializer(read_only=True, source='question')
+    class Meta:
+        model = Context
+        fields = ["id", "question","context","taxonomy_level","test_type","question_data"]
 

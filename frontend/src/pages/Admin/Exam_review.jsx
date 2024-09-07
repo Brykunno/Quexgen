@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { BarChart } from '@mui/x-charts';
-import { Card,Modal,Button,Label, Textarea ,Table,Pagination } from 'flowbite-react';
+import { Card,Modal,Button,Label, Textarea ,Table,Pagination,Breadcrumb } from 'flowbite-react';
 import PdfUpdate from '../../components/PdfUpdate';
 import Swal from 'sweetalert2'
 import ReactDOM from 'react-dom';
@@ -13,10 +13,11 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import CommentIcon from '@mui/icons-material/Comment';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import LoadingSubmit from '../../components/LoadingSubmit';
+import BreadCrumb from '../../components/BreadCrumb';
 
 function Exam_review() {
   const { id } = useParams();
-  const [TOSContent, setTOSContent] = useState([]);
+  const [TOSContent, setTOSContent] = useState([]);  
   const [TOSInfo, setTOSInfo] = useState([]);
   const [loading,setLoading] = useState(false)
   const [swal,setSwal] =useState(false)
@@ -75,6 +76,8 @@ function Exam_review() {
   const [ExamTitle, setExamTitle] = useState('');
 
   const [commentBtn,setCommentBtn] = useState(true)
+
+ 
 
 
 
@@ -520,11 +523,16 @@ if (getQuestion.length && getAnswer.length) {
 
    
   }
-
+  const crumbItem = [{ title:'Exams', link:'/exams'},{title:'Exam review', link:`/exam_review/${id}`}]
  
   return (
-    <div className='content flex gap-8'>
+    <div className='content'>
+      <div className='mb-4'>
+        <BreadCrumb crumbItem={crumbItem}/>
+        </div>
+        <div className=' flex gap-8'>
       <div >
+   
         <Card>
        <PieChart
        colors={[ 'red',
@@ -636,6 +644,7 @@ if (getQuestion.length && getAnswer.length) {
           </div>
         </Modal.Body>
       </Modal>
+      </div>
     </div>
   )
   ReactDOM.render(<TOSview />, document.getElementById('root'));

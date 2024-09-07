@@ -116,6 +116,7 @@ tos_teacher: 0,
   const [Toast, setToast] = useState(false);
 
 
+  const [context,setContext] = useState([])
 
   const [openModal, setOpenModal] = useState(false);
 
@@ -1575,7 +1576,11 @@ const handleStateChange = (index, type, value) => {
   const newStates = [...examStates];
   if (type === 'question') {
     newStates[index]['question'] = value;
-  } else {
+  }
+  else if (type === 'context') {
+    newStates[index]['context'] = value;
+  }
+  else {
     
     newStates[index]['choices'][type] = value;
   }
@@ -1583,6 +1588,9 @@ const handleStateChange = (index, type, value) => {
   saveDataToLocalStorageQuestion()
 
 };
+
+
+
 
 
 
@@ -1619,7 +1627,8 @@ useEffect(() => {
       question: '',
       choices: ['', '', '', ''],
       question_type:'',
-      answer: ''
+      answer: '',
+      context: ''
     }))
   );
 
@@ -1824,7 +1833,8 @@ return api.post("/api/tos-content/", { lessonsDataJson })
                 'answer': data.answer,
                 'question_type': data.question_type,
                 'exam_id': exam_id,
-                'test_part_id': test_part_id
+                'test_part_id': test_part_id,
+                'context': data.context
               })
             }
           
@@ -1837,9 +1847,10 @@ return api.post("/api/tos-content/", { lessonsDataJson })
           .then((fourthRes) => {
             console.log(fourthRes);
             if (fourthRes.status === 201) {
+
+
         
-              
-           
+          
               console.log("fourth request data:", fourthRes.data);
               const question_data = fourthRes.data
               console.log("question_id: ",question_data)
@@ -1915,6 +1926,7 @@ return api.post("/api/tos-content/", { lessonsDataJson })
                 setExamTitle('')
              
                 setExamStates([])
+                setContext([])
                 setTestPart([])
                 localStorage.removeItem('Remembering')
                 localStorage.removeItem('Understanding')
@@ -2136,40 +2148,13 @@ const handleSubmitExam = () =>{
 
        {/* Type of Examination and Course Type */}
        <div className='w-full gap-4 flex flex-col sm:flex-row'>
-         <div className="w-full">
-           <div className="mb-2 block">
-             <Label htmlFor="exam-type" value="Type of Examination" />
-           </div>
-           <Autocomplete
-      multiple
-      id="chip-selection"
-      name="ExaminationType"
-      options={options} // List of options
-      value={formData.ExaminationType}
-      onChange={(event, newValue) => {
-        setFormData({ ...formData, ExaminationType: newValue });
-        localStorage.setItem('formData', JSON.stringify({ ...formData, ExaminationType: newValue }));
-      }}
-      renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
-          <Chip
-            variant="outlined"
-            label={option}
-            {...getTagProps({ index })}
-            key={index}
-          />
-        ))
-      }
-      renderInput={(params) => (
-        <TextField {...params} variant="outlined" label="Select Options" />
-      )}
-    />
-    {formData.ExaminationType}
-           <Select id="exam-type" name="ExaminationType" value={formData.ExaminationType} onChange={handleChange} required>
-             <option value="Multiple choices">Multiple choices</option>
-             <option value="Identification">Identification</option>
-             <option value="True or false">True or false</option>
-           </Select>
+         <div className="w-full ">
+   
+<div className="mb-2 block">
+           <Label htmlFor="executive-director" value="Campus Executive Director" />
+         </div>
+         <TextInput id="executive-director" type="text" name="Director" value={formData.Director} onChange={handleChange} />
+   
          </div>
          <div className='w-full'>
            <div className="mb-2 block">
@@ -2216,11 +2201,35 @@ const handleSubmitExam = () =>{
        </div>
 
        {/* Campus Executive Director */}
-       <div className='w-2/4'>
-         <div className="mb-2 block">
-           <Label htmlFor="executive-director" value="Campus Executive Director" />
-         </div>
-         <TextInput id="executive-director" type="text" name="Director" value={formData.Director} onChange={handleChange} />
+       <div className=' my-3'>
+       <div className="mb-2 block">
+             <Label htmlFor="exam-type" value="Type of Examination" />
+           </div>
+           <Autocomplete
+      multiple
+      id="chip-selection"
+      name="ExaminationType"
+      options={options} // List of options
+      value={formData.ExaminationType}
+      onChange={(event, newValue) => {
+        setFormData({ ...formData, ExaminationType: newValue });
+        localStorage.setItem('formData', JSON.stringify({ ...formData, ExaminationType: newValue }));
+      }}
+      renderTags={(value, getTagProps) =>
+        value.map((option, index) => (
+          <Chip
+            variant="outlined"
+            label={option}
+            {...getTagProps({ index })}
+            key={index}
+          />
+        ))
+      }
+      renderInput={(params) => (
+        <TextField {...params} variant="outlined" label="Select type of examination" />
+      )}
+    />
+
        </div>
      </div>
      {/* <button className='bg-blue-950 hover:bg-blue-800 py-2 text-white rounded-lg'>Next</button> */}
@@ -2467,7 +2476,7 @@ const handleSubmitExam = () =>{
       </Card>
 
         <div className={`mb-5 ${step == 4? 'show':'hidden'}`}>
-      <Examtest items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} setLoading={setLoadingGenerate} />
+      <Examtest items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} setLoading={setLoadingGenerate} context={context} setContext={setContext}/>
 
 
     
@@ -2483,6 +2492,7 @@ const handleSubmitExam = () =>{
       {loadingGenerate  && <LoadingGenerate/>}
 <div className="w-full justify-center mx-auto flex gap-14">
   <div>
+  {JSON.stringify(examStates)} 
 <Button size={'sm'} color={'primary'} onClick={handleBack} disabled={disableBack} className="px-3"><NavigateBeforeIcon/> <p style={{marginTop:'0.5px'}}>Previous</p></Button>
 </div>
 <div>

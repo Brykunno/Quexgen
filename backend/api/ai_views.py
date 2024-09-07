@@ -30,36 +30,37 @@ taxonomy_levels = {
 # Define prompts for each taxonomy level
 prompts = {
     "Remembering": (
-        "Create a multiple-choice or identification or true/false question that tests the recall of specific facts, names, dates, or concepts directly mentioned in the following context. "
+        "Create a multiple-choice question that tests the recall of specific facts, names, dates, or concepts directly mentioned in the following context. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Ensure the options are in plain text without any labels (like letters or numbers) before them. The question and the correct answer should be explicitly connected to the information in the context: {context}"
     ),
     "Understanding": (
-        "Create a multiple-choice or identification or true/false question that asks for an explanation of the following context: {context}. "
+        "Create a question that asks for an explanation of the following context: {context}. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Ensure the options are in plain text without any labels (like letters or numbers) before them. The question and the correct answer should be explicitly connected to the information in the context: {context}"
     ),
     "Applying": (
-        "Create a multiple-choice or identification or true/false question that requires applying the following context to a new situation: {context}. "
+        "Create a question that requires applying the following context to a new situation: {context}. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Ensure the options are in plain text without any labels (like letters or numbers) before them. The question and the correct answer should be explicitly connected to the information in the context: {context}"
     ),
     "Analyzing": (
-        "Create a multiple-choice or identification or true/false question that involves analyzing or breaking down the following context: {context}. "
+        "Create a question that involves analyzing or breaking down the following context: {context}. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Ensure the options are in plain text without any labels (like letters or numbers) before them. The question and the correct answer should be explicitly connected to the information in the context: {context}"
     ),
     "Evaluating": (
-        "Create a a multiple-choice or identification or true/false question that requires evaluating or making a judgment based on the following context: {context}. "
+        "Create a a multiple-choice question that requires evaluating or making a judgment based on the following context: {context}. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Ensure the options are in plain text without any labels (like letters or numbers) before them. The question and the correct answer should be explicitly connected to the information in the context: {context}"
     ),
     "Creating": (
-        "Create a multiple-choice or identification or true/false question that involves creating new ideas based on the following context: {context} with four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
+        "Create a a multiple-choice question that involves creating new ideas based on the following context: {context} with four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Output the question immediately without any introductory words"
         "Do not use any indicator letters or numbers for answer and distractors"
     )
 }
+
 
 torf_prompts = {
     "Remembering": (

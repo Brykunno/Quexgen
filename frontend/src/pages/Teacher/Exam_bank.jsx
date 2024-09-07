@@ -171,7 +171,7 @@ function Exam_bank() {
           showIcons
         />
       </div>
-      <DocViewerFile/>
+
     </div>
   );
 }

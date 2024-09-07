@@ -14,7 +14,7 @@ import ReactDOM from 'react-dom';
 import { PDFViewer } from '@react-pdf/renderer';
 import Exampdf from "./Exampdf";
 
-function Examtest ({ items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading}) {
+function Examtest ({ items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext}) {
 
 
 
@@ -45,10 +45,10 @@ function Examtest ({ items, tos_id, lessonsData,handleStateChange,examStates,set
 
   const [data, setData] = useState(null);
 
-  const [context,setContext] = useState([])
+  
 
  
-  const handleContextChange = (value, index, taxonomy_level) => {
+  const handleContextChange = (value, index, taxonomy_level,test_type) => {
     setContext(prev => {
       // Check if the context for the given index already exists
       const existingIndex = prev.findIndex(item => item.index === index);
@@ -59,7 +59,8 @@ function Examtest ({ items, tos_id, lessonsData,handleStateChange,examStates,set
         updatedContext[existingIndex] = {
           ...updatedContext[existingIndex],
           context: value,
-          taxonomy_level: taxonomy_level
+          taxonomy_level: taxonomy_level,
+          test_type:test_type
         };
         return updatedContext;
       } else {
@@ -69,13 +70,16 @@ function Examtest ({ items, tos_id, lessonsData,handleStateChange,examStates,set
           {
             context: value,
             index: index,
-            taxonomy_level: taxonomy_level
+            taxonomy_level: taxonomy_level,
+            test_type:test_type
           }
         ];
       }
     });
   };
     const generateQues = (index,test_type) =>{
+
+      
 
       setLoading(true)
       api.post('/api/generate-question/', {
@@ -303,7 +307,11 @@ function checkAnswer(localStore, answer){
           <div className="  gap-3">
             <div className='mb-4'>
               Context:
-            <Textarea value={getContextValue(index)}  onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex])}} />
+            <Textarea value={getContextValue(index)}  
+            onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex],"mcq");
+              handleStateChange(index, 'context', e.target.value)
+            }
+            } />
             </div>
             <div className=''>
             <Card>
@@ -472,7 +480,11 @@ function checkAnswer(localStore, answer){
          <div className="  gap-3">
            <div className='mb-4'>
              Context:
-             <Textarea value={getContextValue(index)}  onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex])}} />
+             <Textarea value={getContextValue(index)}  
+            onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex],"identification");
+              handleStateChange(index, 'context', e.target.value)
+            }
+            } />
            </div>
            <div className=''>
            <Card>
@@ -595,7 +607,11 @@ function checkAnswer(localStore, answer){
          <div className="  gap-3">
            <div className='mb-4'>
              Context:
-             <Textarea value={getContextValue(index)}  onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex])}} />
+             <Textarea value={getContextValue(index)}  
+            onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex],"trueOrFalse");
+              handleStateChange(index, 'context', e.target.value)
+            }
+            } />
            </div>
            <div className=''>
            <Card>

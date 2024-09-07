@@ -63,7 +63,7 @@ function TOSview() {
 
   const [modalComment,setModalComment]=useState(false)
 
-
+  const [stats,setStats] = useState(0)
   const [TOSContent, setTOSContent] = useState([]);
   const [TOSInfo, setTOSInfo] = useState([]);
   const [Comment,setComment]=useState([]);
@@ -84,7 +84,7 @@ function TOSview() {
     Campus: 'San Carlos Campus',
     CourseCode: '',
     Department: 'Business and Office Administration',
-    ExaminationType: 'Multiple choices',
+    ExaminationType: [],
     CourseType: '',
     ExaminationDate: '',
     Faculty: '',
@@ -117,7 +117,7 @@ function TOSview() {
   const [getQuestion, setGetQuestion] = useState([]);
   const [getAnswer, setGetAnswer] = useState([]);
   const [examStates, setExamStates] = useState([]);
-
+  const options = ['Multiple Choice ','Identification ','True or False'];
 
 
 
@@ -144,9 +144,9 @@ function TOSview() {
         Campus: TOSInfo[0].Campus,
         CourseCode: TOSInfo[0].CourseCode,
         Department: TOSInfo[0].Department,
-        ExaminationType: TOSInfo[0].ExaminationType,
+        ExaminationType: TOSInfo[0].ExaminationType.split('/'), // Convert string to array
         CourseType: TOSInfo[0].CourseType,
-        ExaminationDate: TOSInfo[0].ExaminationDate,
+        ExaminationDate: TOSInfo[0].ExaminationDate ,
         Faculty: TOSInfo[0].Faculty,
         Chairperson: TOSInfo[0].Chairperson,
         Dean: TOSInfo[0].Dean,
@@ -279,7 +279,8 @@ if (getQuestion.length && getAnswer.length) {
       exam_id:content.exam_id,
       answer: content.answer,
       test_part_num: content.test_part.test_part_num,
-      test_part_id: content.test_part_id
+      test_part_id: content.test_part_id,
+      context: content.context
     };
   });
 
@@ -407,12 +408,22 @@ if (getQuestion.length && getAnswer.length) {
   };
 
   const updateTOSinfo = async (e) => {
+   
     e.preventDefault();
     try {
 
-      formData.Status = Submit===true?1:0
+    
+     
+      console.log('examtypes: ',formData.ExaminationType)
+      formData.Status = Submit===true?1:formData.Status
 
-      await api.put(`/api/tos-info/${id}/update/`, formData);
+      
+
+      const formData1 = formData
+
+     formData1.ExaminationType = formData1.ExaminationType.join('/');
+
+      await api.put(`/api/tos-info/${id}/update/`, formData1);
       
 
       setLoading(true);
@@ -504,7 +515,9 @@ if (getQuestion.length && getAnswer.length) {
                         'question_type': dataques.question_type,
                         'choices':dataques.choices,
                         'exam_id': data.exam_id,
+                        'context':data.context,
                         'test_part_id': createdTestPart.id // Use the newly created test part ID
+
                       });
                     }
                     return acc;
@@ -513,6 +526,9 @@ if (getQuestion.length && getAnswer.length) {
                   if (itemsQues.length > 0) {
                     // Now handle related questions and answers creation
                     const itemQuestionJson = JSON.stringify(itemsQues);
+
+
+                    console.log('debugcontext: ',itemQuestionJson)
         
                     const questionRes = await api.post("/api/create-questions/", { itemQuestionJson });
                     if (questionRes.status === 201) {
@@ -584,6 +600,7 @@ if (getQuestion.length && getAnswer.length) {
                   'answer': data.answer,
                   'question_type': data.question_type,
                   'exam_id': data.exam_id,
+                  'context':data.context,
                   'test_part_id': data.test_part_id
                 }
               ]);
@@ -1970,7 +1987,11 @@ const handleStateChange = (index, type, value) => {
   const newStates = [...examStates];
   if (type === 'question') {
     newStates[index]['question'] = value;
-  } else {
+  } 
+  else  if (type === 'context') {
+    newStates[index]['context'] = value;
+  } 
+  else {
     
     newStates[index]['choices'][type] = value;
   }
@@ -2119,7 +2140,7 @@ const handleSubmitExam = () =>{
       <form  onSubmit={updateTOSinfo}>
    <Card className={`mb-5 ${step == 1? 'show':'hidden'}`}>
   <Breadcrumb aria-label="Default breadcrumb example">
-      <Breadcrumb.Item >
+      <Breadcrumb.Item href='/exam_bank' >
        Exams
       </Breadcrumb.Item>
       <Breadcrumb.Item >Course Information</Breadcrumb.Item>
@@ -2201,14 +2222,12 @@ const handleSubmitExam = () =>{
        {/* Type of Examination and Course Type */}
        <div className='w-full gap-4 flex flex-col sm:flex-row'>
          <div className="w-full">
-           <div className="mb-2 block">
-             <Label htmlFor="exam-type" value="Type of Examination" />
-           </div>
-           <Select id="exam-type" name="ExaminationType" value={formData.ExaminationType} onChange={handleChange} required>
-             <option value="Multiple choices">Multiple choices</option>
-             <option value="Identification">Identification</option>
-             <option value="True or false">True or false</option>
-           </Select>
+        
+
+<div className="mb-2 block">
+           <Label htmlFor="executive-director" value="Campus Executive Director" />
+         </div>
+         <TextInput id="executive-director" type="text" name="Director" value={formData.Director} onChange={handleChange} />
          </div>
          <div className='w-full'>
            <div className="mb-2 block">
@@ -2255,14 +2274,37 @@ const handleSubmitExam = () =>{
        </div>
 
        {/* Campus Executive Director */}
-       <div className='w-full gap-4 flex flex-col sm:flex-row'>
+       <div className='w-full gap-4 sm:flex-row'>
          
-       <div className={comment_text!=null?'w-full ':'w-2/4'}>
-         <div className="mb-2 block">
-           <Label htmlFor="executive-director" value="Campus Executive Director" />
-         </div>
-         <TextInput id="executive-director" type="text" name="Director" value={formData.Director} onChange={handleChange} />
-         
+       <div className='w-full'>
+       
+       <div className="mb-2 block">
+             <Label htmlFor="exam-type" value="Type of Examination" />
+           </div>
+           <Autocomplete
+  multiple
+  id="chip-selection"
+  name="ExaminationType"
+  options={['Multiple Choice', 'Identification', 'True or False']}
+  value={Array.isArray(formData.ExaminationType) ? formData.ExaminationType : []}
+  onChange={(event, newValue) => {
+    setFormData({ ...formData, ExaminationType: newValue });
+  }}
+  renderTags={(value, getTagProps) =>
+    value.map((option, index) => (
+      <Chip
+        variant="outlined"
+        label={option}
+        {...getTagProps({ index })}
+        key={index}
+      />
+    ))
+  }
+  renderInput={(params) => (
+    <TextField {...params} variant="outlined" label="Select type of examination" />
+  )}
+/>
+
        </div>
        <div className={comment_text!=null?'w-full ':'w-full hidden'}>
        <div className="mt-8 block ">
@@ -2310,7 +2352,7 @@ const handleSubmitExam = () =>{
 
   <Card>
   <Breadcrumb aria-label="Default breadcrumb example">
-      <Breadcrumb.Item >
+      <Breadcrumb.Item href='exam_bank' >
       Exams
       </Breadcrumb.Item>
       <Breadcrumb.Item >

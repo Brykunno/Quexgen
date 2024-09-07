@@ -24,6 +24,8 @@ function Examtest ({Status, items, lessonsData,handleStateChange,examStates,setE
 
 
 
+
+
   const [disableAdd,setDisableAdd] = useState(false)
   const [disableAddTestMcq,setDisableAddTestMcq] = useState(false)
   const [disableAddTestIdentification,setDisableAddTestIdentification] = useState(false)
@@ -51,9 +53,8 @@ function Examtest ({Status, items, lessonsData,handleStateChange,examStates,setE
 
   const [context,setContext] = useState([])
 
- 
 
-  const handleContextChange = (value, index, taxonomy_level) => {
+  const handleContextChange = (value, index, taxonomy_level,test_type) => {
     setContext(prev => {
       // Check if the context for the given index already exists
       const existingIndex = prev.findIndex(item => item.index === index);
@@ -64,7 +65,8 @@ function Examtest ({Status, items, lessonsData,handleStateChange,examStates,setE
         updatedContext[existingIndex] = {
           ...updatedContext[existingIndex],
           context: value,
-          taxonomy_level: taxonomy_level
+          taxonomy_level: taxonomy_level,
+          test_type:test_type
         };
         return updatedContext;
       } else {
@@ -74,14 +76,18 @@ function Examtest ({Status, items, lessonsData,handleStateChange,examStates,setE
           {
             context: value,
             index: index,
-            taxonomy_level: taxonomy_level
+            taxonomy_level: taxonomy_level,
+            test_type:test_type
           }
         ];
       }
     });
   };
     const generateQues = (index,test_type) =>{
-
+      if (context[index] && context[index].taxonomy_level === null) {
+        context[index].taxonomy_level = categories[catindex]
+      }
+  
       setLoading(true)
       api.post('/api/generate-question/', {
         context: getContextValue(index),
@@ -171,6 +177,39 @@ const getTaxonomyValue = (index) => {
     return acc;
   }, {});
 
+  
+  
+
+  useEffect(() => {
+    const newContext = [];
+  
+    examStates.forEach((item, idx) => {
+      let catindex = 0;
+  
+      if (item.test_part_num === 1) {
+        catindex = getQuestionNumber(item, examStates);
+      } else if (item.test_part_num === 2) {
+        catindex = getQuestionNumber(item, examStates) + Test1;
+      } else {
+        catindex = getQuestionNumber(item, examStates) + Test1 + Test2;
+      }
+  
+      if (item.context) {
+        newContext.push({
+          context: item.context,
+          index: idx,
+          test_type: item.test_type,
+          taxonomy_level: categories[catindex] || null  // Fallback to null if catindex is out of bounds
+        });
+      }
+    });
+  
+    // Update the context state once after the loop if there is a change
+    if (JSON.stringify(newContext) !== JSON.stringify(context)) {
+      setContext(newContext);
+    }
+  }, [examStates, categories, context]); // Added context as dependency to avoid stale state issues
+
 
 
   const getContextValue = (index) => {
@@ -211,6 +250,9 @@ const getTaxonomyValue = (index) => {
     else{
      catindex = getQuestionNumber(item, examStates)+Test1+Test2
     }
+
+
+
 
 
     return (
@@ -310,7 +352,11 @@ const getTaxonomyValue = (index) => {
           <div className="  gap-3">
             <div className='mb-4'>
               Context:
-            <Textarea value={getContextValue(index)}  onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex])}} />
+              <Textarea value={getContextValue(index)}  
+            onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex],"mcq");
+              handleStateChange(index, 'context', e.target.value)
+            }
+            } />
             </div>
             <div className=''>
             <Card>
@@ -477,7 +523,11 @@ const getTaxonomyValue = (index) => {
          <div className="  gap-3">
            <div className='mb-4'>
              Context:
-             <Textarea value={getContextValue(index)}  onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex])}} />
+             <Textarea value={getContextValue(index)}  
+            onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex],"identification");
+              handleStateChange(index, 'context', e.target.value)
+            }
+            } />
            </div>
            <div className=''>
            <Card>
@@ -600,7 +650,11 @@ const getTaxonomyValue = (index) => {
          <div className="  gap-3">
            <div className='mb-4'>
              Context:
-             <Textarea value={getContextValue(index)}  onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex])}} />
+             <Textarea value={getContextValue(index)}  
+            onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex],"trueOrFalse");
+              handleStateChange(index, 'context', e.target.value)
+            }
+            } />
            </div>
            <div className=''>
            <Card>
@@ -984,6 +1038,9 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       <Card>
         
       <Breadcrumb aria-label="Default breadcrumb example">
+      <Breadcrumb.Item href='/exam_bank' >
+      Exams
+      </Breadcrumb.Item>
       <Breadcrumb.Item >
       Course Information
       </Breadcrumb.Item>
@@ -1020,7 +1077,10 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       <Button  onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
       <Button  onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
       <Button  color="blue" onClick={() => setPdfModal(true)}><PreviewIcon className="mr-2"/> Exam Preview</Button>
-      <Button type='submit'   color={'success'} disabled={Status===2} ><UpdateIcon className='mr-2'/>Update Exam</Button>
+      <div className='flex gap-3'>
+      <Button type='submit'  onClick={() => setSubmit(false)}  color={'success'} disabled={Status===2}  ><UpdateIcon className='mr-2'/>Update and save</Button>
+      <Button type='submit'   onClick={() => setSubmit(true)} color={'success'} disabled={Status===2} ><UpdateIcon className='mr-2'/>Update and submit</Button>
+      </div>
       <Button type='submit' onClick={() => setSubmit(true)} disabled={Status===3 || Status===2 || Status===1} color="success"><SendIcon className='mr-2'/>Submit Exam</Button>
     
     
@@ -1041,7 +1101,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         </div>
        
         <br />
-        
+
       
         {examPart(categories)}
   
@@ -1049,6 +1109,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         
         <Modal show={PdfModal} size={'7xl'}  onClose={() => setPdfModal(false)} className="h-screen">
         <Modal.Header>Table of Specification</Modal.Header>
+      
         <Modal.Body  className="p-0">
           <div className="min-h-96 "  style={{height:'575px'}}>
           <PDFViewer className="h-full w-full">

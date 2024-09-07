@@ -8,7 +8,7 @@ function TaxonomyAllocation(props) {
     <div>
         <Card>
         <Breadcrumb aria-label="Default breadcrumb example">
-      <Breadcrumb.Item >
+      <Breadcrumb.Item href="/exam_bank">
       Exams
       </Breadcrumb.Item>
       <Breadcrumb.Item >

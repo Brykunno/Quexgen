@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from rest_framework import generics
+from rest_framework import generics,viewsets
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
@@ -159,5 +159,59 @@ class TeacherNotifUpdate(generics.UpdateAPIView):
 
     def perform_update(self, serializer):
         serializer.save()
+        
+
+class ContextViewSet(viewsets.ModelViewSet):
+    queryset = Context.objects.all()
+    serializer_class = ContextSerializer
+    permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+       json_string = request.data.get('itemContextJson', '[]')
+        
+       try:
+            # Convert the JSON string to a Python list of dictionaries
+            lessons_data = json.loads(json_string)
+       except json.JSONDecodeError:
+            return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Print lessons_data for debugging purposes
+       print("Context Data:", lessons_data)
+        
+     
+       response_data = []
+
+       for lesson in lessons_data:
+         print("Processing questions:", lesson)
+         serializer = ContextSerializer(data=lesson)
+            
+         if serializer.is_valid():
+                serializer.save()
+                response_data.append(serializer.data)
+         else:
+                print("Validation errors:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+       return Response(response_data, status=status.HTTP_201_CREATED)
+
+    def perform_create(self, serializer):
+        # Save multiple entries if necessary
+        serializer.save()
+
+    def perform_update(self, serializer):
+        # Check if the data is valid
+        if serializer.is_valid():
+            print("Updating Context with data:", serializer.validated_data)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            # Print validation errors
+            print("Invalid data for Context update:", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_destroy(self, instance):
+        print(f"Deleting Context with ID: {instance.id}")
+        instance.delete()
+        return Response({"detail": "Context deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
 

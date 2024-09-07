@@ -7,6 +7,7 @@ from django.conf import settings
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'users', views.UserViewSet)
+router.register(r'context', admin_views.ContextViewSet, basename='context')
 
 
 
@@ -60,6 +61,6 @@ urlpatterns = [
     path('notification/update/teacher/<int:pk>/', admin_views.TeacherNotifUpdate.as_view(), name='teacher-notif-list-update'),
  
     path('generate-question/', ai_views.generate_question, name='generate_question'),
-    path('user/',  include(router.urls)),     
+    path('',  include(router.urls)),     
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -17,7 +17,7 @@ class TOS_info(models.Model):
     
     STATUS_CHOICES = (
         (0, 'Saved'),
-        (1, 'Submitted'),
+        (1, 'To review'),
         (2, 'Approved'),
         (3, 'Needs Revision'),
     )
@@ -97,6 +97,7 @@ class TestPart(models.Model):
 class Questions(models.Model):
     question =  models.TextField()
     answer =  models.TextField()
+    context =  models.TextField(null=True)
     question_type = models.TextField( null=True)
     exam_id = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name="exam_id", null=True)
     test_part_id = models.ForeignKey(TestPart, on_delete=models.CASCADE, related_name="test_part_id", null=True)
@@ -155,5 +156,18 @@ class Admin_notification(models.Model):
     
     class Meta:
         db_table = 'notification_admin'
+
+class Context(models.Model):
+    question = models.ForeignKey(Questions, on_delete=models.CASCADE, related_name="question_context")
+    context = models.TextField()
+    taxonomy_level = models.TextField()
+    test_type = models.TextField()
+    
+
+    def __str__(self):
+        return self.context
+    
+    class Meta:
+        db_table = 'context'
         
 
