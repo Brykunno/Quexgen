@@ -8,7 +8,7 @@ function Create_exam() {
 
   return (
     <div>
-  
+  <Topnavbar title="Create Exam"/>
     <div className='content'>
   
 

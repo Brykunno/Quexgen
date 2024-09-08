@@ -2492,7 +2492,7 @@ const handleSubmitExam = () =>{
       {loadingGenerate  && <LoadingGenerate/>}
 <div className="w-full justify-center mx-auto flex gap-14">
   <div>
-  {JSON.stringify(examStates)} 
+   
 <Button size={'sm'} color={'primary'} onClick={handleBack} disabled={disableBack} className="px-3"><NavigateBeforeIcon/> <p style={{marginTop:'0.5px'}}>Previous</p></Button>
 </div>
 <div>

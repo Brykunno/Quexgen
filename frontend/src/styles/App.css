@@ -36,10 +36,10 @@ background-color: #dee8f7;
  }
 
  .Sidebar{
-    padding-top: 70px;
+    /* padding-top: 60px; */
     height: 100%;
-    width: 200px;
-    background-color: #02022a;
+    width: 230px;
+    background-color: #060164;
     position: fixed;
 
     font-size: 14px;
@@ -48,9 +48,9 @@ background-color: #dee8f7;
 
 
 .content{
-    margin-left: 200px; 
+    margin-left: 230px; 
     padding: 32px; 
-    padding-top: 80px ;
+   
 }
 
 @media (max-width: 768px) {
@@ -59,7 +59,26 @@ background-color: #dee8f7;
     }
     .content{
         margin-left: 0px; 
+        padding-top: 80px;
     }
+
+    
+
+.topnavbar {
+   
+
+
+    width: 100%;
+    position:fixed;
+    z-index: 50;
+   top:0px;
+    left: 0px;
+    border-radius: 0px!important;
+
+
+}
+
+
 }
 /* 
 .content{
@@ -121,7 +140,9 @@ background-color: #dee8f7;
 
    color: #fffafa;
    background: #e5ad06;
-   border-top-right-radius: 30px;
+   /* border-top-right-radius: 30px;
    border-bottom-right-radius: 30px;
-   width: 98%;
+   width: 98%; */
+
+
 }

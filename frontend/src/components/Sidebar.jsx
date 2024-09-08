@@ -5,6 +5,8 @@ import api from "../api";
 import Avatar from '@mui/material/Avatar';
 
 
+
+
 function stringToColor(string) {
   let hash = 0;
   let i;
@@ -116,10 +118,21 @@ function Sidebar() {
           })
     }
   return (
-    <div className="Sidebar">
+    <div className="Sidebar ">
+
+      <div className='mx-auto p-3 '>
+<div className="text-white font-bold text-center text-2xl ">
+
+  <img src="/images/quexgen.png" alt="jbj" style={{height:'80px',width:'80px'}} className='mx-auto'/>
+  
+  Quexgen
+  
+  </div>
+      </div>
      
 
       <ul className="SidebarList">
+
         {data}
        
       </ul>

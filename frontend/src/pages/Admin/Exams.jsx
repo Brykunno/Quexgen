@@ -8,6 +8,10 @@ import RecommendIcon from '@mui/icons-material/Recommend';
 import TurnedInIcon from '@mui/icons-material/TurnedIn';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
+
+
+
+
 function Exams() {
   const [exam, setExam] = useState([]);
   const [filteredExams, setFilteredExams] = useState([]);
@@ -131,7 +135,7 @@ function Exams() {
           <option value="">All Status</option>
          
           <option value="Approved">Approved</option>
-          <option value="Submitted">Submitted</option>
+          <option value="To review">To review</option>
           <option value="Needs Revision">Needs Revision</option>
         </Select>
       </div>

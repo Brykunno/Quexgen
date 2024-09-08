@@ -268,7 +268,7 @@ const readNotif = (id) =>{
  
       
        
-        <span className="self-center whitespace-nowrap text-xl font-semibold text-white">Quexgen</span>
+        <span className="self-center whitespace-nowrap text-xl font-semibold text-white"></span>
       </NavbarBrand>
       <div>
         <p className="text-white font-semibold ">{props.title}</p>
@@ -368,7 +368,7 @@ const readNotif = (id) =>{
           label={
             profile!=='http://127.0.0.1:8000/apinull'? <img src={profile} style={{height:'40px',width:'40px', borderRadius:'50%'}}/>:
 
-            <Avatar {...stringAvatar(full_name)} size='large' />
+            <Avatar {...stringAvatar(full_name)} size='large' /> 
           }
         
         >

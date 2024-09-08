@@ -8,6 +8,7 @@ import RecommendIcon from '@mui/icons-material/Recommend';
 import TurnedInIcon from '@mui/icons-material/TurnedIn';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import DocViewerFile from '../../components/DocViewerFile';
+import Topnavbar from '../../components/Topnavbar';
 
 
 
@@ -93,6 +94,8 @@ function Exam_bank() {
   }
 
   return (
+    <div>
+      <Topnavbar title="Exam Bank"/>
     <div className="content">
       
       {/* Search Bar (real-time filtering) */}
@@ -172,6 +175,7 @@ function Exam_bank() {
         />
       </div>
 
+    </div>
     </div>
   );
 }

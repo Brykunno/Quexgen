@@ -22,20 +22,20 @@ import { colors } from '@mui/material';
 const customTheme = {
   button: {
     color: {
-      primary: "border border-transparent bg-blue-800 text-white focus:ring-4 focus:ring-blue-300 enabled:hover:bg-blue-900 dark:border-blue-700 dark:bg-blue-800 dark:focus:ring-blue-800 dark:enabled:hover:bg-blue-700 flex items-stretch justify-center p-0.5 text-center",
+      primary: "border border-transparent bg-prime text-white focus:ring-4 focus:ring-blue-300 enabled:hover:bg-blue-900 dark:border-blue-700 dark:bg-prime dark:focus:ring-prime dark:enabled:hover:bg-blue-700 flex items-stretch justify-center p-0.5 text-center",
     },
 
   },
 
   progress: {
     color:{
-      primary:'bg-blue-800 dark:bg-blue-700',
+      primary:'bg-prime dark:bg-blue-700',
     },
   },
 
   spinner: {
     color:{
-      primary:'fill-blue-800 dark:fill-blue-700',
+      primary:'fill-prime dark:fill-blue-700',
     },
   },
   
@@ -52,7 +52,7 @@ function Logout() {
 const ProtectedLayout = ({ children }) => (
   <>
     <Sidebar />
-  <Topnavbar/>
+  {/* <Topnavbar/> */}
     {/* <Topnavbarcomp /> */}
     {children}
   </>

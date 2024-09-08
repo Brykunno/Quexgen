@@ -3,6 +3,10 @@ const flowbite = require("flowbite-react/tailwind");
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}", flowbite.content()],
   theme: {
+
+    colors: {
+      'prime':'#060164',
+    },
     extend: {
 
       keyframes: {
