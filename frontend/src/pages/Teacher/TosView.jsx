@@ -1,5 +1,6 @@
 
 import TOSview from '../../components/TOSview';
+import Topnavbar from '../../components/Topnavbar';
 
 
 function TosView() {
@@ -10,8 +11,8 @@ function TosView() {
     <div  >
   
 
+<Topnavbar title="Exams"/>
 
-        
  
       <TOSview />
   

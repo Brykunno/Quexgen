@@ -307,7 +307,7 @@ function checkAnswer(localStore, answer){
           <div className="  gap-3">
             <div className='mb-4'>
               Context:
-            <Textarea value={getContextValue(index)}  
+              <Textarea style={{height:'150px'}} value={getContextValue(index)}  
             onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex],"mcq");
               handleStateChange(index, 'context', e.target.value)
             }
@@ -405,7 +405,7 @@ function checkAnswer(localStore, answer){
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={()=>{generateQues(index,"mcq")}} className='mx-auto'>Generate</Button>
+          <Button color={'primary'} onClick={()=>{generateQues(index,"mcq")}} className='mx-auto'>Generate</Button>
         
         </Modal.Footer>
       </Modal>
@@ -480,7 +480,7 @@ function checkAnswer(localStore, answer){
          <div className="  gap-3">
            <div className='mb-4'>
              Context:
-             <Textarea value={getContextValue(index)}  
+             <Textarea style={{height:'150px'}} value={getContextValue(index)}  
             onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex],"identification");
               handleStateChange(index, 'context', e.target.value)
             }
@@ -528,7 +528,7 @@ function checkAnswer(localStore, answer){
          </div>
        </Modal.Body>
        <Modal.Footer>
-         <Button onClick={()=>{generateQues(index,"identification")}} className='mx-auto'>Generate</Button>
+         <Button color={'primary'} onClick={()=>{generateQues(index,"identification")}} className='mx-auto'>Generate</Button>
        
        </Modal.Footer>
      </Modal>
@@ -607,7 +607,7 @@ function checkAnswer(localStore, answer){
          <div className="  gap-3">
            <div className='mb-4'>
              Context:
-             <Textarea value={getContextValue(index)}  
+             <Textarea style={{height:'150px'}} value={getContextValue(index)}  
             onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex],"trueOrFalse");
               handleStateChange(index, 'context', e.target.value)
             }
@@ -663,7 +663,7 @@ function checkAnswer(localStore, answer){
          </div>
        </Modal.Body>
        <Modal.Footer>
-         <Button onClick={()=>{generateQues(index,"trueOrFalse")}} className='mx-auto'>Generate</Button>
+         <Button color={'primary'} onClick={()=>{generateQues(index,"trueOrFalse")}} className='mx-auto'>Generate</Button>
        
        </Modal.Footer>
      </Modal>
@@ -734,8 +734,8 @@ function checkAnswer(localStore, answer){
       
           <div className='flex gap-5 mt-5 justify-center'>
             <Button 
-            outline
-            color={'success'}
+            
+            color={'primary'}
               onClick={() => { handleAddItem(itemtest.test_type, itemtest.test_part_num, itemtest.exam_id, itemtest.id); }} 
               disabled={disableAdd}
             >
@@ -961,9 +961,9 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
 
       <Card  className='w-full mt-5'> 
       
-      <Button  onClick={()=>{setShowPart(1)}} disabled={disableShowPart1}><VisibilityIcon className="mr-2"/> View Test 1</Button>
-      <Button  onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
-      <Button  onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
+      <Button color={'primary'} onClick={()=>{setShowPart(1)}} disabled={disableShowPart1}><VisibilityIcon className="mr-2"/> View Test 1</Button>
+      <Button color={'primary'} onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
+      <Button color={'primary'} onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
       <Button  color="blue" onClick={() => setPdfModal(true)}><PreviewIcon className="mr-2"/> Exam Preview</Button>
      
       <Button  type="submit" onClick={()=>{setSubmit(false)}} color="success"><SaveIcon className='mr-2'/>Save Exam</Button>

@@ -30,9 +30,10 @@ taxonomy_levels = {
 # Define prompts for each taxonomy level
 prompts = {
     "Remembering": (
+        "We are using this model for builiding our app please strictly follow the format of proceeding prompts"
         "Create a multiple-choice question that tests the recall of specific facts, names, dates, or concepts directly mentioned in the following context. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
-        "Ensure the options are in plain text without any labels (like letters or numbers) before them. The question and the correct answer should be explicitly connected to the information in the context: {context}"
+        "Ensure the options are in plain text without any labels (like letters or numbers or something like **Question** or options:) before them. The question and the correct answer should be explicitly connected to the information in the context: {context}"
     ),
     "Understanding": (
         "Create a question that asks for an explanation of the following context: {context}. "
@@ -106,7 +107,7 @@ def generate_question_ai(level, context_ques, index, test_type, max_retries=5):
     while retry_count < max_retries:
         try:
             response = client.chat.completions.create(
-                model="jamba-1.5-mini",
+                model="jamba-1.5-large",
                 messages=[
                     ChatMessage(
                         role="user",
@@ -218,7 +219,7 @@ def generate_question(request):
             options = data.get('options', [])
             index = data.get('index', 0)
             test_type = data.get('test_type', '')
-            context = test_type+' question '+data.get('context', 'Default context text')
+            context = data.get('context', 'Default context text')
             answer = "True"
             taxonomy_level = data.get('taxonomy_level', '')
         

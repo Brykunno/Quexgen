@@ -352,7 +352,7 @@ const getTaxonomyValue = (index) => {
           <div className="  gap-3">
             <div className='mb-4'>
               Context:
-              <Textarea value={getContextValue(index)}  
+              <Textarea style={{height:'100px'}} value={getContextValue(index)}  
             onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex],"mcq");
               handleStateChange(index, 'context', e.target.value)
             }
@@ -523,7 +523,7 @@ const getTaxonomyValue = (index) => {
          <div className="  gap-3">
            <div className='mb-4'>
              Context:
-             <Textarea value={getContextValue(index)}  
+             <Textarea style={{height:'100px'}} value={getContextValue(index)}  
             onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex],"identification");
               handleStateChange(index, 'context', e.target.value)
             }
@@ -571,7 +571,7 @@ const getTaxonomyValue = (index) => {
          </div>
        </Modal.Body>
        <Modal.Footer>
-         <Button onClick={()=>{generateQues(index,"identification")}} className='mx-auto'>Generate</Button>
+         <Button color={'primary'} onClick={()=>{generateQues(index,"identification")}} className='mx-auto'>Generate</Button>
        
        </Modal.Footer>
      </Modal>
@@ -650,7 +650,7 @@ const getTaxonomyValue = (index) => {
          <div className="  gap-3">
            <div className='mb-4'>
              Context:
-             <Textarea value={getContextValue(index)}  
+             <Textarea style={{height:'100px'}} value={getContextValue(index)}   
             onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex],"trueOrFalse");
               handleStateChange(index, 'context', e.target.value)
             }
@@ -706,7 +706,7 @@ const getTaxonomyValue = (index) => {
          </div>
        </Modal.Body>
        <Modal.Footer>
-         <Button onClick={()=>{generateQues(index,"trueOrFalse")}} className='mx-auto'>Generate</Button>
+         <Button color={'primary'} onClick={()=>{generateQues(index,"trueOrFalse")}} className='mx-auto'>Generate</Button>
        
        </Modal.Footer>
      </Modal>
@@ -783,8 +783,8 @@ const getTaxonomyValue = (index) => {
           <div className='flex gap-5 mt-5 justify-center'>
             <Button 
               onClick={() => { handleAddItem(itemtest.test_type, itemtest.test_part_num, itemtest.exam_id, itemtest.id); }} 
-              outline
-              color={'success'}
+              
+              color={'primary'}
               disabled={disableAdd}
             >
              <AddCircleOutlineIcon className='mr-2'/>  Add Item
@@ -1077,10 +1077,10 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       <Button color={'primary'} onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
       <Button color={'primary'} onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
       <Button  color="blue" onClick={() => setPdfModal(true)}><PreviewIcon className="mr-2"/> Exam Preview</Button>
-      <div className='flex gap-3'>
+      
       <Button type='submit'  onClick={() => setSubmit(false)}  color={'success'} disabled={Status===2}  ><UpdateIcon className='mr-2'/>Update and save</Button>
       <Button type='submit'   onClick={() => setSubmit(true)} color={'success'} disabled={Status===2} ><UpdateIcon className='mr-2'/>Update and submit</Button>
-      </div>
+  
       <Button type='submit' onClick={() => setSubmit(true)} disabled={Status===3 || Status===2 || Status===1} color="success"><SendIcon className='mr-2'/>Submit Exam</Button>
     
     

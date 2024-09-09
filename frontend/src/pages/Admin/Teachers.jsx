@@ -6,6 +6,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import SearchIcon from '@mui/icons-material/Search';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import HideSourceIcon from '@mui/icons-material/HideSource';
+import Topnavbar from '../../components/Topnavbar';
 
 function Teachers() {
   const [user, setUser] = useState([]);
@@ -129,6 +130,8 @@ function Teachers() {
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
 
   return (
+    <div>
+      <Topnavbar title="Teachers / Users"/>
     <div className='content'>
       <div className='flex gap-10 '>
         <div style={{ flex: 0.4 }}>
@@ -284,7 +287,7 @@ function Teachers() {
           </div>
         </div>
       </div>
-    </div>
+    </div></div>
   );
 }
 

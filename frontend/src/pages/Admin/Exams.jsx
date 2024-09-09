@@ -7,6 +7,7 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 import RecommendIcon from '@mui/icons-material/Recommend';  
 import TurnedInIcon from '@mui/icons-material/TurnedIn';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import Topnavbar from '../../components/Topnavbar';
 
 
 
@@ -109,6 +110,8 @@ function Exams() {
   }
 
   return (
+    <div>
+      <Topnavbar title="Exams"/>
     <div className="content">
       {/* Search Bar (real-time filtering) */}
       <div className="flex items-center mb-5 gap-4">
@@ -188,6 +191,7 @@ function Exams() {
           showIcons
         />
       </div>
+    </div>
     </div>
   );
 }

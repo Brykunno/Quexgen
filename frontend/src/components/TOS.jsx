@@ -1263,8 +1263,8 @@ const handleCeil = (index, field, value) => {
   <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value="Number of Items" />
     <div className="flex gap-3 px-3">
-      <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'items', lessonsData[indexRow]['items'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
-      <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'items', lessonsData[indexRow]['items'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+      <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'items', lessonsData[indexRow]['items'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+      <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'items', lessonsData[indexRow]['items'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
     </div>
   </div>
@@ -1281,8 +1281,8 @@ const handleCeil = (index, field, value) => {
       <div className="mb-2 block flex-1">
         <Label htmlFor={`teaching_hours-${indexRow}`} value={`Knowledge/Remembering `} />
         <div className="flex gap-3 px-3">
-        <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'remembering', lessonsData[indexRow]['remembering'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
-        <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'remembering', lessonsData[indexRow]['remembering'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+        <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'remembering', lessonsData[indexRow]['remembering'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+        <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'remembering', lessonsData[indexRow]['remembering'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
     </div>
         
@@ -1300,8 +1300,8 @@ const handleCeil = (index, field, value) => {
   <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value={`Comprehension/Understanding`} />
     <div className="flex gap-3 px-3">
-        <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'understanding', lessonsData[indexRow]['understanding'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
-        <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'understanding', lessonsData[indexRow]['understanding'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+        <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'understanding', lessonsData[indexRow]['understanding'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+        <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'understanding', lessonsData[indexRow]['understanding'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
     </div>
   </div>
@@ -1317,8 +1317,8 @@ const handleCeil = (index, field, value) => {
   <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value={`Application/Applying`} />
     <div className="flex gap-3 px-3">
-        <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'applying', lessonsData[indexRow]['applying'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
-        <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'applying', lessonsData[indexRow]['applying'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+        <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'applying', lessonsData[indexRow]['applying'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+        <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'applying', lessonsData[indexRow]['applying'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
     </div>
   </div>
@@ -1334,8 +1334,8 @@ const handleCeil = (index, field, value) => {
   <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value={`Analysis/Analyzing`} />
     <div className="flex gap-3 px-3">
-        <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'analyzing', lessonsData[indexRow]['analyzing'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
-        <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'analyzing', lessonsData[indexRow]['analyzing'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+        <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'analyzing', lessonsData[indexRow]['analyzing'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+        <Button  color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'analyzing', lessonsData[indexRow]['analyzing'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
     </div>
   </div>
@@ -1351,8 +1351,8 @@ const handleCeil = (index, field, value) => {
   <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value={`Synthesis/Evaluating`} />
     <div className="flex gap-3 px-3">
-        <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'evaluating', lessonsData[indexRow]['evaluating'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
-        <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'evaluating', lessonsData[indexRow]['evaluating'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+        <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'evaluating', lessonsData[indexRow]['evaluating'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+        <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'evaluating', lessonsData[indexRow]['evaluating'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
     </div>
   </div>
@@ -1368,8 +1368,8 @@ const handleCeil = (index, field, value) => {
   <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value={`Evaluation/Creating`} />
     <div className="flex gap-3 px-3">
-        <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'creating', lessonsData[indexRow]['creating'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
-        <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'creating', lessonsData[indexRow]['creating'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+        <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'creating', lessonsData[indexRow]['creating'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+        <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'creating', lessonsData[indexRow]['creating'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
     </div>
   </div>
@@ -2437,7 +2437,7 @@ const handleSubmitExam = () =>{
       <div className="w-full">
         <div className="  w-full flex flex-wrap ">
      <div  className=" mt-3 flex gap-3   mx-auto">
-      <Button  onClick={() => addLesson({  
+      <Button color={'primary'}  onClick={() => addLesson({  
         topic: '',
       learning_outcomes: '',
       teachingHours: 0,

@@ -22,8 +22,10 @@ import { colors } from '@mui/material';
 const customTheme = {
   button: {
     color: {
-      primary: "border border-transparent bg-prime text-white focus:ring-4 focus:ring-blue-300 enabled:hover:bg-blue-900 dark:border-blue-700 dark:bg-prime dark:focus:ring-prime dark:enabled:hover:bg-blue-700 flex items-stretch justify-center p-0.5 text-center",
+      primary: "border border-transparent bg-prime text-white  focus:ring-4 focus:ring-blue-300 enabled:hover:bg-blue-900 dark:border-blue-700 dark:bg-prime dark:text-white dark:focus:ring-prime dark:enabled:hover:bg-blue-700 flex items-stretch justify-center p-0.5 text-center",
+      
     },
+    
 
   },
 

@@ -1093,8 +1093,8 @@ function inputModal(indexRow,lessonData){
 <div className="mb-2 block flex-1">
   <Label htmlFor={`teaching_hours-${indexRow}`} value="Number of Items" />
   <div className="flex gap-3 px-3">
-    <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'items', lessonData[indexRow]['items'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
-    <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'items', lessonData[indexRow]['items'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+    <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'items', lessonData[indexRow]['items'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+    <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'items', lessonData[indexRow]['items'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
   </div>
 </div>
@@ -1111,8 +1111,8 @@ function inputModal(indexRow,lessonData){
     <div className="mb-2 block flex-1">
       <Label htmlFor={`teaching_hours-${indexRow}`} value={`Knowledge/Remembering `} />
       <div className="flex gap-3 px-3">
-      <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'remembering', lessonData[indexRow]['remembering'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
-      <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'remembering', lessonData[indexRow]['remembering'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+      <Button  color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'remembering', lessonData[indexRow]['remembering'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+      <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'remembering', lessonData[indexRow]['remembering'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
   </div>
       
@@ -1130,8 +1130,8 @@ function inputModal(indexRow,lessonData){
 <div className="mb-2 block flex-1">
   <Label htmlFor={`teaching_hours-${indexRow}`} value={`Comprehension/Understanding`} />
   <div className="flex gap-3 px-3">
-      <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'understanding', lessonData[indexRow]['understanding'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
-      <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'understanding', lessonData[indexRow]['understanding'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+      <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'understanding', lessonData[indexRow]['understanding'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+      <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'understanding', lessonData[indexRow]['understanding'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
   </div>
 </div>
@@ -1147,8 +1147,8 @@ function inputModal(indexRow,lessonData){
 <div className="mb-2 block flex-1">
   <Label htmlFor={`teaching_hours-${indexRow}`} value={`Application/Applying`} />
   <div className="flex gap-3 px-3">
-      <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'applying', lessonData[indexRow]['applying'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
-      <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'applying', lessonData[indexRow]['applying'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+      <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'applying', lessonData[indexRow]['applying'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+      <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'applying', lessonData[indexRow]['applying'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
   </div>
 </div>
@@ -1164,8 +1164,8 @@ function inputModal(indexRow,lessonData){
 <div className="mb-2 block flex-1">
   <Label htmlFor={`teaching_hours-${indexRow}`} value={`Analysis/Analyzing`} />
   <div className="flex gap-3 px-3">
-      <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'analyzing', lessonData[indexRow]['analyzing'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
-      <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'analyzing', lessonData[indexRow]['analyzing'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+      <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'analyzing', lessonData[indexRow]['analyzing'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+      <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'analyzing', lessonData[indexRow]['analyzing'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
   </div>
 </div>
@@ -1181,8 +1181,8 @@ function inputModal(indexRow,lessonData){
 <div className="mb-2 block flex-1">
   <Label htmlFor={`teaching_hours-${indexRow}`} value={`Synthesis/Evaluating`} />
   <div className="flex gap-3 px-3">
-      <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'evaluating', lessonData[indexRow]['evaluating'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
-      <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'evaluating', lessonData[indexRow]['evaluating'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+      <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'evaluating', lessonData[indexRow]['evaluating'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+      <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'evaluating', lessonData[indexRow]['evaluating'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
   </div>
 </div>
@@ -1198,8 +1198,8 @@ function inputModal(indexRow,lessonData){
 <div className="mb-2 block flex-1">
   <Label htmlFor={`teaching_hours-${indexRow}`} value={`Evaluation/Creating`} />
   <div className="flex gap-3 px-3">
-      <Button size={'xs'} onClick={(e) => handleFloor(indexRow, 'creating', lessonData[indexRow]['creating'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
-      <Button size={'xs'} onClick={(e) => handleCeil(indexRow, 'creating', lessonData[indexRow]['creating'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+      <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'creating', lessonData[indexRow]['creating'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+      <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'creating', lessonData[indexRow]['creating'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
   </div>
 </div>
@@ -2372,7 +2372,7 @@ const handleSubmitExam = () =>{
     <div className="w-full">
         <div className="  w-full flex flex-wrap ">
      <div  className=" mt-3 flex gap-3   mx-auto">
-      <Button  onClick={() => addLesson({  
+      <Button color={'primary'}  onClick={() => addLesson({  
         topic: '',
       learning_outcomes: '',
       teachingHours: 0,

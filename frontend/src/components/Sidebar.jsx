@@ -62,7 +62,10 @@ function Sidebar() {
     };
   
   
-  
+    function removeIdFromPath(path) {
+      const index = path.lastIndexOf('/');
+      return path.slice(0, index);  // Remove everything after the last '/'
+    }
     
   
     function admin_account(users) {
@@ -91,7 +94,7 @@ function Sidebar() {
               <li
                 key={key}
                 className="row"
-                id={window.location.pathname == val.link ? "active":""}
+                id={window.location.pathname == val.link || removeIdFromPath(window.location.pathname) == val.link2 ? "active":""}
                 onClick={() => {
                   window.location.pathname = val.link;
                 }}
@@ -107,7 +110,7 @@ function Sidebar() {
               <li
                 key={key}
                 className="row"
-                id={window.location.pathname == val.link ? "active":""}
+                id={window.location.pathname == val.link || removeIdFromPath(window.location.pathname) == val.link2? "active":""}
                 onClick={() => {
                   window.location.pathname = val.link;
                 }}

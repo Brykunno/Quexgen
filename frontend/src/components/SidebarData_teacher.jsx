@@ -22,6 +22,7 @@ export const SidebarData_teacher = [
         title: "Exams",
         icon: <FolderCopyIcon />,
         link: "/exam_bank",
+        link2: "/tos_view"
     },
     // {
     //     title: "TOS",
@@ -33,11 +34,11 @@ export const SidebarData_teacher = [
     //     icon: <ManageAccountsIcon />,
     //     link: "/profile",
     // },
-    // {
-    //     title: "Logout",
-    //     icon: <LogoutIcon />,
-    //     link: "/logout",
-    // },
+    {
+        title: "Logout",
+        icon: <LogoutIcon />,
+        link: "/logout",
+    },
 
 
 

@@ -14,6 +14,7 @@ import CommentIcon from '@mui/icons-material/Comment';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import LoadingSubmit from '../../components/LoadingSubmit';
 import BreadCrumb from '../../components/BreadCrumb';
+import Topnavbar from '../../components/Topnavbar';
 
 function Exam_review() {
   const { id } = useParams();
@@ -526,6 +527,8 @@ if (getQuestion.length && getAnswer.length) {
   const crumbItem = [{ title:'Exams', link:'/exams'},{title:'Exam review', link:`/exam_review/${id}`}]
  
   return (
+    <div > 
+      <Topnavbar title="Exam Review"/>
     <div className='content'>
       <div className='mb-4'>
         <BreadCrumb crumbItem={crumbItem}/>
@@ -626,7 +629,7 @@ if (getQuestion.length && getAnswer.length) {
         <Modal.Body  className="p-0">
           <div className="min-h-96 "  style={{height:'575px'}}>
           <PDFViewer className="h-full w-full">
-    <PdfUpdate lessonsData={lessonData} Remembering={Remembering}  Analyzing={Analyzing} Understanding={Understanding} Applying={Applying} Evaluating={Evaluating} Creating={Creating}  formData={formData}/>
+    <PdfUpdate view={true} lessonsData={lessonData} Remembering={Remembering}  Analyzing={Analyzing} Understanding={Understanding} Applying={Applying} Evaluating={Evaluating} Creating={Creating}  formData={formData}/>
   </PDFViewer>
       
           </div>
@@ -645,7 +648,7 @@ if (getQuestion.length && getAnswer.length) {
         </Modal.Body>
       </Modal>
       </div>
-    </div>
+    </div></div>
   )
   ReactDOM.render(<TOSview />, document.getElementById('root'));
 }

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import "../styles/Form.css"
 import LoadingIndicator from "./LoadingIndicator";
+import Swal from 'sweetalert2'
 
 
 
@@ -13,7 +14,21 @@ function Form({ route, method }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [swal,setSwal] = useState(false);
   const navigate = useNavigate();
+
+  const showSwal = (message) => {
+    Swal.fire({
+      title: message,
+     
+      icon: "error",
+      confirmButtonText: "Proceed",
+      confirmButtonColor: '#060164',
+      preConfirm: () => {
+        setSwal(false); 
+      }
+    });
+  }
 
   const name = method == "login" ? "Login" : "Register";
 
@@ -35,18 +50,18 @@ function Form({ route, method }) {
         .then((data) => {
           
          if(data[0].is_superuser ===true){
-          navigate("/admin_profile");
+          navigate("/dashboard");
          }
          else{
-          navigate("/profile");
+          navigate("/create_exam");
          }
         })
-        .catch((err) => alert(err));
+        .catch((err) => setSwal(true));
       } else {
         navigate("/login");
       }
     } catch (error) {
-      alert(error);
+      setSwal(true)
     } finally {
       setLoading(false);
     }
@@ -54,6 +69,7 @@ function Form({ route, method }) {
   return ( 
    
     <Card className="max-w-sm w-auto form-container  ">
+      {swal && showSwal("Invalid username or password")}
         <div className="text-center text-2xl font-bold"><h1>LOGIN</h1></div>
   <form onSubmit={handleSubmit} className="flex max-w-md flex-col gap-4">
       <div>

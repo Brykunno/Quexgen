@@ -21,17 +21,18 @@ export const SidebarData = [
         title: "Exams",
         icon: <ArticleIcon />,
         link: "/exams",
+        link2: "/exam_review"
     },
     // {
     //     title: "Profile",
     //     icon: <ManageAccountsIcon />,
     //     link: "/profile_admin",
     // },
-    // {
-    //     title: "Logout",
-    //     icon: <LogoutIcon />,
-    //     link: "/logout",
-    // },
+    {
+        title: "Logout",
+        icon: <LogoutIcon />,
+        link: "/logout",
+    },
 
 
 
