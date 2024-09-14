@@ -18,6 +18,8 @@ import { Admin_routes_data } from "./Routes/Admin_routes_data";
 
 import { Flowbite } from 'flowbite-react';
 import { colors } from '@mui/material';
+import Reset_password from './pages/reset_password';
+import Reset_form from './components/reset_form';
 
 const customTheme = {
   button: {
@@ -37,10 +39,11 @@ const customTheme = {
 
   spinner: {
     color:{
-      primary:'fill-prime dark:fill-blue-700',
+      primary:'fill-prime dark:fill-prime',
     },
   },
-  
+
+
 };
 
 
@@ -72,6 +75,10 @@ function App() {
 
 <BrowserRouter>
     <Routes>
+
+
+    <Route path="/password-reset" element={<Reset_password />} />
+    <Route path="/password/reset/confirm/:uid/:token" element={<Reset_form />} />
 
     {Admin_routes_data.map((val, key) => {
             return (

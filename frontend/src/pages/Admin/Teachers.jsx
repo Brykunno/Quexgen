@@ -231,7 +231,7 @@ function Teachers() {
                     required
                   />
                 </div>
-                <fieldset className="flex max-w-md flex-col gap-4">
+                <div className="flex max-w-md flex-col gap-4">
                   <Label>User Type</Label>
                   <div className="flex gap-10">
                     <div className="flex items-center gap-2">
@@ -255,7 +255,7 @@ function Teachers() {
                       <Label htmlFor="teacher">Teacher</Label>
                     </div>
                   </div>
-                </fieldset>
+                </div>
                 <div>
                   <Label htmlFor="email" value="Email" />
                   <TextInput
@@ -269,7 +269,7 @@ function Teachers() {
               </div>
             </Modal.Body>
             <Modal.Footer>
-              <Button onClick={handleUserUpdate}>Update</Button>
+              <Button color={'primary'} onClick={handleUserUpdate}>Update</Button>
               
               <Button color="gray" onClick={() => setOpenModal(false)}>
                 Cancel

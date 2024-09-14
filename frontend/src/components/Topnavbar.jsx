@@ -299,7 +299,7 @@ const readNotif = (id) =>{
                   <div>
                   
                   {
-                      data.tos_data.user.profile_image!=='http://127.0.0.1:8000/apinull'? <img src={img_dir+data.tos_data.user.profile_image_url} style={{height:'40px',width:'40px', borderRadius:'50%'}}/>:
+                      data.tos_data.user.profile_image!=='http://127.0.0.1:8000/apinull'? <img src={img_dir+data.tos_data.user.profile_image_url}  style={{height:'40px',width:'40px', borderRadius:'50%'}}/>:
 
                       <Avatar {...stringAvatar(data.tos_data.user.first_name+' '+data.tos_data.user.last_name)} size='large' />
                   }
@@ -378,7 +378,7 @@ const readNotif = (id) =>{
           </DropdownHeader>
      
           <DropdownItem href={admin===true?`/admin_profile`:`/profile`}>Profile </DropdownItem>
-          <DropdownItem href="/logout">Sign out</DropdownItem>
+        
         </Dropdown>
         <NavbarToggle />
       </div>

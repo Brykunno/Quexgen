@@ -3,6 +3,7 @@ import { Card, TextInput, Label, Button, FileInput } from 'flowbite-react';
 import api from "../../api";
 import Avatar from '@mui/material/Avatar';
 import LoadingSubmit from '../../components/LoadingSubmit';
+import Topnavbar from '../../components/Topnavbar';
 
 function stringToColor(string) {
   let hash = 0;
@@ -111,8 +112,10 @@ function Profile() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Card style={{ width: '700px' }}>
+    <div>
+          <Topnavbar title="Profile"/>
+    <div className="content">
+      <Card style={{ width: '700px' }} className=' mx-auto mt-24'>
         <div className="flex gap-5">
           <div style={{ flex: 1 }}>
             {userInfo.profile_image || userInfo.profile_image_url ? (
@@ -156,12 +159,15 @@ function Profile() {
               <Label value="Email:" className="mt-2 font-bold" />
               <TextInput value={userInfo.email} onChange={(e) => handleChange(e, 'email')} />
             </div>
+            <div className="mb-3 flex gap-3 justify-center">
+             <Button color={'primary'} href='/password-reset' >Reset password</Button>
+            </div>
           </div>
         </div>
         {loading && <LoadingSubmit />}
         <Button color="primary" onClick={updateProfile}>Update</Button>
       </Card>
-    </div>
+    </div></div>
   );
 }
 

@@ -499,6 +499,7 @@ const getTaxonomyValue = (index) => {
 
               <span className='mt-2'>Answer</span>
               <Textarea
+              className='h-auto'
                 value={item.choices[0]}
                 onChange={(e) => 
                 {

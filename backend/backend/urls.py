@@ -11,5 +11,7 @@ urlpatterns = [
     path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
     path("api-auth/", include("rest_framework.urls")),
     path("api/", include("api.urls")),
+    path('auth/', include('djoser.urls')),                # For Djoser endpoints
+    path('auth/', include('djoser.urls.jwt')),          # For JWT authentication
     
 ]

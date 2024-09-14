@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import api from "../api";
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import "../styles/Form.css"
 import LoadingIndicator from "./LoadingIndicator";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Swal from 'sweetalert2'
 
 
@@ -16,6 +18,7 @@ function Form({ route, method }) {
   const [loading, setLoading] = useState(false);
   const [swal,setSwal] = useState(false);
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false); 
 
   const showSwal = (message) => {
     Swal.fire({
@@ -30,46 +33,76 @@ function Form({ route, method }) {
     });
   }
 
+  useEffect(() => {
+    const accessToken = localStorage.getItem('username');
+    if (accessToken) {
+  
+      navigate("/profile");
+    }
+    console.log('access: ',accessToken)
+  }, [navigate]);
+
+ 
+
   const name = method == "login" ? "Login" : "Register";
 
   const handleSubmit = async (e) => {
     setLoading(true);
     e.preventDefault();
-
+  
     try {
       const res = await api.post(route, { username, password });
+  
       if (method === "login") {
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
         localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-        localStorage.setItem('img_dir',`${import.meta.env.VITE_API_URL}/api`)
-
-        console.log('usersdata: ',res.data)
-        api
-        .get(`/api/user/account/`)
-        .then((res) => res.data)
-        .then((data) => {
-          
-         if(data[0].is_superuser ===true){
-          navigate("/dashboard");
-         }
-         else{
-          navigate("/create_exam");
-         }
-        })
-        .catch((err) => setSwal(true));
+        localStorage.setItem('img_dir',`${import.meta.env.VITE_API_URL}/api`);
+  
+        console.log('usersdata: ', res.data);
+  
+        try {
+          const userRes = await api.get(`/api/user/account/`);
+          const data = userRes.data;
+          localStorage.setItem('username',data[0].username);
+  
+          if (data[0].is_superuser === true) {
+            navigate("/dashboard");
+          } else {
+            navigate("/create_exam");
+          }
+        } catch (userError) {
+          console.error('Error fetching user data:', userError);
+          setSwal({
+            show: true,
+            title: 'Error',
+            text: 'There was a problem fetching user data. Please try again later.',
+          });
+        }
+  
       } else {
         navigate("/login");
       }
     } catch (error) {
-      setSwal(true)
+      console.error('Error during login:', error);
+      setSwal({
+        show: true,
+        title: 'Login Error',
+        text: `There was an error during login: ${error.message || 'Unknown error'}`,
+      });
     } finally {
       setLoading(false);
     }
   };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);  // Toggle the state to switch between "text" and "password"
+};
+  
   return ( 
-   
-    <Card className="max-w-sm w-auto form-container  ">
+   <div className="flex items-center justify-center h-screen">
+    <Card className="w-96 mx-auto   ">
       {swal && showSwal("Invalid username or password")}
+    <img src="/images/quexgen.png" alt="" className="h-20 w-20 mx-auto" />
         <div className="text-center text-2xl font-bold"><h1>LOGIN</h1></div>
   <form onSubmit={handleSubmit} className="flex max-w-md flex-col gap-4">
       <div>
@@ -81,7 +114,7 @@ function Form({ route, method }) {
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          placeholder="Username"
+        
           required
         />
       </div>
@@ -89,24 +122,40 @@ function Form({ route, method }) {
         <div className="mb-2 block">
           <Label htmlFor="password1" value="Password" />
         </div>
-        <TextInput
-          id="password1"
-          type="password"
-          value={password}
-          placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+
+        <div className="relative mb-3">
+                        <TextInput
+                            type={showPassword ? "text" : "password"}
+                            
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                        <button
+                            type="button"
+                            className="absolute right-2 top-2"
+                            onClick={togglePasswordVisibility}
+                        >
+                            {showPassword ? <VisibilityIcon className="h-5 w-5 text-gray-500" /> : <VisibilityOffIcon className="h-5 w-5 text-gray-500" />}
+                        </button>
+                    </div>
+
       </div>
       <div className="text-center w-full">
       {loading && <LoadingIndicator/>}
+      
+      </div>
+
+      <div className="text-left w-full text-sm">
+      <a href="/password-reset">forgot password?</a>
       </div>
       <Button type="submit" color="primary">
         LOGIN 
       </Button>
+
     </form>
     </Card>
-  
+    </div>
   );
   
 }

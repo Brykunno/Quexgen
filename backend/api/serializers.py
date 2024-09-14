@@ -3,6 +3,9 @@ from rest_framework import serializers
 from .models import *
 from django.conf import settings
 
+from djoser.email import PasswordResetEmail
+from django.core.mail import send_mail
+
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -145,3 +148,31 @@ class ContextSerializer(serializers.ModelSerializer):
         model = Context
         fields = ["id", "question","context","taxonomy_level","test_type","question_data"]
 
+class CustomPasswordResetEmail(PasswordResetEmail):
+    def send(self, *args, **kwargs):
+        context = self.get_context_data()
+        user = context.get('user')
+        reset_url = context['url']  # URL for password reset
+
+        # Compose the email message
+        email_message = f"""
+        You're receiving this email because you requested a password reset for your user account at Quexgen.com.
+
+        Please go to the following page and choose a new password:
+        http://localhost:5173/{reset_url}
+
+        Your username, in case you've forgotten: {user.username}
+
+        Thanks for using our site!
+
+        The Quexgen team
+        """
+
+        # Send the email
+        send_mail(
+            subject="Password Reset Request",
+            message=email_message,
+            from_email="quexgen@gmail.com",
+            recipient_list=[user.email],  # Send email to the user
+            fail_silently=False,
+        )

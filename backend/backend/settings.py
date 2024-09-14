@@ -30,12 +30,15 @@ SECRET_KEY = 'django-insecure-wecd-s50p_y39ol&jcf!-cri8ktx81^h1j*6bjb*o_5)b8-+4#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+SITE_ID = 1
+
 ALLOWED_HOSTS = ["*"]
 
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+         'rest_framework.authentication.TokenAuthentication',
     ),
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
@@ -45,6 +48,7 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 
@@ -59,7 +63,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'rest_framework',
-    'corsheaders'
+    'corsheaders',
+    'django.contrib.sites',
+    'djoser',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -73,6 +80,19 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     
 ]
+
+
+
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': False,
+    'PASSWORD_RESET_CONFIRM_RETYPE': True,
+    'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
+    'SERIALIZERS': {},
+   'EMAIL': {
+        'password_reset': 'api.serializers.CustomPasswordResetEmail',
+    },
+}
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -112,6 +132,14 @@ DATABASES = {
         'PORT': '3306',
     }
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # or your email provider
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'quexgen@gmail.com'
+EMAIL_HOST_PASSWORD = 'hgqjkrjkpolrjesr'
+DEFAULT_FROM_EMAIL = 'quexgen@gmail.com'
 
 
 # Password validation

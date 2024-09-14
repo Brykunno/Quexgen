@@ -62,5 +62,6 @@ urlpatterns = [
  
     path('generate-question/', ai_views.generate_question, name='generate_question'),
     path('',  include(router.urls)),     
+
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

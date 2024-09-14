@@ -30,38 +30,42 @@ taxonomy_levels = {
 # Define prompts for each taxonomy level
 prompts = {
     "Remembering": (
-        "We are using this model for builiding our app please strictly follow the format of proceeding prompts"
-        "Create a multiple-choice question that tests the recall of specific facts, names, dates, or concepts directly mentioned in the following context. "
+        "Create a remembering multiple-choice question based on bloom's taxonomy that tests the recall of specific facts, names, dates, or concepts directly mentioned in the following context:{context}."
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
-        "Ensure the options are in plain text without any labels (like letters or numbers or something like **Question** or options:) before them. The question and the correct answer should be explicitly connected to the information in the context: {context}"
+        "Ensure the options are in plain text without any labels (like letters or numbers) before them."
+        "Output the question immediately without any introductory words."
     ),
     "Understanding": (
-        "Create a question that asks for an explanation of the following context: {context}. "
+        "Create a understanding question based on bloom's taxonomy that asks for an explanation of the following context: {context}. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
-        "Ensure the options are in plain text without any labels (like letters or numbers) before them. The question and the correct answer should be explicitly connected to the information in the context: {context}"
+        "Ensure the options are in plain text without any labels (like letters or numbers) before them."
+        "Output the question immediately without any introductory words."
     ),
     "Applying": (
-        "Create a question that requires applying the following context to a new situation: {context}. "
+        "Create a question for applying based on bloom's taxonomy that requires applying the following context to a new situation: {context}. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
-        "Ensure the options are in plain text without any labels (like letters or numbers) before them. The question and the correct answer should be explicitly connected to the information in the context: {context}"
+        "Ensure the options are in plain text without any labels (like letters or numbers) before them."
+         "Output the question immediately without any introductory words."
     ),
     "Analyzing": (
-        "Create a question that involves analyzing or breaking down the following context: {context}. "
+        "Create a question for analyzing based on bloom's taxonomy that involves analyzing or breaking down the following context: {context}. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
-        "Ensure the options are in plain text without any labels (like letters or numbers) before them. The question and the correct answer should be explicitly connected to the information in the context: {context}"
+        "Ensure the options are in plain text without any labels (like letters or numbers) before them." 
+        "Output the question immediately without any introductory words."
     ),
     "Evaluating": (
-        "Create a a multiple-choice question that requires evaluating or making a judgment based on the following context: {context}. "
+        "Create a multiple-choice question for evaluating based on bloom's taxonomy that requires evaluating or making a judgment based on the following context: {context}. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
-        "Ensure the options are in plain text without any labels (like letters or numbers) before them. The question and the correct answer should be explicitly connected to the information in the context: {context}"
+        "Ensure the options are in plain text without any labels (like letters or numbers) before them."
+        "Output the question immediately without any introductory words."
     ),
     "Creating": (
-        "Create a a multiple-choice question that involves creating new ideas based on the following context: {context} with four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
+        "Create a multiple-choice question for creating based on bloom's taxonomy that involves generating new ideas based on the following context: {context}. with four answer options in a list format: the first choice should be the correct answer, followed by three plausible but incorrect options. "
         "Output the question immediately without any introductory words"
         "Do not use any indicator letters or numbers for answer and distractors"
+
     )
 }
-
 
 torf_prompts = {
     "Remembering": (
@@ -123,10 +127,16 @@ def generate_question_ai(level, context_ques, index, test_type, max_retries=5):
                 stop=[],
                 response_format=ResponseFormat(type="text")
             )
-
-            # Access the response content
+            
+            
             raw_content = response.choices[0].message.content.strip()
-            lines = [line.strip() for line in raw_content.split('\n') if line.strip()]
+            # Access the response content
+            choice = response.choices[0]  # Accessing the first choice
+            message = choice.message  # Accessing the message
+            content = message.content  # Accessing the content of the message
+
+            # Process the content to remove any numbers, letters, or asterisks from the answer options
+            lines = [re.sub(r'^[\d\.\)\*]*(?:[A-Da-d][\.\)])?\s*', '', line.strip()) for line in content.strip().split('\n')]
 
             # Ensure there are enough lines for MCQ, retry if incomplete
             if len(lines) < 5 and test_type != "trueOrFalse":
@@ -136,9 +146,11 @@ def generate_question_ai(level, context_ques, index, test_type, max_retries=5):
             question = lines[0]  # First line is the question
             
             if test_type == "mcq":
-                correct_answer = lines[1]  # First option is the correct answer
-                choices = lines[1:5]  # All four options including the correct answer
+                correct_answer = lines[2]  # First option is the correct answer
+                choices = lines[2:]  # All four options including the correct answer
                 choices = [re.sub(r'^\w+\)\s*', '', choice.replace('*', '').strip()) for choice in choices]  # Clean choices
+                
+           
 
                 random.shuffle(choices)  # Randomize choice order
 
@@ -157,7 +169,7 @@ def generate_question_ai(level, context_ques, index, test_type, max_retries=5):
                 }
 
             elif test_type == "identification":
-                correct_answer = lines[1]  # The answer to be identified
+                correct_answer = lines[2]  # The answer to be identified
                 correct_answer = correct_answer.replace('*', '').strip()
 
                 question_dict = {
@@ -219,7 +231,7 @@ def generate_question(request):
             options = data.get('options', [])
             index = data.get('index', 0)
             test_type = data.get('test_type', '')
-            context = data.get('context', 'Default context text')
+            context = test_type+'question: '+data.get('context', 'Default context text')
             answer = "True"
             taxonomy_level = data.get('taxonomy_level', '')
         

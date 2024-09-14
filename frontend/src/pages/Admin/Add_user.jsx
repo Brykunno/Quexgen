@@ -83,7 +83,7 @@ function Add_user(){
     />
   </div>
 
-  <fieldset className="flex max-w-md flex-col gap-4">
+  <div className="flex max-w-md flex-col gap-4">
   <Label >User Type</Label>
   <div className="flex gap-10">
   <div className="flex items-center gap-2">
@@ -105,7 +105,7 @@ function Add_user(){
   </div>
   </div>
 
-</fieldset>
+</div>
 
 
   <div>

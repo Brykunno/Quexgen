@@ -20,6 +20,35 @@ api.interceptors.request.use(
 }
 
 
+
+
 )
 
 export default api
+
+export const resetPassword = async (uid, token, newPassword,confirmPassword) => {
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/users/reset_password_confirm/`, {
+            uid: uid,
+            token: token,
+            new_password: newPassword,
+            re_new_password:confirmPassword
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error resetting password:', error.response.data);
+        throw error;
+    }
+};
+
+export const requestPasswordReset = async (email) => {
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/users/reset_password/`, {
+            email: email
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error requesting password reset:', error.response.data);
+        throw error;
+    }
+};
