@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from "../../api";
 import { Card } from 'flowbite-react';
 import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
+import RateReviewIcon from '@mui/icons-material/RateReview';
 import ArticleIcon from '@mui/icons-material/Article';
 import PreviewIcon from '@mui/icons-material/Preview';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
@@ -116,7 +117,7 @@ function Dashboard() {
 
             <Card className='flex-1 bg-green-400 text-white'>
               <div className="flex flex-row gap-5">
-                <div><PreviewIcon style={{height:'60px',width:'60px'}}/></div>
+                <div><RateReviewIcon style={{height:'60px',width:'60px'}}/></div>
                 <div className='py-1'>
                   <div className="text-white font-bold">To Review</div>
                   <span className='font-bold text-2xl'>{toreviewCount}</span>

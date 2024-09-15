@@ -5,10 +5,12 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import SearchIcon from '@mui/icons-material/Search';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import RecommendIcon from '@mui/icons-material/Recommend';  
-import TurnedInIcon from '@mui/icons-material/TurnedIn';
+
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import DocViewerFile from '../../components/DocViewerFile';
 import Topnavbar from '../../components/Topnavbar';
+import RateReviewIcon from '@mui/icons-material/RateReview';
+import { Tabs } from "flowbite-react";
 
 
 
@@ -18,7 +20,7 @@ function Exam_bank() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState(''); // Add status filter state
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(8); // Number of items per page
+  const [itemsPerPage] = useState(10); // Number of items per page
 
   useEffect(() => {
     getExam();
@@ -65,12 +67,10 @@ function Exam_bank() {
   };
 
   // Pagination logic
-  const indexOfLastExam = currentPage * itemsPerPage;
-  const indexOfFirstExam = indexOfLastExam - itemsPerPage;
-  const currentExams = filteredExams.slice(indexOfFirstExam, indexOfLastExam);
-  const totalPages = Math.ceil(filteredExams.length / itemsPerPage);
+  
 
   const handlePageChange = (pageNumber) => {
+    
     setCurrentPage(pageNumber);
   };
 
@@ -79,7 +79,7 @@ function Exam_bank() {
       return <div className='border border-blue-700 rounded-full px-2 py-1 text-blue-700 font-bold'>{status_name} <CheckBoxIcon className='ml-2' /></div>
     }
     else if(status===1){
-      return <div className='border border-green-700 rounded-full px-2 py-1 text-green-700 font-bold'>{status_name} <TurnedInIcon className='ml-2'/></div>
+      return <div className='border border-green-700 rounded-full px-2 py-1 text-green-700 font-bold'>{status_name} <RateReviewIcon className='ml-2'/></div>
     }
     else if(status===2){
       return <div className='border border-green-800 rounded-full px-2 py-1 text-green-800 font-bold'>{status_name} <RecommendIcon className='ml-2'/></div>
@@ -93,13 +93,22 @@ function Exam_bank() {
 
   }
 
-  return (
-    <div>
-      <Topnavbar title="Exam Bank"/>
-    <div className="content">
-      
-      {/* Search Bar (real-time filtering) */}
-      <div className="flex items-center mb-5 gap-4">
+
+
+  function content(exams,status){
+
+   
+
+  const filteredExams = exams.filter((item) => item.Status_display === status)
+  const totalPages = Math.ceil(filteredExams.length / itemsPerPage);
+  let page = currentPage>totalPages?1:currentPage
+  const indexOfLastExam = page * itemsPerPage;
+  const indexOfFirstExam = indexOfLastExam - itemsPerPage;
+  const currentExams = filteredExams.slice(indexOfFirstExam, indexOfLastExam);
+
+    return(<div>
+ {/* Search Bar (real-time filtering) */}
+ <div className="flex items-center mb-5 gap-4">
         <div className="relative shadow-lg">
           <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <SearchIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -113,19 +122,8 @@ function Exam_bank() {
           />
         </div>
 
-        {/* Status Filter */}
-        <Select 
-          id="statusFilter" 
-          onChange={handleStatusChange}
-          value={statusFilter}
-          className="p-2  rounded text-sm"
-        >
-          <option value="">All Status</option>
-          <option value="Saved">Saved</option>
-          <option value="Approved">Approved</option>
-          <option value="Submitted">Submitted</option>
-          <option value="Needs Revision">Needs Revision</option>
-        </Select>
+    
+       
       </div>
 
       <Table striped>
@@ -159,7 +157,7 @@ function Exam_bank() {
             ))
           ) : (
             <Table.Row>  
-              <Table.Cell colSpan={'6'}><p className='text-center '>No exams found for "{searchTerm}" with status "{statusFilter}".</p></Table.Cell>
+              <Table.Cell colSpan={'6'}><p className='text-center '>No exams found for "{searchTerm}" with status "{status}".</p></Table.Cell>
             </Table.Row>
           )}
         </Table.Body>
@@ -168,12 +166,42 @@ function Exam_bank() {
       {/* Pagination Controls */}
       <div className="flex justify-center mt-4">
         <Pagination
-          currentPage={currentPage}
+          currentPage={page}
           totalPages={totalPages}
           onPageChange={handlePageChange}
           showIcons
         />
       </div>
+    </div>)
+  }
+
+
+  return (
+    <div>
+      <Topnavbar title="Exam Bank"/>
+    <div className="content">
+      
+    <Tabs aria-label="Tabs with icons" variant="fullWidth" >
+    <Tabs.Item active title="Saved" icon={CheckBoxIcon} >
+      {content(exam,'Saved')}
+      {statusFilter}  
+      </Tabs.Item>
+      <Tabs.Item  title="To review" icon={RateReviewIcon} >
+      {content(exam,'To review')}
+      {statusFilter}
+      </Tabs.Item>
+      <Tabs.Item title="Needs revision" icon={EditNoteIcon}>
+      {content(exam,'Needs Revision')}
+      {statusFilter}
+
+      </Tabs.Item>
+      <Tabs.Item title="Approved" icon={RecommendIcon}>
+      {content(exam,'Approved')}
+      {statusFilter}  
+      </Tabs.Item>
+  
+    
+    </Tabs>
 
     </div>
     </div>
