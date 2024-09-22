@@ -176,3 +176,8 @@ class CustomPasswordResetEmail(PasswordResetEmail):
             recipient_list=[user.email],  # Send email to the user
             fail_silently=False,
         )
+        
+class FileUploadSerializer(serializers.ModelSerializer):
+      class Meta:
+        model = FileUpload
+        fields = ['id', 'study_guide','tos_content', 'uploaded_at']

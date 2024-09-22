@@ -13,8 +13,11 @@ import api from "../api";
 import ReactDOM from 'react-dom';
 import { PDFViewer } from '@react-pdf/renderer';
 import Exampdf from "./Exampdf";
+import Multiple_exam from './Multiple_exam';
 
-function Examtest ({ items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext}) {
+
+
+function Examtest ({ files,items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext,formData}) {
 
 
 
@@ -39,15 +42,23 @@ function Examtest ({ items, tos_id, lessonsData,handleStateChange,examStates,set
   const [modalGenIden, setModalGenIden] = useState({});
   const [modalGenTorF, setModalGenTorF] = useState({});
 
-
-
-
-
-  const [data, setData] = useState(null);
-
+  const [test, setTest] = useState({
+    mcq: 0,
+    identification: 0,
+    trueOrFalse: 0,
+  });
   
 
- 
+
+  const handleTest = (type, value) => {
+    
+    setTest((prevTest) => ({
+      ...prevTest,
+      [type]: value, 
+    }));
+  };
+
+  const [data, setData] = useState(null);
   const handleContextChange = (value, index, taxonomy_level,test_type) => {
     setContext(prev => {
       // Check if the context for the given index already exists
@@ -246,6 +257,7 @@ function checkAnswer(localStore, answer){
             <Textarea
               value={item.choices[0]}
               onChange={(e) => handleStateChange(index, 0, e.target.value)}
+              
             />
           </div>
 
@@ -677,6 +689,138 @@ function checkAnswer(localStore, answer){
   }
 
 
+  const essay = (item, index,examStates) => {
+    
+    let catindex = 0
+
+    if(item.test_part_num === 1){
+      catindex = getQuestionNumber(item, examStates)
+    }
+    else if(item.test_part_num === 2){
+      catindex = getQuestionNumber(item, examStates)+Test1
+    }
+    else{
+     catindex = getQuestionNumber(item, examStates)+Test1+Test2
+    }
+
+    return (
+        <Card key={index} className='m-5'>
+        <div>
+          <div className='flex gap-3'>
+          <span className='mt-2'> {catindex}.</span>
+            <Textarea
+              value={item.question}
+              onChange={(e) => handleStateChange(index, 'question', e.target.value)}
+            />
+          </div>
+      <div className='mt-3'>
+        <div className='flex flex-wrap gap-5 mx-auto'>
+         
+            <div className='flex gap-3 w-80 mb-3'>
+              <Radio
+                name={`answers-${index}`}
+                value="True"
+                className='mt-3'
+                onChange={(e) => handleRadioAnswer(index, e.target.value)}
+                checked={checkAnswer(item.answer, "True")}
+              />
+              <span className='mt-2'>True</span>
+         
+            </div>
+            <div className='flex gap-3 w-80 mb-3'>
+              <Radio
+                name={`answers-${index}`}
+                value="False"
+                className='mt-3'
+                onChange={(e) => handleRadioAnswer(index, e.target.value)}
+                checked={checkAnswer(item.answer, "False")}
+              />
+              <span className='mt-2'>False</span>
+         
+            </div>
+  
+        
+        </div>
+      </div>
+      <div className='flex gap-5 justify-center mt-3'>
+      
+      <Button color={'primary'} onClick={() => setModalGenTorF(prev => ({ ...prev, [index]: true }))} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
+
+            <Modal key={index} size={'4xl'} show={modalGenTorF[index]} onClose={() => setModalGenTorF(prev => ({ ...prev, [index]: false }))}>
+       <Modal.Header>Generate {categories[catindex] ? categories[catindex] : ''} question</Modal.Header>
+       <Modal.Body>
+         <div className="  gap-3">
+           <div className='mb-4'>
+             Context:
+             <Textarea style={{height:'150px'}} value={getContextValue(index)}  
+            onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex],"trueOrFalse");
+              handleStateChange(index, 'context', e.target.value)
+            }
+            } />
+           </div>
+           <div className=''>
+           <Card>
+
+           <div className='flex gap-3'>
+          <span className='mt-2'> {catindex}.</span>
+            <Textarea
+              value={item.question}
+              onChange={(e) => handleStateChange(index, 'question', e.target.value)}
+            />
+          </div>
+          <div className='mt-3'>
+        <div className='flex flex-wrap gap-5 mx-auto'>
+         
+            <div className='flex gap-3 w-80 mb-3'>
+              <Radio
+                name={`answers-${index}`}
+                value="True"
+                className='mt-3'
+                onChange={(e) => handleRadioAnswer(index, e.target.value)}
+                checked={checkAnswer(item.answer, "True")}
+              />
+              <span className='mt-2'>True</span>
+         
+            </div>
+            <div className='flex gap-3 w-80 mb-3'>
+              <Radio
+                name={`answers-${index}`}
+                value="False"
+                className='mt-3'
+                onChange={(e) => handleRadioAnswer(index, e.target.value)}
+                checked={checkAnswer(item.answer, "False")}
+              />
+              <span className='mt-2'>False</span>
+         
+            </div>
+  
+        
+        </div>
+      </div>
+         
+
+       
+           </Card>
+           </div>
+
+         
+           
+         </div>
+       </Modal.Body>
+       <Modal.Footer>
+         <Button color={'primary'} onClick={()=>{generateQues(index,"trueOrFalse")}} className='mx-auto'>Generate</Button>
+       
+       </Modal.Footer>
+     </Modal>
+      <Tooltip content="Delete Question" style="dark">
+      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} ><DeleteIcon/></Button>
+      </Tooltip>
+      </div>
+        </div>
+      </Card>
+    );
+  }
+
 
   const examPart = (categories) => {
 
@@ -697,7 +841,7 @@ function checkAnswer(localStore, answer){
       }
 
       return(
-        <Card key={index} className={itemtest.test_part_num === showPart?'show relative':'hidden'} > {/* Make the Card a relative container */}
+        <Card key={index} className={itemtest.test_part_num === showPart?'show relative mb-5':'show relative mb-5'} > {/* Make the Card a relative container */}
         {/* Delete Button at the Top Right Corner */}
         <Button
         
@@ -720,7 +864,7 @@ function checkAnswer(localStore, answer){
             />
           </div>
         
-        <div className='overflow-y-scroll py-5' style={{ height: '400px', direction: 'rtl', overflow: 'auto' }}>
+        <div className=' py-5' style={{ height: 'auto', direction: 'rtl',  }}>
           <div style={{ direction: 'ltr' }}>
         
       
@@ -729,6 +873,7 @@ function checkAnswer(localStore, answer){
               {item.question_type === 'mcq' && itemtest.test_type === 'mcq' && mcq(item, idx, examStates)}
               {item.question_type === 'identification' && itemtest.test_type === 'identification' && identification(item, idx, examStates)}
               {item.question_type === 'trueOrFalse' && itemtest.test_type === 'trueOrFalse' && trueOrFalse(item, idx, examStates)}
+           
             </div>
           ))}
       
@@ -777,13 +922,6 @@ function checkAnswer(localStore, answer){
       }, {}));
     console.log(`Unique test_part_num values: ${uniqueTestPartNums}`);
 
-
-      setTest1(examStates.filter(item => item.test_part_num === 1).length);
-      setTest2(examStates.filter(item => item.test_part_num === 2).length);
-      setTest3(examStates.filter(item => item.test_part_num === 3).length);
-
-
-   
       disableBtn();
       disableBtnShowPart();
 
@@ -877,6 +1015,10 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
     });
   };
 
+  
+  
+  
+  
 
   const handleRemoveLastItemTest = (index, test_type) => {
     setTestPart((prevTestPart) => {
@@ -921,6 +1063,114 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       return updatedExamStates;
     });
   };
+
+  let arr = [2,2]
+  
+  const handleFileProcessing = async () => {
+
+    
+    const newTestParts = [];
+  
+    const existingTestTypes = TestPart.map(part => part.test_type); // Get the list of existing test types
+  
+    // Check if ExaminationType contains 'Multiple Choice' and if it hasn't been added already
+    if (formData.ExaminationType.includes('Multiple Choice') && !existingTestTypes.includes('mcq')) {
+      newTestParts.push({
+        test_type: 'mcq',
+        test_instruction: '',
+        test_part_num: TestPart.length + newTestParts.length + 1,
+      });
+    }
+  
+    // Check if ExaminationType contains 'Identification' and if it hasn't been added already
+    if (formData.ExaminationType.includes('Identification') && !existingTestTypes.includes('identification')) {
+      newTestParts.push({
+        test_type: 'identification',
+        test_instruction: '',
+        test_part_num: TestPart.length + newTestParts.length + 1,
+      });
+    }
+  
+    // Check if ExaminationType contains 'True or False' and if it hasn't been added already
+    if (formData.ExaminationType.includes('True or False') && !existingTestTypes.includes('trueOrFalse')) {
+      newTestParts.push({
+        test_type: 'trueOrFalse',
+        test_instruction: '',
+        test_part_num: TestPart.length + newTestParts.length + 1,
+      });
+    }
+  
+    // If there are new test parts to add, update the state
+    if (newTestParts.length > 0) {
+      setTestPart((prevTestPart) => [...prevTestPart, ...newTestParts]);
+    }
+    if (files.length === 0) return alert('Please select a file.');
+    let num = 0;
+    let mcq= test.mcq
+    let identification= test.identification
+    let trueOrFalse= test.trueOrFalse
+  
+    for (const file of files) {
+      if (!file) return alert('Please select a file.');
+  
+      const formData = new FormData();
+      formData.append('file', file); // Append the selected file
+  
+      // Add other JSON data to the FormData
+      formData.append('index', 0);
+      
+      formData.append('context', 'Your context');
+      formData.append('taxonomy_level', 'Remembering');
+
+     
+        formData.append('test_type', 'Identification');
+        formData.append('mcq', mcq);
+        formData.append('identification', identification);
+        formData.append('trueOrFalse', trueOrFalse);
+      
+
+      
+  
+      try {
+        // Make a request to Django to process the file and JSON data
+        const response = await api.post('/api/generate-question-module/', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+  
+       
+ 
+        // Process the response
+        const dataques = response.data.generated_questions;
+        console.log('Processed response:', dataques);
+  
+        // Check if data is an array before using map
+        if (Array.isArray(dataques)) {
+          setExamStates((prevExamStates) => [
+            ...prevExamStates,
+            ...dataques.map((item) => ({
+              question: item.question.question, // Ensure it's a string
+              choices: [item.question.choices[0],item.question.choices[1],item.question.choices[2],item.question.choices[3]], // Convert choices to strings
+              question_type: 'mcq', // Ensure it's a string
+              answer: item.question.answer,
+              test_part_num: 1,
+            })),
+          ]);
+        } else {
+          console.error('Expected an array but got:', dataques);
+        }
+  
+      } catch (error) {
+        console.error('Error processing the file and data:', error);
+      }
+  
+      num++;
+    }
+  };
+  
+  
+  
   
 
 
@@ -945,53 +1195,54 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
     </Breadcrumb>
    
    <Progress progress={100} size={'sm'} color={'primary'}/>
+
+
        
          <div className='flex gap-5 '>
-       <div style={{flex:0.4}}>
 
-       <div className=' w-full'>
-        <Card  className='w-full'> 
-      
-      <Button color={'primary'} onClick={()=>{handleAddTest('mcq')}} disabled={disableAddTestMcq}><PostAddIcon className="mr-2"/> Add Multiple Choice Test</Button>
-      <Button color={'primary'} onClick={()=>{handleAddTest('identification')}} disabled={disableAddTestIdentification}><PostAddIcon className="mr-2"/> Add Identification Test</Button>
-      <Button color={'primary'} onClick={()=>{handleAddTest('trueOrFalse')}} disabled={disableAddTestTrueorFalse}><PostAddIcon className="mr-2"/> Add True or False Test</Button>
-     
-   
-      </Card>
-
-      <Card  className='w-full mt-5'> 
-      
-      <Button color={'primary'} onClick={()=>{setShowPart(1)}} disabled={disableShowPart1}><VisibilityIcon className="mr-2"/> View Test 1</Button>
-      <Button color={'primary'} onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
-      <Button color={'primary'} onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
-      <Button  color="blue" onClick={() => setPdfModal(true)}><PreviewIcon className="mr-2"/> Exam Preview</Button>
-     
-      <Button  type="submit" onClick={()=>{setSubmit(false)}} color="success"><SaveIcon className='mr-2'/>Save Exam</Button>
-      <Button  type="submit" onClick={()=>{setSubmit(true)}} color="success"><SendIcon className='mr-2'/>Submit Exam</Button>
-    
-    
-   
-      </Card>
-   
-      </div>
-      
-       </div>
+          
+  
    
    <div className='flex-1'>
 
-        <div className='w-full'>
+        <div className='w-full hidden' >
           <div className="mb-2 block">
             <Label htmlFor="title" value="Exam Title" />
           </div>
-          <TextInput id="title" type="text" value={ExamTitle}  onChange={handleExamTitleChange}/>
+          <TextInput id="title" type="text" value={formData.Title}  onChange={handleExamTitleChange}/>
         </div>
        
         <br />
         
       
         {examPart(categories)}
-  
+        {JSON.stringify(examStates)}
+        <div className='w-full ' >
+          <div className="mb-2 block">
+            <Label htmlFor="title" value="For Multiple choice" />
+          </div>
+          <TextInput id="title" type="number"  className='max-w-sm' value={test.mcq} onChange={(e)=>{handleTest('mcq',e.target.value)}}/>
+        </div>
+
+        <div className='w-full ' >
+          <div className="mb-2 block">
+            <Label htmlFor="title" value="For Idnetification" />
+          </div>
+          <TextInput id="title" type="number"  className='max-w-sm' value={test.identification} onChange={(e)=>{handleTest('identification',e.target.value)}}/>
+        </div>
         
+        <div className='w-full ' >
+          <div className="mb-2 block">
+            <Label htmlFor="title" value="For True or false" />
+          </div>
+          <TextInput id="title" type="number"  className='max-w-sm' value={test.trueOrFalse} onChange={(e)=>{handleTest('trueOrFalse',e.target.value)}}/>
+        </div>
+  <div >
+ 
+  <Button className='mx-auto' color={'primary'}  onClick={handleFileProcessing}>Create Exam</Button>
+  </div>
+        {JSON.stringify(test)}
+        {String(formData.ExaminationType.includes('Identification'))}
         
         <Modal show={PdfModal} size={'7xl'}  onClose={() => setPdfModal(false)} className="h-screen">
         <Modal.Header>Exam</Modal.Header>

@@ -170,4 +170,17 @@ class Context(models.Model):
     class Meta:
         db_table = 'context'
         
+        
+class FileUpload(models.Model):
+    study_guide = models.FileField(upload_to='uploads/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    tos_content = models.ForeignKey(TOS_Content, on_delete=models.CASCADE, related_name="tos_content_file",null=True)
+    
+    def __str__(self):
+        return self.study_guide
+    
+    class Meta:
+        db_table = 'study_guides'
+    
+        
 

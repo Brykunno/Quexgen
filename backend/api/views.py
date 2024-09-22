@@ -11,6 +11,7 @@ from django.contrib.contenttypes.models import ContentType
 from .models import *
 import json
 from rest_framework import viewsets
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 class UserListCreate(generics.ListCreateAPIView):
@@ -638,3 +639,27 @@ class AdminNotifCreateView(generics.ListCreateAPIView):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+class FileUploadView(APIView):
+    parser_classes = (MultiPartParser, FormParser)  # Handles file uploads
+
+    def post(self, request, *args, **kwargs):
+        # Initialize the serializer with the request data
+        file_serializer = FileUploadSerializer(data=request.data)
+
+        if file_serializer.is_valid():
+            file_serializer.save()
+            return Response(file_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            # Print the errors and request data for debugging
+            print("Request data:", request.data)
+            print("Serializer errors:", file_serializer.errors)
+            
+            # Optionally log the errors for further inspection
+            # logger.error(f"File upload failed: {file_serializer.errors}")
+
+            return Response({
+                "message": "File upload failed",
+                "errors": file_serializer.errors,  # Detailed validation errors
+                "data_received": request.data  # Information on the received data
+            }, status=status.HTTP_400_BAD_REQUEST)

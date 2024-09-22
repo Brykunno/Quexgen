@@ -8,7 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import TableRow from "@mui/material/TableRow";
-import { Breadcrumb,Card,Progress,Label, Textarea, TextInput,Button,RangeSlider,Modal,Select } from "flowbite-react";
+import { Breadcrumb,Card,Progress,Label, Textarea, TextInput,Button,RangeSlider,Modal,Select,FileInput } from "flowbite-react";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import TOSmodal from "./TOSmodal";
 import api from "../api";
@@ -48,7 +48,8 @@ function createData(
   evaluating,
   creating,
   total,
-  placement
+  placement,
+  study_guide
 ) {
   return {
     topic,
@@ -64,6 +65,7 @@ function createData(
     creating,
     total,
     placement,
+    study_guide
   };
 }
 
@@ -89,6 +91,7 @@ creating: 0,
 total: 0,
 placement: '',
 totalItems:0,
+study_guide:null,
 tos_teacher: 0,
 }]));
   } 
@@ -115,7 +118,7 @@ tos_teacher: 0,
   const [loading, setLoading] = useState(false);
   const [Toast, setToast] = useState(false);
 
-
+  const [files, setFiles] = useState([]); 
   const [context,setContext] = useState([])
 
   const [openModal, setOpenModal] = useState(false);
@@ -464,6 +467,13 @@ const handleLessonDataChange = (index, field, value) => {
 
   // Log the updated lessonsData for debugging
   console.log('Lessons Data:', newData);
+
+  if(field === 'study_guide'){
+    const newFiles = [...files];
+    newFiles[index] = value;  
+    setFiles(newFiles);
+  }
+
 
   if (field === 'teachingHours') {
     for (let i = 0; i < newData.length; i++) {
@@ -1225,9 +1235,23 @@ const handleCeil = (index, field, value) => {
         onChange={(e) => handleLessonDataChange(indexRow, 'learning_outcomes', e.target.value)}
         required
       />
+      
     </div>
+    
     <div className="flex-1">
-      <Button>Upload Study Guide</Button>
+    <div>
+      <div className="mb-2 block">
+        <Label htmlFor="file-upload" value="Upload file" />
+      </div>
+      <FileInput id="file-upload"
+       accept="application/pdf"
+      
+       onChange={(e) => handleLessonDataChange(indexRow, 'study_guide', e.target.files[0])}
+      />
+      {lessonsDataInitial[indexRow] && lessonsDataInitial[indexRow]['study_guide'] && (
+    <p>Selected file: {String(lessonsDataInitial[indexRow]['study_guide'].name)}</p>  // Display the selected file name
+  )}
+    </div>
     </div>
     </Card>
     </div>
@@ -1462,7 +1486,7 @@ const handleTitle = (event) => {
   
 };
 
-const options = ['Multiple Choice ','Identification ','True or False'];
+const options = ['Multiple Choice','Identification','True or False','Essay','Any'];
 
 
   const [formData, setFormData] = useState({
@@ -1701,7 +1725,38 @@ console.log('Partsss:',TestPart)
 
 
 
+const uploadFiles = async (data) => {
 
+
+  const uploadPromises = files.map(async (lesson,index) => {
+    const formDatapdf = new FormData();
+
+    // Check if the study_guide is a valid file
+    if (lesson) {
+      console.log('studyguideeee: ', lesson);
+      formDatapdf.append('study_guide', lesson); // Ensure this is a valid file object
+      formDatapdf.append('tos_content', data[index]); 
+      console.log('FormData for upload:', data[index]);
+
+      try {
+        const response = await api.post('/api/upload/', formDatapdf, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        console.log('Upload successful:', response.data);
+      } catch (error) {
+        console.error('Upload failed:', error);
+      }
+    } else {
+      console.warn('No valid file to upload for lesson:', lesson);
+    }
+  });
+
+  // Wait for all uploads to complete
+  await Promise.all(uploadPromises);
+  console.log('All uploads completed.');
+};
 
 
 
@@ -1746,14 +1801,25 @@ const handleSubmit = (e) => {
 
         
 
+        
 
 
 
 return api.post("/api/tos-content/", { lessonsDataJson })
   .then((secondRes) => {
-    console.log(secondRes);
+    console.log('secondres: ',secondRes.data)
     if (secondRes.status === 201) {
+      const ids = secondRes.data.reduce((acc, item) => {
+        // Assuming each item in secondRes.data has an `id` property
+        acc.push(item.id); // Add each ID to the accumulator (array)
+        return acc;
+      }, []); // Initialize the accumulator as an empty array
+      
+      console.log('All IDs:', ids);
+      
      
+      uploadFiles(ids);
+
  
       console.log("Second request data:", secondRes.data);
 
@@ -2476,7 +2542,7 @@ const handleSubmitExam = () =>{
       </Card>
 
         <div className={`mb-5 ${step == 4? 'show':'hidden'}`}>
-      <Examtest items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} setLoading={setLoadingGenerate} context={context} setContext={setContext}/>
+      <Examtest files={files} setExamTitle={setExamTitle} items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} setLoading={setLoadingGenerate} context={context} setContext={setContext} formData={formData}/>
 
 
     
@@ -2496,7 +2562,9 @@ const handleSubmitExam = () =>{
 <Button size={'sm'} color={'primary'} onClick={handleBack} disabled={disableBack} className="px-3"><NavigateBeforeIcon/> <p style={{marginTop:'0.5px'}}>Previous</p></Button>
 </div>
 <div>
+ 
       <Button size={'sm'}  color={'primary'} onClick={handleNext} disabled={disableNext} className="px-4" > <p style={{marginTop:'0.5px'}}>Next</p> <NavigateNextIcon  /></Button>
+      
       </div>
       </div>
     </div>

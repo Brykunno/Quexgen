@@ -61,7 +61,9 @@ urlpatterns = [
     path('notification/update/teacher/<int:pk>/', admin_views.TeacherNotifUpdate.as_view(), name='teacher-notif-list-update'),
  
     path('generate-question/', ai_views.generate_question, name='generate_question'),
+    path('generate-question-module/', ai_views.generate_question_with_module, name='generate_question_with_module'),
     path('',  include(router.urls)),     
+    path('upload/', views.FileUploadView.as_view(), name='file-upload'),
 
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

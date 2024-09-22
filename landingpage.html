@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quexgen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+        }
+        body {
+            font-family: 'Orbitron', sans-serif;
+            height: 100vh;
+            background: radial-gradient(circle at center, #00146d, #000a3b);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #FFF;
+        }
+        .bg {
+            font-family: 'Orbitron', sans-serif;
+            height: 100vh;
+            background-image: 
+                linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 0%),
+                linear-gradient(-135deg, rgba(255, 255, 255, 0.035) 5%, transparent 0%);
+            background-size: 100px 100px; /* Adjust size for line thickness */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #FFF;
+        }
+        header {
+            width: 100%;
+            background-color: #000a3b;
+            padding: 10px 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        nav img {
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        nav .title {
+            color: #FFD700;
+            font-size: 1.7rem;
+            font-weight: bold;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 90%;
+            min-height: 80vh;
+            margin-top: 60px;
+        }
+
+        .login-box {
+            background-color: rgba(1, 0, 0, 0.15);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 40%;
+        }
+        .login-box:hover {
+            box-shadow: 0 0 15px rgba(244, 255, 41, 0.289);
+        }
+
+        h1 {
+            color: #ffffff;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group label {
+            font-size: 1rem;
+            color: #ffffff;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-bottom: 3px solid #00146d;
+            color: #FFF;
+            font-size: 1rem;
+            outline: none;
+            transition: border-bottom 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .input-group input:focus {
+            border-bottom: 3px solid #FFEB3B;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #FFD700;
+            border: none;
+            color: #000;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+            font-weight: 800;
+        }
+
+        .login-btn:hover {
+            background-color: #FFEB3B;
+        }
+
+        .options {
+            margin-top: 20px;
+        }
+
+        .options a {
+            color: #ffffff;
+            text-decoration: none;
+            text-align: center;
+            font-size: 0.8rem;
+            display: block;
+            margin-bottom:5px;
+        }
+
+
+        .options a:hover {
+            color: #FFEB3B;
+        }
+
+        .text-box {
+            width: 40%;
+            padding: 20px;
+            color: #FFF;
+            text-align: left;
+        }
+
+        .text-box h2 {
+            font-size: 2rem;
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+
+        .text-box p {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+            </style>
+</head>
+    <body>
+    <div class="bg">
+        <header>
+            <nav>
+                <div class="logo">
+                    <img src="/quexgenlogo5.png" alt="Logo" />
+                        <span class="title">Q U E X G E N</span>
+                </div>
+            </nav>
+        </header>
+        <div class="container">
+              <div class="text-box">
+                <h2>Welcome to the Quexgen</h2>
+                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Voluptas molestias iure ullam nihil officiis, cumque officia ratione explicabo nobis quos doloremque est corrupti quas tempora doloribus odio beatae expedita ex!</p>
+            </div>
+            <div class="login-box">
+                <h1>L o g i n</h1>
+                <form action="#">
+                    <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username"  required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password"  required>
+                    </div>
+                    <button type="submit" class="login-btn">Log In</button>
+                </form>
+                <div class="options">
+                    <a href="#">Forgot Password?</a>
+                </div>
+            </div>
+          
+        </div>
+    </div>
+    
+</body>
+</html>

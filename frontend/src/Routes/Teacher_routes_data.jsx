@@ -6,6 +6,7 @@ import Create_exam from '../pages/Teacher/Create_exam';
 
 import TosView from '../pages/Teacher/TosView';
 import Profile from '../pages/Teacher/Profile';
+import Upload from '../pages/Teacher/Upload';
 
 
 
@@ -28,6 +29,10 @@ export const Teacher_routes_data = [
     {
         path: "/profile",
         element: <Profile />
+    },
+    {
+        path: "/upload",
+        element: <Upload />
     },
    
 

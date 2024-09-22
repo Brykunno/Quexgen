@@ -5,11 +5,12 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import SearchIcon from '@mui/icons-material/Search';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import RecommendIcon from '@mui/icons-material/Recommend';  
-
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import DocViewerFile from '../../components/DocViewerFile';
-import Topnavbar from '../../components/Topnavbar';
 import RateReviewIcon from '@mui/icons-material/RateReview';
+
+
+import Topnavbar from '../../components/Topnavbar';
+
 import { Tabs } from "flowbite-react";
 
 

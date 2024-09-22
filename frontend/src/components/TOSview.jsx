@@ -15,6 +15,10 @@ import ExamUpdate from './ExamUpdate';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import { Autocomplete, TextField, Chip } from '@mui/material';
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import RecommendIcon from '@mui/icons-material/Recommend';  
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import RateReviewIcon from '@mui/icons-material/RateReview';
 
 
 
@@ -151,7 +155,8 @@ function TOSview() {
         Chairperson: TOSInfo[0].Chairperson,
         Dean: TOSInfo[0].Dean,
         Director: TOSInfo[0].Director,
-        Status: TOSInfo[0].Status
+        Status: TOSInfo[0].Status,
+        Status_display: TOSInfo[0].Status_display
       });
     }
   
@@ -2133,6 +2138,26 @@ const handleSubmitExam = () =>{
 
 
 
+function statusIcons(status,status_name){
+  if(status===0){
+    return <div className='border border-blue-700 rounded-full px-2 py-1 text-blue-700 font-bold'>{status_name} <CheckBoxIcon className='ml-2' /></div>
+  }
+  else if(status===1){
+    return <div className='border border-green-700 rounded-full px-2 py-1 text-green-700 font-bold'>{status_name} <RateReviewIcon className='ml-2'/></div>
+  }
+  else if(status===2){
+    return <div className='border border-green-800 rounded-full px-2 py-1 text-green-800 font-bold'>{status_name} <RecommendIcon className='ml-2'/></div>
+  }
+  else if(status===3){
+    return <div className='border border-orange-600 rounded-full px-2 py-1 text-orange-600 font-bold'>{status_name} <EditNoteIcon className='ml-2'/></div>
+  }
+  else {
+    return null
+  }
+
+}
+
+
 
 
   return (
@@ -2306,9 +2331,11 @@ const handleSubmitExam = () =>{
 />
 
        </div>
+       <div className='text-center mt-3'> <div className='w-48 mx-auto'>{statusIcons(formData.Status,formData.Status_display)}</div></div>
        <div className={comment_text!=null?'w-full ':'w-full hidden'}>
-       <div className="mt-8 block ">
+       <div className="mt-5 block ">
            <Button color={'primary'} className='mx-auto' onClick={()=>{setModalComment(true)}}><VisibilityIcon className='mr-2'/>View comment</Button>
+         
          </div>
 
          <Modal show={modalComment} onClose={() => setModalComment(false)}>
@@ -2326,6 +2353,8 @@ const handleSubmitExam = () =>{
          </Modal>
 
        </div>
+
+       
 
        </div>
        

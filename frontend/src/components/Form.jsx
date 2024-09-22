@@ -33,14 +33,14 @@ function Form({ route, method }) {
     });
   }
 
-  useEffect(() => {
-    const accessToken = localStorage.getItem('username');
-    if (accessToken) {
+  // useEffect(() => {
+  //   const accessToken = localStorage.getItem('username');
+  //   if (accessToken) {
   
-      navigate("/profile");
-    }
-    console.log('access: ',accessToken)
-  }, [navigate]);
+  //     navigate("/profile");
+  //   }
+  //   console.log('access: ',accessToken)
+  // }, [navigate]);
 
  
 
