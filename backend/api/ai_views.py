@@ -82,36 +82,47 @@ prompts = {
     )
 }
 
-torf_prompts = {
-   "Remembering": (
-        "Create a True or False question that align with remembering level of bloom's taxonomy based on the following context: {context}. "
+torf_prompts =  {
+    "Remembering": (
+        "Create a True or False question that aligns with the remembering level of Bloom's Taxonomy based on the following context: {}. "
         "Generate only one statement that could be either true or false. Include the answer (True or False) directly at the end of the statement with only plain text and don't use parenthesis."
-        "Make the chance of being a true or false to be 50% "
+        "Make the chance of being a true fifty percent and false fifty percent."
+        "Don't use any introductory words or phrase."
+        "Make sure the answer is accurate for the question"
     ),
     "Understanding": (
-        "Create a True or False question that align with understanding level of bloom's taxonomy based on the following context: {context}. "
-         "Generate only one statement that could be either true or false. Include the answer (True or False) directly at the end of the statement with only plain text and don't use parenthesis."
-        "Make the chance of being a true or a false fifty percent "
+        "Create a True or False question that aligns with the understanding level of Bloom's Taxonomy based on the following context: {}. "
+        "Generate only one statement that could be either true or false. Include the answer (True or False) directly at the end of the statement with only plain text and don't use parenthesis."
+        "Make the chance of being a true fifty percent and false fifty percent."
+        "Don't use any introductory words or phrase."
+        "Make sure the answer is accurate for the question"
     ),
     "Applying": (
-        "Create a True or False question that align with applying level of bloom's taxonomy based on the following context: {context}. "
-        "Generate only one statement that could be either true or false. Include the answer (True or False) directly at the end of the statement with only plain text and don't use parenthesis."
-        "Make the chance of being a true or a false fifty percent "
+        "Create a problem or task that aligns with the applying level of Bloom's Taxonomy based on the given context: {}. "
+        "Don't use any introductory words or phrase."
+        "Make it short and direct."
+        "Don't use any introductory words or phrase."
+
     ),
     "Analyzing": (
-        "Create a True or False question that align with analyzing level of bloom's taxonomy based on the following context: {context}. "
+        "Create a True or False question that aligns with the analyzing level of Bloom's Taxonomy based on the following context: {}. "
         "Generate only one statement that could be either true or false. Include the answer (True or False) directly at the end of the statement with only plain text and don't use parenthesis."
-        "Make the chance of being a true or a false fifty percent "
+          "Make the chance of being a true fifty percent and false fifty percent."
+        "Don't use any introductory words or phrase."
+        "Make sure the answer is accurate for the question"
     ),
     "Evaluating": (
-        "Create a True or False question that align with evaluating level of bloom's taxonomy based on the following context: {context}. "
+        "Create a True or False question that aligns with the evaluating level of Bloom's Taxonomy based on the following context: {}. "
         "Generate only one statement that could be either true or false. Include the answer (True or False) directly at the end of the statement with only plain text and don't use parenthesis."
-        "Make the chance of being a true or a false fifty percent "
+        "Make the chance of being a true fifty percent and false fifty percent."
+        "Don't use any introductory words or phrase."
+        "Make sure the answer is accurate for the question"
     ),
     "Creating": (
-        "Create a True or False question tthat align with creating level of bloom's taxonomy based on the following context: {context}. "
-        "Generate only one statement that could be either true or false. Include the answer (True or False) directly at the end of the statement with only plain text and don't use parenthesis."
-        "Make the chance of being a true or a false fifty percent "
+        "Create a problem or task that aligns with the creating level of Bloom's Taxonomy based on the given context: {}. "
+        "Don't use any introductory words or phrase."
+        "Make it short and direct."
+        "Don't use any introductory words or phrase."
     )
 }
 def generate_question_ai(level, context_ques, index, test_type, max_retries=5):
@@ -234,13 +245,17 @@ def generate_question_ai(level, context_ques, index, test_type, max_retries=5):
 
     return {"error": "Failed to generate a valid question after multiple attempts."}
 
-def generate_question_module(level, context_paragraph):
-    test_type = 'mcq'
+def generate_question_module(level, context_paragraph,test_type):
+    
     # Choose prompt based on taxonomy level
-    if level in ["Remembering", "Understanding", "Analyzing"]:
-        prompt = prompts[level].format(context=context_paragraph)  # Format the prompt with the context
-    elif level in ["Applying", "Evaluating", "Creating"]:
-        prompt = f"Create a problem or question that requires {taxonomy_levels[level]} based on the following context: {context_paragraph}. Output the question immediately without any introductory words."
+    
+    if test_type =='trueOrFalse':
+        prompt = torf_prompts[level].format(context_paragraph)
+    else:
+        if level in ["Remembering", "Understanding", "Analyzing"]:
+            prompt = prompts[level].format(context=context_paragraph)  # Format the prompt with the context
+        elif level in ["Applying", "Evaluating", "Creating"]:
+            prompt = f"Create a problem or question that requires {taxonomy_levels[level]} based on the following context: {context_paragraph}. Output the question immediately without any introductory words."
 
     retries = 0
     max_retries = 5
@@ -299,7 +314,8 @@ def generate_question_module(level, context_paragraph):
                         "correct_answer": correct_answer,
                         "choices": choice_dict,  # Use the dictionary that maps letters to choices
                         # "index": index,  uncomment mo nalang sayo ta ayaw gumana dito baka may dependency na wala dito.hahaha
-                        "answer": correct_answer_letter
+                        "answer": correct_answer_letter,
+                        "test_type": 'mcq'
                     }
 
 
@@ -311,7 +327,64 @@ def generate_question_module(level, context_paragraph):
 
                     question = lines[0]  # The whole content is treated as a single question or problem
                     question_dict = {
-                        "question": question
+                        "question": question,
+                        "test_type": 'subjective'
+                    }
+
+                return question_dict
+            elif test_type == 'identification':
+                # Accessing the response attributes directly
+                choice = response.choices[0]  # Accessing the first choice
+                message = choice.message  # Accessing the message
+                content = message.content  # Accessing the content of the message
+
+                # Process the content based on taxonomy level
+                lines = [re.sub(r'^[\d\.\)\*]*(?:[A-Da-d][\.\)])?\s*', '', line.strip()) for line in
+                        content.strip().split('\n')]
+
+                # Handle MCQ questions
+                if level in ["Remembering", "Understanding", "Analyzing"]:
+                    if len(lines) < 4:
+                        raise ValueError(
+                            "The generated content does not have enough lines for a valid MCQ question and answers.")
+
+                    question = lines[0]  # The first line is the question
+                    correct_answer = lines[2]  # The second option is assumed to be the correct answer
+                    choices = lines[2:]  # All options including the correct answer
+
+                    # Clean the choices and remove any special characters or numbering
+                    choices = [re.sub(r'^\w+\)\s*', '', choice.replace('*', '').strip()) for choice in choices]
+
+                    
+
+                    letters = ['A']
+                    choice_dict = [choices[i] for i in range(len(choices))]
+
+                    # Determine the letter for the correct answer based on its content after cleaning
+                    correct_answer_letter = next(
+                        letter for letter, choice in zip(letters, choice_dict) if choice == correct_answer.strip())
+
+                    # Create a dictionary to store the question, choices, correct answer, and letter for correct answer
+                    question_dict = {
+                        "question": question,
+                        "correct_answer": correct_answer,
+                        "choices": choice_dict,  # Use the dictionary that maps letters to choices
+                        # "index": index,  uncomment mo nalang sayo ta ayaw gumana dito baka may dependency na wala dito.hahaha
+                        "answer": correct_answer_letter,
+                        "test_type": 'identification'
+                    }
+
+
+                # Handle Problem-based questions for other levels
+                else:
+                    if len(lines) < 1:
+                        raise ValueError(
+                            "The generated content does not have enough lines for a valid problem-based question.")
+
+                    question = lines[0]  # The whole content is treated as a single question or problem
+                    question_dict = {
+                        "question": question,
+                         "test_type": 'subjective'
                     }
 
                 return question_dict
@@ -321,7 +394,7 @@ def generate_question_module(level, context_paragraph):
                 print(raw_content)
 
                 # For True/False questions
-                if level in ["Remembering", "Understanding", "Analyzing", "Evaluating"]:
+                if level in ["Remembering", "Understanding", "Analyzing"]:
                     # Extract the statement and answer
                     lines = raw_content.strip().split('\n')
                     if lines:
@@ -341,8 +414,9 @@ def generate_question_module(level, context_paragraph):
                         if statement_with_answer and statement_with_answer.lower() not in ["true", "false"]:
                             # Create a dictionary to store the cleaned statement and the True/False answer
                             question_dict = {
-                                "statement": statement_with_answer,
+                                "question": statement_with_answer,
                                 "answer": true_false,
+                                "test_type": 'trueOrFalse'
                                 # "index":index
                             }
                             return question_dict
@@ -350,6 +424,13 @@ def generate_question_module(level, context_paragraph):
                             print("Invalid output detected, regenerating question...")
                             retries += 1
                             continue
+                else: 
+                    question_dict = {
+                        "question": raw_content,
+                         "test_type": 'subjective'
+                    }
+
+                return question_dict
 
         except Exception as e:
             retries += 1
@@ -443,28 +524,50 @@ def extract_within_bounds(pdf_file, header_height, footer_height):
         print(f"Error during PDF extraction: {e}")
         print(traceback.format_exc())
         return None  # Return None if an error occurs
+# Declare ques_gen as a global variable
+ques_gen = []
 
 @csrf_exempt
 def generate_question_with_module(request):
+    global ques_gen  # Refer to the global variable
+
     if request.method == 'POST':
         try:
-            # Handle the file and form data
+            generated_questions = []
+
+            # Debugging output to check the contents of ques_gen
+            print("Current ques_gen:", ques_gen)
+
+            mcq_count = sum(1 for question in ques_gen if question.get('test_type') == 'mcq')
+            identification_count = sum(1 for question in ques_gen if question.get('test_type') == 'identification')
+            trueOrFalse_count = sum(1 for question in ques_gen if question.get('test_type') == 'trueOrFalse')
+            
+            
+
             file = request.FILES.get('file')
             index = request.POST.get('index', 0)
-            mcq = int(request.POST.get('mcq', 0))
-            identification = int(request.POST.get('identification', 0))
-            trueOrFalse = int(request.POST.get('trueOrFalse', 0))
-            numques = mcq+identification+trueOrFalse
-            test_type = request.POST.get('test_type', 'mcq')
-            context = test_type + ' question: ' + request.POST.get('context', 'Default context text')
-            taxonomy_level = request.POST.get('taxonomy_level', 'Remembering')
+            mcq = int(request.POST.get('mcq', 0)) - mcq_count
+            identification = int(request.POST.get('identification', 0)) - identification_count
+            trueOrFalse = int(request.POST.get('trueOrFalse', 0)) - trueOrFalse_count
+            
+            print(f'True or false count: {trueOrFalse}')
+            print(f'identification count: {identification}')
+            print(f'mcq count: {mcq}')
+            numques = int(request.POST.get('numques', 0))
+
+            Remembering = int(request.POST.get('Remembering', 0))
+            Understanding = int(request.POST.get('Understanding', 0))
+            Applying = int(request.POST.get('Applying', 0))
+            Analyzing = int(request.POST.get('Analyzing', 0))
+            Evaluating = int(request.POST.get('Evaluating', 0))
+            Creating = int(request.POST.get('Creating', 0))
 
             if not file:
                 return JsonResponse({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)
 
             # Debug log for file and form data
             print(f"Received file: {file.name}")
-            print(f"Form Data - Index: {index}, Test Type: {test_type}, Context: {context}, Taxonomy Level: {taxonomy_level}")
+           
 
             # Extract text from the PDF
             extracted_text = extract_within_bounds(file, 70, 50)
@@ -476,31 +579,68 @@ def generate_question_with_module(request):
             paragraphs = split_context_into_paragraphs(extracted_text)
 
             # Initialize list to store all generated questions
-            generated_questions = []
+            
 
             # Simulate generating questions
+         
+
             for i in range(min(int(numques), len(paragraphs))):
-                selected_level = "Remembering"  # Replace with the desired level for each question
-                generated_ques = generate_question_module(selected_level, paragraphs[i])
+                
+                selected_level = ""
+                if Remembering!=0:
+                    selected_level = "Remembering"
+                    Remembering -=1
+                elif Understanding!=0:
+                    selected_level = "Understanding"
+                    Understanding -=1
+                elif Applying!=0:
+                    selected_level = "Applying"
+                    Applying -=1
+                elif Analyzing!=0:
+                    selected_level = "Analyzing"
+                    Analyzing -=1
+                elif Evaluating!=0:
+                    selected_level = "Evaluating"
+                    Evaluating -=1
+                elif Creating!=0:
+                    selected_level = "Creating"
+                    Creating -=1
+                generated_ques =  {}
+                if mcq != 0:
+                    generated_ques = generate_question_module(selected_level, paragraphs[i], 'mcq')
+                    mcq -= 1
+                elif identification != 0:
+                    generated_ques = generate_question_module(selected_level, paragraphs[i], 'identification')
+                    identification -= 1
+                elif trueOrFalse != 0:
+                    generated_ques = generate_question_module(selected_level, paragraphs[i], 'trueOrFalse')
+                    trueOrFalse -= 1
+
                 print(f"Generated Question {i + 1} for {selected_level}:")
                 print(generated_ques)
-
+                ques_gen.append(generated_ques)  # Append to global ques_gen list
+                print(ques_gen)
                 # Append each generated question to the list
                 generated_questions.append({
                     "question_number": i + 1,
                     "level": selected_level,
                     "question": generated_ques
                 })
+                
+                
 
-            # Return the list of generated questions
             return JsonResponse({"generated_questions": generated_questions}, status=status.HTTP_200_OK)
 
         except Exception as e:
-            # Log the error and stack trace for debugging
             print(f"Error during question generation: {e}")
-            print(traceback.format_exc())
             return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+# You can access ques_gen from outside the function
+
+
+
+
 
 

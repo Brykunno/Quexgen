@@ -1425,7 +1425,7 @@ const handleCeil = (index, field, value) => {
   <span className=" flex-1 text-right text-black">
     {/* If there's a percentage or similar value, you can place it here */}
   </span>
-  <span className="text-right text-black font-bold" style={{flex: 0.2}}>
+  <span className="text-right text-black font-bold" style={{flex: 0.3}}>
     {lessonsData[indexRow]['placement']}
   </span>
 </div>
@@ -1486,7 +1486,7 @@ const handleTitle = (event) => {
   
 };
 
-const options = ['Multiple Choice','Identification','True or False','Essay','Any'];
+const options = ['Multiple Choice','Identification','True or False','Subjective','Any'];
 
 
   const [formData, setFormData] = useState({

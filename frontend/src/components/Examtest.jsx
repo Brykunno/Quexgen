@@ -170,6 +170,25 @@ function checkAnswer(localStore, answer){
      
          
 };
+
+
+
+      
+    
+    return acc;
+  }, {});
+
+  
+const lessons = lessonsData.reduce((acc, cat,index) => {
+  const start = stringToIntegerStart(String(cat.placement));
+  const end = stringToIntegerEnd(String(cat.placement));
+
+let num = 0
+  for (let i = start; i <= end; i++) {
+num++;
+acc[index] = num;
+       
+};
       
     
     return acc;
@@ -689,7 +708,7 @@ function checkAnswer(localStore, answer){
   }
 
 
-  const essay = (item, index,examStates) => {
+  const subjective = (item, index,examStates) => {
     
     let catindex = 0
 
@@ -713,35 +732,6 @@ function checkAnswer(localStore, answer){
               onChange={(e) => handleStateChange(index, 'question', e.target.value)}
             />
           </div>
-      <div className='mt-3'>
-        <div className='flex flex-wrap gap-5 mx-auto'>
-         
-            <div className='flex gap-3 w-80 mb-3'>
-              <Radio
-                name={`answers-${index}`}
-                value="True"
-                className='mt-3'
-                onChange={(e) => handleRadioAnswer(index, e.target.value)}
-                checked={checkAnswer(item.answer, "True")}
-              />
-              <span className='mt-2'>True</span>
-         
-            </div>
-            <div className='flex gap-3 w-80 mb-3'>
-              <Radio
-                name={`answers-${index}`}
-                value="False"
-                className='mt-3'
-                onChange={(e) => handleRadioAnswer(index, e.target.value)}
-                checked={checkAnswer(item.answer, "False")}
-              />
-              <span className='mt-2'>False</span>
-         
-            </div>
-  
-        
-        </div>
-      </div>
       <div className='flex gap-5 justify-center mt-3'>
       
       <Button color={'primary'} onClick={() => setModalGenTorF(prev => ({ ...prev, [index]: true }))} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
@@ -768,38 +758,7 @@ function checkAnswer(localStore, answer){
               onChange={(e) => handleStateChange(index, 'question', e.target.value)}
             />
           </div>
-          <div className='mt-3'>
-        <div className='flex flex-wrap gap-5 mx-auto'>
-         
-            <div className='flex gap-3 w-80 mb-3'>
-              <Radio
-                name={`answers-${index}`}
-                value="True"
-                className='mt-3'
-                onChange={(e) => handleRadioAnswer(index, e.target.value)}
-                checked={checkAnswer(item.answer, "True")}
-              />
-              <span className='mt-2'>True</span>
-         
-            </div>
-            <div className='flex gap-3 w-80 mb-3'>
-              <Radio
-                name={`answers-${index}`}
-                value="False"
-                className='mt-3'
-                onChange={(e) => handleRadioAnswer(index, e.target.value)}
-                checked={checkAnswer(item.answer, "False")}
-              />
-              <span className='mt-2'>False</span>
-         
-            </div>
-  
-        
-        </div>
-      </div>
-         
-
-       
+ 
            </Card>
            </div>
 
@@ -836,8 +795,11 @@ function checkAnswer(localStore, answer){
       }
       else if(itemtest.test_type === 'identification'){
         type = 'Identification'
-      }else{
+      }else if(itemtest.test_type === 'trueOrFalse'){
         type = 'True or False'
+      }
+      else{
+        type = 'Subjective Test'
       }
 
       return(
@@ -873,6 +835,7 @@ function checkAnswer(localStore, answer){
               {item.question_type === 'mcq' && itemtest.test_type === 'mcq' && mcq(item, idx, examStates)}
               {item.question_type === 'identification' && itemtest.test_type === 'identification' && identification(item, idx, examStates)}
               {item.question_type === 'trueOrFalse' && itemtest.test_type === 'trueOrFalse' && trueOrFalse(item, idx, examStates)}
+              {item.question_type === 'subjective' && itemtest.test_type === 'subjective' && subjective(item, idx, examStates)}
            
             </div>
           ))}
@@ -1070,6 +1033,9 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
 
     
     const newTestParts = [];
+    let mcq= test.mcq
+    let identification= test.identification
+    let trueOrFalse= test.trueOrFalse
   
     const existingTestTypes = TestPart.map(part => part.test_type); // Get the list of existing test types
   
@@ -1077,7 +1043,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
     if (formData.ExaminationType.includes('Multiple Choice') && !existingTestTypes.includes('mcq')) {
       newTestParts.push({
         test_type: 'mcq',
-        test_instruction: '',
+        test_instruction: 'Choose the correct answer.',
         test_part_num: TestPart.length + newTestParts.length + 1,
       });
     }
@@ -1086,7 +1052,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
     if (formData.ExaminationType.includes('Identification') && !existingTestTypes.includes('identification')) {
       newTestParts.push({
         test_type: 'identification',
-        test_instruction: '',
+        test_instruction: 'Identify the correct answer',
         test_part_num: TestPart.length + newTestParts.length + 1,
       });
     }
@@ -1095,25 +1061,36 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
     if (formData.ExaminationType.includes('True or False') && !existingTestTypes.includes('trueOrFalse')) {
       newTestParts.push({
         test_type: 'trueOrFalse',
-        test_instruction: '',
+        test_instruction: 'Answer True if the statement is true and False if the statement is false.',
         test_part_num: TestPart.length + newTestParts.length + 1,
       });
     }
+
+        // Check if ExaminationType contains 'True or False' and if it hasn't been added already
+        if (formData.ExaminationType.includes('Subjective') && !existingTestTypes.includes('subjective')) {
+          newTestParts.push({
+            test_type: 'subjective',
+            test_instruction: '',
+            test_part_num: TestPart.length + newTestParts.length + 1,
+          });
+        }
+  
+ 
   
     // If there are new test parts to add, update the state
     if (newTestParts.length > 0) {
       setTestPart((prevTestPart) => [...prevTestPart, ...newTestParts]);
     }
     if (files.length === 0) return alert('Please select a file.');
+
+    
     let num = 0;
-    let mcq= test.mcq
-    let identification= test.identification
-    let trueOrFalse= test.trueOrFalse
+
   
     for (const file of files) {
       if (!file) return alert('Please select a file.');
-  
       const formData = new FormData();
+      
       formData.append('file', file); // Append the selected file
   
       // Add other JSON data to the FormData
@@ -1127,6 +1104,13 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         formData.append('mcq', mcq);
         formData.append('identification', identification);
         formData.append('trueOrFalse', trueOrFalse);
+        formData.append('numques', lessons[num]);
+        formData.append('Remembering', lessonsData[num].remembering);
+        formData.append('Understanding', lessonsData[num].understanding);
+        formData.append('Applying', lessonsData[num].applying);
+        formData.append('Analyzing', lessonsData[num].analyzing);
+        formData.append('Evaluating', lessonsData[num].evaluating);
+        formData.append('Creating', lessonsData[num].creating);
       
 
       
@@ -1145,22 +1129,25 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         const dataques = response.data.generated_questions;
         console.log('Processed response:', dataques);
   
+
         // Check if data is an array before using map
         if (Array.isArray(dataques)) {
           setExamStates((prevExamStates) => [
             ...prevExamStates,
             ...dataques.map((item) => ({
-              question: item.question.question, // Ensure it's a string
-              choices: [item.question.choices[0],item.question.choices[1],item.question.choices[2],item.question.choices[3]], // Convert choices to strings
-              question_type: 'mcq', // Ensure it's a string
-              answer: item.question.answer,
+              question: item.question.question || '', // Default to an empty string if undefined
+              choices: item.question.test_type === 'trueOrFalse' || !item.question.choices 
+                ? [] 
+                : item.question.choices.slice(0, 4), // Use slice to prevent accessing out of bounds
+              question_type: item.question.test_type || '',
+              answer: item.question.answer || '',
               test_part_num: 1,
             })),
           ]);
         } else {
           console.error('Expected an array but got:', dataques);
         }
-  
+        
       } catch (error) {
         console.error('Error processing the file and data:', error);
       }
@@ -1216,7 +1203,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         
       
         {examPart(categories)}
-        {JSON.stringify(examStates)}
+       
         <div className='w-full ' >
           <div className="mb-2 block">
             <Label htmlFor="title" value="For Multiple choice" />
@@ -1237,12 +1224,14 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
           </div>
           <TextInput id="title" type="number"  className='max-w-sm' value={test.trueOrFalse} onChange={(e)=>{handleTest('trueOrFalse',e.target.value)}}/>
         </div>
+
+        {JSON.stringify(examStates.length)}
   <div >
  
   <Button className='mx-auto' color={'primary'}  onClick={handleFileProcessing}>Create Exam</Button>
   </div>
-        {JSON.stringify(test)}
-        {String(formData.ExaminationType.includes('Identification'))}
+ 
+  
         
         <Modal show={PdfModal} size={'7xl'}  onClose={() => setPdfModal(false)} className="h-screen">
         <Modal.Header>Exam</Modal.Header>
