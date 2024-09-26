@@ -14,10 +14,11 @@ import ReactDOM from 'react-dom';
 import { PDFViewer } from '@react-pdf/renderer';
 import Exampdf from "./Exampdf";
 import Multiple_exam from './Multiple_exam';
+import LoadingWithPercent from './LoadingWithPercent';
 
 
 
-function Examtest ({ files,items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext,formData}) {
+function Examtest ({ saveDataToLocalStorageTestPart,files,items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext,formData}) {
 
 
 
@@ -32,15 +33,21 @@ function Examtest ({ files,items, tos_id, lessonsData,handleStateChange,examStat
   const [Test1,setTest1] = useState(0)
   const [Test2,setTest2] = useState(0)
   const [Test3,setTest3] = useState(0)
+  const [Test4,setTest4] = useState(0)
   const [PdfModal,setPdfModal] = useState(false)
   const [showPart,setShowPart] = useState(1)
   const [disableShowPart1,setDisableShowPart1] = useState('false')
   const [disableShowPart2,setDisableShowPart2] = useState('false')
   const [disableShowPart3,setDisableShowPart3] = useState('false')
+  const [disableShowPart4,setDisableShowPart4] = useState('false')
+ 
 
   const [modalGenMcq, setModalGenMcq] = useState({});
   const [modalGenIden, setModalGenIden] = useState({});
   const [modalGenTorF, setModalGenTorF] = useState({});
+
+  const [loadingpercent,setLoadingPercent] = useState(false);
+  const [percent,setPercent] = useState(0);
 
   const [test, setTest] = useState({
     mcq: 0,
@@ -50,13 +57,7 @@ function Examtest ({ files,items, tos_id, lessonsData,handleStateChange,examStat
   
 
 
-  const handleTest = (type, value) => {
-    
-    setTest((prevTest) => ({
-      ...prevTest,
-      [type]: value, 
-    }));
-  };
+    // localStorage.setItem('questionData',[])
 
   const [data, setData] = useState(null);
   const handleContextChange = (value, index, taxonomy_level,test_type) => {
@@ -121,6 +122,7 @@ function checkAnswer(localStore, answer){
     return true
   }
 }
+let subtest = 0
 
   const categories = lessonsData.reduce((acc, cat,index) => {
     const start = stringToIntegerStart(String(cat.placement));
@@ -148,7 +150,7 @@ function checkAnswer(localStore, answer){
         understanding--;
       } else if (applying) {
         acc[i] =  'Applying'
-         
+         subtest++
 
         applying--;
       } else if (analyzing) {
@@ -159,11 +161,11 @@ function checkAnswer(localStore, answer){
       } else if (evaluating) {
         acc[i] =  'Evaluating'
          
-
+        subtest++
         evaluating--;
       } else if (creating) {
         acc[i] =  'Creating'
-         
+        subtest++
 
         creating--;
       }
@@ -177,6 +179,23 @@ function checkAnswer(localStore, answer){
     
     return acc;
   }, {});
+
+  const [max,setMax] = useState(0)
+
+
+  useEffect(()=>{
+    setMax(Number(items-subtest)-test.mcq-test.identification-test.trueOrFalse)
+  },[items,test])
+
+  const handleTest = (type, value) => {
+    setMax(Number(items-subtest)-Number(test.mcq))
+    setTest((prevTest) => ({
+      ...prevTest,
+      [type]: value, 
+    }));
+
+  
+  };
 
   
 const lessons = lessonsData.reduce((acc, cat,index) => {
@@ -235,10 +254,12 @@ acc[index] = num;
     else if(item.test_part_num === 2){
       catindex = getQuestionNumber(item, examStates)+Test1
     }
-    else{
-     catindex = getQuestionNumber(item, examStates)+Test1+Test2
+    else if(item.test_part_num === 3){
+      catindex = getQuestionNumber(item, examStates)+Test1+Test2
     }
-
+    else{
+     catindex = getQuestionNumber(item, examStates)+Test1+Test2+Test3
+    }
 
     return (
       <Card key={index} className='m-5'>
@@ -465,8 +486,11 @@ acc[index] = num;
     else if(item.test_part_num === 2){
       catindex = getQuestionNumber(item, examStates)+Test1
     }
+    else if(item.test_part_num === 3){
+      catindex = getQuestionNumber(item, examStates)+Test1+Test2
+    }
     else{
-     catindex = getQuestionNumber(item, examStates)+Test1+Test2
+     catindex = getQuestionNumber(item, examStates)+Test1+Test2+Test3
     }
 
     return (
@@ -579,14 +603,18 @@ acc[index] = num;
     
     let catindex = 0
 
+
     if(item.test_part_num === 1){
       catindex = getQuestionNumber(item, examStates)
     }
     else if(item.test_part_num === 2){
       catindex = getQuestionNumber(item, examStates)+Test1
     }
+    else if(item.test_part_num === 3){
+      catindex = getQuestionNumber(item, examStates)+Test1+Test2
+    }
     else{
-     catindex = getQuestionNumber(item, examStates)+Test1+Test2
+     catindex = getQuestionNumber(item, examStates)+Test1+Test2+Test3
     }
 
     return (
@@ -712,14 +740,18 @@ acc[index] = num;
     
     let catindex = 0
 
+
     if(item.test_part_num === 1){
       catindex = getQuestionNumber(item, examStates)
     }
     else if(item.test_part_num === 2){
       catindex = getQuestionNumber(item, examStates)+Test1
     }
+    else if(item.test_part_num === 3){
+      catindex = getQuestionNumber(item, examStates)+Test1+Test2
+    }
     else{
-     catindex = getQuestionNumber(item, examStates)+Test1+Test2
+     catindex = getQuestionNumber(item, examStates)+Test1+Test2+Test3
     }
 
     return (
@@ -803,7 +835,7 @@ acc[index] = num;
       }
 
       return(
-        <Card key={index} className={itemtest.test_part_num === showPart?'show relative mb-5':'show relative mb-5'} > {/* Make the Card a relative container */}
+        <Card key={index} className={itemtest.test_part_num === showPart?'show relative mb-5':'hidden'} > {/* Make the Card a relative container */}
         {/* Delete Button at the Top Right Corner */}
         <Button
         
@@ -826,7 +858,7 @@ acc[index] = num;
             />
           </div>
         
-        <div className=' py-5' style={{ height: 'auto', direction: 'rtl',  }}>
+          <div className='overflow-y-scroll py-5' style={{ height: '400px', direction: 'rtl', overflow: 'auto' }}>
           <div style={{ direction: 'ltr' }}>
         
       
@@ -887,6 +919,21 @@ acc[index] = num;
 
       disableBtn();
       disableBtnShowPart();
+      const test1 = examStates.filter(test => test.question_type === 'mcq').length;
+
+      
+ 
+      // Count how many 'identification' test types are in examStates
+      const test2 = examStates.filter(test => test.question_type === 'identification').length;
+      
+      // Count how many 'trueOrFalse' test types are in examStates
+      const test3 = examStates.filter(test => test.question_type === 'trueOrFalse').length;
+      const test4 = examStates.filter(test => test.question_type === 'subjective').length;
+
+      setTest1(test1)
+      setTest2(test2)
+      setTest3(test3)
+      setTest4(test4)
 
   },[examStates,items,TestPart])
 
@@ -919,12 +966,14 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
  
  // Count how many 'trueOrFalse' test types are in TestPart
  const test3 = TestPart.filter(test => test.test_part_num === 3).length;
+ const test4 = TestPart.filter(test => test.test_part_num === 4).length;
  
  
  // Set disable states based on counts
  setDisableShowPart1(test1 <= 0);
  setDisableShowPart2(test2 <= 0);
  setDisableShowPart3(test3 <= 0);
+ setDisableShowPart4(test4 <= 0);
  
   
    }
@@ -1028,6 +1077,16 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
   };
 
   let arr = [2,2]
+
+  useEffect(()=>{
+
+    setPercent((examStates.length/items)*100)
+
+    if(percent ===100){
+      setLoadingPercent(false)
+    }
+
+  },[examStates,items,percent])
   
   const handleFileProcessing = async () => {
 
@@ -1079,19 +1138,26 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
   
     // If there are new test parts to add, update the state
     if (newTestParts.length > 0) {
-      setTestPart((prevTestPart) => [...prevTestPart, ...newTestParts]);
+      setTestPart((prevTestPart) =>{
+        
+        const updatedTestPart =   [...prevTestPart, ...newTestParts]
+        localStorage.setItem('testpartData', JSON.stringify(updatedTestPart));
+        return updatedTestPart;
+      }
+      );
+      
     }
-    if (files.length === 0) return alert('Please select a file.');
+    if (files.length === 0){ return alert('Please select a file.')} else {setLoadingPercent(true)};
 
     
     let num = 0;
 
   
-    for (const file of files) {
-      if (!file) return alert('Please select a file.');
+    for (let i = 0;i<files.length;i++) {
+      if (!files[i]) return alert('Please select a file.');
       const formData = new FormData();
       
-      formData.append('file', file); // Append the selected file
+      formData.append('file', files[i]); // Append the selected file
   
       // Add other JSON data to the FormData
       formData.append('index', 0);
@@ -1104,6 +1170,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         formData.append('mcq', mcq);
         formData.append('identification', identification);
         formData.append('trueOrFalse', trueOrFalse);
+        formData.append('subjective', subtest);
         formData.append('numques', lessons[num]);
         formData.append('Remembering', lessonsData[num].remembering);
         formData.append('Understanding', lessonsData[num].understanding);
@@ -1111,6 +1178,10 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         formData.append('Analyzing', lessonsData[num].analyzing);
         formData.append('Evaluating', lessonsData[num].evaluating);
         formData.append('Creating', lessonsData[num].creating);
+
+        if(i === files.length-1){
+          formData.append('last', 1);
+        }
       
 
       
@@ -1132,19 +1203,39 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
 
         // Check if data is an array before using map
         if (Array.isArray(dataques)) {
-          setExamStates((prevExamStates) => [
-            ...prevExamStates,
-            ...dataques.map((item) => ({
-              question: item.question.question || '', // Default to an empty string if undefined
-              choices: item.question.test_type === 'trueOrFalse' || !item.question.choices 
-                ? [] 
-                : item.question.choices.slice(0, 4), // Use slice to prevent accessing out of bounds
-              question_type: item.question.test_type || '',
-              answer: item.question.answer || '',
-              test_part_num: 1,
-            })),
-          ]);
-        } else {
+          setExamStates((prevExamStates) => {
+            const updatedStates = [
+              ...prevExamStates,
+              ...dataques.map((item) => ({
+                question: item.question.question || '', // Default to an empty string if undefined
+                choices:
+                  item.question.test_type === 'trueOrFalse' || !item.question.choices
+                    ? []
+                    : item.question.choices.slice(0, 4), // Use slice to prevent accessing out of bounds
+                question_type: item.question.test_type || '',
+                answer: item.question.answer || '',
+                test_part_num: 1,
+              })),
+            ];
+        
+            // Filter out invalid entries (empty questions or answers)
+            const validUpdatedStates = updatedStates.filter(
+              (state) => state.question !== ''
+            );
+        
+            // Only update if there are valid states
+            if (validUpdatedStates.length > 0) {
+              localStorage.setItem('questionData', JSON.stringify(validUpdatedStates));
+        
+              // Return the modified array with valid data
+              return validUpdatedStates;
+            }
+        
+            // If no valid data, return the previous state without changes
+            return prevExamStates;
+          });
+        }
+         else {
           console.error('Expected an array but got:', dataques);
         }
         
@@ -1153,6 +1244,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       }
   
       num++;
+  
     }
   };
   
@@ -1163,93 +1255,286 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
 
   return (
     <div >
-      <Card>
-        
-      <Breadcrumb aria-label="Default breadcrumb example">
-      <Breadcrumb.Item >
-      Course Information
-      </Breadcrumb.Item>
-      <Breadcrumb.Item >
-      Taxonomy Allocation
-      </Breadcrumb.Item>
-      <Breadcrumb.Item >
-      Table of Specification
-      </Breadcrumb.Item>
-      <Breadcrumb.Item >
-      Create Exam
-      </Breadcrumb.Item>
+    <Card>
       
-    </Breadcrumb>
+    <Breadcrumb aria-label="Default breadcrumb example">
+    <Breadcrumb.Item >
+    Course Information
+    </Breadcrumb.Item>
+    <Breadcrumb.Item >
+    Taxonomy Allocation
+    </Breadcrumb.Item>
+    <Breadcrumb.Item >
+    Table of Specification
+    </Breadcrumb.Item>
+    <Breadcrumb.Item >
+    Create Exam
+    </Breadcrumb.Item>
+    
+  </Breadcrumb>
+ 
+ <Progress progress={100} size={'sm'} color={'primary'}/>
+
+
+
+     
+       <div className='flex gap-5 '>
+     <div style={{flex:0.4}}>
+
+     <div className=' w-full'>
+ 
+
+    <Card  className='w-full mt-5'> 
+    
+    <Button color={'primary'} onClick={()=>{setShowPart(1)}} disabled={disableShowPart1}><VisibilityIcon className="mr-2"/> View Test 1</Button>
+    <Button color={'primary'} onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
+    <Button color={'primary'} onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
+    <Button color={'primary'} onClick={()=>{setShowPart(4)}} disabled={disableShowPart4}><VisibilityIcon className="mr-2"/> View Test 4</Button>
+    <Button  color="blue" onClick={() => setPdfModal(true)}><PreviewIcon className="mr-2"/> Exam Preview</Button>
    
-   <Progress progress={100} size={'sm'} color={'primary'}/>
+    <Button  type="submit" onClick={()=>{setSubmit(false)}} color="success"><SaveIcon className='mr-2'/>Save Exam</Button>
+    <Button  type="submit" onClick={()=>{setSubmit(true)}} color="success"><SendIcon className='mr-2'/>Submit Exam</Button>
+  
+  
+ 
+    </Card>
+
+ 
+    </div>
+    
+     </div>
+ 
+ <div className='flex-1'>
+
+      <div className='w-full' >
+        <div className="mb-2 block">
+          <Label htmlFor="title" value="Exam Title" />
+        </div>
+        <TextInput id="title" type="text" value={ExamTitle}  onChange={handleExamTitleChange}/>
+      </div>
+     
+      <br />
+      
+    
+      {examPart(categories)}
+
+     
+
+      <div className={`justify-center w-96 mx-auto ${examStates.length == items?'hidden':'show'}`}>
+  {/* Multiple Choice */}
+  <div className={`flex items-center justify-between mb-4 ${!formData.ExaminationType.includes('Multiple Choice')?'hidden':'show'}`} >
+    <div className="block">
+      <Label htmlFor="mcq" value="For Multiple Choice" />
+    </div>
+    <TextInput
+      min={0}
+      id="mcq"
+      type="number"
+      className="max-w-sm"
+      value={test.mcq}
+      onChange={(e) => handleTest('mcq', e.target.value)}
+      max={max === 0 ? test.mcq : 100}
+    />
+  </div>
+
+  {/* Identification */}
+  <div className={`flex items-center justify-between mb-4 ${!formData.ExaminationType.includes('Identification')?'hidden':'show'}`} >
+    <div className="block">
+      <Label htmlFor="identification" value="For Identification" />
+    </div>
+    <TextInput
+      min={0}
+      id="identification"
+      type="number"
+      className="max-w-sm"
+      value={test.identification}
+      onChange={(e) => handleTest('identification', e.target.value)}
+      max={max === 0 ? test.identification : 100}
+    />
+  </div>
+
+  {/* True or False */}
+  <div className={`flex items-center justify-between mb-4 ${!formData.ExaminationType.includes('True or False')?'hidden':'show'}`} >
+    <div className="block">
+      <Label htmlFor="trueOrFalse" value="For True or False" />
+    </div>
+    <TextInput
+      min={0}
+      id="trueOrFalse"
+      type="number"
+      className="max-w-sm"
+      value={test.trueOrFalse}
+      onChange={(e) => handleTest('trueOrFalse', e.target.value)}
+      max={max === 0 ? test.trueOrFalse : 100}
+    />
+  </div>
+
+  {/* Subjective Test */}
+  <div className={`flex items-center justify-between mb-4 ${!formData.ExaminationType.includes('Subjective')?'hidden':'show'}`} >
+    <div className="block">
+      <Label htmlFor="subjective" value="For Subjective Test" />
+    </div>
+    <TextInput
+      min={0}
+      id="subjective"
+      type="number"
+      className="max-w-sm"
+      value={subtest}
+      
+      max={max === 0 ? test.trueOrFalse : 100}
+    />
+  </div>
+
+  
+
+  <hr className="my-4" />
+
+  <div className="flex items-center justify-between mb-4">
+    <div className="block">
+      <Label htmlFor="subjective" value="Total Items" />
+    </div>
+   <div>{Number(test.mcq)+Number(test.identification)+Number(test.trueOrFalse)+subtest}/{items}</div>
+  </div>
+
+  {/* Button */}
+  <div className="text-center">
+    <Button
+      className="mt-3 mx-auto"
+      color="primary"
+      onClick={handleFileProcessing}
+   disabled={max ==0 ?false:true}
+
+    >
+      Create Exam
+    </Button>
+  </div>
+</div>
+
+      
+      <Modal show={PdfModal} size={'7xl'}  onClose={() => setPdfModal(false)} className="h-screen">
+      <Modal.Header>Exam</Modal.Header>
+      <Modal.Body  className="p-0">
+        <div className="min-h-96 "  style={{height:'575px'}}>
+        <PDFViewer className="h-full w-full">
+  <Exampdf TestPart={TestPart} examStates={examStates} />
+</PDFViewer>
+    
+        </div>
+      </Modal.Body>
+    </Modal>
+
+    </div>
+    </div>
+    </Card>
+    {/* {examStates.length} 
+    <br/>
+    <div>test 1: {Test1}</div>
+    <div>test 2: {Test2}</div>
+    <div>test 3: {Test3}</div>
+    <div>test 4: {Test4}</div>
+    <div>test 4: {JSON.stringify(TestPart)}</div> */}
+ {/* {JSON.stringify(TestPart)} */}
+   
+    {loadingpercent && <LoadingWithPercent percent={percent}/>}
+  </div>
+  
+//     <div >
+//       <Card>
+        
+//       <Breadcrumb aria-label="Default breadcrumb example">
+//       <Breadcrumb.Item >
+//       Course Information
+//       </Breadcrumb.Item>
+//       <Breadcrumb.Item >
+//       Taxonomy Allocation
+//       </Breadcrumb.Item>
+//       <Breadcrumb.Item >
+//       Table of Specification
+//       </Breadcrumb.Item>
+//       <Breadcrumb.Item >
+//       Create Exam
+//       </Breadcrumb.Item>
+      
+//     </Breadcrumb>
+   
+//    <Progress progress={100} size={'sm'} color={'primary'}/>
 
 
        
-         <div className='flex gap-5 '>
+//          <div className='flex gap-5 '>
 
           
   
    
-   <div className='flex-1'>
+//    <div className='flex-1'>
 
-        <div className='w-full hidden' >
-          <div className="mb-2 block">
-            <Label htmlFor="title" value="Exam Title" />
-          </div>
-          <TextInput id="title" type="text" value={formData.Title}  onChange={handleExamTitleChange}/>
-        </div>
+//         <div className='w-full hidden' >
+//           <div className="mb-2 block">
+//             <Label htmlFor="title" value="Exam Title" />
+//           </div>
+//           <TextInput id="title" type="text" value={formData.Title}  onChange={handleExamTitleChange}/>
+//         </div>
        
-        <br />
+//         <br />
         
       
-        {examPart(categories)}
+//         {examPart(categories)}
        
-        <div className='w-full ' >
-          <div className="mb-2 block">
-            <Label htmlFor="title" value="For Multiple choice" />
-          </div>
-          <TextInput id="title" type="number"  className='max-w-sm' value={test.mcq} onChange={(e)=>{handleTest('mcq',e.target.value)}}/>
-        </div>
+//         <div className='w-full ' >
+//           <div className="mb-2 block">
+//             <Label htmlFor="title" value="For Multiple choice" />
+//           </div>
+//           <TextInput id="title" type="number"  className='max-w-sm' value={test.mcq} onChange={(e)=>{handleTest('mcq',e.target.value)}}/>
+//         </div>
 
-        <div className='w-full ' >
-          <div className="mb-2 block">
-            <Label htmlFor="title" value="For Idnetification" />
-          </div>
-          <TextInput id="title" type="number"  className='max-w-sm' value={test.identification} onChange={(e)=>{handleTest('identification',e.target.value)}}/>
-        </div>
+//         <div className='w-full ' >
+//           <div className="mb-2 block">
+//             <Label htmlFor="title" value="For Identification" />
+//           </div>
+//           <TextInput id="title" type="number"  className='max-w-sm' value={test.identification} onChange={(e)=>{handleTest('identification',e.target.value)}}/>
+//         </div>
         
-        <div className='w-full ' >
-          <div className="mb-2 block">
-            <Label htmlFor="title" value="For True or false" />
-          </div>
-          <TextInput id="title" type="number"  className='max-w-sm' value={test.trueOrFalse} onChange={(e)=>{handleTest('trueOrFalse',e.target.value)}}/>
-        </div>
+//         <div className='w-full ' >
+//           <div className="mb-2 block">
+//             <Label htmlFor="title" value="For True or false" />
+//           </div>
+//           <TextInput id="title" type="number"  className='max-w-sm' value={test.trueOrFalse} onChange={(e)=>{handleTest('trueOrFalse',e.target.value)}}/>
+//         </div>
 
-        {JSON.stringify(examStates.length)}
-  <div >
+     
+        
+//   <div >
  
-  <Button className='mx-auto' color={'primary'}  onClick={handleFileProcessing}>Create Exam</Button>
-  </div>
+//   <Button className='mx-auto' color={'primary'}  onClick={handleFileProcessing}>Create Exam</Button>
+//   </div>
  
   
         
-        <Modal show={PdfModal} size={'7xl'}  onClose={() => setPdfModal(false)} className="h-screen">
-        <Modal.Header>Exam</Modal.Header>
-        <Modal.Body  className="p-0">
-          <div className="min-h-96 "  style={{height:'575px'}}>
-          <PDFViewer className="h-full w-full">
-    <Exampdf TestPart={TestPart} examStates={examStates} />
-  </PDFViewer>
+//         <Modal show={PdfModal} size={'7xl'}  onClose={() => setPdfModal(false)} className="h-screen">
+//         <Modal.Header>Exam</Modal.Header>
+//         <Modal.Body  className="p-0">
+//           <div className="min-h-96 "  style={{height:'575px'}}>
+//           <PDFViewer className="h-full w-full">
+//     <Exampdf TestPart={TestPart} examStates={examStates} />
+//   </PDFViewer>
       
-          </div>
-        </Modal.Body>
-      </Modal>
+//           </div>
+//         </Modal.Body>
+//       </Modal>
 
-      </div>
-      </div>
-      </Card>
-
-    </div>
+//       </div>
+//       </div>
+//       </Card>
+//       {/* {examStates.map((item,index)=>{
+//         return(
+//           <div key={index}>
+//             {index+1}. {item.question}
+//           </div>
+//         )
+//       })} */}
+      
+// {loadingpercent && <LoadingWithPercent percent={percent}/>}
+//     </div>
   );
 };
 

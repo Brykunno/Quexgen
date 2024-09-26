@@ -723,6 +723,8 @@ const getTaxonomyValue = (index) => {
 
 
 
+
+
   const examPart = (categories) => {
 
 
@@ -1063,14 +1065,14 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
        <div style={{flex:0.4}}>
 
        <div className=' w-full'>
-        <Card  className='w-full'> 
+        {/* <Card  className='w-full'> 
       
       <Button color={'primary'} onClick={()=>{handleAddTest('mcq',exam_id)}} disabled={disableAddTestMcq}><PostAddIcon className="mr-2"/> Add Multiple Choice Test</Button>
       <Button color={'primary'} onClick={()=>{handleAddTest('identification',exam_id)}} disabled={disableAddTestIdentification}><PostAddIcon className="mr-2"/> Add Identification Test</Button>
       <Button color={'primary'} onClick={()=>{handleAddTest('trueOrFalse',exam_id)}} disabled={disableAddTestTrueorFalse}><PostAddIcon className="mr-2"/> Add True or False Test</Button>
      
    
-      </Card>
+      </Card> */}
 
       <Card  className='w-full mt-5'> 
       

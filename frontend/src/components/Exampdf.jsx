@@ -1,21 +1,18 @@
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet,Image,Font } from '@react-pdf/renderer';
-
+import { Page, Text, View, Document, StyleSheet, Font } from '@react-pdf/renderer';
 
 Font.register({
   family: 'Arial',
   fonts: [
     {
       src: `fonts/Arial.ttf`,
-      
     },
     {
       src: 'fonts/Arial_Bold.ttf',
       fontWeight: 'bold'
     }
-
   ]
-})
+});
 
 // Create styles
 const styles = StyleSheet.create({
@@ -23,7 +20,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: 'white',
     fontFamily: 'Arial'
-
   },
   section: {
     margin: 10,
@@ -33,45 +29,20 @@ const styles = StyleSheet.create({
   table: {
     display: "table",
     width: "auto",
-    // borderStyle: "solid",
-    // borderWidth: 1,
-    // borderRightWidth: 0,
-    // borderBottomWidth: 0
   },
   tableRow: {
     flexDirection: "row"
   },
   tableCol: {
     flex: 1,
-    // borderStyle: "solid",
-    // borderWidth: 1,
-    // borderLeftWidth: 0,
-    // borderTopWidth: 1,
-   
   },
   tableCell: {
     margin: 5,
-    padding:2,
+    padding: 2,
     fontSize: 9,
-    wordWrap: 'break-word', // Ensure text wraps within the cell
-    wordBreak: 'break-all', // Allow breaking long words or URLs
-    whiteSpace: 'normal', // Allow text to wrap normally
-  },
-  
-  tableCellCenter: {
-   
-    textAlign: 'center',
-    margin: 2,
-    fontSize: 9,
-  
- 
-  },image: {
-    width: '89%',
-    height: 'auto',
-    padding: 5,
-    alignSelf: 'center'
-   
-    
+    wordWrap: 'break-word',
+    wordBreak: 'break-all',
+    whiteSpace: 'normal',
   },
   letterBold: {
     fontWeight: 'bold'
@@ -79,192 +50,74 @@ const styles = StyleSheet.create({
 });
 
 function Exampdf(props) {
+  const renderQuestionsByType = (questions, typeLabel, testType) => {
+    const filteredQuestions = questions.filter(q => q.question_type === testType);
+    
+    if (filteredQuestions.length === 0) return null;
+
+    return (
+      <View>
+        <Text style={{ ...styles.tableCell, fontWeight: 'bold', marginTop: 10 }}>{typeLabel}</Text>
+        {filteredQuestions.map((question, idx) => {
+          return (
+            <View key={idx}>
+              {testType === 'subjective'?<View style={styles.tableRow}>
+                <Text style={styles.tableCell}>
+                  <Text style={{ fontWeight: 'bold' }}>{idx + 1}. </Text>
+                  {question.question}
+                </Text>
+              </View> : <View style={styles.tableRow}>
+                <Text style={styles.tableCell}>
+                  <Text style={{ fontWeight: 'bold' }}>____________ {idx + 1}. </Text>
+                  {question.question}
+                </Text>
+              </View>}
+              
+
+              {testType === 'mcq' && (
+                <View>
+                  <View style={[styles.tableRow]}>
+                    <View style={[styles.tableCol]}><Text style={styles.tableCell}>A. {question.choices[0]}</Text></View>
+                    <View style={[styles.tableCol]}><Text style={styles.tableCell}>B. {question.choices[1]}</Text></View>
+                  </View>
+                  <View style={[styles.tableRow]}>
+                    <View style={[styles.tableCol]}><Text style={styles.tableCell}>C. {question.choices[2]}</Text></View>
+                    <View style={[styles.tableCol]}><Text style={styles.tableCell}>D. {question.choices[3]}</Text></View>
+                  </View>
+                </View>
+              )}
+            </View>
+          );
+        })}
+      </View>
+    );
+  };
+
   return (
     <Document>
-      <Page  style={styles.page}>
+      <Page style={styles.page}>
         <View style={styles.section}>
-          
+          {/* Header */}
           <View style={styles.table}>
-            {/* Table Header */}
-
-            <View style={[styles.tableRow]} >
-                        
-                        <View style={[styles.tableCol]}>
-                        <Text style={styles.tableCell}>Name:_________________________</Text>
-                      </View>
-                      <View style={[styles.tableCol]}>
-                        <Text style={[styles.tableCell,{textAlign:'center'}]}>Year and Section:________________</Text>
-                      </View>
-                      <View style={[styles.tableCol]}>
-                        <Text style={[styles.tableCell,{textAlign:'center'}]}>Date:_____________________</Text>
-                      </View>
-
+            <View style={styles.tableRow}>
+              <View style={[styles.tableCol]}>
+                <Text style={styles.tableCell}>Name:_________________________</Text>
               </View>
-
-      
-            {/* Table Rows */}
-          
-
-            {props.TestPart.map((lesson, index) => {
-              let test = ''
-              if(lesson.test_type === 'mcq'){
-                test = 'Multiple Choice'
-              }
-              else if(lesson.test_type === 'identification'){
-                test = 'Identification'
-              }
-              else{
-                test = 'True or False'
-              }
-
-              let part = ''
-
-              switch(index+1){
-                case 1:
-                  part='I'
-                  break
-                case 2:
-                  part='II'
-                  break
-                case 3:
-                  part='III'
-                  break
-                default:
-                  part = ''
-
-              }
-              
-              
-              return(
-                <View>
-              <View style={styles.tableRow} key={index}>
-              
-                 <View style={[styles.tableCol,{fontWeight:'bold'}]}>
-                  <Text style={styles.tableCell}>{part}. {test}. {lesson.test_instruction} </Text>
-                </View>
-             
+              <View style={[styles.tableCol]}>
+                <Text style={[styles.tableCell, { textAlign: 'center' }]}>Year and Section:________________</Text>
               </View>
-
-
-
-              {
-
-                props.examStates.map((question,idx) => {
-
-                  const test1 = props.examStates.filter(q => q.test_part_num === 1).length;
-                  const test2 = props.examStates.filter(q => q.test_part_num === 2).length;
-                  const test3 = props.examStates.filter(q => q.test_part_num === 3).length;
-
-                  const filteredQuestions = props.examStates.filter(q => q.test_part_num === lesson.test_part_num);
-
-                  let item_num = filteredQuestions.indexOf(question) + 1;
-
-                  switch(question.test_part_num){
-                    case 2:
-                        item_num = item_num + test1
-                      break
-                    case 3:
-                       item_num = item_num + test1 + test2
-                      break
-                    default:
-                      item_num = item_num
-                      break
-                  }
-               
-                 
-
-
-                  if(question.question_type === 'mcq' && question.test_part_num === lesson.test_part_num){
-                    return(<View>
-
-                   
-
-                      <View style={[styles.tableRow,{marginLeft:'10px'}]} key={index}>
-                        
-                        <View style={[styles.tableCol]}>
-                        <Text style={styles.tableCell}> <Text style={[styles.tableCell,{fontWeight:'bold'}]}>____________ {item_num}. </Text>  <Text>
-                        {question.question}</Text></Text>
-                      </View>
-
-                    </View>
-
-                    <View style={[styles.tableRow,{width:'80%', margin:'auto'}]} key={index}>
-                        
-                        <View style={[styles.tableCol]}>
-                        <Text style={styles.tableCell}>A. {question.choices[0]}</Text>
-                      </View>
-
-                      <View style={[styles.tableCol]}>
-                        <Text style={styles.tableCell}>B. {question.choices[1]}</Text>
-                      </View>
-
-                    </View>
-
-                    <View style={[styles.tableRow,{width:'80%', margin:'auto'}]} key={index}>
-                        
-                        <View style={[styles.tableCol]}>
-                        <Text style={styles.tableCell}>C. {question.choices[2]}</Text>
-                      </View>
-
-                      <View style={[styles.tableCol]}>
-                        <Text style={styles.tableCell}>D. {question.choices[3]}</Text>
-                      </View>
-
-                    </View>
-
-                     
-                    
-                      </View>);
-                  
-                  }
-
-                  else if (question.question_type === 'identification' && question.test_part_num === lesson.test_part_num){
-                    return(<View>
-
-                   
-
-                        <View style={[styles.tableRow,{marginLeft:'10px'}]} key={index}>
-                        
-                        <View style={[styles.tableCol]}>
-                      
-
-                        <Text style={styles.tableCell}> <Text style={[styles.tableCell,{fontWeight:'bold'}]}>____________ {item_num}. </Text>  <Text>
-                        {question.question}</Text></Text>
-                      </View>
-
-                    </View>
-
-                     
-                    
-                      </View>);
-                  }
-                  else if (question.question_type === 'trueOrFalse' && question.test_part_num === lesson.test_part_num){
-                    return(<View>
-
-                   
-
-                    <View style={[styles.tableRow,{marginLeft:'10px'}]} key={index}>
-                        
-                        <View style={[styles.tableCol]}>
-                        <Text style={styles.tableCell}> <Text style={[styles.tableCell,{fontWeight:'bold'}]}>____________ {item_num}. </Text>  <Text>
-                        {question.question}</Text></Text>
-                      </View>
-
-                    </View>
-
-                     
-                    
-                      </View>);
-                  }
-
-                 
-                })
-
-                }
-
+              <View style={[styles.tableCol]}>
+                <Text style={[styles.tableCell, { textAlign: 'center' }]}>Date:_____________________</Text>
               </View>
-              
-            )})}
+            </View>
+          </View>
+
+          {/* Segregated Questions by Type */}
+          <View style={styles.table}>
+            {renderQuestionsByType(props.examStates, 'I. Multiple Choice', 'mcq')}
+            {renderQuestionsByType(props.examStates, 'II. Identification', 'identification')}
+            {renderQuestionsByType(props.examStates, 'III. True or False', 'trueOrFalse')}
+            {renderQuestionsByType(props.examStates, 'IV. Subjective', 'subjective')}
           </View>
         </View>
       </Page>

@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from "../../api";
-import { Card, Button, Table, Pagination, Select } from "flowbite-react";
+import { Card, Button, Table, Pagination, Select,  Dropdown,
+  DropdownDivider,
+  DropdownHeader,
+  DropdownItem, } from "flowbite-react";
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import SearchIcon from '@mui/icons-material/Search';
 import EditNoteIcon from '@mui/icons-material/EditNote';
@@ -122,10 +126,29 @@ function Exam_bank() {
             onChange={handleSearch} // Real-time search here
           />
         </div>
+        <Dropdown
+          arrowIcon={false}
+          inline
+          label={
+           
+            <FilterAltIcon/>
+          }
+        
+        >
+          <DropdownHeader>
+            <span className="block text-sm">Academic Year</span>
+            <span className="block truncate text-sm font-medium"></span>
+          </DropdownHeader>
+     
+          <DropdownItem>Semester </DropdownItem>
+        
+        </Dropdown>
+     
 
     
        
       </div>
+      
 
       <Table striped>
         <Table.Head>

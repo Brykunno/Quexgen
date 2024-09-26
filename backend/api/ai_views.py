@@ -328,7 +328,8 @@ def generate_question_module(level, context_paragraph,test_type):
                     question = lines[0]  # The whole content is treated as a single question or problem
                     question_dict = {
                         "question": question,
-                        "test_type": 'subjective'
+                        "test_type": 'subjective',
+                        "from" : 'mcq'
                     }
 
                 return question_dict
@@ -372,6 +373,7 @@ def generate_question_module(level, context_paragraph,test_type):
                         # "index": index,  uncomment mo nalang sayo ta ayaw gumana dito baka may dependency na wala dito.hahaha
                         "answer": correct_answer_letter,
                         "test_type": 'identification'
+                       
                     }
 
 
@@ -384,10 +386,68 @@ def generate_question_module(level, context_paragraph,test_type):
                     question = lines[0]  # The whole content is treated as a single question or problem
                     question_dict = {
                         "question": question,
-                         "test_type": 'subjective'
+                         "test_type": 'subjective',
+                          "from" : 'identification'
                     }
 
                 return question_dict
+            elif test_type == 'subjective':
+                # Accessing the response attributes directly
+                choice = response.choices[0]  # Accessing the first choice
+                message = choice.message  # Accessing the message
+                content = message.content  # Accessing the content of the message
+
+                # Process the content based on taxonomy level
+                lines = [re.sub(r'^[\d\.\)\*]*(?:[A-Da-d][\.\)])?\s*', '', line.strip()) for line in
+                        content.strip().split('\n')]
+
+                # Handle MCQ questions
+                if level in ["Remembering", "Understanding", "Analyzing"]:
+                    if len(lines) < 4:
+                        raise ValueError(
+                            "The generated content does not have enough lines for a valid MCQ question and answers.")
+
+                    question = lines[0]  # The first line is the question
+                    correct_answer = lines[2]  # The second option is assumed to be the correct answer
+                    choices = lines[2:]  # All options including the correct answer
+
+                    # Clean the choices and remove any special characters or numbering
+                    choices = [re.sub(r'^\w+\)\s*', '', choice.replace('*', '').strip()) for choice in choices]
+
+                    
+
+                    letters = ['A']
+                    choice_dict = [choices[i] for i in range(len(choices))]
+
+                    # Determine the letter for the correct answer based on its content after cleaning
+                    correct_answer_letter = next(
+                        letter for letter, choice in zip(letters, choice_dict) if choice == correct_answer.strip())
+
+                    # Create a dictionary to store the question, choices, correct answer, and letter for correct answer
+                    question = lines[0]  # The whole content is treated as a single question or problem
+                    question_dict = {
+                        "question": question,
+                         "test_type": 'subjective',
+                          
+                    }
+
+
+
+                # Handle Problem-based questions for other levels
+                else:
+                    if len(lines) < 1:
+                        raise ValueError(
+                            "The generated content does not have enough lines for a valid problem-based question.")
+
+                    question = lines[0]  # The whole content is treated as a single question or problem
+                    question_dict = {
+                        "question": question,
+                         "test_type": 'subjective',
+                          
+                    }
+
+                return question_dict
+            
             elif test_type == 'trueOrFalse':
                 raw_content = response.choices[0].message.content
                 print("Raw Output Content:")
@@ -424,10 +484,12 @@ def generate_question_module(level, context_paragraph,test_type):
                             print("Invalid output detected, regenerating question...")
                             retries += 1
                             continue
-                else: 
+                else:
+                    
                     question_dict = {
                         "question": raw_content,
-                         "test_type": 'subjective'
+                         "test_type": 'subjective',
+                         "from": 'trueOrFalse'
                     }
 
                 return question_dict
@@ -538,14 +600,16 @@ def generate_question_with_module(request):
             # Debugging output to check the contents of ques_gen
             print("Current ques_gen:", ques_gen)
 
-            mcq_count = sum(1 for question in ques_gen if question.get('test_type') == 'mcq')
-            identification_count = sum(1 for question in ques_gen if question.get('test_type') == 'identification')
-            trueOrFalse_count = sum(1 for question in ques_gen if question.get('test_type') == 'trueOrFalse')
+            mcq_count = sum(1 for question in ques_gen if question.get('test_type') == 'mcq' or question.get('from') == 'mcq' )
+            identification_count = sum(1 for question in ques_gen if question.get('test_type') == 'identification' or question.get('from') == 'identification')
+            trueOrFalse_count = sum(1 for question in ques_gen if question.get('test_type') == 'trueOrFalse' or question.get('from') == 'trueOrFalse')
+            subjective_count = sum(1 for question in ques_gen if question.get('test_type') == 'subjective' or question.get('from') == 'subjective')
             
             
 
             file = request.FILES.get('file')
-            index = request.POST.get('index', 0)
+            last = int(request.POST.get('last', 0))
+            subtest = int(request.POST.get('subjective', 0)) - subjective_count
             mcq = int(request.POST.get('mcq', 0)) - mcq_count
             identification = int(request.POST.get('identification', 0)) - identification_count
             trueOrFalse = int(request.POST.get('trueOrFalse', 0)) - trueOrFalse_count
@@ -553,6 +617,7 @@ def generate_question_with_module(request):
             print(f'True or false count: {trueOrFalse}')
             print(f'identification count: {identification}')
             print(f'mcq count: {mcq}')
+            print(f'subjective count: {subtest}')
             numques = int(request.POST.get('numques', 0))
 
             Remembering = int(request.POST.get('Remembering', 0))
@@ -606,15 +671,20 @@ def generate_question_with_module(request):
                     selected_level = "Creating"
                     Creating -=1
                 generated_ques =  {}
-                if mcq != 0:
-                    generated_ques = generate_question_module(selected_level, paragraphs[i], 'mcq')
-                    mcq -= 1
-                elif identification != 0:
-                    generated_ques = generate_question_module(selected_level, paragraphs[i], 'identification')
-                    identification -= 1
-                elif trueOrFalse != 0:
-                    generated_ques = generate_question_module(selected_level, paragraphs[i], 'trueOrFalse')
-                    trueOrFalse -= 1
+                if selected_level in ['Remembering','Understanding','Analyzing']:
+                    if mcq != 0:
+                        generated_ques = generate_question_module(selected_level, paragraphs[i], 'mcq')
+                        mcq -= 1
+                    elif identification != 0:
+                        generated_ques = generate_question_module(selected_level, paragraphs[i], 'identification')
+                        identification -= 1
+                    elif trueOrFalse != 0:
+                        generated_ques = generate_question_module(selected_level, paragraphs[i], 'trueOrFalse')
+                        trueOrFalse -= 1
+                else:
+                    if subtest != 0:
+                        generated_ques = generate_question_module(selected_level, paragraphs[i], 'subjective')
+                        subtest -= 1
 
                 print(f"Generated Question {i + 1} for {selected_level}:")
                 print(generated_ques)
@@ -628,7 +698,9 @@ def generate_question_with_module(request):
                 })
                 
                 
-
+                print(f'last module: {last}')
+                if last == 1:
+                    ques_gen = []
             return JsonResponse({"generated_questions": generated_questions}, status=status.HTTP_200_OK)
 
         except Exception as e:
@@ -637,9 +709,13 @@ def generate_question_with_module(request):
 
     return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+
+
 # You can access ques_gen from outside the function
 
 
+
+ques_gen = []
 
 
 

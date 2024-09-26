@@ -128,6 +128,14 @@ tos_teacher: 0,
 
   const [selectedOptions, setSelectedOptions] = useState([]);
 
+  function roundNum(num) {
+    if (num % 1 >= 0.4 && num % 1 <= 0.6) {
+      return num; // Return original value if it's .4, .5, or .6
+    }
+    return Math.round(num); // Otherwise, round normally
+  }
+  
+
   React.useEffect(() => {
     // Retrieve lessons data from local storage on component mount
     const storedLessonsString = localStorage.getItem('lessonsData');
@@ -184,7 +192,7 @@ tos_teacher: 0,
 
   
 const columns = [
-  { id: "topic", label: "Lesson/Topic", minWidth: 170  },
+  { id: "topic", label: "Lesson/Topic Summary", minWidth: 170  },
   // { id: "learning_outcomes", label: "Learning Outcomes", minWidth: 170 },
   {
     id: "teaching_hours",
@@ -395,36 +403,36 @@ function getTotalHours(){
 
 function getNumItems(totalItems,allocation){
   const allocationDecimal = allocation / 100;
-  return totalItems * allocationDecimal
+  return roundNum(totalItems * allocationDecimal)
  
 
 }
 
 function getRemembering(remembering,items){
 
-  return (remembering/100)*items
+  return roundNum((remembering/100)*items)
 }
 
 function getUnderstanding(Understanding,items){
 
-  return (Understanding/100)*items
+  return roundNum((Understanding/100)*items)
 }
 
 function getApplying(Applying,items){
 
-  return (Applying/100)*items
+  return roundNum((Applying/100)*items)
 }
 function getAnalyzing(Analyzing,items){
 
-  return (Analyzing/100)*items
+  return roundNum((Analyzing/100)*items)
 }
 function getEvaluating(Evaluating,items){
 
-  return (Evaluating/100)*items
+  return roundNum((Evaluating/100)*items)
 }
 function getCreating(Creating,items){
 
-  return (Creating/100)*items
+  return roundNum((Creating/100)*items)
 }
 
 function getTotal(remembering,understanding,applying,analyzing,evaluating,creating){
@@ -469,9 +477,11 @@ const handleLessonDataChange = (index, field, value) => {
   console.log('Lessons Data:', newData);
 
   if(field === 'study_guide'){
+    newData[index][field] = value.name;
     const newFiles = [...files];
     newFiles[index] = value;  
     setFiles(newFiles);
+    localStorage.setItem('filesData', JSON.stringify(newFiles));
   }
 
 
@@ -1214,7 +1224,7 @@ const handleCeil = (index, field, value) => {
         <div className="mb-3 flex-1">
        
       <div className="mb-2 block">
-        <Label htmlFor={`topic-${indexRow}`} value="Lesson/Topic" />
+        <Label htmlFor={`topic-${indexRow}`} value="Lesson/Topic Summary" />
       </div>
       <Textarea
         id={`topic-${indexRow}`}
@@ -1248,9 +1258,9 @@ const handleCeil = (index, field, value) => {
       
        onChange={(e) => handleLessonDataChange(indexRow, 'study_guide', e.target.files[0])}
       />
-      {lessonsDataInitial[indexRow] && lessonsDataInitial[indexRow]['study_guide'] && (
-    <p>Selected file: {String(lessonsDataInitial[indexRow]['study_guide'].name)}</p>  // Display the selected file name
-  )}
+      {/* {lessonsDataInitial[indexRow] && lessonsDataInitial[indexRow]['study_guide'] && (
+    <p>Selected file: {String(lessonsDataInitial[indexRow]['study_guide'])}</p>  // Display the selected file name
+  )} */}
     </div>
     </div>
     </Card>
@@ -1262,6 +1272,7 @@ const handleCeil = (index, field, value) => {
         <Label htmlFor={`teaching_hours-${indexRow}`} value="No. of Teaching Hours" />
       </div>
       <TextInput
+      min={0}
         id={`teaching_hours-${indexRow}`}
         type="number"
         style={{maxWidth:'200px'}}
@@ -1527,10 +1538,14 @@ const loadDataFromLocalStorage = () => {
     setFormData(data);
   }
 };
+
+
+
+
 // Use the effect hook to load data when the component mounts
 useEffect(() => {
   loadDataFromLocalStorage();
- 
+
  
 }, []);
 
@@ -1893,10 +1908,10 @@ return api.post("/api/tos-content/", { lessonsDataJson })
 
             
 
-            if(data.question != '' && data.answer != ''){
+            if(data.question != ''){
               acc.push( {
                 'question': data.question,
-                'answer': data.answer,
+                'answer': data.answer||'subjective',
                 'question_type': data.question_type,
                 'exam_id': exam_id,
                 'test_part_id': test_part_id,
@@ -1938,7 +1953,7 @@ return api.post("/api/tos-content/", { lessonsDataJson })
                   for(let i = 0; i< 4; i++){
                     if(data.choices[i] != '' && data.answer != ''){
                       acc.push({
-                        'answer_text': data.choices[i],
+                        'answer_text': data.choices[i]||'none',
                         'choices': answers[i],
                         'question_id': ques_ids[index]
                       });
@@ -2482,7 +2497,7 @@ const handleSubmitExam = () =>{
             </TableHead>
             <TableBody>
               {rows.map((row,index) => (
-                <TableRow hover role="checkbox" tabIndex={-1} key={index} onClick={(event) => handleModalRow(event, index)} className="cursor-pointer ">
+                <TableRow role="checkbox" tabIndex={-1} key={index} onClick={(event) => handleModalRow(event, index)} className="cursor-pointer  hover:bg-yellow-100">
                   {columns.map((column) => {
                     const value = row[column.id];
                     return (
@@ -2542,7 +2557,7 @@ const handleSubmitExam = () =>{
       </Card>
 
         <div className={`mb-5 ${step == 4? 'show':'hidden'}`}>
-      <Examtest files={files} setExamTitle={setExamTitle} items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} setLoading={setLoadingGenerate} context={context} setContext={setContext} formData={formData}/>
+      <Examtest saveDataToLocalStorageTestPart={saveDataToLocalStorageTestPart} files={files} setExamTitle={setExamTitle} items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} setLoading={setLoadingGenerate} context={context} setContext={setContext} formData={formData}/>
 
 
     
