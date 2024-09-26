@@ -132,7 +132,8 @@ tos_teacher: 0,
     if (num % 1 >= 0.4 && num % 1 <= 0.6) {
       return num; // Return original value if it's .4, .5, or .6
     }
-    return Math.round(num); // Otherwise, round normally
+    // return Math.round(num); 
+    return num;
   }
   
 
@@ -555,6 +556,9 @@ const handleReset = (i, field) => {
 
 
 
+const configTotal = lessonsData.reduce((acc, data) => {
+  return acc + data.total;
+}, 0); // Initial value of acc is set to 0
 
 
 
@@ -1212,7 +1216,7 @@ const handleCeil = (index, field, value) => {
     else{
       return(
       <Modal size={'7xl'} show={openModal} onClose={() => setOpenModal(false)}>
-      <Modal.Header>Lesson {indexRow+1}</Modal.Header>
+      <Modal.Header>Lesson {indexRow+1} {configTotal}</Modal.Header>
       <Modal.Body>
         <div className="space-y-6 " >
           <div className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
@@ -1221,7 +1225,7 @@ const handleCeil = (index, field, value) => {
       <div className="flex gap-5">  
          <div style={{flex:1}} className="flex flex-col">
           <Card className="h-full">
-        <div className="mb-3 flex-1">
+        <div className="mb-5 flex-1">
        
       <div className="mb-2 block">
         <Label htmlFor={`topic-${indexRow}`} value="Lesson/Topic Summary" />
@@ -1229,7 +1233,7 @@ const handleCeil = (index, field, value) => {
       <Textarea
         id={`topic-${indexRow}`}
         value={lessonsData[indexRow]['topic']}
-       style={{height:'90%'}}
+       style={{height:'100%'}}
         onChange={(e) => handleLessonDataChange(indexRow, 'topic', e.target.value)}
         required
       />
@@ -1241,7 +1245,7 @@ const handleCeil = (index, field, value) => {
       <Textarea
         id={`learning_outcomes-${indexRow}`}
         value={lessonsData[indexRow]['learning_outcomes']}
-        style={{height:'90%'}}
+        style={{height:'100%'}}
         onChange={(e) => handleLessonDataChange(indexRow, 'learning_outcomes', e.target.value)}
         required
       />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet, Font } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, Font, Image } from '@react-pdf/renderer';
 
 Font.register({
   family: 'Arial',
@@ -19,7 +19,8 @@ const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
     backgroundColor: 'white',
-    fontFamily: 'Arial'
+    fontFamily: 'Arial',
+    position: 'relative', // Added to enable absolute positioning
   },
   section: {
     margin: 10,
@@ -46,7 +47,14 @@ const styles = StyleSheet.create({
   },
   letterBold: {
     fontWeight: 'bold'
-  }
+  },
+  professorText: {
+    position: 'absolute',
+    bottom: 10, // Adjust this value for spacing from the bottom
+    left: 10,  // Adjust this value for spacing from the right
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
 });
 
 function Exampdf(props) {
@@ -57,34 +65,54 @@ function Exampdf(props) {
 
     return (
       <View>
-        <Text style={{ ...styles.tableCell, fontWeight: 'bold', marginTop: 10 }}>{typeLabel}</Text>
+        <Text style={{ ...styles.tableCell, fontWeight: 'bold', marginTop: 10 }}>{typeLabel}. </Text>
         {filteredQuestions.map((question, idx) => {
           return (
-            <View key={idx}>
-              {testType === 'subjective'?<View style={styles.tableRow}>
-                <Text style={styles.tableCell}>
-                  <Text style={{ fontWeight: 'bold' }}>{idx + 1}. </Text>
-                  {question.question}
-                </Text>
-              </View> : <View style={styles.tableRow}>
-                <Text style={styles.tableCell}>
-                  <Text style={{ fontWeight: 'bold' }}>____________ {idx + 1}. </Text>
-                  {question.question}
-                </Text>
+            <View key={idx} >
+              {testType === 'subjective'?<View style={[styles.tableRow,{paddingLeft:'30px',paddingRight:'50px'}]}>
+              <View style={[styles.tableCol,{fontWeight: 'bold',flex:0.07}]}><Text style={[styles.tableCell,{padding:0,marginRight:0}]}>{idx + 1}. </Text></View>
+              <View style={[styles.tableCol,{fontWeight: 'bold'}]}><Text style={[styles.tableCell,{padding:0,marginLeft:'-10px'}]}>{question.question}</Text></View>
+            
+              </View> : <View style={[styles.tableRow,{paddingRight:'50px'}]}>
+              <View style={[styles.tableCol,{fontWeight: 'bold',flex:0.22}]}><Text style={[styles.tableCell,{padding:0,marginRight:0}]}>____________ {idx + 1}. </Text></View>
+              <View style={[styles.tableCol,{fontWeight: 'bold'}]}><Text style={[styles.tableCell,{padding:0,marginLeft:'-10px'}]}>{question.question}</Text></View>
+            
               </View>}
               
 
               {testType === 'mcq' && (
                 <View>
-                  <View style={[styles.tableRow]}>
-                    <View style={[styles.tableCol]}><Text style={styles.tableCell}>A. {question.choices[0]}</Text></View>
-                    <View style={[styles.tableCol]}><Text style={styles.tableCell}>B. {question.choices[1]}</Text></View>
-                  </View>
-                  <View style={[styles.tableRow]}>
-                    <View style={[styles.tableCol]}><Text style={styles.tableCell}>C. {question.choices[2]}</Text></View>
-                    <View style={[styles.tableCol]}><Text style={styles.tableCell}>D. {question.choices[3]}</Text></View>
-                  </View>
-                </View>
+  {/* First row (A and B options) */}
+  <View style={[styles.tableRow,{paddingLeft:'60px',paddingRight:'60px'}]}>
+    {/* Column for Choice A */}
+    <View style={[styles.tableCol, { flexDirection: 'row', alignItems: 'center' }]}>
+      <Text style={[styles.tableCell, { marginRight: 0, flex: 0.1 }]}>A.</Text>
+      <Text style={[styles.tableCell, { marginLeft: '-8px', flex: 0.9 }]}>{question.choices[0]}</Text>
+    </View>
+    
+    {/* Column for Choice B */}
+    <View style={[styles.tableCol, { flexDirection: 'row', alignItems: 'center' }]}>
+      <Text style={[styles.tableCell, { marginRight: 0, flex: 0.1 }]}>B.</Text>
+      <Text style={[styles.tableCell, { marginLeft: '-8px', flex: 0.9 }]}>{question.choices[1]}</Text>
+    </View>
+  </View>
+
+  {/* Second row (C and D options) */}
+  <View style={[styles.tableRow,{paddingLeft:'60px',paddingRight:'60px'}]}>
+    {/* Column for Choice C */}
+    <View style={[styles.tableCol, { flexDirection: 'row', alignItems: 'center' }]}>
+      <Text style={[styles.tableCell, { marginRight: 0, flex: 0.1 }]}>C.</Text>
+      <Text style={[styles.tableCell, { marginLeft: '-8px', flex: 0.9 }]}>{question.choices[2]}</Text>
+    </View>
+    
+    {/* Column for Choice D */}
+    <View style={[styles.tableCol, { flexDirection: 'row', alignItems: 'center' }]}>
+      <Text style={[styles.tableCell, { marginRight: 0, flex: 0.1 }]}>D.</Text>
+      <Text style={[styles.tableCell, { marginLeft: '-8px', flex: 0.9 }]}>{question.choices[3]}</Text>
+    </View>
+  </View>
+</View>
+
               )}
             </View>
           );
@@ -97,6 +125,30 @@ function Exampdf(props) {
     <Document>
       <Page style={styles.page}>
         <View style={styles.section}>
+          <View style={styles.table}>
+            <View style={styles.tableRow}>
+              <View style={[styles.tableCol]}>
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginTop: '-5px' }}>
+                  <View style={{ marginRight: '-10px' }}>
+                    <Image
+                      style={[styles.image,{height:'30px',width:'30px'}]}
+                      src="images/PSULogo.png" // Provide the path to your image
+                    />
+                  </View>
+                </View>
+              </View>
+
+              <View style={[styles.tableCol]}>
+                <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>PANGASINAN STATE UNIVERSITY</Text>
+                <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>SAN CARLOS CAMPUS</Text>
+                <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>IT DEPARTMENT</Text>
+              </View>
+              <View style={[styles.tableCol]}>
+              
+              </View>
+            </View>
+          </View>
+
           {/* Header */}
           <View style={styles.table}>
             <View style={styles.tableRow}>
@@ -120,6 +172,9 @@ function Exampdf(props) {
             {renderQuestionsByType(props.examStates, 'IV. Subjective', 'subjective')}
           </View>
         </View>
+
+        {/* Add INSTRUCTOR/PROFESSOR text at the bottom right */}
+        <Text style={styles.professorText}>INSTRUCTOR/PROFESSOR: {props.faculty} </Text>
       </Page>
     </Document>
   );
