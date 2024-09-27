@@ -21,6 +21,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import { Autocomplete, TextField, Chip } from '@mui/material';
+import Learning_outcomes from "./Learning_outcomes";
 
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
@@ -49,7 +50,10 @@ function createData(
   creating,
   total,
   placement,
-  study_guide
+  study_guide,
+  action
+
+  
 ) {
   return {
     topic,
@@ -65,7 +69,9 @@ function createData(
     creating,
     total,
     placement,
-    study_guide
+    study_guide,
+    action
+   
   };
 }
 
@@ -193,7 +199,7 @@ tos_teacher: 0,
 
   
 const columns = [
-  { id: "topic", label: "Lesson/Topic Summary", minWidth: 170  },
+  { id: "topic", label: "Lesson/\nChapter", minWidth: 100  },
   // { id: "learning_outcomes", label: "Learning Outcomes", minWidth: 170 },
   {
     id: "teaching_hours",
@@ -301,6 +307,12 @@ const columns = [
     minWidth: 170,
     align: "right",
     format: (value) => value.toFixed(2),
+  },
+  {
+    id: "action",
+    label: "Action",
+    minWidth: 170,
+    align: "right"
   },
 ];
 
@@ -566,9 +578,9 @@ const configTotal = lessonsData.reduce((acc, data) => {
 
   const rows = lessonsData.map((data, index) =>
     createData(
-    <div className="max-w-36  max-h-10  overflow-hidden" style={{maxHeight:'100'}} key={index}> {data.topic}</div>,
+    <div className="max-w-36  max-h-10  overflow-hidden" style={{maxHeight:'100'}} key={index}><b> {index+1}</b></div>,
     <div className="max-w-36  overflow-hidden" style={{maxHeight:'100'}} key={index}> {data.learning_outcomes}</div>,
-     data.teachingHours,
+    <TextInput type="number" min={'0'} value={data.teachingHours }  onChange={(e) => handleLessonDataChange(indexRow, 'teachingHours', e.target.value)}/>,
      
      data.allocation,
      data.items,
@@ -579,7 +591,11 @@ const configTotal = lessonsData.reduce((acc, data) => {
      data.evaluating,
      data.creating,
      data.total,
-     data.placement
+     data.placement,
+     <div key={index}>
+     <Button color={'red'} >{data.placement}</Button>
+
+     </div>,
 
 
     
@@ -2344,7 +2360,16 @@ const handleSubmitExam = () =>{
    <Progress progress={50} size={'sm'} color={'primary'} />
    
    <br />
-       
+   <Learning_outcomes 
+        setRemembering={setRemembering} 
+        setUnderstanding={setUnderstanding}
+        setAnalyzing={setAnalyzing}
+        setApplying={setApplying}
+        setEvaluating={setEvaluating}
+        setCreating={setCreating}
+        setTotalTaxonomy={setTotalTaxonomy} 
+        getTotalTaxonomy={getTotalTaxonomy} 
+      />
 <div className="flex gap-3"> 
         <div className=" max-w-md">
       <div>
@@ -2501,7 +2526,7 @@ const handleSubmitExam = () =>{
             </TableHead>
             <TableBody>
               {rows.map((row,index) => (
-                <TableRow role="checkbox" tabIndex={-1} key={index} onClick={(event) => handleModalRow(event, index)} className="cursor-pointer  hover:bg-yellow-100">
+                <TableRow role="checkbox" tabIndex={-1} key={index} >
                   {columns.map((column) => {
                     const value = row[column.id];
                     return (

@@ -64,6 +64,7 @@ urlpatterns = [
     path('generate-question-module/', ai_views.generate_question_with_module, name='generate_question_with_module'),
     path('',  include(router.urls)),     
     path('upload/', views.FileUploadView.as_view(), name='file-upload'),
+    path('taxonomy-allocation/', ai_views.taxonomy_allocation, name='taxonomy_allocation'),
 
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
