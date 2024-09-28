@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { Tooltip,Breadcrumb,Progress, Card, Textarea, Button, TextInput, Label,Radio,Modal } from "flowbite-react";
+import { Tooltip,Breadcrumb,Progress, Card, Textarea, Button, TextInput, Label,Radio,Modal,FileInput } from "flowbite-react";
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CloseIcon from '@mui/icons-material/Close';
@@ -18,7 +18,7 @@ import LoadingWithPercent from './LoadingWithPercent';
 
 
 
-function Examtest ({ saveDataToLocalStorageTestPart,files,items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext,formData}) {
+function Examtest ({handleLessonDataChange, saveDataToLocalStorageTestPart,files,items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext,formData}) {
 
 
 
@@ -1320,7 +1320,34 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
 
      
 
-      <div className={`justify-center w-96 mx-auto ${examStates.length == items?'hidden':'show'}`}>
+<div className={`flex ${examStates.length > 0?'hidden':'show'}`}>
+<div>
+  {lessonsData.map((data,index)=>{
+
+    return(
+      <div key={index}>
+
+<div className="">
+    <div>
+      <div className="mb-2 block">
+        <Label htmlFor="file-upload" > Upload file for Lesson {index+1}</Label>
+      </div>
+      <FileInput id="file-upload"
+       accept="application/pdf"
+      
+       onChange={(e) => handleLessonDataChange(index, 'study_guide', e.target.files[0])}
+      />
+      {/* {lessonsDataInitial[indexRow] && lessonsDataInitial[indexRow]['study_guide'] && (
+    <p>Selected file: {String(lessonsDataInitial[indexRow]['study_guide'])}</p>  // Display the selected file name
+  )} */}
+    </div>
+    </div>
+      </div>
+    )
+
+  })}
+</div>
+      <div className={`justify-center w-96 mx-auto `}>
   {/* Multiple Choice */}
   <div className={`flex items-center justify-between mb-4 ${!formData.ExaminationType.includes('Multiple Choice')?'hidden':'show'}`} >
     <div className="block">
@@ -1409,7 +1436,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
     </Button>
   </div>
 </div>
-
+</div>
       
       <Modal show={PdfModal} size={'7xl'}  onClose={() => setPdfModal(false)} className="h-screen">
       <Modal.Header>Exam</Modal.Header>

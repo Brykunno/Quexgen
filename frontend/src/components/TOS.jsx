@@ -50,8 +50,7 @@ function createData(
   creating,
   total,
   placement,
-  study_guide,
-  action
+  study_guide
 
   
 ) {
@@ -69,8 +68,7 @@ function createData(
     creating,
     total,
     placement,
-    study_guide,
-    action
+    study_guide
    
   };
 }
@@ -136,10 +134,10 @@ tos_teacher: 0,
 
   function roundNum(num) {
     if (num % 1 >= 0.4 && num % 1 <= 0.6) {
-      return num; // Return original value if it's .4, .5, or .6
+      return parseFloat(num.toFixed(2)); 
     }
-    // return Math.round(num); 
-    return num;
+    return parseFloat(num.toFixed(2)); 
+   
   }
   
 
@@ -308,12 +306,7 @@ const columns = [
     align: "right",
     format: (value) => value.toFixed(2),
   },
-  {
-    id: "action",
-    label: "Action",
-    minWidth: 170,
-    align: "right"
-  },
+
 ];
 
 
@@ -580,16 +573,16 @@ const configTotal = lessonsData.reduce((acc, data) => {
     createData(
     <div className="max-w-36  max-h-10  overflow-hidden" style={{maxHeight:'100'}} key={index}><b> {index+1}</b></div>,
     <div className="max-w-36  overflow-hidden" style={{maxHeight:'100'}} key={index}> {data.learning_outcomes}</div>,
-    <TextInput type="number" min={'0'} value={data.teachingHours }  onChange={(e) => handleLessonDataChange(indexRow, 'teachingHours', e.target.value)}/>,
+    <div className={`${data.teachingHours==0?'bg-red-500 text-white':''} text-center`}>{data.teachingHours}</div>,
      
      data.allocation,
-     data.items,
-     data.remembering,
-     data.understanding,
-     data.applying,
-     data.analyzing,
-     data.evaluating,
-     data.creating,
+     <div className={`${!Number.isInteger(data.items)?'bg-red-500 text-white':''} text-center`}>{data.items}</div>,
+     <div className={`${!Number.isInteger(data.remembering)?'bg-red-500 text-white':''} text-center`}>{data.remembering}</div>,
+     <div className={`${!Number.isInteger(data.understanding)?'bg-red-500 text-white':''} text-center`}>{data.understanding}</div>,
+     <div className={`${!Number.isInteger(data.applying)?'bg-red-500 text-white':''} text-center`}>{data.applying}</div>,
+     <div className={`${!Number.isInteger(data.analyzing)?'bg-red-500 text-white':''} text-center`}>{data.analyzing}</div>,
+     <div className={`${!Number.isInteger(data.evaluating)?'bg-red-500 text-white':''} text-center`}>{data.evaluating}</div>,
+     <div className={`${!Number.isInteger(data.creating)?'bg-red-500 text-white':''} text-center`}>{data.creating}</div>,
      data.total,
      data.placement,
      <div key={index}>
@@ -1231,17 +1224,17 @@ const handleCeil = (index, field, value) => {
     }
     else{
       return(
-      <Modal size={'7xl'} show={openModal} onClose={() => setOpenModal(false)}>
-      <Modal.Header>Lesson {indexRow+1} {configTotal}</Modal.Header>
+      <Modal size={'4xl'} show={openModal} onClose={() => setOpenModal(false)}>
+      <Modal.Header>Lesson {indexRow+1} </Modal.Header>
       <Modal.Body>
         <div className="space-y-6 " >
           <div className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
            
 
-      <div className="flex gap-5">  
-         <div style={{flex:1}} className="flex flex-col">
-          <Card className="h-full">
-        <div className="mb-5 flex-1">
+      <div className="flex-col gap-5">  
+         <div style={{flex:1}} className="">
+          <Card className="p-5 pb-10 mb-5">
+        <div className="mb-5 ">
        
       <div className="mb-2 block">
         <Label htmlFor={`topic-${indexRow}`} value="Lesson/Topic Summary" />
@@ -1249,40 +1242,30 @@ const handleCeil = (index, field, value) => {
       <Textarea
         id={`topic-${indexRow}`}
         value={lessonsData[indexRow]['topic']}
-       style={{height:'100%'}}
+
+       style={{height:'100px'}}
         onChange={(e) => handleLessonDataChange(indexRow, 'topic', e.target.value)}
         required
       />
     </div>
-    <div className="mb-3 flex-1">
+    <div className="mb-3 ">
       <div className="mb-2 block">
-        <Label htmlFor={`learning_outcomes-${indexRow}`} value="Learning Outcomes" />
+      <Label htmlFor={`learning_outcomes-${indexRow}`}>
+  Learning Outcomes <span className='text-red-600 font-bold'>*</span>
+</Label>
       </div>
       <Textarea
+      
         id={`learning_outcomes-${indexRow}`}
         value={lessonsData[indexRow]['learning_outcomes']}
-        style={{height:'100%'}}
+        style={{height:'100px'}}
         onChange={(e) => handleLessonDataChange(indexRow, 'learning_outcomes', e.target.value)}
         required
       />
       
     </div>
     
-    <div className="flex-1">
-    <div>
-      <div className="mb-2 block">
-        <Label htmlFor="file-upload" value="Upload file" />
-      </div>
-      <FileInput id="file-upload"
-       accept="application/pdf"
-      
-       onChange={(e) => handleLessonDataChange(indexRow, 'study_guide', e.target.files[0])}
-      />
-      {/* {lessonsDataInitial[indexRow] && lessonsDataInitial[indexRow]['study_guide'] && (
-    <p>Selected file: {String(lessonsDataInitial[indexRow]['study_guide'])}</p>  // Display the selected file name
-  )} */}
-    </div>
-    </div>
+   
     </Card>
     </div>
     <div style={{flex:1}}>
@@ -1458,6 +1441,18 @@ const handleCeil = (index, field, value) => {
   </span>
   <span className="text-right text-black font-bold" style={{flex: 0.3}}>
     {lessonsData[indexRow]['placement']}
+  </span>
+</div>
+
+<div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
+  <div className="mb-2 block flex-1">
+    <Label htmlFor={`teaching_hours-${indexRow}`} value="Total of all items" />
+  </div>
+  <span className=" flex-1 text-right text-black">
+    {/* If there's a percentage or similar value, you can place it here */}
+  </span>
+  <span className="text-right text-black font-bold" style={{flex: 0.3}}>
+    {configTotal}
   </span>
 </div>
 <Button color={'failure'} size={'xs'} onClick={(e) => handleReset(indexRow, 'reset')}><ArrowUpwardIcon/> <span className="mt-1">Reset</span></Button>
@@ -2369,26 +2364,26 @@ const handleSubmitExam = () =>{
         setCreating={setCreating}
         setTotalTaxonomy={setTotalTaxonomy} 
         getTotalTaxonomy={getTotalTaxonomy} 
+        Remembering={Remembering}
+        addLesson={addLesson}
+        lessonsDataInitial={lessonsDataInitial}
+        handleLessonDataChange={handleLessonDataChange}
+        lessonsData={lessonsData}
+        removeLesson={removeLesson}
+       
       />
 <div className="flex gap-3"> 
-        <div className=" max-w-md">
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="totalItems" value="Total of Items" />
-        </div>
-        <TextInput id="totalItems" type="number" required value={totalItems} onChange={handleTotalItemsChange} />
-      </div>
-      {/* {placements} */}
-
-      {/* <div className="mb-3">
-        <div className="mb-2 block">
-          <Label htmlFor="numLesson" value="Number of Lesson" />
-        </div>
-        <TextInput id="numLesson" type="number" required value={lesson} onChange={handleLessonChange} />
-      </div> */}
-      </div>
+     
 
       <Card className=" gap-4 mb-5  w-full p-3"> 
+        <div>
+      <div className="max-w-md flex gap-5">
+        <div className="mt-3" >
+          <Label htmlFor="totalItems" className="font-bold" > Total of Items<span className="text-red-600">*</span></Label> 
+        </div>
+        <TextInput id="totalItems" type="number" className="max-w-32 " required value={totalItems} onChange={handleTotalItemsChange} />
+      </div>
+      </div>
       <div>
         <div className="flex gap-3">
         <div className="mt-2 block w-32">
@@ -2526,7 +2521,8 @@ const handleSubmitExam = () =>{
             </TableHead>
             <TableBody>
               {rows.map((row,index) => (
-                <TableRow role="checkbox" tabIndex={-1} key={index} >
+                <TableRow role="checkbox" tabIndex={-1} key={index} onClick={(event) => handleModalRow(event, index)} className="cursor-pointer " >
+                  
                   {columns.map((column) => {
                     const value = row[column.id];
                     return (
@@ -2547,7 +2543,7 @@ const handleSubmitExam = () =>{
       <div className="w-full">
         <div className="  w-full flex flex-wrap ">
      <div  className=" mt-3 flex gap-3   mx-auto">
-      <Button color={'primary'}  onClick={() => addLesson({  
+      {/* <Button color={'primary'}  onClick={() => addLesson({  
         topic: '',
       learning_outcomes: '',
       teachingHours: 0,
@@ -2561,7 +2557,7 @@ const handleSubmitExam = () =>{
       creating: 0,
       total: 0,
       placement: '',
-      totalItems:0,})}> <AddCircleOutlineIcon className="mr-2 "/>Add Lesson</Button>
+      totalItems:0,})}> <AddCircleOutlineIcon className="mr-2 "/>Add Lesson</Button> */}
 
      
 
@@ -2586,7 +2582,7 @@ const handleSubmitExam = () =>{
       </Card>
 
         <div className={`mb-5 ${step == 4? 'show':'hidden'}`}>
-      <Examtest saveDataToLocalStorageTestPart={saveDataToLocalStorageTestPart} files={files} setExamTitle={setExamTitle} items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} setLoading={setLoadingGenerate} context={context} setContext={setContext} formData={formData}/>
+      <Examtest saveDataToLocalStorageTestPart={saveDataToLocalStorageTestPart} files={files} setExamTitle={setExamTitle} items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} setLoading={setLoadingGenerate} context={context} setContext={setContext} formData={formData} handleLessonDataChange={handleLessonDataChange}/>
 
 
     

@@ -771,7 +771,7 @@ def objectives_percentage(objectives):
             
             # Print the raw response for debugging (optional)
             print(f"Raw response: {response}")
-            
+            print("objectives: "+objectives)
             # Extract taxonomy levels from the response content
             taxonomy_counts = extract_taxonomy_levels(content)
 
