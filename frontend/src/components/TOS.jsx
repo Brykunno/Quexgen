@@ -573,16 +573,16 @@ const configTotal = lessonsData.reduce((acc, data) => {
     createData(
     <div className="max-w-36  max-h-10  overflow-hidden" style={{maxHeight:'100'}} key={index}><b> {index+1}</b></div>,
     <div className="max-w-36  overflow-hidden" style={{maxHeight:'100'}} key={index}> {data.learning_outcomes}</div>,
-    <div className={`${data.teachingHours==0?'bg-red-500 text-white':''} text-center`}>{data.teachingHours}</div>,
+    <div className={`${data.teachingHours==0?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.teachingHours}</div>,
      
      data.allocation,
-     <div className={`${!Number.isInteger(data.items)?'bg-red-500 text-white':''} text-center`}>{data.items}</div>,
-     <div className={`${!Number.isInteger(data.remembering)?'bg-red-500 text-white':''} text-center`}>{data.remembering}</div>,
-     <div className={`${!Number.isInteger(data.understanding)?'bg-red-500 text-white':''} text-center`}>{data.understanding}</div>,
-     <div className={`${!Number.isInteger(data.applying)?'bg-red-500 text-white':''} text-center`}>{data.applying}</div>,
-     <div className={`${!Number.isInteger(data.analyzing)?'bg-red-500 text-white':''} text-center`}>{data.analyzing}</div>,
-     <div className={`${!Number.isInteger(data.evaluating)?'bg-red-500 text-white':''} text-center`}>{data.evaluating}</div>,
-     <div className={`${!Number.isInteger(data.creating)?'bg-red-500 text-white':''} text-center`}>{data.creating}</div>,
+     <div className={`${!Number.isInteger(data.items)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.items}</div>,
+     <div className={`${!Number.isInteger(data.remembering)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.remembering}</div>,
+     <div className={`${!Number.isInteger(data.understanding)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.understanding}</div>,
+     <div className={`${!Number.isInteger(data.applying)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.applying}</div>,
+     <div className={`${!Number.isInteger(data.analyzing)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.analyzing}</div>,
+     <div className={`${!Number.isInteger(data.evaluating)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.evaluating}</div>,
+     <div className={`${!Number.isInteger(data.creating)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.creating}</div>,
      data.total,
      data.placement,
      <div key={index}>
@@ -1402,7 +1402,7 @@ const handleCeil = (index, field, value) => {
   </span>
 </div>
 
-<div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
+<div className="mb-3 flex"  style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
   <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value={`Evaluation/Creating`} />
     <div className="flex gap-3 px-3">
@@ -1519,6 +1519,7 @@ const options = ['Multiple Choice','Identification','True or False','Subjective'
     Title: '',
     Semester: '1st Semester',
     AcademicYear: '',
+    Term:'Midterm',
     Campus: 'San Carlos Campus',
     CourseCode: '',
     Department: 'Business and Office Administration',
@@ -2119,6 +2120,62 @@ const handleBack = () => {
     setDisableNext(false)
   }
 
+  let topic = false
+let outcomes = false
+let hours = false
+let items = false
+let remember =false
+let understand =false
+let analyze =false
+let apply =false
+let evaluate  = false
+let create = false
+
+  lessonsData.map((data)=>{
+
+    if(data.topic == ''){
+      topic = true
+    }
+    if(data.learning_outcomes == ''){
+      outcomes = true
+    }
+
+    if(data.teachingHours == 0){
+      hours = true
+    }
+
+    if(!Number.isInteger(data.items)){
+      items = true
+    }
+
+
+    if(!Number.isInteger(data.remembering)){
+      remember = true
+    }
+
+    if(!Number.isInteger(data.understanding)){
+      understand = true
+    }
+
+    if(!Number.isInteger(data.analyzing)){
+      analyze = true
+    }
+
+    if(!Number.isInteger(data.applying)){
+      apply = true
+    }
+
+    if(!Number.isInteger(data.evaluating)){
+      evaluate = true
+    }
+
+    if(!Number.isInteger(data.creating)){
+      create = true
+    }
+
+
+  })
+
   switch(step){
     case 1:
       if(formData.Title == '' || formData.AcademicYear == '' || formData.CourseCode == '' || formData.Faculty == ''|| formData.Chairperson == ''|| formData.Dean == ''|| formData.Director == ''){
@@ -2126,17 +2183,24 @@ const handleBack = () => {
       }
       break
     case 2:
-      if(getTotalTaxonomy!=100 || totalItems<10){
+      if(getTotalTaxonomy!=100 || totalItems<10 || topic || outcomes){
         setDisableNext(true)
       }
-    
+      break
+    case 3:
+      if(items || hours || remember|| understand || analyze || apply || evaluate ||create){
+        setDisableNext(true)
+      }
       break
   }
+
+
+
  
 
 
 
-},[step,formData,getTotalTaxonomy,totalItems])
+},[step,formData,getTotalTaxonomy,totalItems,lessonsData])
 
 
 const handleSubmitExam = () =>{
@@ -2179,14 +2243,15 @@ const handleSubmitExam = () =>{
 
 
        {/* Title and Semester */}
-       <div className='w-full gap-4 flex flex-col sm:flex-row'>
-         <div className='w-full'>
+       <div className='w-full mb-3'>
            <div className="mb-2 block">
              <Label htmlFor="title" value="Title" />
            </div>
-           <TextInput id="title" type="text" name="Title" value={formData.Title} onChange={handleChange} />
+           <TextInput id="title" type="text" name="Title" value={formData.Title} onChange={(e)=>{handleChange(e);handleExamTitleChange(e)}} />
            
          </div>
+       <div className='w-full gap-4 flex flex-col sm:flex-row'>
+      
          <div className="w-full">
            <div className="mb-2 block">
              <Label htmlFor="semester" value="Semester" />
@@ -2195,6 +2260,18 @@ const handleSubmitExam = () =>{
          
              <option value="1st Semester">1st Semester</option>
              <option value="2nd Semester">2nd Semester</option>
+         
+           </Select>
+         </div>
+
+         <div className="w-full">
+           <div className="mb-2 block">
+             <Label htmlFor="semester" value="Term" />
+           </div>
+           <Select id="Term" name="Term" value={formData.Term} onChange={handleChange} color={'gray'} required>
+         
+             <option value="Midterm">Midterm</option>
+             <option value="Finals">Finals</option>
          
            </Select>
          </div>
@@ -2381,7 +2458,7 @@ const handleSubmitExam = () =>{
         <div className="mt-3" >
           <Label htmlFor="totalItems" className="font-bold" > Total of Items<span className="text-red-600">*</span></Label> 
         </div>
-        <TextInput id="totalItems" type="number" className="max-w-32 " required value={totalItems} onChange={handleTotalItemsChange} />
+        <TextInput id="totalItems" type="number" className="max-w-32 " required value={totalItems} min={'0'} onChange={handleTotalItemsChange} />
       </div>
       </div>
       <div>

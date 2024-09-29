@@ -65,7 +65,7 @@ function Exampdf(props) {
 
     return (
       <View>
-        <Text style={{ ...styles.tableCell, fontWeight: 'bold', marginTop: 10 }}>{typeLabel}. </Text>
+        <Text style={{ ...styles.tableCell, fontWeight: 'bold', marginTop: 10 }}>{typeLabel} </Text>
         {filteredQuestions.map((question, idx) => {
           return (
             <View key={idx} >
@@ -166,10 +166,10 @@ function Exampdf(props) {
 
           {/* Segregated Questions by Type */}
           <View style={styles.table}>
-            {renderQuestionsByType(props.examStates, 'I. Multiple Choice', 'mcq')}
-            {renderQuestionsByType(props.examStates, 'II. Identification', 'identification')}
-            {renderQuestionsByType(props.examStates, 'III. True or False', 'trueOrFalse')}
-            {renderQuestionsByType(props.examStates, 'IV. Subjective', 'subjective')}
+            {renderQuestionsByType(props.examStates, `I. Multiple Choice.  ${props.TestPart[0]===undefined?'':props.TestPart[0].test_instruction}`, 'mcq')}
+            {renderQuestionsByType(props.examStates, `II. Identification.  ${props.TestPart[1]===undefined?'':props.TestPart[1].test_instruction}`, 'identification')}
+            {renderQuestionsByType(props.examStates, `III. True or False.  ${props.TestPart[2]===undefined?'':props.TestPart[2].test_instruction}`, 'trueOrFalse')}
+            {renderQuestionsByType(props.examStates, `IV. Subjective.  ${props.TestPart[3]===undefined?'':props.TestPart[3].test_instruction}`, 'subjective')}
           </View>
         </View>
 

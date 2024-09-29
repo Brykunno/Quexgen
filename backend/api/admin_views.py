@@ -25,7 +25,7 @@ class TOSInfoRetrieve(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return TOS_info.objects.all()
+        return TOS_info.objects.all().order_by('-tos_info_date_added')
     
 class TOSInfoRetrieveDetail(generics.ListCreateAPIView):
     serializer_class = TOSInfoSerializer

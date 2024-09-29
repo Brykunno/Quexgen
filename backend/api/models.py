@@ -24,6 +24,7 @@ class TOS_info(models.Model):
     
     Title = models.TextField()
     Semester = models.TextField()
+    Term = models.TextField(null=True)
     AcademicYear = models.TextField()
     Campus = models.TextField()
     CourseCode = models.TextField()

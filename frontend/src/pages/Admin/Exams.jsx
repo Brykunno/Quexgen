@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from "../../api";
-import { Card, Button, Table, Pagination, Select } from "flowbite-react";
+import { Card, Button, Table, Pagination, Select,TextInput } from "flowbite-react";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import SearchIcon from '@mui/icons-material/Search';
 import EditNoteIcon from '@mui/icons-material/EditNote';
@@ -25,6 +25,11 @@ function Exams() {
   const [statusFilter, setStatusFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); // Number of items per page
+
+
+  const [academicYearFilter, setAcademicYearFilter] = useState('');
+const [semesterFilter, setSemesterFilter] = useState('');
+const [termFilter, setTermFilter] = useState('');
 
   useEffect(() => {
     getExam();
@@ -55,25 +60,55 @@ function Exams() {
     filterExams(searchTerm, value);
   };
 
-  const filterExams = (searchTerm, status) => {
+  const filterExams = (searchTerm, status, academicYear, semester, term) => {
     let filtered = exam;
-
-    // Filter exams that don't have Status = 0
-    filtered = filtered.filter((item) => item.Status !== 0);
-
+  
     if (searchTerm) {
       filtered = filtered.filter((item) =>
         item.Title.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-
+  
     if (status) {
       filtered = filtered.filter((item) => item.Status_display === status);
     }
-
+  
+    if (academicYear) {
+      filtered = filtered.filter((item) =>  item.AcademicYear.toLowerCase().includes(academicYear.toLowerCase()));
+    }
+  
+    if (semester) {
+      filtered = filtered.filter((item) => item.Semester === semester);
+    }
+  
+    if (term) {
+      filtered = filtered.filter((item) => item.Term === term); // Assuming 'Term' is part of the exam data
+    }
+  
     setFilteredExams(filtered);
-    setCurrentPage(1); 
+    setCurrentPage(1); // Reset to the first page when filtering
   };
+
+
+  
+  const handleAcademicYearChange = (e) => {
+    const value = e.target.value;
+    setAcademicYearFilter(value);
+    filterExams(searchTerm, statusFilter, value, semesterFilter, termFilter);
+  };
+  
+  const handleSemesterChange = (e) => {
+    const value = e.target.value;
+    setSemesterFilter(value);
+    filterExams(searchTerm, statusFilter, academicYearFilter, value, termFilter);
+  };
+  
+  const handleTermChange = (e) => {
+    const value = e.target.value;
+    setTermFilter(value);
+    filterExams(searchTerm, statusFilter, academicYearFilter, semesterFilter, value);
+  };
+  
 
   // Pagination logic
   const indexOfLastExam = currentPage * itemsPerPage;
@@ -126,7 +161,15 @@ function Exams() {
   function content(exams,status){
 
     
-    const filteredExams = exams.filter((item) => item.Status_display === status)
+   
+
+    const filteredExams = exams.filter(
+      (item) => item.Status_display === status && 
+                (academicYearFilter ? item.AcademicYear === academicYearFilter : true) &&
+                (semesterFilter ? item.Semester === semesterFilter : true) &&
+                (termFilter ? item.Term === termFilter : true) &&
+                (searchTerm ? item.Title.toLowerCase().includes(searchTerm.toLowerCase()) : true)
+    );
     const totalPages = Math.ceil(filteredExams.length / itemsPerPage);
     let page = currentPage>totalPages?1:currentPage
     const indexOfLastExam = page * itemsPerPage;
@@ -146,6 +189,30 @@ function Exams() {
             onChange={handleSearch} // Real-time search here
           />
         </div>
+        <TextInput
+      type='text'
+      placeholder='Academic Year'
+      value={academicYearFilter}
+      onChange={handleAcademicYearChange}  // Update for academic year
+    />
+
+    
+  <span className="block text-sm">
+    <Select value={semesterFilter} onChange={handleSemesterChange}>  // Update for semester
+      <option value="">All Semesters</option>
+      <option value="1st Semester">1st Semester</option>
+      <option value="2nd Semester">2nd Semester</option>
+      <option value="Summer">Summer</option>
+    </Select>
+  </span>
+
+  <span className="block text-sm">
+    <Select value={termFilter} onChange={handleTermChange}>  // Update for term
+      <option value="">All Terms</option>
+      <option value="Midterm">Midterm</option>
+      <option value="Finals">Finals</option>
+    </Select>
+  </span>
 
         {/* Status Filter */}
        

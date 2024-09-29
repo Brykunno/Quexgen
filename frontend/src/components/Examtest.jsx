@@ -15,6 +15,8 @@ import { PDFViewer } from '@react-pdf/renderer';
 import Exampdf from "./Exampdf";
 import Multiple_exam from './Multiple_exam';
 import LoadingWithPercent from './LoadingWithPercent';
+import AnswerKey from './AnswerKey';
+import KeyIcon from '@mui/icons-material/Key';
 
 
 
@@ -35,6 +37,7 @@ function Examtest ({handleLessonDataChange, saveDataToLocalStorageTestPart,files
   const [Test3,setTest3] = useState(0)
   const [Test4,setTest4] = useState(0)
   const [PdfModal,setPdfModal] = useState(false)
+  const [PdfModalAnswer,setPdfModalAnswer] = useState(false)
   const [showPart,setShowPart] = useState(1)
   const [disableShowPart1,setDisableShowPart1] = useState('false')
   const [disableShowPart2,setDisableShowPart2] = useState('false')
@@ -244,6 +247,8 @@ acc[index] = num;
     return filteredQuestions.indexOf(item) + 1;
   };
 
+  let num1 = 1
+
   const mcq = (item, index,examStates) => {
 
     let catindex = 0
@@ -271,7 +276,7 @@ acc[index] = num;
       <div>
         <div className='flex gap-3'>
         <span className='mt-2'>
-          {catindex}.
+          {num1++}. 
           
           
           </span>
@@ -296,6 +301,7 @@ acc[index] = num;
             <span className='mt-2'>A.</span>
             <Textarea
               value={item.choices[0]}
+              style={{height:'100px'}}
               onChange={(e) => handleStateChange(index, 0, e.target.value)}
               
             />
@@ -312,6 +318,7 @@ acc[index] = num;
             <span className='mt-2'>B.</span>
             <Textarea
               value={item.choices[1]}
+              style={{height:'100px'}}
               onChange={(e) => handleStateChange(index, 1, e.target.value)}
             />
           </div>
@@ -328,6 +335,7 @@ acc[index] = num;
             <span className='mt-2'>C.</span>
             <Textarea
               value={item.choices[2]}
+              style={{height:'100px'}}
               onChange={(e) => handleStateChange(index, 2, e.target.value)}
             />
           </div>
@@ -343,6 +351,7 @@ acc[index] = num;
             <span className='mt-2'>D.</span>
             <Textarea
               value={item.choices[3]}
+              style={{height:'100px'}}
               onChange={(e) => handleStateChange(index, 3, e.target.value)}
             />
           </div>
@@ -397,6 +406,7 @@ acc[index] = num;
             <span className='mt-2'>A.</span>
             <Textarea
               value={item.choices[0]}
+              style={{height:'100px'}}
               onChange={(e) => handleStateChange(index, 0, e.target.value)}
             />
           </div>
@@ -412,6 +422,7 @@ acc[index] = num;
             <span className='mt-2'>B.</span>
             <Textarea
               value={item.choices[1]}
+              style={{height:'100px'}}
               onChange={(e) => handleStateChange(index, 1, e.target.value)}
             />
           </div>
@@ -428,6 +439,7 @@ acc[index] = num;
             <span className='mt-2'>C.</span>
             <Textarea
               value={item.choices[2]}
+              style={{height:'100px'}}
               onChange={(e) => handleStateChange(index, 2, e.target.value)}
             />
           </div>
@@ -443,6 +455,7 @@ acc[index] = num;
             <span className='mt-2'>D.</span>
             <Textarea
               value={item.choices[3]}
+              style={{height:'100px'}}
               onChange={(e) => handleStateChange(index, 3, e.target.value)}
             />
           </div>
@@ -474,7 +487,8 @@ acc[index] = num;
     );
   }
   
-  
+  // let num2 = Test1+1
+  let num2 = 1
 
   const identification = (item, index,examStates) => {
     
@@ -497,9 +511,10 @@ acc[index] = num;
         <Card key={index} className='m-5'>
         <div>
           <div className='flex gap-3'>
-          <span className='mt-2'> {catindex}.</span>
+          <span className='mt-2'> {num2++}.</span>
             <Textarea
               value={item.question}
+              
               onChange={(e) => handleStateChange(index, 'question', e.target.value)}
             />
           </div>
@@ -511,6 +526,7 @@ acc[index] = num;
               <span className='mt-2 font-bold'>Answer:</span>
               <Textarea
                 value={item.choices[0]}
+                style={{height:'100px'}}
                 onChange={(e) => 
                 {
                   handleStateChange(index, 0, e.target.value)
@@ -559,6 +575,7 @@ acc[index] = num;
               <span className='mt-2 font-bold'>Answer:</span>
               <Textarea
                 value={item.choices[0]}
+                style={{height:'100px'}}
                 onChange={(e) => 
                 {
                   handleStateChange(index, 0, e.target.value)
@@ -599,6 +616,10 @@ acc[index] = num;
     );
   }
 
+  // let num3 = Test1+Test2+1
+
+  let num3 = 1
+
   const trueOrFalse = (item, index,examStates) => {
     
     let catindex = 0
@@ -621,7 +642,7 @@ acc[index] = num;
         <Card key={index} className='m-5'>
         <div>
           <div className='flex gap-3'>
-          <span className='mt-2'> {catindex}.</span>
+          <span className='mt-2'> {num3++}.</span>
             <Textarea
               value={item.question}
               onChange={(e) => handleStateChange(index, 'question', e.target.value)}
@@ -734,7 +755,8 @@ acc[index] = num;
       </Card>
     );
   }
-
+// let num4 = Test1+Test2+Test3+1
+let num4 = 1
 
   const subjective = (item, index,examStates) => {
     
@@ -758,15 +780,16 @@ acc[index] = num;
         <Card key={index} className='m-5'>
         <div>
           <div className='flex gap-3'>
-          <span className='mt-2'> {catindex}.</span>
+          <span className='mt-2'> {num4++}.</span>
             <Textarea
+            style={{height:'100px'}}
               value={item.question}
               onChange={(e) => handleStateChange(index, 'question', e.target.value)}
             />
           </div>
       <div className='flex gap-5 justify-center mt-3'>
       
-      <Button color={'primary'} onClick={() => setModalGenTorF(prev => ({ ...prev, [index]: true }))} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
+      {/* <Button color={'primary'} onClick={() => setModalGenTorF(prev => ({ ...prev, [index]: true }))} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button> */}
 
             <Modal key={index} size={'4xl'} show={modalGenTorF[index]} onClose={() => setModalGenTorF(prev => ({ ...prev, [index]: false }))}>
        <Modal.Header>Generate {categories[catindex] ? categories[catindex] : ''} question</Modal.Header>
@@ -1129,7 +1152,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         if (formData.ExaminationType.includes('Subjective') && !existingTestTypes.includes('subjective')) {
           newTestParts.push({
             test_type: 'subjective',
-            test_instruction: '',
+            test_instruction: 'Read each question carefully.',
             test_part_num: TestPart.length + newTestParts.length + 1,
           });
         }
@@ -1248,8 +1271,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
     }
   };
   
-  
-  
+  const [disableBtnCreate,setDisableBtnCreate] = useState(false)
   
 
 
@@ -1284,13 +1306,14 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
      <div className=' w-full'>
  
 
-    <Card  className='w-full mt-5'> 
+    <Card  className='w-full mt-5 position: sticky top-0'> 
     
     <Button color={'primary'} onClick={()=>{setShowPart(1)}} disabled={disableShowPart1}><VisibilityIcon className="mr-2"/> View Test 1</Button>
     <Button color={'primary'} onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
     <Button color={'primary'} onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
     <Button color={'primary'} onClick={()=>{setShowPart(4)}} disabled={disableShowPart4}><VisibilityIcon className="mr-2"/> View Test 4</Button>
     <Button  color="blue" onClick={() => setPdfModal(true)}><PreviewIcon className="mr-2"/> Exam Preview</Button>
+    <Button  color="blue" onClick={() => setPdfModalAnswer(true)}><KeyIcon className="mr-2"/> Answer keys</Button>
    
     <Button  type="submit" onClick={()=>{setSubmit(false)}} color="success"><SaveIcon className='mr-2'/>Save Exam</Button>
     <Button  type="submit" onClick={()=>{setSubmit(true)}} color="success"><SendIcon className='mr-2'/>Submit Exam</Button>
@@ -1299,14 +1322,14 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
  
     </Card>
 
- 
+
     </div>
     
      </div>
  
  <div className='flex-1'>
 
-      <div className='w-full' >
+      <div className='w-full hidden' >
         <div className="mb-2 block">
           <Label htmlFor="title" value="Exam Title" />
         </div>
@@ -1320,38 +1343,13 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
 
      
 
-<div className={`flex ${examStates.length > 0?'hidden':'show'}`}>
-<div>
-  {lessonsData.map((data,index)=>{
+<div className={`flex  gap-10 ${examStates.length > 0?'hidden':'show '}`}>
 
-    return(
-      <div key={index}>
-
-<div className="">
-    <div>
-      <div className="mb-2 block">
-        <Label htmlFor="file-upload" > Upload file for Lesson {index+1}</Label>
-      </div>
-      <FileInput id="file-upload"
-       accept="application/pdf"
-      
-       onChange={(e) => handleLessonDataChange(index, 'study_guide', e.target.files[0])}
-      />
-      {/* {lessonsDataInitial[indexRow] && lessonsDataInitial[indexRow]['study_guide'] && (
-    <p>Selected file: {String(lessonsDataInitial[indexRow]['study_guide'])}</p>  // Display the selected file name
-  )} */}
-    </div>
-    </div>
-      </div>
-    )
-
-  })}
-</div>
-      <div className={`justify-center w-96 mx-auto `}>
+      <Card className={`justify-center w-96 mx-auto `}>
   {/* Multiple Choice */}
   <div className={`flex items-center justify-between mb-4 ${!formData.ExaminationType.includes('Multiple Choice')?'hidden':'show'}`} >
     <div className="block">
-      <Label htmlFor="mcq" value="For Multiple Choice" />
+      <Label htmlFor="mcq" value="Items for Multiple Choice" />
     </div>
     <TextInput
       min={0}
@@ -1367,7 +1365,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
   {/* Identification */}
   <div className={`flex items-center justify-between mb-4 ${!formData.ExaminationType.includes('Identification')?'hidden':'show'}`} >
     <div className="block">
-      <Label htmlFor="identification" value="For Identification" />
+      <Label htmlFor="identification" value="Items for Identification" />
     </div>
     <TextInput
       min={0}
@@ -1383,7 +1381,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
   {/* True or False */}
   <div className={`flex items-center justify-between mb-4 ${!formData.ExaminationType.includes('True or False')?'hidden':'show'}`} >
     <div className="block">
-      <Label htmlFor="trueOrFalse" value="For True or False" />
+      <Label htmlFor="trueOrFalse" value="Items for True or False" />
     </div>
     <TextInput
       min={0}
@@ -1399,7 +1397,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
   {/* Subjective Test */}
   <div className={`flex items-center justify-between mb-4 ${!formData.ExaminationType.includes('Subjective')?'hidden':'show'}`} >
     <div className="block">
-      <Label htmlFor="subjective" value="For Subjective Test" />
+      <Label htmlFor="subjective" value="Items for Subjective Test" />
     </div>
     <TextInput
       min={0}
@@ -1429,12 +1427,41 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       className="mt-3 mx-auto"
       color="primary"
       onClick={handleFileProcessing}
-   disabled={max ==0 ?false:true}
+   disabled={max ==0 && files.length == lessonsData.length?false:true}
 
     >
       Create Exam
     </Button>
   </div>
+</Card>
+<div className='flex-1'>
+  <Card >
+  {lessonsData.map((data,index)=>{
+
+    return(
+      <div key={index}>
+
+<div className="mb-3">
+    <div>
+      <div className="mb-2 block">
+        <Label htmlFor="file-upload" > Upload file for Lesson {index+1} <span className='text-red-600'>*</span></Label>
+      </div>
+      <FileInput id="file-upload"
+       accept="application/pdf"
+      sizing={'sm'}
+       onChange={(e) => handleLessonDataChange(index, 'study_guide', e.target.files[0])}
+      />
+      {/* {lessonsDataInitial[indexRow] && lessonsDataInitial[indexRow]['study_guide'] && (
+    <p>Selected file: {String(lessonsDataInitial[indexRow]['study_guide'])}</p>  // Display the selected file name
+  )} */}
+    </div>
+    </div>
+      </div>
+    )
+
+  })}
+ 
+  </Card>
 </div>
 </div>
       
@@ -1450,6 +1477,21 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       </Modal.Body>
     </Modal>
 
+
+    <Modal show={PdfModalAnswer} size={'7xl'}  onClose={() => setPdfModalAnswer(false)} className="h-screen">
+      <Modal.Header>Answer Key</Modal.Header>
+      <Modal.Body  className="p-0">
+        <div className="min-h-96 "  style={{height:'575px'}}>
+        <PDFViewer className="h-full w-full">
+  <AnswerKey TestPart={TestPart} examStates={examStates} faculty={formData.Faculty} />
+</PDFViewer>
+    
+        </div>
+      </Modal.Body>
+    </Modal>
+
+
+
     </div>
     </div>
     </Card>
@@ -1463,105 +1505,10 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
  {/* {JSON.stringify(TestPart)} */}
    
     {loadingpercent && <LoadingWithPercent percent={percent}/>}
+
+    
   </div>
   
-//     <div >
-//       <Card>
-        
-//       <Breadcrumb aria-label="Default breadcrumb example">
-//       <Breadcrumb.Item >
-//       Course Information
-//       </Breadcrumb.Item>
-//       <Breadcrumb.Item >
-//       Taxonomy Allocation
-//       </Breadcrumb.Item>
-//       <Breadcrumb.Item >
-//       Table of Specification
-//       </Breadcrumb.Item>
-//       <Breadcrumb.Item >
-//       Create Exam
-//       </Breadcrumb.Item>
-      
-//     </Breadcrumb>
-   
-//    <Progress progress={100} size={'sm'} color={'primary'}/>
-
-
-       
-//          <div className='flex gap-5 '>
-
-          
-  
-   
-//    <div className='flex-1'>
-
-//         <div className='w-full hidden' >
-//           <div className="mb-2 block">
-//             <Label htmlFor="title" value="Exam Title" />
-//           </div>
-//           <TextInput id="title" type="text" value={formData.Title}  onChange={handleExamTitleChange}/>
-//         </div>
-       
-//         <br />
-        
-      
-//         {examPart(categories)}
-       
-//         <div className='w-full ' >
-//           <div className="mb-2 block">
-//             <Label htmlFor="title" value="For Multiple choice" />
-//           </div>
-//           <TextInput id="title" type="number"  className='max-w-sm' value={test.mcq} onChange={(e)=>{handleTest('mcq',e.target.value)}}/>
-//         </div>
-
-//         <div className='w-full ' >
-//           <div className="mb-2 block">
-//             <Label htmlFor="title" value="For Identification" />
-//           </div>
-//           <TextInput id="title" type="number"  className='max-w-sm' value={test.identification} onChange={(e)=>{handleTest('identification',e.target.value)}}/>
-//         </div>
-        
-//         <div className='w-full ' >
-//           <div className="mb-2 block">
-//             <Label htmlFor="title" value="For True or false" />
-//           </div>
-//           <TextInput id="title" type="number"  className='max-w-sm' value={test.trueOrFalse} onChange={(e)=>{handleTest('trueOrFalse',e.target.value)}}/>
-//         </div>
-
-     
-        
-//   <div >
- 
-//   <Button className='mx-auto' color={'primary'}  onClick={handleFileProcessing}>Create Exam</Button>
-//   </div>
- 
-  
-        
-//         <Modal show={PdfModal} size={'7xl'}  onClose={() => setPdfModal(false)} className="h-screen">
-//         <Modal.Header>Exam</Modal.Header>
-//         <Modal.Body  className="p-0">
-//           <div className="min-h-96 "  style={{height:'575px'}}>
-//           <PDFViewer className="h-full w-full">
-//     <Exampdf TestPart={TestPart} examStates={examStates} />
-//   </PDFViewer>
-      
-//           </div>
-//         </Modal.Body>
-//       </Modal>
-
-//       </div>
-//       </div>
-//       </Card>
-//       {/* {examStates.map((item,index)=>{
-//         return(
-//           <div key={index}>
-//             {index+1}. {item.question}
-//           </div>
-//         )
-//       })} */}
-      
-// {loadingpercent && <LoadingWithPercent percent={percent}/>}
-//     </div>
   );
 };
 

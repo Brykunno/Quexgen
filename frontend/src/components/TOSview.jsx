@@ -84,6 +84,7 @@ function TOSview() {
   const [formData, setFormData] = useState({
     Title: '',
     Semester: '1st Semester',
+    Term: 'Midterm',
     AcademicYear: '',
     Campus: 'San Carlos Campus',
     CourseCode: '',
@@ -121,7 +122,7 @@ function TOSview() {
   const [getQuestion, setGetQuestion] = useState([]);
   const [getAnswer, setGetAnswer] = useState([]);
   const [examStates, setExamStates] = useState([]);
-  const options = ['Multiple Choice ','Identification ','True or False'];
+  const options = ['Multiple Choice ','Identification ','True or False','Subjective'];
 
 
 
@@ -144,6 +145,7 @@ function TOSview() {
  
         Title: TOSInfo[0].Title,
         Semester: TOSInfo[0].Semester,
+        Term: TOSInfo[0].Term,
         AcademicYear: TOSInfo[0].AcademicYear,
         Campus: TOSInfo[0].Campus,
         CourseCode: TOSInfo[0].CourseCode,
@@ -184,7 +186,7 @@ function TOSview() {
 
       const updateTotalItems = TOSContent.reduce((total, content) => total + content.items, 0);
 
-      const calculatePercentage = (totalValue, TotalItems) => (totalValue / TotalItems) * 100;
+      const calculatePercentage = (totalValue, TotalItems) => Math.round((totalValue / TotalItems) * 100);
 
 
 // Sum for each category
@@ -2181,26 +2183,40 @@ function statusIcons(status,status_name){
 
 
        {/* Title and Semester */}
-       <div className='w-full gap-4 flex flex-col sm:flex-row'>
-         <div className='w-full'>
+       <div className='w-full mb-3'>
            <div className="mb-2 block">
              <Label htmlFor="title" value="Title" />
            </div>
-           <TextInput id="title" type="text" name="Title" value={formData.Title} onChange={handleChange} />
+           <TextInput id="title" type="text" name="Title" value={formData.Title} onChange={(e)=>{handleChange(e);handleExamTitleChange(e)}} />
            
          </div>
+       <div className='w-full gap-4 flex flex-col sm:flex-row'>
+      
          <div className="w-full">
            <div className="mb-2 block">
              <Label htmlFor="semester" value="Semester" />
            </div>
-           <Select id="semester" name="Semester" value={formData.Semester} onChange={handleChange} required>
+           <Select id="semester" name="Semester" value={formData.Semester} onChange={handleChange} color={'gray'} required>
          
              <option value="1st Semester">1st Semester</option>
              <option value="2nd Semester">2nd Semester</option>
          
            </Select>
          </div>
+
+         <div className="w-full">
+           <div className="mb-2 block">
+             <Label htmlFor="semester" value="Term" />
+           </div>
+           <Select id="Term" name="Term" value={formData.Term} onChange={handleChange} color={'gray'} required>
+         
+             <option value="Midterm">Midterm</option>
+             <option value="Finals">Finals</option>
+         
+           </Select>
+         </div>
        </div>
+   
    
 
        {/* Academic Year and Campus */}
@@ -2310,7 +2326,7 @@ function statusIcons(status,status_name){
   multiple
   id="chip-selection"
   name="ExaminationType"
-  options={['Multiple Choice', 'Identification', 'True or False']}
+  options={['Multiple Choice', 'Identification', 'True or False','Subjective']}
   value={Array.isArray(formData.ExaminationType) ? formData.ExaminationType : []}
   onChange={(event, newValue) => {
     setFormData({ ...formData, ExaminationType: newValue });
@@ -2442,7 +2458,7 @@ function statusIcons(status,status_name){
    </div>
 
    <div className={`mb-5 ${step == 4? 'show':'hidden'}`}>
-   <ExamUpdate items={TotalItems} lessonsData={lessonData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} exam_id={exam_id} updateTOSinfo={updateTOSinfo} handleSubmitExam={handleSubmitExam} setSubmit={setSubmit} setLoading={setLoadingGenerate} Status={formData.Status}/>
+   <ExamUpdate items={TotalItems} lessonsData={lessonData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} exam_id={exam_id} updateTOSinfo={updateTOSinfo} handleSubmitExam={handleSubmitExam} setSubmit={setSubmit} setLoading={setLoadingGenerate} Status={formData.Status} formData={formData}/>
 
     </div>
 

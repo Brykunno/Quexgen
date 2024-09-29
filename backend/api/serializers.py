@@ -79,7 +79,7 @@ class TOSInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TOS_info
         fields = [
-            'id', 'Title', 'Semester',
+            'id', 'Title', 'Semester','Term',
             'AcademicYear',
             'Campus',
             'CourseCode',

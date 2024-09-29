@@ -8,19 +8,20 @@ import PreviewIcon from '@mui/icons-material/Preview';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import api from "../api";
-
+import KeyIcon from '@mui/icons-material/Key';
 import ReactDOM from 'react-dom';
 import { PDFViewer } from '@react-pdf/renderer';
 import ExampdfUpdate from "./ExampdfUpdate";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SendIcon from '@mui/icons-material/Send';
+import AnswerKeyUpdate from './AnswerKeyUpdate';
 
 
 
 
 
 
-function Examtest ({Status, items, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,exam_id,updateTOSinfo,handleSubmitExam,setSubmit,setLoading}) {
+function Examtest ({Status, items, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,exam_id,updateTOSinfo,handleSubmitExam,setSubmit,setLoading,formData}) {
 
 
 
@@ -30,18 +31,20 @@ function Examtest ({Status, items, lessonsData,handleStateChange,examStates,setE
   const [disableAddTestMcq,setDisableAddTestMcq] = useState(false)
   const [disableAddTestIdentification,setDisableAddTestIdentification] = useState(false)
   const [disableAddTestTrueorFalse,setDisableAddTestTrueorFalse] = useState(false)
-
+  const [PdfModalAnswer,setPdfModalAnswer] = useState(false)
   const [disableRemove,setDisableRemove] = useState(false)
   const [disableRemoveTest,setDisableRemoveTest] = useState(false)
   const [uniqueTestPartNums,setuniqueTestPartNums] = useState([])
   const [Test1,setTest1] = useState(0)
   const [Test2,setTest2] = useState(0)
   const [Test3,setTest3] = useState(0)
+  const [Test4,setTest4] = useState(0)
   const [PdfModal,setPdfModal] = useState(false)
   const [showPart,setShowPart] = useState(1)
   const [disableShowPart1,setDisableShowPart1] = useState('false')
   const [disableShowPart2,setDisableShowPart2] = useState('false')
   const [disableShowPart3,setDisableShowPart3] = useState('false')
+  const [disableShowPart4,setDisableShowPart4] = useState('false')
   const [openModalDelete,setOpenModalDelete] = useState(false)
 
   
@@ -236,7 +239,7 @@ const getTaxonomyValue = (index) => {
     const filteredQuestions = examStates.filter(q => q.test_part_num === item.test_part_num);
     return filteredQuestions.indexOf(item) + 1;
   };
-
+let num1=1
   const mcq = (item, index,examStates) => {
 
     let catindex = 0
@@ -265,7 +268,7 @@ const getTaxonomyValue = (index) => {
         <div>
           <div className='flex gap-3'>
           <span className='mt-2'>
-            {catindex}.
+            {num1++}.
             
             
             </span>
@@ -467,7 +470,7 @@ const getTaxonomyValue = (index) => {
     );
   }
   
-
+let num2 =1
   const identification = (item, index,examStates) => {
     
     let catindex = 0
@@ -486,7 +489,7 @@ const getTaxonomyValue = (index) => {
         <Card key={index} className='m-5'>
         <div>
           <div className='flex gap-3'>
-          <span className='mt-2'> {catindex}.</span>
+          <span className='mt-2'> {num2++}.</span>
             <Textarea
               value={item.question}
               onChange={(e) => handleStateChange(index, 'question', e.target.value)}
@@ -587,7 +590,7 @@ const getTaxonomyValue = (index) => {
       </Card>
     );
   }
-
+let num3 = 1
   const trueOrFalse = (item, index,examStates) => {
     
     let catindex = 0
@@ -606,7 +609,7 @@ const getTaxonomyValue = (index) => {
         <Card key={index} className='m-5'>
         <div>
           <div className='flex gap-3'>
-          <span className='mt-2'> {catindex}.</span>
+          <span className='mt-2'> {num3++}.</span>
             <Textarea
               value={item.question}
               onChange={(e) => handleStateChange(index, 'question', e.target.value)}
@@ -719,7 +722,83 @@ const getTaxonomyValue = (index) => {
       </Card>
     );
   }
+let num4 = 1
+  const subjective = (item, index,examStates) => {
+    
+    let catindex = 0
 
+
+    if(item.test_part_num === 1){
+      catindex = getQuestionNumber(item, examStates)
+    }
+    else if(item.test_part_num === 2){
+      catindex = getQuestionNumber(item, examStates)+Test1
+    }
+    else if(item.test_part_num === 3){
+      catindex = getQuestionNumber(item, examStates)+Test1+Test2
+    }
+    else{
+     catindex = getQuestionNumber(item, examStates)+Test1+Test2+Test3
+    }
+
+    return (
+        <Card key={index} className='m-5'>
+        <div>
+          <div className='flex gap-3'>
+          <span className='mt-2'> {num4++}.</span>
+            <Textarea
+            style={{height:'100px'}}
+              value={item.question}
+              onChange={(e) => handleStateChange(index, 'question', e.target.value)}
+            />
+          </div>
+      <div className='flex gap-5 justify-center mt-3'>
+      
+      {/* <Button color={'primary'} onClick={() => setModalGenTorF(prev => ({ ...prev, [index]: true }))} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button> */}
+
+            <Modal key={index} size={'4xl'} show={modalGenTorF[index]} onClose={() => setModalGenTorF(prev => ({ ...prev, [index]: false }))}>
+       <Modal.Header>Generate {categories[catindex] ? categories[catindex] : ''} question</Modal.Header>
+       <Modal.Body>
+         <div className="  gap-3">
+           <div className='mb-4'>
+             Context:
+             <Textarea style={{height:'150px'}} value={getContextValue(index)}  
+            onChange={(e)=>{handleContextChange(e.target.value,index,categories[catindex],"trueOrFalse");
+              handleStateChange(index, 'context', e.target.value)
+            }
+            } />
+           </div>
+           <div className=''>
+           <Card>
+
+           <div className='flex gap-3'>
+          <span className='mt-2'> {catindex}.</span>
+            <Textarea
+              value={item.question}
+              onChange={(e) => handleStateChange(index, 'question', e.target.value)}
+            />
+          </div>
+ 
+           </Card>
+           </div>
+
+         
+           
+         </div>
+       </Modal.Body>
+       <Modal.Footer>
+         <Button color={'primary'} onClick={()=>{generateQues(index,"trueOrFalse")}} className='mx-auto'>Generate</Button>
+       
+       </Modal.Footer>
+     </Modal>
+      <Tooltip content="Delete Question" style="dark">
+      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} ><DeleteIcon/></Button>
+      </Tooltip>
+      </div>
+        </div>
+      </Card>
+    );
+  }
 
 
 
@@ -739,8 +818,10 @@ const getTaxonomyValue = (index) => {
       }
       else if(itemtest.test_type === 'identification'){
         type = 'Identification'
-      }else{
+      }else if(itemtest.test_type === 'trueOrFalse'){
         type = 'True or False'
+      }else{
+         type = 'Subjective Test'
       }
 
       return(
@@ -780,6 +861,7 @@ const getTaxonomyValue = (index) => {
               {item.question_type === 'mcq' && itemtest.test_type === 'mcq' && mcq(item, idx, examStates)}
               {item.question_type === 'identification' && itemtest.test_type === 'identification' && identification(item, idx, examStates)}
               {item.question_type === 'trueOrFalse' && itemtest.test_type === 'trueOrFalse' && trueOrFalse(item, idx, examStates)}
+              {item.question_type === 'subjective' && itemtest.test_type === 'subjective' && subjective(item, idx, examStates)}
             </div>
           ))}
       
@@ -854,6 +936,7 @@ const getTaxonomyValue = (index) => {
       setTest1(examStates.filter(item => item.test_part_num === 1).length);
       setTest2(examStates.filter(item => item.test_part_num === 2).length);
       setTest3(examStates.filter(item => item.test_part_num === 3).length);
+      setTest4(examStates.filter(item => item.test_part_num === 4).length);
 
 
    
@@ -890,12 +973,15 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
  
  // Count how many 'trueOrFalse' test types are in TestPart
  const test3 = TestPart.filter(test => test.test_part_num === 3).length;
+
+ const test4 = TestPart.filter(test => test.test_part_num === 4).length;
  
  
  // Set disable states based on counts
  setDisableShowPart1(test1 <= 0);
  setDisableShowPart2(test2 <= 0);
  setDisableShowPart3(test3 <= 0);
+ setDisableShowPart4(test4 <= 0);
  
   
    }
@@ -1079,7 +1165,9 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       <Button color={'primary'} onClick={()=>{setShowPart(1)}} disabled={disableShowPart1}><VisibilityIcon className="mr-2"/> View Test 1</Button>
       <Button color={'primary'} onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
       <Button color={'primary'} onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
+      <Button color={'primary'} onClick={()=>{setShowPart(4)}} disabled={disableShowPart4}><VisibilityIcon className="mr-2"/> View Test 4</Button>
       <Button  color="blue" onClick={() => setPdfModal(true)}><PreviewIcon className="mr-2"/> Exam Preview</Button>
+      <Button  color="blue" onClick={() => setPdfModalAnswer(true)}><KeyIcon className="mr-2"/> Answer keys</Button>
       
       <Button type='submit'  onClick={() => setSubmit(false)}  color={'success'} disabled={Status===2}  ><UpdateIcon className='mr-2'/>Update and save</Button>
       <Button type='submit'   onClick={() => setSubmit(true)} color={'success'} disabled={Status===2} ><UpdateIcon className='mr-2'/>Update and submit</Button>
@@ -1096,7 +1184,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
    
    <div className='flex-1'>
 
-        <div className='w-full'>
+        <div className='w-full hidden'>
           <div className="mb-2 block">
             <Label htmlFor="title" value="Title" />
           </div>
@@ -1111,20 +1199,33 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         
         
         <Modal show={PdfModal} size={'7xl'}  onClose={() => setPdfModal(false)} className="h-screen">
-        <Modal.Header>Table of Specification</Modal.Header>
+        <Modal.Header>Exam</Modal.Header>
       
         <Modal.Body  className="p-0">
           <div className="min-h-96 "  style={{height:'575px'}}>
           <PDFViewer className="h-full w-full">
-    <ExampdfUpdate TestPart={TestPart} examStates={examStates} />
+    <ExampdfUpdate TestPart={TestPart} examStates={examStates} faculty={formData.Faculty} />
   </PDFViewer>
       
           </div>
         </Modal.Body>
       </Modal>
 
+      <Modal show={PdfModalAnswer} size={'7xl'}  onClose={() => setPdfModalAnswer(false)} className="h-screen">
+      <Modal.Header>Answer Key</Modal.Header>
+      <Modal.Body  className="p-0">
+        <div className="min-h-96 "  style={{height:'575px'}}>
+        <PDFViewer className="h-full w-full">
+  <AnswerKeyUpdate TestPart={TestPart} examStates={examStates} faculty={formData.Faculty} exam_title={formData.Title} />
+</PDFViewer>
+    
+        </div>
+      </Modal.Body>
+    </Modal>
+
       </div>
       </div>
+
       </Card>
 
     </div>
