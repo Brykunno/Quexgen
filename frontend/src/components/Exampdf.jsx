@@ -128,7 +128,7 @@ function Exampdf(props) {
           <View style={styles.table}>
             <View style={styles.tableRow}>
               <View style={[styles.tableCol]}>
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginTop: '-5px' }}>
+                <View style={{ flexDirection: 'row',  justifyContent: 'flex-end', alignItems: 'center', marginTop: '-5px' }}>
                   <View style={{ marginRight: '-10px' }}>
                     <Image
                       style={[styles.image,{height:'30px',width:'30px'}]}
@@ -138,10 +138,13 @@ function Exampdf(props) {
                 </View>
               </View>
 
-              <View style={[styles.tableCol]}>
+              <View style={[styles.tableCol,{flex:1.1}]}>
                 <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>PANGASINAN STATE UNIVERSITY</Text>
                 <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>SAN CARLOS CAMPUS</Text>
                 <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>IT DEPARTMENT</Text>
+                <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>AY {props.formData.AcademicYear}</Text>
+
+                <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'2px'  }]}>{props.formData.Term.toUpperCase()} EXAMINATION IN {props.formData.Title}</Text>
               </View>
               <View style={[styles.tableCol]}>
               

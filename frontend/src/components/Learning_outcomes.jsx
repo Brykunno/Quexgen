@@ -3,6 +3,7 @@ import { Textarea, Button, TextInput,Card,Pagination } from 'flowbite-react';
 import api from '../api';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import LoadingGenerate from './LoadingGenerate';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 
 function Learning_outcomes({
@@ -220,17 +221,29 @@ const handlePageChange = (pageNumber) => {
               color={'failure'}
               onClick={() => removeLesson(lessonsData, indexOfFirstLesson + index)}
             >
-              Delete
+              <DeleteIcon/>
             </Button>
           </div>
         </div>
       </div>
     ))}
 
+
     {/* Add Lesson and Allocate buttons */}
     <div className="">
+    <div className=" mb-3  flex">
+      
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          showIcons // If supported by the component
+          className='mx-auto '
+        />
+     
+      </div>
     
-      <div className="flex gap-5 max-w-96 mx-auto">
+      <div className="flex gap-5 max-w-72 mx-auto ">
         <Button
           color={'primary'}
           className="mt-3"
@@ -260,14 +273,7 @@ const handlePageChange = (pageNumber) => {
         </Button>
       </div>
 
-      <div className="mx-auto mt-5 max-w-96">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          showIcons // If supported by the component
-        />
-      </div>
+     
     </div>
     {loading && <LoadingGenerate />}
 

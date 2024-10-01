@@ -701,6 +701,7 @@ def generate_question_with_module(request):
                 print(f'last module: {last}')
                 if last == 1:
                     ques_gen = []
+                           
             return JsonResponse({"generated_questions": generated_questions}, status=status.HTTP_200_OK)
 
         except Exception as e:

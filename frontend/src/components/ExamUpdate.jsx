@@ -852,8 +852,12 @@ let num4 = 1
             />
           </div>
         
-        <div className='overflow-y-scroll' style={{ height: '400px', direction: 'rtl', overflow: 'auto' }}>
-          <div style={{ direction: 'ltr' }}>
+        {/* <div className='overflow-y-scroll' style={{ height: '400px', direction: 'rtl', overflow: 'auto' }}>
+          <div style={{ direction: 'ltr' }}> */}
+
+              
+        <div className='py-5'>
+          <div >
          
       
           {examStates.map((item, idx) => (
@@ -1148,9 +1152,9 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
    {/* <Progress progress={100} size={'sm'} /> */}
        
        <div className='flex gap-5'>
-       <div style={{flex:0.4}}>
+       {/* <div style={{flex:0.4}}>
 
-       <div className=' w-full'>
+       <div className=' w-full'> */}
         {/* <Card  className='w-full'> 
       
       <Button color={'primary'} onClick={()=>{handleAddTest('mcq',exam_id)}} disabled={disableAddTestMcq}><PostAddIcon className="mr-2"/> Add Multiple Choice Test</Button>
@@ -1160,7 +1164,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
    
       </Card> */}
 
-      <Card  className='w-full mt-5'> 
+      {/* <Card  className='w-full mt-5'> 
       
       <Button color={'primary'} onClick={()=>{setShowPart(1)}} disabled={disableShowPart1}><VisibilityIcon className="mr-2"/> View Test 1</Button>
       <Button color={'primary'} onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
@@ -1170,19 +1174,43 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       <Button  color="blue" onClick={() => setPdfModalAnswer(true)}><KeyIcon className="mr-2"/> Answer keys</Button>
       
       <Button type='submit'  onClick={() => setSubmit(false)}  color={'success'} disabled={Status===2}  ><UpdateIcon className='mr-2'/>Update and save</Button>
-      <Button type='submit'   onClick={() => setSubmit(true)} color={'success'} disabled={Status===2} ><UpdateIcon className='mr-2'/>Update and submit</Button>
-  
-      <Button type='submit' onClick={() => setSubmit(true)} disabled={Status===3 || Status===2 || Status===1} color="success"><SendIcon className='mr-2'/>Submit Exam</Button>
+      <Button type='submit'   onClick={() => setSubmit(true)} color={'success'} disabled={Status===2} ><SendIcon className='mr-2'/>Update and submit</Button>
+   */}
+      {/* <Button type='submit' onClick={() => setSubmit(true)} disabled={Status===3 || Status===2 || Status===1} color="success"><SendIcon className='mr-2'/>Submit Exam</Button> */}
     
     
    
-      </Card>
+      {/* </Card>
    
       </div>
       
-       </div>
+       </div> */}
    
    <div className='flex-1'>
+
+
+    
+ <div className='position: sticky top-0 z-40 rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 p-3'>
+<div className='flex '>
+ <div className='flex gap-5 justify-start'>
+ <Button color={'primary'} onClick={()=>{setShowPart(1)}} disabled={disableShowPart1} size={'sm'} fontSize='small'><VisibilityIcon className="mr-2"/> Test 1</Button>
+    <Button color={'primary'} onClick={()=>{setShowPart(2)}} disabled={disableShowPart2} size={'sm'} fontSize='small'><VisibilityIcon className="mr-2"/> Test 2</Button>
+    <Button color={'primary'} onClick={()=>{setShowPart(3)}} disabled={disableShowPart3} size={'sm'} fontSize='small'><VisibilityIcon className="mr-2"/> Test 3</Button>
+    <Button color={'primary'} onClick={()=>{setShowPart(4)}} disabled={disableShowPart4} size={'sm'} fontSize='small'><VisibilityIcon className="mr-2"/> Test 4</Button>
+  </div>
+
+  <div className='flex flex-1 gap-5 justify-end'>
+  <Button  color="blue" onClick={() => setPdfModal(true)}  size={'sm'}><PreviewIcon className="mr-2" fontSize='small'/>Preview</Button>
+    <Button  color="blue" onClick={() => setPdfModalAnswer(true)}  size={'sm'}><KeyIcon className="mr-2" fontSize='small'/> Answer keys</Button>
+ 
+    <Button  type="submit" onClick={()=>{setSubmit(false)}} color="success"  size={'sm'}><UpdateIcon className='mr-2' fontSize='small'/>Update</Button>
+    <Button  type="submit" onClick={()=>{setSubmit(true)}} color="success"  size={'sm'} ><SendIcon className='mr-2' fontSize='small'/>Submit</Button>
+  </div>
+  </div>
+
+ 
+
+</div>
 
         <div className='w-full hidden'>
           <div className="mb-2 block">

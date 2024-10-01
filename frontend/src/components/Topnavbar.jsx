@@ -327,7 +327,7 @@ const readNotif = (id) =>{
  
       </Dropdown>
 
-      <Modal show={openModal} onClose={() => setOpenModal(false)} className="z-100">
+      <Modal show={openModal} onClose={() => setOpenModal(false)} className="z-100" style={{zIndex:200}} >
         <Modal.Header>Notification</Modal.Header>
         <Modal.Body>
           <div className="space-y-6">

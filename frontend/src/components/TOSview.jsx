@@ -2185,7 +2185,7 @@ function statusIcons(status,status_name){
        {/* Title and Semester */}
        <div className='w-full mb-3'>
            <div className="mb-2 block">
-             <Label htmlFor="title" value="Title" />
+             <Label htmlFor="title" value="Subject" />
            </div>
            <TextInput id="title" type="text" name="Title" value={formData.Title} onChange={(e)=>{handleChange(e);handleExamTitleChange(e)}} />
            

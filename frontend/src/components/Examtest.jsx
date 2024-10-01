@@ -17,8 +17,9 @@ import Multiple_exam from './Multiple_exam';
 import LoadingWithPercent from './LoadingWithPercent';
 import AnswerKey from './AnswerKey';
 import KeyIcon from '@mui/icons-material/Key';
+import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 
-
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 function Examtest ({handleLessonDataChange, saveDataToLocalStorageTestPart,files,items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext,formData}) {
 
@@ -60,7 +61,7 @@ function Examtest ({handleLessonDataChange, saveDataToLocalStorageTestPart,files
   
 
 
-    // localStorage.setItem('questionData',[])
+    
 
   const [data, setData] = useState(null);
   const handleContextChange = (value, index, taxonomy_level,test_type) => {
@@ -288,9 +289,9 @@ acc[index] = num;
         </div>
 
     <div className='mt-3'>
-      <div className='flex flex-wrap gap-3 mx-auto'>
-        <div>
-          <div className='flex gap-3 w-80 mb-3'>
+      <div className='flex  gap-3 mx-auto'>
+        <div className='w-full'>
+          <div className='flex gap-3 w-full mb-3'>
             <Radio
               name={`answers-${index}`}
               value="A"
@@ -307,7 +308,7 @@ acc[index] = num;
             />
           </div>
 
-          <div className='flex gap-3 w-80 mb-3'>
+          <div className='flex gap-3 w-full mb-3'>
             <Radio
               name={`answers-${index}`}
               value="B"
@@ -323,8 +324,8 @@ acc[index] = num;
             />
           </div>
         </div>
-        <div>
-          <div className='flex gap-3 w-80 mb-3'>
+        <div className='w-full'>
+          <div className='flex gap-3 w-full mb-3'>
             <Radio
               name={`answers-${index}`}
               value="C"
@@ -340,7 +341,7 @@ acc[index] = num;
             />
           </div>
 
-          <div className='flex gap-3 w-80 mb-3'>
+          <div className='flex gap-3 w-full mb-3'>
             <Radio
               name={`answers-${index}`}
               value="D"
@@ -520,8 +521,8 @@ acc[index] = num;
           </div>
       <div className='mt-3'>
         <div className='flex flex-wrap gap-10 mx-auto'>
-          <div>
-            <div className='flex gap-3 w-80 mb-3'>
+          <div className='w-3/4'>
+            <div className='flex gap-3 w-full mb-3'>
 
               <span className='mt-2 font-bold'>Answer:</span>
               <Textarea
@@ -860,7 +861,7 @@ let num4 = 1
       return(
         <Card key={index} className={itemtest.test_part_num === showPart?'show relative mb-5':'hidden'} > {/* Make the Card a relative container */}
         {/* Delete Button at the Top Right Corner */}
-        <Button
+        {/* <Button
         
           size={'xs'}
           color={'failure'}
@@ -868,7 +869,7 @@ let num4 = 1
           className="absolute top-2 right-2" // Position the button absolutely
         >
           <CloseIcon />
-        </Button>
+        </Button> */}
 
           <div >
             <div className='mb-5 text-center'><p className='font-bold text-lg'>Test {index + 1}  : {type} </p></div> 
@@ -881,8 +882,11 @@ let num4 = 1
             />
           </div>
         
-          <div className='overflow-y-scroll py-5' style={{ height: '400px', direction: 'rtl', overflow: 'auto' }}>
-          <div style={{ direction: 'ltr' }}>
+          {/* <div className='overflow-y-scroll py-5' style={{ height: '400px', direction: 'rtl', overflow: 'auto' }}>
+          <div style={{ direction: 'ltr' }}> */}
+
+<div className=' py-5' >
+<div >
         
       
           {examStates.map((item, idx) => (
@@ -1269,10 +1273,21 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       num++;
   
     }
+    
+    setLoadingPercent(false)
+  
   };
   
-  const [disableBtnCreate,setDisableBtnCreate] = useState(false)
+  const handleClear = () =>{
+localStorage.setItem('questionData',[])
+localStorage.setItem('testpartData',[])
+setExamStates([])
+setTestPart([])
+  }
+
+  const [clearBtn,setClearBtn] =useState(false)
   
+ 
 
 
   return (
@@ -1301,9 +1316,9 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
 
      
        <div className='flex gap-5 '>
-     <div style={{flex:0.4}}>
+     {/* <div style={{flex:0.4}}>
 
-     <div className=' w-full'>
+     <div className=' w-full h-full'  >
  
 
     <Card  className='w-full mt-5 position: sticky top-0'> 
@@ -1312,9 +1327,11 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
     <Button color={'primary'} onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
     <Button color={'primary'} onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
     <Button color={'primary'} onClick={()=>{setShowPart(4)}} disabled={disableShowPart4}><VisibilityIcon className="mr-2"/> View Test 4</Button>
+
+    
     <Button  color="blue" onClick={() => setPdfModal(true)}><PreviewIcon className="mr-2"/> Exam Preview</Button>
     <Button  color="blue" onClick={() => setPdfModalAnswer(true)}><KeyIcon className="mr-2"/> Answer keys</Button>
-   
+   <Button  color="failure" onClick={handleClear}><KeyIcon className="mr-2"/> Clear Exam</Button>
     <Button  type="submit" onClick={()=>{setSubmit(false)}} color="success"><SaveIcon className='mr-2'/>Save Exam</Button>
     <Button  type="submit" onClick={()=>{setSubmit(true)}} color="success"><SendIcon className='mr-2'/>Submit Exam</Button>
   
@@ -1322,12 +1339,67 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
  
     </Card>
 
+    
+
+   
+
 
     </div>
     
-     </div>
+     </div> */}
  
- <div className='flex-1'>
+ <div className=' flex-1'>
+
+
+ <div className='position: sticky top-0 z-40 rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 p-3'>
+<div className='flex '>
+ <div className='flex gap-5 justify-start'>
+ <Button color={'primary'} onClick={()=>{setShowPart(1)}} disabled={disableShowPart1} size={'sm'} fontSize='small'><VisibilityIcon className="mr-2"/> Test 1</Button>
+    <Button color={'primary'} onClick={()=>{setShowPart(2)}} disabled={disableShowPart2} size={'sm'} fontSize='small'><VisibilityIcon className="mr-2"/> Test 2</Button>
+    <Button color={'primary'} onClick={()=>{setShowPart(3)}} disabled={disableShowPart3} size={'sm'} fontSize='small'><VisibilityIcon className="mr-2"/> Test 3</Button>
+    <Button color={'primary'} onClick={()=>{setShowPart(4)}} disabled={disableShowPart4} size={'sm'} fontSize='small'><VisibilityIcon className="mr-2"/> Test 4</Button>
+  </div>
+
+  <div className='flex flex-1 gap-5 justify-end'>
+  <Button  color="blue" onClick={() => setPdfModal(true)}  size={'sm'}><PreviewIcon className="mr-2" fontSize='small'/>Preview</Button>
+    <Button  color="blue" onClick={() => setPdfModalAnswer(true)}  size={'sm'}><KeyIcon className="mr-2" fontSize='small'/> Answer keys</Button>
+   <Button  color="failure" onClick={()=>{setClearBtn(true)}}><CleaningServicesIcon className="mr-2" size={'sm'} fontSize='small'/> Clear</Button>
+    <Button  type="submit" onClick={()=>{setSubmit(false)}} color="success"  size={'sm'}><SaveIcon className='mr-2' fontSize='small'/>Save</Button>
+    <Button  type="submit" onClick={()=>{setSubmit(true)}} color="success"  size={'sm'} ><SendIcon className='mr-2' fontSize='small'/>Submit</Button>
+  </div>
+  </div>
+
+ 
+
+</div>
+
+<div className='flex gap-5 mt-5 px-5'>
+  <div className='flex-1 mt-2'>
+<Progress progress={Math.round(percent)} size={'md'} color={'primary'}/> 
+</div>
+<div className='flex font-bold text-lg'>
+{Math.round(percent)}%
+</div>
+
+</div>
+
+{/* <div className='flex gap-5 mb-5'>
+  <div className='flex-1'>
+<Progress progress={100} size={'sm'} color={'primary'}/> 
+</div>
+<div className='flex-1'>
+90%
+</div>
+
+</div>
+
+<div className='flex gap-5 mb-5 justify-center'>
+<Button color={'primary'} onClick={()=>{setShowPart(1)}} disabled={disableShowPart1}><VisibilityIcon className="mr-2"/> View Test 1</Button>
+    <Button color={'primary'} onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
+    <Button color={'primary'} onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
+    <Button color={'primary'} onClick={()=>{setShowPart(4)}} disabled={disableShowPart4}><VisibilityIcon className="mr-2"/> View Test 4</Button>
+
+</div> */}
 
       <div className='w-full hidden' >
         <div className="mb-2 block">
@@ -1470,7 +1542,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       <Modal.Body  className="p-0">
         <div className="min-h-96 "  style={{height:'575px'}}>
         <PDFViewer className="h-full w-full">
-  <Exampdf TestPart={TestPart} examStates={examStates} faculty={formData.Faculty} />
+  <Exampdf TestPart={TestPart} examStates={examStates} faculty={formData.Faculty} formData={formData} />
 </PDFViewer>
     
         </div>
@@ -1483,12 +1555,32 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       <Modal.Body  className="p-0">
         <div className="min-h-96 "  style={{height:'575px'}}>
         <PDFViewer className="h-full w-full">
-  <AnswerKey TestPart={TestPart} examStates={examStates} faculty={formData.Faculty} />
+  <AnswerKey TestPart={TestPart} examStates={examStates} faculty={formData.Faculty} formData={formData}/>
 </PDFViewer>
     
         </div>
       </Modal.Body>
     </Modal>
+
+    <Modal show={clearBtn} size="md" onClose={() => setClearBtn(false)} popup>
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+              Are you sure you want to clear all the exam?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button color="failure" onClick={handleClear}>
+                {"Yes, I'm sure"}
+              </Button>
+              <Button color="gray" onClick={() => setClearBtn(false)}>
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
 
 
 

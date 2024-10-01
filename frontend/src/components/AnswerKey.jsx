@@ -107,6 +107,9 @@ function AnswerKey(props) {
                 <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>PANGASINAN STATE UNIVERSITY</Text>
                 <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>SAN CARLOS CAMPUS</Text>
                 <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>IT DEPARTMENT</Text>
+                <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>AY {props.formData.AcademicYear}</Text>
+
+<Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'5px' }]}>{props.formData.Term.toUpperCase()} EXAMINATION IN {props.formData.Title}</Text>
               </View>
               <View style={[styles.tableCol]}>
               

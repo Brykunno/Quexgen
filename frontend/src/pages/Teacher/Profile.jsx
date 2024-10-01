@@ -167,7 +167,7 @@ function Profile() {
         {loading && <LoadingSubmit />}
         <Button color="primary" onClick={updateProfile}>Update</Button>
       </Card>
-      {JSON.stringify(userInfo)}
+    
     </div></div>
   );
 }

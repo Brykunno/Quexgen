@@ -162,7 +162,7 @@ const [termFilter, setTermFilter] = useState('');
           </span>
           <input
             type="text"
-            placeholder="Search by title"
+            placeholder="Search by subject"
             className="p-2 pl-10 border border-gray-300 rounded w-full text-sm"
             value={searchTerm}
             onChange={handleSearch} // Real-time search here
@@ -247,7 +247,7 @@ const [termFilter, setTermFilter] = useState('');
 
       <Table striped>
         <Table.Head>
-          <Table.HeadCell>Title</Table.HeadCell>
+          <Table.HeadCell>Subject</Table.HeadCell>
           <Table.HeadCell>Course Code</Table.HeadCell>
           <Table.HeadCell>Semester</Table.HeadCell>
           <Table.HeadCell>Academic Year</Table.HeadCell>

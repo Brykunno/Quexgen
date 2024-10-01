@@ -11,6 +11,7 @@ import TableRow from "@mui/material/TableRow";
 import { Breadcrumb,Card,Progress,Label, Textarea, TextInput,Button,RangeSlider,Modal,Select,FileInput } from "flowbite-react";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import TOSmodal from "./TOSmodal";
+import Error from "./Error";
 import api from "../api";
 import { useNavigate } from "react-router-dom";
 import LoadingPage from "./LoadingPage";
@@ -22,9 +23,9 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import { Autocomplete, TextField, Chip } from '@mui/material';
 import Learning_outcomes from "./Learning_outcomes";
-
+import RestoreIcon from '@mui/icons-material/Restore';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-
+import ErrorHandling from "./ErrorHandling";
 import { useState,useEffect } from "react";
 import ToastMessage from "./Toast";
 import Exam from "./Exam";
@@ -1237,7 +1238,7 @@ const handleCeil = (index, field, value) => {
         <div className="mb-5 ">
        
       <div className="mb-2 block">
-        <Label htmlFor={`topic-${indexRow}`} value="Lesson/Topic Summary" />
+        <Label htmlFor={`topic-${indexRow}`} > Lesson/Topic Summary<span className='text-red-600 font-bold'>*</span></Label>
       </div>
       <Textarea
         id={`topic-${indexRow}`}
@@ -1272,7 +1273,7 @@ const handleCeil = (index, field, value) => {
       <Card>
     <div className="mb-4">
       <div className="mb-2 block">
-        <Label htmlFor={`teaching_hours-${indexRow}`} value="No. of Teaching Hours" />
+        <Label htmlFor={`teaching_hours-${indexRow}`} >No. of Teaching Hours<span className='text-red-600 font-bold'>*</span></Label>
       </div>
       <TextInput
       min={0}
@@ -1434,6 +1435,18 @@ const handleCeil = (index, field, value) => {
 
 <div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
   <div className="mb-2 block flex-1">
+    <Label htmlFor={`teaching_hours-${indexRow}`} value="Expected number of items" />
+  </div>
+  <span className=" flex-1 text-right text-black">
+    {/* If there's a percentage or similar value, you can place it here */}
+  </span>
+  <span className="text-right text-black font-bold" style={{flex: 0.2}}>
+    {lessonsData[indexRow]['items']}
+  </span>
+</div>
+
+<div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
+  <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value="Placement" />
   </div>
   <span className=" flex-1 text-right text-black">
@@ -1455,7 +1468,7 @@ const handleCeil = (index, field, value) => {
     {configTotal}
   </span>
 </div>
-<Button color={'failure'} size={'xs'} onClick={(e) => handleReset(indexRow, 'reset')}><ArrowUpwardIcon/> <span className="mt-1">Reset</span></Button>
+<Button color={'failure'} size={'xs'} onClick={(e) => handleReset(indexRow, 'reset')}><RestoreIcon/> <span className="mt-1">Reset</span></Button>
 </Card>
     </div>
 
@@ -1512,7 +1525,7 @@ const handleTitle = (event) => {
   
 };
 
-const options = ['Multiple Choice','Identification','True or False','Subjective','Any'];
+const options = ['Multiple Choice','Identification','True or False','Subjective'];
 
 
   const [formData, setFormData] = useState({
@@ -2245,7 +2258,7 @@ const handleSubmitExam = () =>{
        {/* Title and Semester */}
        <div className='w-full mb-3'>
            <div className="mb-2 block">
-             <Label htmlFor="title" value="Title" />
+             <Label htmlFor="title" value="Subject" />
            </div>
            <TextInput id="title" type="text" name="Title" value={formData.Title} onChange={(e)=>{handleChange(e);handleExamTitleChange(e)}} />
            
@@ -2419,6 +2432,9 @@ const handleSubmitExam = () =>{
 
   
       <Card className={`mb-5 ${step == 2? 'show':'hidden'}`}>
+      <div className="flex">
+        <div className="flex-1 "> 
+
       <Breadcrumb aria-label="Default breadcrumb example">
       <Breadcrumb.Item onClick={()=>{setStep(1)}} className="cursor-pointer">
       Course Information
@@ -2428,6 +2444,20 @@ const handleSubmitExam = () =>{
       </Breadcrumb.Item>
       
     </Breadcrumb>
+
+    </div>
+
+<div className="justify-end">
+  <div>
+
+
+<Error lessonsData={lessonsData} getTotalTaxonomy={getTotalTaxonomy} totalItems={totalItems} />
+  </div>
+ 
+</div>
+
+
+</div>
    
    <Progress progress={50} size={'sm'} color={'primary'} />
    
@@ -2567,7 +2597,11 @@ const handleSubmitExam = () =>{
       </Card>
 
       <Card className={`mb-5 ${step == 3? 'show':'hidden'}`}>
-      <Breadcrumb aria-label="Default breadcrumb example">
+
+      <div className="flex">
+        <div className="flex-1 "> 
+
+        <Breadcrumb aria-label="Default breadcrumb example">
       <Breadcrumb.Item >
       Course Information
       </Breadcrumb.Item>
@@ -2577,8 +2611,21 @@ const handleSubmitExam = () =>{
       <Breadcrumb.Item >
       Table of Specification
       </Breadcrumb.Item>
-      
     </Breadcrumb>
+
+        </div>
+
+        <div className="justify-end">
+          <div>
+
+
+      <ErrorHandling lessonsData={lessonsData} />
+          </div>
+         
+        </div>
+    
+
+    </div>
    
    <Progress progress={75} size={'sm'} color={'primary'}/>
  
@@ -2638,7 +2685,7 @@ const handleSubmitExam = () =>{
 
      
 
-      <Button color="blue" onClick={() => setPdfModal(true)}><VisibilityIcon className="mr-2"/>Preview</Button>
+      <Button color="primary" onClick={() => setPdfModal(true)}><VisibilityIcon className="mr-2"/>Preview</Button>
 
  
       </div>
