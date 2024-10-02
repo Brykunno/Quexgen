@@ -18,7 +18,7 @@ import LoadingWithPercent from './LoadingWithPercent';
 import AnswerKey from './AnswerKey';
 import KeyIcon from '@mui/icons-material/Key';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
-
+import AutoModeIcon from '@mui/icons-material/AutoMode';
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 function Examtest ({handleLessonDataChange, saveDataToLocalStorageTestPart,files,items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext,formData}) {
@@ -360,9 +360,12 @@ acc[index] = num;
       </div>
     </div>
     <div className='flex gap-5 justify-center mt-3'>
-    
-    <Button color={'primary'} onClick={() => setModalGenMcq(prev => ({ ...prev, [index]: true }))} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
-
+    <Tooltip content="Generate another question" style="dark">
+    <Button color={'primary'} onClick={() => setModalGenMcq(prev => ({ ...prev, [index]: true }))} size={'sm'} ><AutoModeIcon sizing={'small'}/></Button>
+    </Tooltip>
+    <Tooltip content="Delete Question" style="dark">
+    <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} size={'sm'}><DeleteIcon sizing={'small'}/></Button>
+    </Tooltip>
 <Modal key={index} size={'4xl'} show={modalGenMcq[index]} onClose={() => setModalGenMcq(prev => ({ ...prev, [index]: false }))}>
         <Modal.Header>Generate {categories[catindex] ? categories[catindex] : ''} question</Modal.Header>
         <Modal.Body>
@@ -479,9 +482,7 @@ acc[index] = num;
 
 
 
-    <Tooltip content="Delete Question" style="dark">
-    <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} ><DeleteIcon/></Button>
-    </Tooltip>
+
     </div>
       </div>
     </Card>
@@ -543,8 +544,13 @@ acc[index] = num;
       </div>
       <div className='flex gap-5 justify-center mt-3'>
       
-      
-      <Button color={'primary'} onClick={() => setModalGenIden(prev => ({ ...prev, [index]: true }))} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
+      <Tooltip content="Generate another question" style="dark">
+      <Button color={'primary'} onClick={() => setModalGenIden(prev => ({ ...prev, [index]: true }))} size={'sm'} ><AutoModeIcon sizing={'small'}/></Button>
+      </Tooltip>
+
+      <Tooltip content="Delete Question" style="dark">
+      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} size={'sm'}><DeleteIcon sizing={'small'}/></Button>
+      </Tooltip>
 
 <Modal key={index} size={'4xl'} show={modalGenIden[index]} onClose={() => setModalGenIden(prev => ({ ...prev, [index]: false }))}>
        <Modal.Header>Generate {categories[catindex] ? categories[catindex] : ''} question</Modal.Header>
@@ -607,10 +613,6 @@ acc[index] = num;
      </Modal>
 
 
-
-      <Tooltip content="Delete Question" style="dark">
-      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} ><DeleteIcon/></Button>
-      </Tooltip>
       </div>
         </div>
       </Card>
@@ -679,8 +681,12 @@ acc[index] = num;
         </div>
       </div>
       <div className='flex gap-5 justify-center mt-3'>
-      
-      <Button color={'primary'} onClick={() => setModalGenTorF(prev => ({ ...prev, [index]: true }))} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
+      <Tooltip content="Generate another question" style="dark">
+      <Button color={'primary'} onClick={() => setModalGenTorF(prev => ({ ...prev, [index]: true }))} size={'sm'} ><AutoModeIcon sizing={'small'}/></Button>
+      </Tooltip>
+      <Tooltip content="Delete Question" style="dark">
+      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} ><DeleteIcon/></Button>
+      </Tooltip>
 
             <Modal key={index} size={'4xl'} show={modalGenTorF[index]} onClose={() => setModalGenTorF(prev => ({ ...prev, [index]: false }))}>
        <Modal.Header>Generate {categories[catindex] ? categories[catindex] : ''} question</Modal.Header>
@@ -748,9 +754,7 @@ acc[index] = num;
        
        </Modal.Footer>
      </Modal>
-      <Tooltip content="Delete Question" style="dark">
-      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} ><DeleteIcon/></Button>
-      </Tooltip>
+    
       </div>
         </div>
       </Card>
@@ -1568,10 +1572,10 @@ setTestPart([])
           <div className="text-center">
             <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
             <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-              Are you sure you want to clear all the exam?
+              Are you sure you want to clear all the items in the exam?
             </h3>
             <div className="flex justify-center gap-4">
-              <Button color="failure" onClick={handleClear}>
+              <Button color="failure" onClick={() => {setClearBtn(false);handleClear()}}>
                 {"Yes, I'm sure"}
               </Button>
               <Button color="gray" onClick={() => setClearBtn(false)}>

@@ -42,6 +42,18 @@ taxonomy_levels = {
     "Creating": "Generate new ideas or products."
 }
 
+
+iden_taxonomy_levels = {
+    "Remembering": "Identify and recall basic facts and concepts.",
+    "Understanding": "Identify and explain ideas or concepts.",
+    "Applying": "Identify how to use information in new situations.",
+    "Analyzing": "Identify patterns and connections among ideas.",
+    "Evaluating": "Identify and justify a decision or course of action.",
+    "Creating": "Identify components to generate new ideas or products."
+}
+
+
+
 # Define prompts for each taxonomy level
 prompts = {
     "Remembering": (
@@ -129,8 +141,9 @@ def generate_question_ai(level, context_ques, index, test_type, max_retries=5):
     # Select the appropriate prompt based on test type
     if test_type == "trueOrFalse":
         prompt = torf_prompts[level].format(context=context_ques)
-    else:
+    else :
         prompt = prompts[level].format(context=context_ques)
+        
     
     retry_count = 0
 

@@ -24,7 +24,7 @@ function Error(props) {
     errors.push('Total taxonomy allocations exceeds 100%');
   }
 
-  if(props.totalItems){
+  if(props.totalItems == 0){
     errors.push('Please input how many items do you want to create for the exam');
   }
 
