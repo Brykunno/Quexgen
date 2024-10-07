@@ -12,6 +12,10 @@ Font.register({
     {
       src: 'fonts/Arial_Bold.ttf',
       fontWeight: 'bold'
+    },
+    {
+      src: 'fonts/Arial_Italic.ttf',
+      fontStyle: 'italic'
     }
 
   ]
@@ -23,7 +27,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: 'white',
     fontFamily: 'Arial',
-    paddingTop: '50px',
+    paddingTop: '70px',
     paddingBottom: '50px'
 
   },
@@ -34,9 +38,17 @@ const styles = StyleSheet.create({
   },
 header: {
 position: 'absolute',
-top:0,
+top:-10,
+right:0,
 },
+
+footer: {
+  position: 'absolute',
+  bottom:-30,
+  right:0,
+  },
   table: {
+    marginTop:-20,
     display: "table",
     width: "auto",
     borderStyle: "solid",
@@ -88,12 +100,23 @@ function PdfFile(props) {
       
       <Page size={{ width: 963, height: 612 }} style={styles.page}>
 
-        <View style={styles.header}>
-        
-        </View>
+       
         
         <View style={styles.section}>
-          
+
+        <View style={styles.footer} fixed>
+       
+       <Text style={[{fontSize:9,margin:'auto',marginTop:'100px' ,marginRight:'30px',color:'grey',fontStyle:'italic'}]}  render={({ pageNumber, totalPages }) => (`Page ${pageNumber} of ${totalPages}`)}/>
+
+       </View>
+
+
+           <View style={styles.header} fixed>
+       
+        <Text style={[{fontSize:7,margin:'auto',marginTop: '-30',marginRight:'10px',color:'grey',fontStyle:'italic'}]}>FM-AA-CIA-19</Text>
+        <Text style={[{fontSize:7,margin:'auto',marginTop: '0',marginRight:'10px',color:'grey',fontStyle:'italic'}]}>Rev. 0</Text>
+        <Text style={[{fontSize:7,margin:'auto',marginTop: '0',marginRight:'10px',color:'grey',fontStyle:'italic'}]}>11-Apr-2022</Text>
+        </View>
           <View style={styles.table}>
             {/* Table Header */}
 

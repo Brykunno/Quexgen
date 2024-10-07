@@ -17,7 +17,7 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import { Autocomplete, TextField, Chip } from '@mui/material';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import RecommendIcon from '@mui/icons-material/Recommend';  
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import ManageHistoryIcon from '@mui/icons-material/ManageHistory';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 
 
@@ -2142,10 +2142,10 @@ const handleSubmitExam = () =>{
 
 function statusIcons(status,status_name){
   if(status===0){
-    return <div className='border border-blue-700 rounded-full px-2 py-1 text-blue-700 font-bold'>{status_name} <CheckBoxIcon className='ml-2' /></div>
+    return <div className='border border-blue-700 rounded-full px-2 py-1 text-blue-700 font-bold'>Ongoing <ManageHistoryIcon className='ml-2' /></div>
   }
   else if(status===1){
-    return <div className='border border-green-700 rounded-full px-2 py-1 text-green-700 font-bold'>{status_name} <RateReviewIcon className='ml-2'/></div>
+    return <div className='border border-green-700 rounded-full px-2 py-1 text-green-700 font-bold'>For review <RateReviewIcon className='ml-2'/></div>
   }
   else if(status===2){
     return <div className='border border-green-800 rounded-full px-2 py-1 text-green-800 font-bold'>{status_name} <RecommendIcon className='ml-2'/></div>

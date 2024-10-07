@@ -9,7 +9,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import SearchIcon from '@mui/icons-material/Search';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import RecommendIcon from '@mui/icons-material/Recommend';  
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import ManageHistoryIcon from '@mui/icons-material/ManageHistory';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 
 
@@ -117,10 +117,10 @@ const [termFilter, setTermFilter] = useState('');
 
   function statusIcons(status,status_name){
     if(status===0){
-      return <div className='border border-blue-700 rounded-full px-2 py-1 text-blue-700 font-bold'>{status_name} <CheckBoxIcon className='ml-2' /></div>
+      return <div className='border border-blue-700 rounded-full px-2 py-1 text-blue-700 font-bold'>Ongoing <ManageHistoryIcon className='ml-2' /></div>
     }
     else if(status===1){
-      return <div className='border border-green-700 rounded-full px-2 py-1 text-green-700 font-bold'>{status_name} <RateReviewIcon className='ml-2'/></div>
+      return <div className='border border-green-700 rounded-full px-2 py-1 text-green-700 font-bold'>For review <RateReviewIcon className='ml-2'/></div>
     }
     else if(status===2){
       return <div className='border border-green-800 rounded-full px-2 py-1 text-green-800 font-bold'>{status_name} <RecommendIcon className='ml-2'/></div>
@@ -301,11 +301,11 @@ const [termFilter, setTermFilter] = useState('');
     <div className="content">
       
     <Tabs aria-label="Tabs with icons" variant="fullWidth" >
-    <Tabs.Item active title="Saved" icon={CheckBoxIcon} >
+    <Tabs.Item active title="Ongoing" icon={ManageHistoryIcon} >
       {content(exam,'Saved')}
       {statusFilter}  
       </Tabs.Item>
-      <Tabs.Item  title="To review" icon={RateReviewIcon} >
+      <Tabs.Item  title="For review" icon={RateReviewIcon} >
       {content(exam,'To review')}
       {statusFilter}
       </Tabs.Item>
