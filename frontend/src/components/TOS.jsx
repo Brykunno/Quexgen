@@ -137,10 +137,15 @@ tos_teacher: 0,
     if (num % 1 >= 0.4 && num % 1 <= 0.6) {
       return parseFloat(num.toFixed(2)); 
     }
-    return parseFloat(num.toFixed(2)); 
+    return Math.round(parseFloat(num.toFixed(2))); 
    
   }
   
+  function roundNumItems(num) {
+
+    return parseFloat(num.toFixed(2)); 
+   
+  }
 
   React.useEffect(() => {
     // Retrieve lessons data from local storage on component mount
@@ -410,14 +415,48 @@ function getTotalHours(){
 
 function getNumItems(totalItems,allocation){
   const allocationDecimal = allocation / 100;
-  return roundNum(totalItems * allocationDecimal)
+  return roundNumItems(totalItems * allocationDecimal)
  
 
 }
 
 function getRemembering(remembering,items){
 
+
+
   return roundNum((remembering/100)*items)
+}
+
+function getRoundRemembering(remembering,items,index){
+
+  // let remembering = lessonsData[index]['remembering'];
+  // let understanding = lessonsData[index]['understanding'];
+  // let applying = lessonsData[index]['applying'];
+  // let analyzing = lessonsData[index]['analyzing'];
+  // let evaluating = lessonsData[index]['evaluating'];
+  // let creating = lessonsData[index]['creating'];
+
+  let total = lessonsData[index]['total'];
+  let num = roundNum((remembering/100)*items)
+  if(total > items && num % 1 == 0.5 ){
+    return Math.floor(num)
+  }
+  return num
+}
+
+function getRoundUnderstanding(remembering,items,total){
+
+  // let remembering = lessonsData[index]['remembering'];
+  // let understanding = lessonsData[index]['understanding'];
+  // let applying = lessonsData[index]['applying'];
+  // let analyzing = lessonsData[index]['analyzing'];
+  // let evaluating = lessonsData[index]['evaluating'];
+  // let creating = lessonsData[index]['creating'];
+  let num = roundNum((remembering/100)*items)
+  if(total > items && num % 1 == 0.5 ){
+    return Math.floor(num)
+  }
+  return num
 }
 
 function getUnderstanding(Understanding,items){
@@ -443,8 +482,8 @@ function getCreating(Creating,items){
 }
 
 function getTotal(remembering,understanding,applying,analyzing,evaluating,creating){
-
-  return remembering+understanding+applying+analyzing+evaluating+creating
+ const num = remembering+understanding+applying+analyzing+evaluating+creating
+  return parseFloat(num.toFixed(2))
 }
 
 let placements = [];
@@ -641,6 +680,25 @@ const handleFloor = (index, field, value) => {
       newData[i]['allocation'] = getAllocation(Number(newData[i]['teachingHours']), getTotalHours());
       if(i == index){
         newData[i]['items'] = Math.floor(getNumItems(totalItems, newData[i]['allocation']));
+        newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
+        newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
+        newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
+        newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+        newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+
+        newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+  
+        newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+        newData[i]['totalItems'] = totalItems;
+        
       }
       else{
         if(newData[i]['items']%1 != 0){
@@ -935,6 +993,24 @@ const handleCeil = (index, field, value) => {
       newData[i]['allocation'] = getAllocation(Number(newData[i]['teachingHours']), getTotalHours());
       if(i == index){
         newData[i]['items'] = Math.ceil(getNumItems(totalItems, newData[i]['allocation']));
+        newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
+        newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
+        newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
+        newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+        newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+
+        newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+  
+        newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+        newData[i]['totalItems'] = totalItems;
       }
       else{
         if(newData[i]['items']%1 != 0){
@@ -1483,7 +1559,7 @@ const handleCeil = (index, field, value) => {
          <Modal.Footer>
           <div className=" w-full ">
             <div className="mx-auto flex gap-5 justify-center">
-            <Button color="failure" onClick={() => removeLesson(lessonsData,indexRow)}><RemoveCircleOutlineIcon className="mr-2"/>Remove Lesson</Button>
+            {/* <Button color="failure" onClick={() => removeLesson(lessonsData,indexRow)}><RemoveCircleOutlineIcon className="mr-2"/>Remove Lesson</Button> */}
            <Button onClick={() => setOpenModal(false)}  color={'success'}>Done</Button>
            
            </div>
@@ -2334,14 +2410,13 @@ const handleSubmitExam = () =>{
 
        {/* Type of Examination and Course Type */}
        <div className='w-full gap-4 flex flex-col sm:flex-row'>
-         <div className="w-full ">
-   
-<div className="mb-2 block">
-           <Label htmlFor="executive-director" value="Campus Executive Director" />
+           {/* Date of Examination */}
+       <div className='w-full'>
+         <div className="mb-2 block">
+           <Label htmlFor="exam-date" value="Date of Examination" />
          </div>
-         <TextInput id="executive-director" type="text" name="Director" value={formData.Director} onChange={handleChange} />
-   
-         </div>
+         <TextInput id="exam-date" type="date" name="ExaminationDate" value={formData.ExaminationDate} onChange={handleChange} />
+       </div>
          <div className='w-full'>
            <div className="mb-2 block">
              <Label htmlFor="course-type" value="Course Type" />
@@ -2352,12 +2427,14 @@ const handleSubmitExam = () =>{
 
        <div className='w-full gap-4 flex flex-col sm:flex-row'>
        {/* Date of Examination */}
-       <div className='w-full'>
-         <div className="mb-2 block">
-           <Label htmlFor="exam-date" value="Date of Examination" />
+       <div className="w-full ">
+   
+<div className="mb-2 block">
+           <Label htmlFor="executive-director" value="Campus Executive Director" />
          </div>
-         <TextInput id="exam-date" type="date" name="ExaminationDate" value={formData.ExaminationDate} onChange={handleChange} />
-       </div>
+         <TextInput id="executive-director" type="text" name="Director" value={formData.Director} onChange={handleChange} />
+   
+         </div>
 
        {/* Faculty */}
        <div className='w-full'>

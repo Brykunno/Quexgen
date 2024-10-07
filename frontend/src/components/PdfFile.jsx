@@ -22,7 +22,9 @@ const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
     backgroundColor: 'white',
-    fontFamily: 'Arial'
+    fontFamily: 'Arial',
+    paddingTop: '50px',
+    paddingBottom: '50px'
 
   },
   section: {
@@ -30,6 +32,10 @@ const styles = StyleSheet.create({
     padding: 10,
     flexGrow: 1
   },
+header: {
+position: 'absolute',
+top:0,
+},
   table: {
     display: "table",
     width: "auto",
@@ -74,10 +80,18 @@ const styles = StyleSheet.create({
   },
 });
 
+
+
 function PdfFile(props) {
   return (
     <Document>
+      
       <Page size={{ width: 963, height: 612 }} style={styles.page}>
+
+        <View style={styles.header}>
+        
+        </View>
+        
         <View style={styles.section}>
           
           <View style={styles.table}>

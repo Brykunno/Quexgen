@@ -14,6 +14,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         
 
 
+from django.contrib.auth.hashers import make_password
 
 class UserSerializer(serializers.ModelSerializer):
     profile_image = serializers.ImageField(source='profile.profile_image', required=False)
@@ -31,33 +32,41 @@ class UserSerializer(serializers.ModelSerializer):
             "is_superuser",
             "is_active",
             "profile_image",
-            "profile_image_url"
+            "profile_image_url",
+            "password"
         ]
         extra_kwargs = {"password": {"write_only": True}}
 
     def get_profile_image_url(self, obj):
-        # Check if the user has a profile and a profile image
         if hasattr(obj, 'profile') and obj.profile.profile_image:
             return obj.profile.profile_image.url
         return None
+
+    def create(self, validated_data):
+        # Hash the password before saving the user
+        if 'password' in validated_data:
+            validated_data['password'] = make_password(validated_data['password'])
+        return super(UserSerializer, self).create(validated_data)
 
     def update(self, instance, validated_data):
         # Extract profile data if it exists
         profile_data = validated_data.pop('profile', {})
         profile_image = profile_data.get('profile_image', None)
 
+        # Hash the password if it is being updated
+        if 'password' in validated_data:
+            validated_data['password'] = make_password(validated_data['password'])
+
         # Update user fields
         instance = super().update(instance, validated_data)
 
-        # Check if profile_image is provided and is a valid file
+        # Handle profile image
         if profile_image is not None:
             if not isinstance(profile_image, (str, bytes)) and profile_image:
-                # Update or create the profile only if the image is valid
                 profile, created = Profile.objects.get_or_create(user=instance)
                 profile.profile_image = profile_image
                 profile.save()
             else:
-                # Handle the case where the profile_image is not a valid file
                 raise serializers.ValidationError({'profile_image': 'The submitted data was not a valid file.'})
 
         return instance

@@ -198,8 +198,10 @@ const handlePageChange = (pageNumber) => {
     {/* Render only the current page of lessons */}
     {currentLessons.map((item, index) => (
       <div key={indexOfFirstLesson + index}>
-        <div className="ms-2 font-bold">Lesson {indexOfFirstLesson + index + 1}</div>
+       
         <div className="flex gap-5 mb-4">
+          <div className='flex-1'>
+          <div className="ms-2 font-bold mb-2">Lesson {indexOfFirstLesson + index + 1} summary</div>
           <Textarea
             value={lessonsData[indexOfFirstLesson + index]['topic']}
             style={{ height: '100px' }}
@@ -208,6 +210,9 @@ const handlePageChange = (pageNumber) => {
             }
             placeholder="Enter the summary of the lesson"
           />
+          </div>
+          <div className='flex-1'>
+          <div className="ms-2 font-bold mb-2">Learning outcomes</div>
           <Textarea
             value={lessonsData[indexOfFirstLesson + index]['learning_outcomes']}
             style={{ height: '100px' }}
@@ -216,10 +221,13 @@ const handlePageChange = (pageNumber) => {
             }
             placeholder="Enter the learning outcomes for the lesson"
           />
-          <div style={{ flex: 0.5 }}>
+          </div>
+          <div style={{ flex: 0.1 }}>
+            
             <Button
               color={'failure'}
               onClick={() => removeLesson(lessonsData, indexOfFirstLesson + index)}
+              className='mt-12'
             >
               <DeleteIcon/>
             </Button>

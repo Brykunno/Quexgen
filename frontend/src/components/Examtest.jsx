@@ -58,6 +58,8 @@ function Examtest ({handleLessonDataChange, saveDataToLocalStorageTestPart,files
     identification: 0,
     trueOrFalse: 0,
   });
+
+  
   
 
 
