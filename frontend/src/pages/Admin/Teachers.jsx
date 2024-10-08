@@ -7,16 +7,15 @@ import SearchIcon from '@mui/icons-material/Search';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import HideSourceIcon from '@mui/icons-material/HideSource';
 import Topnavbar from '../../components/Topnavbar';
+import ToastMessage from '../../components/Toast';
 
 function Teachers() {
   const [user, setUser] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [itemsPerPage] = useState(10);
   const [openModal, setOpenModal] = useState(false);
-
-  // User fields
   const [username, setUsername] = useState("");
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
@@ -28,17 +27,17 @@ function Teachers() {
   useEffect(() => {
     document.title = "Home";
     getUser();
-  }, []);
+  });
 
   const getUser = () => {
     api.get(`/api/user/account/admin/`)
       .then((res) => {
         setUser(res.data);
-        setLoading(false);
+        
       })
       .catch((err) => {
         alert(err);
-        setLoading(false);
+        
       });
   };
 
@@ -135,7 +134,7 @@ function Teachers() {
     <div className='content'>
       <div className='flex gap-10 '>
         <div style={{ flex: 0.4 }}>
-          <Add_user />
+          <Add_user setLoading={setLoading}/>
         </div>
         <div className='flex-1'>
           <div className="flex items-center mb-5">
@@ -284,6 +283,7 @@ function Teachers() {
               onPageChange={handlePageChange}
               showIcons
             />
+            {loading && <ToastMessage message="Instructor successflly added!" setToast={setLoading}/>}
           </div>
         </div>
       </div>

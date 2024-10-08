@@ -182,6 +182,19 @@ class FileUpload(models.Model):
     
     class Meta:
         db_table = 'study_guides'
+        
+        
+class ExamDates(models.Model):
+    midterm_exam = models.TextField()
+    finals_exam = models.TextField()
+    summer_exam = models.TextField()
+    
+    def __str__(self):
+        return self.midterm_exam
+    
+    class Meta:
+        db_table = 'exam_dates'
+    
     
         
 

@@ -21,10 +21,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     fontFamily: 'Arial',
     position: 'relative', // Added to enable absolute positioning
+    paddingTop: '30px',
+    paddingBottom: '30px'
   },
   section: {
     margin: 10,
     padding: 10,
+    paddingTop:0,
     flexGrow: 1
   },
   table: {
@@ -144,7 +147,7 @@ function Exampdf(props) {
                 <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>IT DEPARTMENT</Text>
                 <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>AY {props.formData.AcademicYear}</Text>
 
-                <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'2px'  }]}>{props.formData.Term.toUpperCase()} EXAMINATION IN {props.formData.Title}</Text>
+                <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'2px'  }]}>{props.formData.Term} Examination in {props.formData.Title}</Text>
               </View>
               <View style={[styles.tableCol]}>
               

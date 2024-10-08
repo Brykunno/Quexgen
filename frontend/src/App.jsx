@@ -113,6 +113,7 @@ function App() {
       
  
     <Route path="/login" element={<Login />} />
+    <Route path="/" element={<Login />} />
 
     <Route path="/logout" element={<Logout />} />
     <Route path="*" element={<NotFound />} />

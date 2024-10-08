@@ -190,3 +190,8 @@ class FileUploadSerializer(serializers.ModelSerializer):
       class Meta:
         model = FileUpload
         fields = ['id', 'study_guide','tos_content', 'uploaded_at']
+
+class ExamDatesSerializer(serializers.ModelSerializer):
+      class Meta:
+        model = ExamDates
+        fields = ['id', 'midterm_exam','finals_exam','summer_exam']

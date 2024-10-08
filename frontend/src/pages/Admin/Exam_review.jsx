@@ -643,7 +643,7 @@ if (getQuestion.length && getAnswer.length) {
         <Modal.Body  className="p-0">
           <div className="min-h-96 "  style={{height:'575px'}}>
           <PDFViewer className="h-full w-full">
-    <ExampdfUpdate TestPart={TestPart} examStates={examStates} />
+    <ExampdfUpdate TestPart={TestPart} examStates={examStates} formData={formData}/>
   </PDFViewer>
       
           </div>

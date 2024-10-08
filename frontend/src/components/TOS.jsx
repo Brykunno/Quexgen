@@ -134,7 +134,7 @@ tos_teacher: 0,
   const [selectedOptions, setSelectedOptions] = useState([]);
 
   function roundNum(num) {
-    if (num % 1 >= 0.4 && num % 1 <= 0.6) {
+    if (num % 1 >= 0.3 && num % 1 <= 0.7) {
       return parseFloat(num.toFixed(2)); 
     }
     return Math.round(parseFloat(num.toFixed(2))); 
@@ -395,8 +395,14 @@ const columns = [
   
 
   function getAllocation(hours,totalHours){
+    let result = (hours / totalHours) * 100;
 
-    return Math.round((hours / totalHours) * 100);
+    if (result % 1 >= 0.3 && result % 1 <= 0.7) {
+      return parseFloat(result.toFixed(2)); 
+    }
+    return parseFloat(result.toFixed(2)); 
+   
+  
   }
 
 
@@ -599,11 +605,89 @@ const handleReset = (i, field) => {
   localStorage.setItem('lessonsData', JSON.stringify(newData));
 };
 
+const handleResetAll = () => {
+  // Clone the lessonsData array to avoid direct mutation
+  const newData = [...lessonsData];
+
+for(let i = 0; i<lessonsData.length;i++ ){
+
+
+    // Recalculate fields based on the updated teachingHours
+    newData[i]['allocation'] = getAllocation(Number(newData[i]['teachingHours']), getTotalHours());
+    newData[i]['items'] = getNumItems(totalItems, newData[i]['allocation']);
+    newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
+    newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
+    newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
+    newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+    newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+    newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+    newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+ 
+    newData[i]['totalItems'] = totalItems;
+
+}
+    
+  
+  // Update the state with the new data
+  setLessonsDatainitial(newData);
+
+  // Save the updated lessonsData to localStorage
+  localStorage.setItem('lessonsData', JSON.stringify(newData));
+};
 
 
 const configTotal = lessonsData.reduce((acc, data) => {
+  return acc + data.items;
+}, 0); // Initial value of acc is set to 0
+
+const configTotalAllocation = lessonsData.reduce((acc, data) => {
+  return parseFloat(acc) + parseFloat(data.allocation);
+}, 0); // Initial value of acc is set to 0
+
+const configTotalHours = lessonsData.reduce((acc, data) => {
+  return acc + Number(data.teachingHours);
+}, 0); // Initial value of acc is set to 0
+
+const configTotalRemember = lessonsData.reduce((acc, data) => {
+  return acc + data.remembering;
+}, 0); // Initial value of acc is set to 0
+
+const configTotalunderstand = lessonsData.reduce((acc, data) => {
+  return acc + data.understanding;
+}, 0); // Initial value of acc is set to 0
+
+const configTotalapply = lessonsData.reduce((acc, data) => {
+  return acc + data.applying;
+}, 0); // Initial value of acc is set to 0
+
+const configTotalanalyze = lessonsData.reduce((acc, data) => {
+  return acc + data.analyzing;
+}, 0); // Initial value of acc is set to 0
+
+const configTotalevaluate = lessonsData.reduce((acc, data) => {
+  return acc + data.evaluating;
+}, 0); // Initial value of acc is set to 0
+
+const configTotalcreate = lessonsData.reduce((acc, data) => {
+  return acc + data.creating;
+}, 0); // Initial value of acc is set to 0
+
+
+
+
+const configTotalTaxonomy = lessonsData.reduce((acc, data) => {
   return acc + data.total;
 }, 0); // Initial value of acc is set to 0
+
+
 
 
 
@@ -615,7 +699,7 @@ const configTotal = lessonsData.reduce((acc, data) => {
     <div className="max-w-36  overflow-hidden" style={{maxHeight:'100'}} key={index}> {data.learning_outcomes}</div>,
     <div className={`${data.teachingHours==0?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.teachingHours}</div>,
      
-     data.allocation,
+    <div className={`${!Number.isInteger(data.allocation)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.allocation}</div>,
      <div className={`${!Number.isInteger(data.items)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.items}</div>,
      <div className={`${!Number.isInteger(data.remembering)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.remembering}</div>,
      <div className={`${!Number.isInteger(data.understanding)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.understanding}</div>,
@@ -672,12 +756,82 @@ const handleFloor = (index, field, value) => {
   // Update the specific field in the corresponding lesson object
   newData[index][field] = value;
 
+  if (field === 'allocation' ) {
+    for (let i = 0; i < newData.length; i++) {
+      // Recalculate fields based on the updated teachingHours
+      
+      if(i == index){
+        newData[i]['allocation'] = Math.floor(getAllocation(Number(newData[i]['teachingHours']), getTotalHours()));
+        newData[i]['items'] = getNumItems(totalItems, newData[i]['allocation']);
+        newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
+        newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
+        newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
+        newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+        newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
 
+        newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+  
+        newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+        newData[i]['totalItems'] = totalItems;
+      }
+      else{
+
+      if(newData[i]['allocation']%1 != 0){
+          newData[i]['allocation'] = getAllocation(Number(newData[i]['teachingHours']), getTotalHours())
+        }
+        if(newData[i]['items']%1 != 0){
+        newData[i]['items'] = getNumItems(totalItems, newData[i]['allocation']);
+      }
+      if (newData[i]['remembering'] % 1 !== 0) {
+        newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
+      }
+      
+      if (newData[i]['understanding'] % 1 !== 0) {
+        newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
+      }
+      
+      if (newData[i]['applying'] % 1 !== 0) {
+        newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
+      }
+      
+      if (newData[i]['analyzing'] % 1 !== 0) {
+        newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+      }
+      
+      if (newData[i]['evaluating'] % 1 !== 0) {
+        newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+      }
+      
+      if (newData[i]['creating'] % 1 !== 0) {
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+      }
+      newData[i]['total'] = getTotal(
+        newData[i]['remembering'],
+        newData[i]['understanding'],
+        newData[i]['applying'],
+        newData[i]['analyzing'],
+        newData[i]['evaluating'],
+        newData[i]['creating']
+      );
+
+      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+      newData[i]['totalItems'] = totalItems;
+    }
+  }
+}
 
   if (field === 'items' ) {
     for (let i = 0; i < newData.length; i++) {
       // Recalculate fields based on the updated teachingHours
-      newData[i]['allocation'] = getAllocation(Number(newData[i]['teachingHours']), getTotalHours());
+
       if(i == index){
         newData[i]['items'] = Math.floor(getNumItems(totalItems, newData[i]['allocation']));
         newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
@@ -986,11 +1140,84 @@ const handleCeil = (index, field, value) => {
   newData[index][field] = value;
 
 
+  if (field === 'allocation' ) {
+    for (let i = 0; i < newData.length; i++) {
+      // Recalculate fields based on the updated teachingHours
+      
+      if(i == index){
+        newData[i]['allocation'] = Math.ceil(getAllocation(Number(newData[i]['teachingHours']), getTotalHours()));
+        newData[i]['items'] = getNumItems(totalItems, newData[i]['allocation']);
+        newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
+        newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
+        newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
+        newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+        newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+
+        newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+  
+        newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+        newData[i]['totalItems'] = totalItems;
+      }
+      else{
+
+      if(newData[i]['allocation']%1 != 0){
+          newData[i]['allocation'] = getAllocation(Number(newData[i]['teachingHours']), getTotalHours())
+        }
+        if(newData[i]['items']%1 != 0){
+        newData[i]['items'] = getNumItems(totalItems, newData[i]['allocation']);
+      }
+      if (newData[i]['remembering'] % 1 !== 0) {
+        newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
+      }
+      
+      if (newData[i]['understanding'] % 1 !== 0) {
+        newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
+      }
+      
+      if (newData[i]['applying'] % 1 !== 0) {
+        newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
+      }
+      
+      if (newData[i]['analyzing'] % 1 !== 0) {
+        newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
+      }
+      
+      if (newData[i]['evaluating'] % 1 !== 0) {
+        newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
+      }
+      
+      if (newData[i]['creating'] % 1 !== 0) {
+        newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+      }
+      newData[i]['total'] = getTotal(
+        newData[i]['remembering'],
+        newData[i]['understanding'],
+        newData[i]['applying'],
+        newData[i]['analyzing'],
+        newData[i]['evaluating'],
+        newData[i]['creating']
+      );
+
+      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+      newData[i]['totalItems'] = totalItems;
+    }
+  }
+}
+
+
 
   if (field === 'items' ) {
     for (let i = 0; i < newData.length; i++) {
       // Recalculate fields based on the updated teachingHours
-      newData[i]['allocation'] = getAllocation(Number(newData[i]['teachingHours']), getTotalHours());
+    
       if(i == index){
         newData[i]['items'] = Math.ceil(getNumItems(totalItems, newData[i]['allocation']));
         newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
@@ -1365,6 +1592,11 @@ const handleCeil = (index, field, value) => {
     <div className="mb-3 flex" style={{borderBottomStyle:'solid',borderBottomWidth:1}}>
   <div className="mb-2 block flex-1">
     <Label htmlFor={`teaching_hours-${indexRow}`} value="% of Allocation" />
+    <div className="flex gap-3 px-3">
+      <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'allocation', lessonsData[indexRow]['allocation'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+      <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'allocation', lessonsData[indexRow]['allocation'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
+
+    </div>
   </div>
   <span className=" flex-1 text-right text-black">
     {lessonsData[indexRow]['allocation']}%
@@ -2736,12 +2968,62 @@ const handleSubmitExam = () =>{
                   })}
                 </TableRow>
               ))}
+
+              <TableRow >
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                  Total
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                  {configTotalHours}
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                {Number.isInteger(configTotalAllocation) ? configTotalAllocation : configTotalAllocation.toFixed(2)
+                }
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                {Number.isInteger(configTotal) ? configTotal : configTotal.toFixed(2)
+                }
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                {Number.isInteger(configTotalRemember) ? configTotalRemember : configTotalRemember.toFixed(2)
+                }
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                {Number.isInteger(configTotalunderstand) ? configTotalunderstand : configTotalunderstand.toFixed(2)
+                }
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                {Number.isInteger(configTotalanalyze) ? configTotalanalyze : configTotalanalyze.toFixed(2)
+                }
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                {Number.isInteger(configTotalapply) ? configTotalapply : configTotalapply.toFixed(2)
+                }
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                {Number.isInteger(configTotalevaluate) ? configTotalevaluate : configTotalevaluate.toFixed(2)
+                }
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                {Number.isInteger(configTotalcreate) ? configTotalcreate : configTotalcreate.toFixed(2)
+                }
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                  {Number.isInteger(configTotalTaxonomy) ? configTotalTaxonomy : configTotalTaxonomy.toFixed(2)
+                  }
+                  
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                 
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
    
       </Paper>
       <div className="w-full">
+    
         <div className="  w-full flex flex-wrap ">
      <div  className=" mt-3 flex gap-3   mx-auto">
       {/* <Button color={'primary'}  onClick={() => addLesson({  
@@ -2760,8 +3042,8 @@ const handleSubmitExam = () =>{
       placement: '',
       totalItems:0,})}> <AddCircleOutlineIcon className="mr-2 "/>Add Lesson</Button> */}
 
-     
-
+    
+        <Button  color={'failure'} onClick={()=>handleResetAll()}>Reset</Button>
       <Button color="primary" onClick={() => setPdfModal(true)}><VisibilityIcon className="mr-2"/>Preview</Button>
 
  

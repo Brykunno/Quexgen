@@ -2,6 +2,7 @@ import React from 'react';
 import { Page, Text, View, Document, StyleSheet,Image,Font } from '@react-pdf/renderer';
 
 import Arial_Bold from './Arial_Bold.ttf'
+import Arial_Italic from './Arial_Italic.ttf'
 import Arial from './Arial.ttf'
 import Logo from './PSULogo.png'
 
@@ -18,7 +19,12 @@ Font.register({
     {
       src: Arial_Bold,
       fontWeight: 'bold'
+    },
+    {
+      src: Arial_Italic,
+      fontStyle: 'italic'
     }
+
 
   ]
 })
@@ -28,7 +34,9 @@ const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
     backgroundColor: 'white',
-    fontFamily: 'Arial-sec'
+    fontFamily: 'Arial-sec',
+     paddingTop: '70px',
+    paddingBottom: '50px'
 
   },
   section: {
@@ -36,7 +44,19 @@ const styles = StyleSheet.create({
     padding: 10,
     flexGrow: 1
   },
+header: {
+position: 'absolute',
+top:-10,
+right:0,
+},
+
+footer: {
+  position: 'absolute',
+  bottom:-30,
+  right:0,
+  },
   table: {
+    marginTop:-20,
     display: "table",
     width: "auto",
     borderStyle: "solid",
@@ -80,12 +100,31 @@ const styles = StyleSheet.create({
   },
 });
 
+
+
 function PdfUpdate(props) {
   return (
     <Document>
+      
       <Page size={{ width: 963, height: 612 }} style={styles.page}>
+
+       
+        
         <View style={styles.section}>
-          
+
+        <View style={styles.footer} fixed>
+       
+       <Text style={[{fontSize:9,margin:'auto',marginTop:'100px' ,marginRight:'30px',color:'grey',fontStyle:'italic'}]}  render={({ pageNumber, totalPages }) => (`Page ${pageNumber} of ${totalPages}`)}/>
+
+       </View>
+
+
+           <View style={styles.header} fixed>
+       
+        <Text style={[{fontSize:7,margin:'auto',marginTop: '-30',marginRight:'10px',color:'grey',fontStyle:'italic'}]}>FM-AA-CIA-19</Text>
+        <Text style={[{fontSize:7,margin:'auto',marginTop: '0',marginRight:'10px',color:'grey',fontStyle:'italic'}]}>Rev. 0</Text>
+        <Text style={[{fontSize:7,margin:'auto',marginTop: '0',marginRight:'10px',color:'grey',fontStyle:'italic'}]}>11-Apr-2022</Text>
+        </View>
           <View style={styles.table}>
             {/* Table Header */}
 
@@ -95,7 +134,7 @@ function PdfUpdate(props) {
 <View style={[styles.tableCol,{flex:0.9}]}>
 <Image
                   style={styles.image}
-                  src={Logo}// Provide the path to your image
+                  src={Logo} // Provide the path to your image
                 />
   </View>
 
@@ -114,8 +153,9 @@ function PdfUpdate(props) {
               <View style={styles.tableRow}>
 
 <View style={[styles.tableCol,{padding:5}]}>
-<Text style={[styles.tableCell,{fontSize:10,margin:'auto',fontWeight: 'extrabold'}]}>{props.formData.Term.toUpperCase()} EXAMINATION IN {props.formData.Title}</Text>
-<Text style={[styles.tableCell,{fontSize:10,margin:'auto',fontWeight: 'extrabold'}]}>{props.formData.Semester} AY {props.formData.AcademicYear}</Text>
+  
+    <Text style={[styles.tableCell,{fontSize:10,margin:'auto',fontWeight: 'extrabold'}]}>{props.formData.Term.toUpperCase()} EXAMINATION IN {props.formData.Title}</Text>
+    <Text style={[styles.tableCell,{fontSize:10,margin:'auto',fontWeight: 'extrabold'}]}>{props.formData.Semester} AY {props.formData.AcademicYear}</Text>
   </View>
 
 

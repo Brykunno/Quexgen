@@ -24,10 +24,13 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: 'white',
     fontFamily: 'Arial-sec',
+    paddingTop: '30px',
+    paddingBottom: '30px'
   },
   section: {
     margin: 10,
     padding: 10,
+    paddingTop: 0,
     flexGrow: 1
   },
   table: {
@@ -142,9 +145,12 @@ function ExampdfUpdate(props) {
               </View>
 
               <View style={[styles.tableCol]}>
-                <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>PANGASINAN STATE UNIVERSITY</Text>
+              <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>PANGASINAN STATE UNIVERSITY</Text>
                 <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>SAN CARLOS CAMPUS</Text>
                 <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>IT DEPARTMENT</Text>
+                <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'-5px' }]}>AY {props.formData.AcademicYear}</Text>
+
+                <Text style={[styles.tableCell, { textAlign: 'center',fontWeight: 'bold',marginTop:'2px'  }]}>{props.formData.Term} Examination in {props.formData.Title}</Text>
 
      
               </View>

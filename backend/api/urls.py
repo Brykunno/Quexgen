@@ -8,7 +8,7 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'context', admin_views.ContextViewSet, basename='context')
-
+router.register(r'exam-dates', views.ExamDatesCreateView)
 
 
 
@@ -65,6 +65,7 @@ urlpatterns = [
     path('',  include(router.urls)),     
     path('upload/', views.FileUploadView.as_view(), name='file-upload'),
     path('taxonomy-allocation/', ai_views.taxonomy_allocation, name='taxonomy_allocation'),
+   
 
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

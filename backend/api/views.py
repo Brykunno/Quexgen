@@ -663,3 +663,58 @@ class FileUploadView(APIView):
                 "errors": file_serializer.errors,  # Detailed validation errors
                 "data_received": request.data  # Information on the received data
             }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ExamDatesCreateView(viewsets.ModelViewSet):
+    queryset = ExamDates.objects.all()
+    serializer_class = ExamDatesSerializer
+
+    def create(self, request, *args, **kwargs):
+        """Create a new exam date"""
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            # Print validation errors and return a detailed response
+            print("Validation errors:", serializer.errors)
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Validation errors occurred.",
+                    "errors": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    def retrieve(self, request, pk=None, *args, **kwargs):
+        """Retrieve a single exam date by ID"""
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    def update(self, request, pk=None, *args, **kwargs):
+        """Update an existing exam date"""
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        else:
+            # Print validation errors and return a detailed response
+            print("Validation errors:", serializer.errors)
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Validation errors occurred.",
+                    "errors": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    def destroy(self, request, pk=None, *args, **kwargs):
+        """Delete an exam date"""
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)

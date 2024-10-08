@@ -5,9 +5,11 @@ import { useNavigate } from "react-router-dom";
 
 import { Button, Radio, Label, TextInput,Card } from "flowbite-react";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 
-function Add_user(){
+function Add_user({setLoading}){
     // return <Add_form route="/api/create_user/" method="add_user"/>
 
     const [username, setUsername] = useState("");
@@ -17,7 +19,8 @@ function Add_user(){
     const [is_superuser, setIs_superuser] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false); 
+   
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -30,10 +33,14 @@ function Add_user(){
         } catch (error) {
           alert(error);
         } finally {
-          setLoading(false);
+          setLoading(true);
         }
       };
 
+      const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);  // Toggle the state to switch between "text" and "password"
+    };
+      
     return(
 
         <div >
@@ -123,17 +130,28 @@ function Add_user(){
   </div>
 
   <div>
-    <div className="mb-2 block">
-      <Label htmlFor="passwordtrue" value="Password" />
-    </div>
-    <TextInput
-      id="passwordtrue"
-      type="password"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      required
-    />
-  </div>
+        <div className="mb-2 block">
+          <Label htmlFor="password1" value="Password" />
+        </div>
+
+        <div className="relative mb-3">
+                        <TextInput
+                            type={showPassword ? "text" : "password"}
+                            
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                        <button
+                            type="button"
+                            className="absolute right-2 top-2"
+                            onClick={togglePasswordVisibility}
+                        >
+                            {showPassword ? <VisibilityIcon className="h-5 w-5 text-gray-500" /> : <VisibilityOffIcon className="h-5 w-5 text-gray-500" />}
+                        </button>
+                    </div>
+
+      </div>
 
   <Button color={'primary'} type="submit" >
     <PersonAddIcon className="mr-2"/>
