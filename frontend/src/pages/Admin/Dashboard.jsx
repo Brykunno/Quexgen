@@ -143,66 +143,74 @@ function Dashboard() {
       <Topnavbar title="Dashboard" />
       <div className='content'>
         <div className='flex flex-col gap-5 '>
-          <div className='flex gap-5'>
-            <Card className='flex-1 bg-blue-500 text-white'>
-              <div className="flex flex-row gap-5">
-                <div><SupervisedUserCircleIcon style={{ height: '60px', width: '60px' }} /></div>
-                <div className='py-1'>
-                  <div className="text-white font-bold">Teachers</div>
-                  <span className='font-bold text-2xl'>{StaffUsersCount}</span>
-                </div>
-              </div>
-            </Card>
+        <div className='flex flex-col gap-5'>
+  <div className='flex flex-col gap-5 md:flex-row'>
+    <Card className='flex-1 bg-blue-500 text-white w-full'>
+      <div className="flex flex-row gap-5 items-center">
+        <div><SupervisedUserCircleIcon style={{ height: '60px', width: '60px' }} /></div>
+        <div className='py-1'>
+          <div className="text-white font-bold">Teachers</div>
+          <span className='font-bold text-2xl'>{StaffUsersCount}</span>
+        </div>
+      </div>
+    </Card>
 
-            <Card className='flex-1 bg-yellow-300 text-white'>
-              <div className="flex flex-row gap-5">
-                <div><ArticleIcon style={{ height: '60px', width: '60px' }} /></div>
-                <div className='py-1'>
-                  <div className="text-white font-bold">Exams</div>
-                  <span className='font-bold text-2xl'>{TOSInfo.length}</span>
-                </div>
-              </div>
-            </Card>
+    <Card className='flex-1 bg-yellow-300 text-white w-full'>
+      <div className="flex flex-row gap-5 items-center">
+        <div><ArticleIcon style={{ height: '60px', width: '60px' }} /></div>
+        <div className='py-1'>
+          <div className="text-white font-bold">Exams</div>
+          <span className='font-bold text-2xl'>{TOSInfo.length}</span>
+        </div>
+      </div>
+    </Card>
 
-            <Card className='flex-1 bg-green-400 text-white'>
-              <div className="flex flex-row gap-5">
-                <div><RateReviewIcon style={{ height: '60px', width: '60px' }} /></div>
-                <div className='py-1'>
-                  <div className="text-white font-bold">To Review</div>
-                  <span className='font-bold text-2xl'>{toreviewCount}</span>
-                </div>
-              </div>
-            </Card>
-          </div>
+    <Card className='flex-1 bg-green-400 text-white w-full'>
+      <div className="flex flex-row gap-5 items-center">
+        <div><RateReviewIcon style={{ height: '60px', width: '60px' }} /></div>
+        <div className='py-1'>
+          <div className="text-white font-bold">To Review</div>
+          <span className='font-bold text-2xl'>{toreviewCount}</span>
+        </div>
+      </div>
+    </Card>
+  </div>
+</div>
+
 
           <Card>
-            <div className='flex gap-5'>
-              <div className='flex-1'>
-                <Label>Midterm exam</Label>
-                <TextInput
-                  type='date'
-                  value={examDates.midterm_exam}
-                  onChange={(e) => { handleExamDates('midterm_exam', e.target.value) }}
-                />
-              </div>
+          <div className='flex flex-col gap-5 md:flex-row'>
+  <div className='flex-1 w-full'>
+    <Label>Midterm exam</Label>
+    <TextInput
+      type='date'
+      value={examDates.midterm_exam}
+      onChange={(e) => { handleExamDates('midterm_exam', e.target.value) }}
+      className='w-full'
+    />
+  </div>
 
-              <div className='flex-1'>
-                <Label>Finals exam</Label>
-                <TextInput
-                  type='date'
-                  value={examDates.finals_exam}
-                  onChange={(e) => { handleExamDates('finals_exam', e.target.value) }}
-                />
-              </div>
-              <div className='flex-1'>
-                <Label>Summer exam</Label>
-                <TextInput
-                  type='date'
-                  value={examDates.summer_exam}
-                  onChange={(e) => { handleExamDates('summer_exam', e.target.value) }}
-                />
-              </div>
-            </div>
+  <div className='flex-1 w-full'>
+    <Label>Finals exam</Label>
+    <TextInput
+      type='date'
+      value={examDates.finals_exam}
+      onChange={(e) => { handleExamDates('finals_exam', e.target.value) }}
+      className='w-full'
+    />
+  </div>
+
+  <div className='flex-1 w-full'>
+    <Label>Summer exam</Label>
+    <TextInput
+      type='date'
+      value={examDates.summer_exam}
+      onChange={(e) => { handleExamDates('summer_exam', e.target.value) }}
+      className='w-full'
+    />
+  </div>
+</div>
+
             
             <div style={{ height: '500px' }}>
               <Calendar

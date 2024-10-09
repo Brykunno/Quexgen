@@ -20,6 +20,17 @@ function Form({ route, method }) {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false); 
 
+
+  useEffect(()=>{
+    if(localStorage.getItem('user_logged_in')){
+      window.location.href = "/create_exam"
+    }
+
+    if(localStorage.getItem('admin_logged_in')){
+      window.location.href = "/dashboard"
+    }
+  },[])
+
   const showSwal = (message) => {
     Swal.fire({
       title: message,
@@ -56,6 +67,7 @@ function Form({ route, method }) {
       if (method === "login") {
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
         localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
+        
         localStorage.setItem('img_dir',`${import.meta.env.VITE_API_URL}/api`);
   
         console.log('usersdata: ', res.data);
@@ -66,8 +78,10 @@ function Form({ route, method }) {
           localStorage.setItem('username',data[0].username);
   
           if (data[0].is_superuser === true) {
+            localStorage.setItem('admin_logged_in',true)
             navigate("/dashboard");
           } else {
+            localStorage.setItem('user_logged_in',true)
             navigate("/create_exam");
           }
         } catch (userError) {
@@ -99,11 +113,13 @@ function Form({ route, method }) {
 };
   
   return ( 
-   <div className="flex items-center justify-center h-screen">
+   <div className="flex items-center justify-center h-screen px-5">
     <Card className="w-96 mx-auto   ">
       {swal && showSwal("Invalid username or password")}
     <img src="/images/quexgen.png" alt="" className="h-20 w-20 mx-auto" />
-        <div className="text-center text-2xl font-bold"><h1>LOGIN</h1></div>
+        <div className="text-center text-2xl font-bold"><h1>Welcome to Quexgen</h1>
+        <p className="text-center text-sm font-normal">Login to your account</p>
+        </div>
   <form onSubmit={handleSubmit} className="flex max-w-md flex-col gap-4">
       <div>
         <div className="mb-2 block">
@@ -139,16 +155,16 @@ function Form({ route, method }) {
                             {showPassword ? <VisibilityIcon className="h-5 w-5 text-gray-500" /> : <VisibilityOffIcon className="h-5 w-5 text-gray-500" />}
                         </button>
                     </div>
-
+                    <div className="text-left w-full text-sm font-semibold">
+      <a href="/password-reset">forgot password?</a>
+      </div >
       </div>
       <div className="text-center w-full">
       {loading && <LoadingIndicator/>}
       
       </div>
 
-      <div className="text-left w-full text-sm">
-      <a href="/password-reset">forgot password?</a>
-      </div>
+      
       <Button type="submit" color="primary">
         LOGIN 
       </Button>

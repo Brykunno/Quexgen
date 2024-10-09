@@ -9,7 +9,7 @@ import HideSourceIcon from '@mui/icons-material/HideSource';
 import Topnavbar from '../../components/Topnavbar';
 import ToastMessage from '../../components/Toast';
 
-function Teachers() {
+function Instructors() {
   const [user, setUser] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -130,7 +130,7 @@ function Teachers() {
 
   return (
     <div>
-      <Topnavbar title="Teachers / Users"/>
+      <Topnavbar title="Instructors / Users"/>
     <div className='content'>
       <div className='flex gap-10 '>
         <div style={{ flex: 0.4 }}>
@@ -169,7 +169,7 @@ function Teachers() {
                     </Table.Cell>
                     <Table.Cell>{user.first_name}</Table.Cell>
                     <Table.Cell>{user.last_name}</Table.Cell>
-                    <Table.Cell>{user.is_staff ? 'Teacher' : 'Admin'}</Table.Cell>
+                    <Table.Cell>{user.is_staff ? 'Instructor' : 'Admin'}</Table.Cell>
                     <Table.Cell className='flex gap-3'>
                       <Button
                         color={'primary'}
@@ -183,7 +183,7 @@ function Teachers() {
                      
                       {user.is_active!==true? <Button size={'xs'} color={'success'} onClick={()=>{handleUserActivate(user.id)}}><PowerSettingsNewIcon/><p className='mt-1 ml-1'>Activate</p></Button>:  <Button size={'xs'} color={'failure'} onClick={()=>{handleUserArchive(user.id)}}><HideSourceIcon/><p className='mt-1 ml-1'>Deactivate</p></Button>}
                     </Table.Cell>
-                    <Table.Cell>{user.is_active ? 'Active' : 'Inactive'}</Table.Cell>
+                    <Table.Cell>{user.is_active ? <div className='text-green-600 font-bold'>Active</div> : <div className='text-red-600 font-bold'>Deactivated</div>}</Table.Cell>
                   </Table.Row>
                 ))
               ) : (
@@ -251,7 +251,7 @@ function Teachers() {
                         checked={is_staff}
                         onChange={() => { setIsSuperuser(false); setIsStaff(true); }}
                       />
-                      <Label htmlFor="teacher">Teacher</Label>
+                      <Label htmlFor="teacher">Instructor</Label>
                     </div>
                   </div>
                 </div>
@@ -291,4 +291,4 @@ function Teachers() {
   );
 }
 
-export default Teachers;
+export default Instructors;

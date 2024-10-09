@@ -126,7 +126,7 @@ const [termFilter, setTermFilter] = useState('');
       return <div className='border border-green-800 rounded-full px-2 py-1 text-green-800 font-bold'>{status_name} <RecommendIcon className='ml-2'/></div>
     }
     else if(status===3){
-      return <div className='border border-orange-600 rounded-full px-2 py-1 text-orange-600 font-bold'>{status_name} <EditNoteIcon className='ml-2'/></div>
+      return <div className='border border-orange-600 rounded-full px-2 py-1 text-orange-600 font-bold'>To revise <EditNoteIcon className='ml-2'/></div>
     }
     else {
       return null
@@ -276,7 +276,7 @@ const [termFilter, setTermFilter] = useState('');
             ))
           ) : (
             <Table.Row>  
-              <Table.Cell colSpan={'6'}><p className='text-center '>No exams found for "{searchTerm}" with status "{status}".</p></Table.Cell>
+              <Table.Cell colSpan={'6'}><p className='text-center '>No exams found.</p></Table.Cell>
             </Table.Row>
           )}
         </Table.Body>
@@ -309,7 +309,7 @@ const [termFilter, setTermFilter] = useState('');
       {content(exam,'To review')}
       {statusFilter}
       </Tabs.Item>
-      <Tabs.Item title="Needs revision" icon={EditNoteIcon}>
+      <Tabs.Item title="To revise" icon={EditNoteIcon}>
       {content(exam,'Needs Revision')}
       {statusFilter}
 

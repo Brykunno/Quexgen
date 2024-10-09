@@ -2151,7 +2151,7 @@ function statusIcons(status,status_name){
     return <div className='border border-green-800 rounded-full px-2 py-1 text-green-800 font-bold'>{status_name} <RecommendIcon className='ml-2'/></div>
   }
   else if(status===3){
-    return <div className='border border-orange-600 rounded-full px-2 py-1 text-orange-600 font-bold'>{status_name} <EditNoteIcon className='ml-2'/></div>
+    return <div className='border border-orange-600 rounded-full px-2 py-1 text-orange-600 font-bold'>To revise <EditNoteIcon className='ml-2'/></div>
   }
   else {
     return null

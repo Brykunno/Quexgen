@@ -619,7 +619,7 @@ if (getQuestion.length && getAnswer.length) {
 
 
     </div>
-{swal && showSwal("Updated")}
+{swal && showSwal("Comment sent successfully!")}
 {approve && showSwal("Aprroved")}
 
 {loading && <LoadingSubmit  />}

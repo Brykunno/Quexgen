@@ -20,7 +20,9 @@ function Learning_outcomes({
   lessonsDataInitial,
   handleLessonDataChange,
   lessonsData,
-  removeLesson
+  removeLesson,
+  formData,
+  setFormData
 }) {
   // State to manage input data
  
@@ -173,8 +175,42 @@ useEffect(()=>{
     }
   },[percent]
 )
- 
 
+useEffect(() => {
+  const updateExaminationType = () => {
+    const creating = Number(localStorage.getItem('Creating'));
+    const evaluating = Number(localStorage.getItem('Evaluating'));
+    const applying = Number(localStorage.getItem('Applying'));
+    
+    // Determine the new examination type
+    let updatedExaminationType = [...formData.ExaminationType];
+
+    // Check if 'Subjective' should be added
+    if (creating > 0 || evaluating > 0 || applying > 0) {
+      if (!updatedExaminationType.includes('Subjective')) {
+        updatedExaminationType.push('Subjective'); // Add 'Subjective'
+      }
+    } else {
+      // Remove 'Subjective' if it exists
+      updatedExaminationType = updatedExaminationType.filter(type => type !== 'Subjective');
+    }
+
+    // Update formData and localStorage
+    setFormData((prev) => {
+      const updatedFormData = {
+        ...prev,
+        ExaminationType: updatedExaminationType,
+      };
+
+      // Update localStorage with the new formData
+      localStorage.setItem('formData', JSON.stringify(updatedFormData));
+
+      return updatedFormData; // Return updated formData to set the state
+    });
+  };
+
+  updateExaminationType();
+}); // Add dependencies to run effect when formData changes
 
 const [currentPage, setCurrentPage] = useState(1);
 const lessonsPerPage = 3; // Number of lessons per page

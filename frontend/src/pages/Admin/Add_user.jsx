@@ -108,7 +108,7 @@ function Add_user({setLoading}){
      checked={is_staff}
      onChange={(e) => {setIs_superuser(false); setIs_staff(true);}}
     />
-    <Label htmlFor="teacher">Teacher</Label>
+    <Label htmlFor="teacher">Instructor</Label>
   </div>
   </div>
 

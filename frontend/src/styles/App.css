@@ -37,6 +37,8 @@ background-color: #dee8f7;
 
  .Sidebar{
     /* padding-top: 60px; */
+    /* margin: 5px;
+    border-radius: 10px; */
     height: 100%;
     width: 230px;
     background-color: #060164;
@@ -140,9 +142,9 @@ background-color: #dee8f7;
 
    color: #fffafa;
    background: #e5ad06;
-   /* border-top-right-radius: 30px;
+   border-top-right-radius: 30px;
    border-bottom-right-radius: 30px;
-   width: 98%; */
+   width: 98%;
 
 
 }

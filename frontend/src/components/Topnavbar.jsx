@@ -15,11 +15,19 @@ import Avatar from '@mui/material/Avatar';
 import React, { useState, useEffect } from 'react';
 import { SidebarData } from "./SidebarData";
 import { SidebarData_teacher } from "./SidebarData_teacher";
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import api from "../api";
 import "../styles/Topnavbar.css"
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import Badge from '@mui/material/Badge';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import dayjs from 'dayjs';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+const localizer = momentLocalizer(moment);
 function formatDateTime(dateTimeString) {
+
+ 
   // Convert the string to a JavaScript Date object
   const date = new Date(dateTimeString);
 
@@ -73,7 +81,11 @@ const img_dir = String(localStorage.getItem('img_dir'))
 
 
 function Topnavbar(props) {
-
+  const [examDates, setExamDates] = useState({
+    midterm_exam: '',
+    finals_exam: '',
+    summer_exam: ''
+  });
   
 const [user, setUser] = useState([]);
 const [loading, setLoading] = useState(true);
@@ -85,6 +97,29 @@ useEffect(() => {
 
   getUser();
 }, []);
+
+useEffect(() => {
+  
+  getExamDates(1); // Fetch exam dates with ID 1
+}, []);
+
+
+const getExamDates = (id) => {
+  api.get(`/api/exam-dates/${id}/`) // Adjust the endpoint as per your API
+    .then((res) => {
+      const { midterm_exam, finals_exam, summer_exam } = res.data;
+      setExamDates({
+        midterm_exam,
+        finals_exam,
+        summer_exam
+      });
+    })
+    .catch((err) => {
+      console.error('Error fetching exam dates:', err);
+    });
+};
+
+
 
 const getUser = () => {
   api
@@ -261,6 +296,41 @@ const readNotif = (id) =>{
 
 }
 
+const sampleEvents = [
+  {
+    title: 'Midterm Examination',
+    start: new Date(examDates.midterm_exam), // Use the actual date
+    end: new Date(new Date(examDates.midterm_exam).getTime() + 259200000), // One day later
+  },
+  {
+    title: 'Final Examination',
+    start: new Date(examDates.finals_exam),
+    end: new Date(new Date(examDates.finals_exam).getTime() + 259200000), // One day later
+  },
+  {
+    title: 'Summer Examination',
+    start: new Date(examDates.summer_exam),
+    end: new Date(new Date(examDates.summer_exam).getTime() + 259200000), // One day later
+  },
+];
+
+
+const eventStyleGetter = (event) => {
+  let backgroundColor = '#060164'; // Default color
+  return {
+    style: {
+      backgroundColor,
+      color: 'white', // Font color
+      fontSize: '16px',
+      borderRadius: '5px',
+      padding: '5px',
+    },
+  };
+};
+
+
+
+
 
   return (
     <Navbar fluid rounded className="topnavbar">
@@ -274,8 +344,37 @@ const readNotif = (id) =>{
         <p className="text-white font-semibold ">{props.title}</p>
       </div>
       <div className="flex md:order-2 gap-5">
+
+      <div className="text-white mt-2" >
+
+      <Dropdown
+           arrowIcon={false}
+           inline
+           label={
+           
+            <CalendarMonthIcon color="white" className="text-4xl cursor-pointer"/>
+          
+           }
+           >
+
+
+          <DropdownHeader>  <Calendar
+                localizer={localizer}
+                events={sampleEvents}
+                startAccessor="start"
+                endAccessor="end"
+                defaultView="month"
+                views={['month', 'week', 'day']}
+                style={{ height: 500 }}
+                eventPropGetter={eventStyleGetter}
+              /></DropdownHeader>
+         
+ 
+      </Dropdown></div>
         
         <div className="text-white mt-2" >
+
+     
         
 
         <Dropdown

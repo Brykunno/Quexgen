@@ -2571,7 +2571,7 @@ const handleSubmitExam = () =>{
            <TextInput id="title" type="text" name="Title" value={formData.Title} onChange={(e)=>{handleChange(e);handleExamTitleChange(e)}} />
            
          </div>
-       <div className='w-full gap-4 flex flex-col sm:flex-row'>
+       <div className='w-full mb-3 gap-4 flex flex-col sm:flex-row'>
       
          <div className="w-full">
            <div className="mb-2 block">
@@ -2600,7 +2600,7 @@ const handleSubmitExam = () =>{
    
 
        {/* Academic Year and Campus */}
-       <div className='w-full gap-4 flex flex-col sm:flex-row'>
+       <div className='w-full gap-4 mb-3 flex flex-col sm:flex-row'>
          <div className="w-full">
            <div className="mb-2 block">
              <Label htmlFor="Academic-year" value="Academic Year" />
@@ -2620,7 +2620,7 @@ const handleSubmitExam = () =>{
        </div>
 
        {/* Course Code and Department */}
-       <div className='w-full gap-4 flex flex-col sm:flex-row'>
+       <div className='w-full gap-4 flex flex-col mb-3 sm:flex-row'>
          <div className='w-full'>
            <div className="mb-2 block">
              <Label htmlFor="course-code" value="Course Code" />
@@ -2641,7 +2641,7 @@ const handleSubmitExam = () =>{
        </div>
 
        {/* Type of Examination and Course Type */}
-       <div className='w-full gap-4 flex flex-col sm:flex-row'>
+       <div className='w-full mb-3 gap-4 flex flex-col sm:flex-row'>
            {/* Date of Examination */}
        <div className='w-full'>
          <div className="mb-2 block">
@@ -2657,7 +2657,7 @@ const handleSubmitExam = () =>{
          </div>
        </div>
 
-       <div className='w-full gap-4 flex flex-col sm:flex-row'>
+       <div className='w-full mb-3 gap-4 flex flex-col sm:flex-row'>
        {/* Date of Examination */}
        <div className="w-full ">
    
@@ -2671,7 +2671,7 @@ const handleSubmitExam = () =>{
        {/* Faculty */}
        <div className='w-full'>
          <div className="mb-2 block">
-           <Label htmlFor="faculty" value="Faculty" />
+           <Label htmlFor="faculty" value="Instructor" />
          </div>
          <TextInput id="faculty" type="text" name="Faculty" value={formData.Faculty} onChange={handleChange} />
        </div>
@@ -2786,6 +2786,8 @@ const handleSubmitExam = () =>{
         handleLessonDataChange={handleLessonDataChange}
         lessonsData={lessonsData}
         removeLesson={removeLesson}
+        formData={formData}
+        setFormData={setFormData}
        
       />
 <div className="flex gap-3"> 
@@ -3088,6 +3090,7 @@ const handleSubmitExam = () =>{
  
       <Button size={'sm'}  color={'primary'} onClick={handleNext} disabled={disableNext} className="px-4" > <p style={{marginTop:'0.5px'}}>Next</p> <NavigateNextIcon  /></Button>
       
+    
       </div>
       </div>
     </div>

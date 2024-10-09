@@ -12,7 +12,7 @@ export const SidebarData = [
         link: "/dashboard",
     },
     {
-        title: "Teachers",
+        title: "Instructors",
         icon: <AccountCircleIcon />,
         link: "/teachers",
     },
