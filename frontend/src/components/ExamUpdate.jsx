@@ -1232,7 +1232,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         <Modal.Body  className="p-0">
           <div className="min-h-96 "  style={{height:'575px'}}>
           <PDFViewer className="h-full w-full">
-    <ExampdfUpdate TestPart={TestPart} examStates={examStates} faculty={formData.Faculty} />
+    <ExampdfUpdate TestPart={TestPart} examStates={examStates} faculty={formData.Faculty} formData={formData} />
   </PDFViewer>
       
           </div>

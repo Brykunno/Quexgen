@@ -1,5 +1,6 @@
 import { React, useState,useEffect } from "react";
 import { Breadcrumb,Card,Progress,Label, Textarea, TextInput,Button,RangeSlider,Modal,Select } from "flowbite-react";
+import Learning_outcomes_update from "./Learning_outcomes_update";
 
 function TaxonomyAllocation(props) {
 
@@ -19,7 +20,10 @@ function TaxonomyAllocation(props) {
       </Breadcrumb.Item>
       
     </Breadcrumb>
+
+    <Learning_outcomes_update setRemembering={props.setRemembering} setUnderstanding={props.setUnderstanding}  setApplying={props.setApplying} setAnalyzing={props.setAnalyzing} setEvaluating={props.setEvaluating} setCreating={props.setCreating} addLesson={props.addLesson} handleLessonDataChange={props.handleLessonDataChange} lessonsData={props.lessonsData} removeLesson={props.removeLesson} formData={props.formData} setFormData={props.setFormData} allocations={props.allocations} Remembering={props.Remembering} Understanding={props.Understanding} Applying={props.Applying} Analyzing={props.Analyzing} Evaluating={props.Evaluating} Creating={props.Creating} />
 <div className="flex gap-3"> 
+  
         <div className=" max-w-md">
       <div>
         <div className="mb-2 block">
@@ -129,6 +133,9 @@ function TaxonomyAllocation(props) {
         {props.getTotalTaxonomy}%</div></span> 
       
       </div>
+      <Button color={'primary'} className="mx-auto" onClick={props.submitAllocation}  isProcessing={props.loadingAllocate ? true : false}>
+      {props.loadingAllocate ? 'Allocating' : 'Allocate'}
+        </Button>
       </Card>
 
       </div>

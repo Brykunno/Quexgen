@@ -6,7 +6,7 @@ import LoadingGenerate from './LoadingGenerate';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 
-function Learning_outcomes({
+function Learning_outcomes_update({
   setRemembering,
   Remembering,
   setUnderstanding,
@@ -25,7 +25,12 @@ function Learning_outcomes({
   setFormData,
   submit,
   allocations,
-  setAllocations
+  setAllocations,
+  Understanding,
+  Applying,
+  Analyzing,
+  Evaluating,
+  Creating
   
 }) {
   // State to manage input data
@@ -77,79 +82,79 @@ useEffect(()=>{
 
   useEffect(()=>{
     
-    const remember = localStorage.getItem('Remembering')||0;
-    const understand = localStorage.getItem('Understanding')||0;
-    const apply = localStorage.getItem('Applying')||0;
-    const analyze = localStorage.getItem('Analyzing')||0;
-    const evaluate = localStorage.getItem('Evaluating')||0;
-    const create = localStorage.getItem('Creating')||0;
+    const remember = Remembering||0;
+    const understand = Understanding||0;
+    const apply = Applying||0;
+    const analyze = Analyzing||0;
+    const evaluate = Evaluating||0;
+    const create = Creating||0;
     
    
 
     if(percent.Remembering || percent.Remembering==0){
       setRemembering(percent.Remembering);
-      localStorage.setItem('Remembering',percent.Remembering);
+    
     }else{
       setRemembering(remember);
-      localStorage.setItem('Remembering',remember);
+     
     }
    
 
     if(percent.Understanding || percent.Understanding==0){
       setUnderstanding(percent.Understanding);
-      localStorage.setItem('Understanding',percent.Understanding);
+      
     }else{
       setUnderstanding(understand);
-      localStorage.setItem('Understanding',understand);
+     
     }
 
     
 
     if(percent.Applying || percent.Applying==0){
-      localStorage.setItem('Applying',percent.Applying);
+     
       setApplying(percent.Applying);
     }else{
       setApplying(apply);
-      localStorage.setItem('Applying',apply);
+     
     }
 
   
 
     if(percent.Analyzing || percent.Analyzing==0){
       setAnalyzing(percent.Analyzing);
-      localStorage.setItem('Analyzing',percent.Analyzing);
+     
     }
     else{
       setAnalyzing(analyze);
-      localStorage.setItem('Analyzing',analyze);
+   
     }
   
 
     if(percent.Evaluating || percent.Evaluating==0){
       setEvaluating(percent.Evaluating);
-      localStorage.setItem('Evaluating',percent.Evaluating);
+    
     }else{
       setEvaluating(evaluate);
-      localStorage.setItem('Evaluating',evaluate);
+     
     }
     
 
     if(percent.Creating || percent.Creating==0){
       setCreating(percent.Creating);
-      localStorage.setItem('Creating',percent.Creating);
+
     }
     else{
       setCreating(create);
-      localStorage.setItem('Creating',create);
+
     }
   },[percent]
 )
 
 useEffect(() => {
   const updateExaminationType = () => {
-    const creating = Number(localStorage.getItem('Creating'));
-    const evaluating = Number(localStorage.getItem('Evaluating'));
-    const applying = Number(localStorage.getItem('Applying'));
+    const creating = Number(Creating);
+    const evaluating = Number(Evaluating);
+    const applying = Number(Applying);
     
     // Determine the new examination type
     let updatedExaminationType = [...formData.ExaminationType];
@@ -172,7 +177,7 @@ useEffect(() => {
       };
 
       // Update localStorage with the new formData
-      localStorage.setItem('formData', JSON.stringify(updatedFormData));
+ 
 
       return updatedFormData; // Return updated formData to set the state
     });
@@ -295,4 +300,4 @@ const handlePageChange = (pageNumber) => {
   );
 }
 
-export default Learning_outcomes;
+export default Learning_outcomes_update;

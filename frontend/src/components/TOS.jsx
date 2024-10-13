@@ -122,6 +122,7 @@ tos_teacher: 0,
   
   const [loading, setLoading] = useState(false);
   const [Toast, setToast] = useState(false);
+  const [loadingAllocate,setLoadingAllocate] = useState(false)
 
   const [files, setFiles] = useState([]); 
   const [context,setContext] = useState([])
@@ -137,7 +138,7 @@ tos_teacher: 0,
     if (num % 1 >= 0.3 && num % 1 <= 0.7) {
       return parseFloat(num.toFixed(2)); 
     }
-    return Math.round(parseFloat(num.toFixed(2))); 
+    return parseFloat(num.toFixed(2)); 
    
   }
   
@@ -199,7 +200,7 @@ tos_teacher: 0,
   const lessonsData = JSON.parse(lessonsDataStorage);
   
   // Now you can use the `storedLessons` array as needed
-  console.log(lessonsData);
+
 
   
 const columns = [
@@ -400,7 +401,7 @@ const columns = [
     if (result % 1 >= 0.3 && result % 1 <= 0.7) {
       return parseFloat(result.toFixed(2)); 
     }
-    return parseFloat(result.toFixed(2)); 
+    return Math.round(parseFloat(result.toFixed(2))); 
    
   
   }
@@ -525,8 +526,7 @@ const handleLessonDataChange = (index, field, value) => {
   // Update the specific field in the corresponding lesson object
   newData[index][field] = value;
 
-  // Log the updated lessonsData for debugging
-  console.log('Lessons Data:', newData);
+
 
   if(field === 'study_guide'){
     newData[index][field] = value.name;
@@ -557,9 +557,739 @@ const handleLessonDataChange = (index, field, value) => {
         newData[i]['creating']
       );
 
+    
+    }
+    for (let i = 0; i < newData.length; i++) {
+
+      let overall = 0
+      let percent = 0
+    
+      for (let i = 0; i < newData.length; i++) {
+          overall += newData[i]['items']
+      }
+
+      for (let i = 0; i < newData.length; i++) {
+        percent += newData[i]['allocation']
+    }
+
+    if(percent<100){
+      newData[i]['allocation'] = Math.ceil(newData[i]['allocation']);
+    }
+    else if(percent>100){
+      newData[i]['allocation'] = Math.floor(newData[i]['allocation']);
+    }
+    else if(percent==100){
+      newData[i]['allocation'] = Math.round(newData[i]['allocation']);
+    }
+
+
+
+
+    
+      console.log('overall: ',overall)
+    
+      if(overall<totalItems){
+        newData[i]['items'] = Math.ceil(newData[i]['items']);
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['remembering'])){
+          newData[i]['remembering'] = Math.round(newData[i]['remembering']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['remembering'] = Math.floor(newData[i]['remembering']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['remembering'] = Math.ceil(newData[i]['remembering']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['understanding'])){
+          newData[i]['understanding'] = Math.round(newData[i]['understanding']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['understanding'] = Math.floor(newData[i]['understanding']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['understanding'] = Math.ceil(newData[i]['understanding']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['applying'])){
+          newData[i]['applying'] = Math.round(newData[i]['applying']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['applying'] = Math.floor(newData[i]['applying']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['applying'] = Math.ceil(newData[i]['applying']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['analyzing'])){
+          newData[i]['analyzing'] = Math.round(newData[i]['analyzing']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['analyzing'] = Math.floor(newData[i]['analyzing']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['analyzing'] = Math.ceil(newData[i]['analyzing']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['evaluating'])){
+          newData[i]['evaluating'] = Math.round(newData[i]['evaluating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['evaluating'] = Math.floor(newData[i]['evaluating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['evaluating'] = Math.ceil(newData[i]['evaluating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['creating'])){
+          newData[i]['creating'] = Math.round(newData[i]['creating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['creating'] = Math.floor(newData[i]['creating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['creating'] = Math.ceil(newData[i]['creating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+      }
+      else if(overall>totalItems){
+        newData[i]['items'] = Math.floor(newData[i]['items']);
+    
+    
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['remembering'])){
+          newData[i]['remembering'] = Math.round(newData[i]['remembering']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['remembering'] = Math.floor(newData[i]['remembering']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['remembering'] = Math.ceil(newData[i]['remembering']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['understanding'])){
+          newData[i]['understanding'] = Math.round(newData[i]['understanding']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['understanding'] = Math.floor(newData[i]['understanding']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['understanding'] = Math.ceil(newData[i]['understanding']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['applying'])){
+          newData[i]['applying'] = Math.round(newData[i]['applying']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['applying'] = Math.floor(newData[i]['applying']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['applying'] = Math.ceil(newData[i]['applying']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['analyzing'])){
+          newData[i]['analyzing'] = Math.round(newData[i]['analyzing']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['analyzing'] = Math.floor(newData[i]['analyzing']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['analyzing'] = Math.ceil(newData[i]['analyzing']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['evaluating'])){
+          newData[i]['evaluating'] = Math.round(newData[i]['evaluating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['evaluating'] = Math.floor(newData[i]['evaluating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['evaluating'] = Math.ceil(newData[i]['evaluating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['creating'])){
+          newData[i]['creating'] = Math.round(newData[i]['creating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['creating'] = Math.floor(newData[i]['creating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['creating'] = Math.ceil(newData[i]['creating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+      
+      }
+      else if(overall==totalItems){
+        newData[i]['items'] = Math.round(newData[i]['items']);
+        
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['remembering'])){
+          newData[i]['remembering'] = Math.round(newData[i]['remembering']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['remembering'] = Math.floor(newData[i]['remembering']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['remembering'] = Math.ceil(newData[i]['remembering']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['understanding'])){
+          newData[i]['understanding'] = Math.round(newData[i]['understanding']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['understanding'] = Math.floor(newData[i]['understanding']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['understanding'] = Math.ceil(newData[i]['understanding']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['applying'])){
+          newData[i]['applying'] = Math.round(newData[i]['applying']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['applying'] = Math.floor(newData[i]['applying']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['applying'] = Math.ceil(newData[i]['applying']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['analyzing'])){
+          newData[i]['analyzing'] = Math.round(newData[i]['analyzing']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['analyzing'] = Math.floor(newData[i]['analyzing']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['analyzing'] = Math.ceil(newData[i]['analyzing']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['evaluating'])){
+          newData[i]['evaluating'] = Math.round(newData[i]['evaluating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['evaluating'] = Math.floor(newData[i]['evaluating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['evaluating'] = Math.ceil(newData[i]['evaluating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['creating'])){
+          newData[i]['creating'] = Math.round(newData[i]['creating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+        else if(newData[i]['items'] < newData[i]['total']){
+          newData[i]['creating'] = Math.floor(newData[i]['creating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+    
+        else if(newData[i]['items'] > newData[i]['total']){
+          newData[i]['creating'] = Math.ceil(newData[i]['creating']);
+            newData[i]['total'] = getTotal(
+          newData[i]['remembering'],
+          newData[i]['understanding'],
+          newData[i]['applying'],
+          newData[i]['analyzing'],
+          newData[i]['evaluating'],
+          newData[i]['creating']
+        );
+    
+        }
+      }
+      
+    
+    
       newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
       newData[i]['totalItems'] = totalItems;
     }
+    
   }
 
   // Update the state with the new data
@@ -697,9 +1427,17 @@ const configTotalTaxonomy = lessonsData.reduce((acc, data) => {
     createData(
     <div className="max-w-36  max-h-10  overflow-hidden" style={{maxHeight:'100'}} key={index}><b> {index+1}</b></div>,
     <div className="max-w-36  overflow-hidden" style={{maxHeight:'100'}} key={index}> {data.learning_outcomes}</div>,
-    <div className={`${data.teachingHours==0?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.teachingHours}</div>,
+    <div className={`${data.teachingHours==0?'bg-red-500 rounded-lg text-white':''} text-center`} key={index} >  <TextInput
+    min={0}
+      id={`teaching_hours-${index}`}
+      type="number"
+      style={{maxWidth:'200px'}}
+      value={lessonsData[index]['teachingHours']}
+      onChange={(e) => handleLessonDataChange(index, 'teachingHours', e.target.value)}
+      required
+    /></div>,
      
-    <div className={`${!Number.isInteger(data.allocation)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.allocation}</div>,
+    <div className={`${!Number.isInteger(data.allocation)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.allocation}%</div>,
      <div className={`${!Number.isInteger(data.items)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.items}</div>,
      <div className={`${!Number.isInteger(data.remembering)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.remembering}</div>,
      <div className={`${!Number.isInteger(data.understanding)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.understanding}</div>,
@@ -742,7 +1480,7 @@ const configTotalTaxonomy = lessonsData.reduce((acc, data) => {
       // Save the updated array back to local storage
       localStorage.setItem('lessonsData', JSON.stringify(myArray));
     } else {
-      console.log('Invalid index or array is empty.');
+      
     }
   };
   
@@ -750,8 +1488,14 @@ const configTotalTaxonomy = lessonsData.reduce((acc, data) => {
 
 
 const handleFloor = (index, field, value) => {
+
+  
   // Clone the lessonsData array to avoid direct mutation
+
+
   const newData = [...lessonsData];
+
+  
 
   // Update the specific field in the corresponding lesson object
   newData[index][field] = value;
@@ -763,6 +1507,9 @@ const handleFloor = (index, field, value) => {
       if(i == index){
         newData[i]['allocation'] = Math.floor(getAllocation(Number(newData[i]['teachingHours']), getTotalHours()));
         newData[i]['items'] = getNumItems(totalItems, newData[i]['allocation']);
+      
+
+        
         newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
         newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
         newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
@@ -779,8 +1526,7 @@ const handleFloor = (index, field, value) => {
           newData[i]['creating']
         );
   
-        newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
-        newData[i]['totalItems'] = totalItems;
+      
       }
       else{
 
@@ -788,7 +1534,9 @@ const handleFloor = (index, field, value) => {
           newData[i]['allocation'] = getAllocation(Number(newData[i]['teachingHours']), getTotalHours())
         }
         if(newData[i]['items']%1 != 0){
+       
         newData[i]['items'] = getNumItems(totalItems, newData[i]['allocation']);
+      
       }
       if (newData[i]['remembering'] % 1 !== 0) {
         newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
@@ -822,11 +1570,726 @@ const handleFloor = (index, field, value) => {
         newData[i]['creating']
       );
 
-      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
-      newData[i]['totalItems'] = totalItems;
     }
   }
+
+  
 }
+
+
+for (let i = 0; i < newData.length; i++) {
+
+  let overall = 0
+
+  for (let i = 0; i < newData.length; i++) {
+      overall += newData[i]['items']
+  }
+
+  console.log('overall: ',overall)
+
+  if(overall<totalItems){
+    newData[i]['items'] = Math.ceil(newData[i]['items']);
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['remembering'])){
+      newData[i]['remembering'] = Math.round(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['remembering'] = Math.floor(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['remembering'] = Math.ceil(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['understanding'])){
+      newData[i]['understanding'] = Math.round(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['understanding'] = Math.floor(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['understanding'] = Math.ceil(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['applying'])){
+      newData[i]['applying'] = Math.round(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['applying'] = Math.floor(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['applying'] = Math.ceil(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['analyzing'])){
+      newData[i]['analyzing'] = Math.round(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['analyzing'] = Math.floor(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['analyzing'] = Math.ceil(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['evaluating'])){
+      newData[i]['evaluating'] = Math.round(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['evaluating'] = Math.floor(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['evaluating'] = Math.ceil(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['creating'])){
+      newData[i]['creating'] = Math.round(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['creating'] = Math.floor(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['creating'] = Math.ceil(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+  }
+  else if(overall>totalItems){
+    newData[i]['items'] = Math.floor(newData[i]['items']);
+
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['remembering'])){
+      newData[i]['remembering'] = Math.round(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['remembering'] = Math.floor(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['remembering'] = Math.ceil(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['understanding'])){
+      newData[i]['understanding'] = Math.round(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['understanding'] = Math.floor(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['understanding'] = Math.ceil(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['applying'])){
+      newData[i]['applying'] = Math.round(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['applying'] = Math.floor(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['applying'] = Math.ceil(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['analyzing'])){
+      newData[i]['analyzing'] = Math.round(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['analyzing'] = Math.floor(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['analyzing'] = Math.ceil(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['evaluating'])){
+      newData[i]['evaluating'] = Math.round(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['evaluating'] = Math.floor(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['evaluating'] = Math.ceil(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['creating'])){
+      newData[i]['creating'] = Math.round(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['creating'] = Math.floor(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['creating'] = Math.ceil(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+  
+  }
+  else if(overall==totalItems){
+    newData[i]['items'] = Math.round(newData[i]['items']);
+    
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['remembering'])){
+      newData[i]['remembering'] = Math.round(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['remembering'] = Math.floor(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['remembering'] = Math.ceil(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['understanding'])){
+      newData[i]['understanding'] = Math.round(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['understanding'] = Math.floor(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['understanding'] = Math.ceil(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['applying'])){
+      newData[i]['applying'] = Math.round(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['applying'] = Math.floor(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['applying'] = Math.ceil(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['analyzing'])){
+      newData[i]['analyzing'] = Math.round(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['analyzing'] = Math.floor(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['analyzing'] = Math.ceil(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['evaluating'])){
+      newData[i]['evaluating'] = Math.round(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['evaluating'] = Math.floor(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['evaluating'] = Math.ceil(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['creating'])){
+      newData[i]['creating'] = Math.round(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['creating'] = Math.floor(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['creating'] = Math.ceil(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+  }
+  
+
+
+  newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+  newData[i]['totalItems'] = totalItems;
+}
+
+
 
   if (field === 'items' ) {
     for (let i = 0; i < newData.length; i++) {
@@ -834,12 +2297,14 @@ const handleFloor = (index, field, value) => {
 
       if(i == index){
         newData[i]['items'] = Math.floor(getNumItems(totalItems, newData[i]['allocation']));
+        
         newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
         newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
         newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
         newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
         newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
         newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+
 
         newData[i]['total'] = getTotal(
           newData[i]['remembering'],
@@ -1145,8 +2610,11 @@ const handleCeil = (index, field, value) => {
       // Recalculate fields based on the updated teachingHours
       
       if(i == index){
+        
         newData[i]['allocation'] = Math.ceil(getAllocation(Number(newData[i]['teachingHours']), getTotalHours()));
         newData[i]['items'] = getNumItems(totalItems, newData[i]['allocation']);
+        
+      
         newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
         newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
         newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
@@ -1162,9 +2630,10 @@ const handleCeil = (index, field, value) => {
           newData[i]['evaluating'],
           newData[i]['creating']
         );
+
+
   
-        newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
-        newData[i]['totalItems'] = totalItems;
+       
       }
       else{
 
@@ -1173,6 +2642,8 @@ const handleCeil = (index, field, value) => {
         }
         if(newData[i]['items']%1 != 0){
         newData[i]['items'] = getNumItems(totalItems, newData[i]['allocation']);
+        
+      
       }
       if (newData[i]['remembering'] % 1 !== 0) {
         newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
@@ -1206,10 +2677,724 @@ const handleCeil = (index, field, value) => {
         newData[i]['creating']
       );
 
-      newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
-      newData[i]['totalItems'] = totalItems;
+
     }
   }
+
+
+
+}
+
+for (let i = 0; i < newData.length; i++) {
+
+  let overall = 0
+
+  for (let i = 0; i < newData.length; i++) {
+      overall += newData[i]['items']
+  }
+
+  console.log('overall: ',overall)
+
+  if(overall<totalItems){
+    newData[i]['items'] = Math.ceil(newData[i]['items']);
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['remembering'])){
+      newData[i]['remembering'] = Math.round(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['remembering'] = Math.floor(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['remembering'] = Math.ceil(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['understanding'])){
+      newData[i]['understanding'] = Math.round(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['understanding'] = Math.floor(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['understanding'] = Math.ceil(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['applying'])){
+      newData[i]['applying'] = Math.round(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['applying'] = Math.floor(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['applying'] = Math.ceil(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['analyzing'])){
+      newData[i]['analyzing'] = Math.round(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['analyzing'] = Math.floor(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['analyzing'] = Math.ceil(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['evaluating'])){
+      newData[i]['evaluating'] = Math.round(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['evaluating'] = Math.floor(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['evaluating'] = Math.ceil(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['creating'])){
+      newData[i]['creating'] = Math.round(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['creating'] = Math.floor(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['creating'] = Math.ceil(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+  }
+  else if(overall>totalItems){
+    newData[i]['items'] = Math.floor(newData[i]['items']);
+
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['remembering'])){
+      newData[i]['remembering'] = Math.round(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['remembering'] = Math.floor(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['remembering'] = Math.ceil(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['understanding'])){
+      newData[i]['understanding'] = Math.round(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['understanding'] = Math.floor(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['understanding'] = Math.ceil(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['applying'])){
+      newData[i]['applying'] = Math.round(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['applying'] = Math.floor(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['applying'] = Math.ceil(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['analyzing'])){
+      newData[i]['analyzing'] = Math.round(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['analyzing'] = Math.floor(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['analyzing'] = Math.ceil(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['evaluating'])){
+      newData[i]['evaluating'] = Math.round(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['evaluating'] = Math.floor(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['evaluating'] = Math.ceil(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['creating'])){
+      newData[i]['creating'] = Math.round(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['creating'] = Math.floor(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['creating'] = Math.ceil(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+  
+  }
+  else if(overall==totalItems){
+    newData[i]['items'] = Math.round(newData[i]['items']);
+    
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['remembering'])){
+      newData[i]['remembering'] = Math.round(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['remembering'] = Math.floor(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['remembering'] = Math.ceil(newData[i]['remembering']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['understanding'])){
+      newData[i]['understanding'] = Math.round(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['understanding'] = Math.floor(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['understanding'] = Math.ceil(newData[i]['understanding']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['applying'])){
+      newData[i]['applying'] = Math.round(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['applying'] = Math.floor(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['applying'] = Math.ceil(newData[i]['applying']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['analyzing'])){
+      newData[i]['analyzing'] = Math.round(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['analyzing'] = Math.floor(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['analyzing'] = Math.ceil(newData[i]['analyzing']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['evaluating'])){
+      newData[i]['evaluating'] = Math.round(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['evaluating'] = Math.floor(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['evaluating'] = Math.ceil(newData[i]['evaluating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['creating'])){
+      newData[i]['creating'] = Math.round(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+    else if(newData[i]['items'] < newData[i]['total']){
+      newData[i]['creating'] = Math.floor(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+
+    else if(newData[i]['items'] > newData[i]['total']){
+      newData[i]['creating'] = Math.ceil(newData[i]['creating']);
+        newData[i]['total'] = getTotal(
+      newData[i]['remembering'],
+      newData[i]['understanding'],
+      newData[i]['applying'],
+      newData[i]['analyzing'],
+      newData[i]['evaluating'],
+      newData[i]['creating']
+    );
+
+    }
+  }
+  
+
+
+  newData[i]['placement'] = getPlacement(newData[i]['total'], placements);
+  newData[i]['totalItems'] = totalItems;
 }
 
 
@@ -1286,7 +3471,7 @@ const handleCeil = (index, field, value) => {
       // Recalculate fields based on the updated teachingHours
       if(i == index){
         newData[i]['remembering'] = Math.ceil(getRemembering(Remembering, newData[i]['items']));
-        console.log('indexremember: ',index)
+    
      
       }
       else{
@@ -1490,12 +3675,12 @@ const handleCeil = (index, field, value) => {
       // Recalculate fields based on the updated teachingHours
       if(i == index){
         newData[i]['creating'] = Math.ceil(getCreating(Creating, newData[i]['items']));
-        console.log('indexcreate: ',index,' : ', Math.ceil(getCreating(Creating, newData[i]['items'])),' : ', newData[i]['creating'])
+     
      
       }
       else{
         if (newData[i]['creating'] % 1 !== 0) {
-          console.log('olddatacreate: ',newData[i]['creating']);
+         
           newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
         }
       }
@@ -1927,7 +4112,7 @@ useEffect(() => {
 for (let i = 0; i < localStorage.length; i++) {
   const key = localStorage.key(i);
   const value = localStorage.getItem(key);
-  console.log(`${key}: ${value}`);
+
 }
 
 
@@ -1944,7 +4129,7 @@ const handleExamTitleChange = (event) => {
 }
 
 
-console.log('examData: ',localStorage.getItem('examData'))
+
 
 
 
@@ -2067,12 +4252,6 @@ const loadDataFromLocalStorageTestPart = () => {
   }
 };
 
-console.log('examState:',localStorage.getItem('questionData'))
-console.log('Examsss2:',examStates)
-
-
-console.log('TestPart:',localStorage.getItem('testpartData'))
-console.log('Partsss:',TestPart)
 
 
 
@@ -2085,10 +4264,10 @@ const uploadFiles = async (data) => {
 
     // Check if the study_guide is a valid file
     if (lesson) {
-      console.log('studyguideeee: ', lesson);
+      
       formDatapdf.append('study_guide', lesson); // Ensure this is a valid file object
       formDatapdf.append('tos_content', data[index]); 
-      console.log('FormData for upload:', data[index]);
+    
 
       try {
         const response = await api.post('/api/upload/', formDatapdf, {
@@ -2096,7 +4275,7 @@ const uploadFiles = async (data) => {
             'Content-Type': 'multipart/form-data',
           },
         });
-        console.log('Upload successful:', response.data);
+    
       } catch (error) {
         console.error('Upload failed:', error);
       }
@@ -2107,7 +4286,7 @@ const uploadFiles = async (data) => {
 
   // Wait for all uploads to complete
   await Promise.all(uploadPromises);
-  console.log('All uploads completed.');
+
 };
 
 
@@ -2128,7 +4307,7 @@ const handleSubmit = (e) => {
   const formDataJson = JSON.stringify(formData1);
 
 
-  console.log('formSubmit: ',formDataJson)
+
 
   let id_tos = 0
  
@@ -2136,13 +4315,12 @@ const handleSubmit = (e) => {
 
   api.post("/api/tos-info/", { formDataJson })
     .then((firstRes) => {
-      console.log(firstRes);  // Log the entire response to see its structure
+
       if (firstRes.status === 201) {
         const id = firstRes.data[0].id;  // Assuming the ID is in the data of the response
         id_tos = id
         
-        console.log("ID of the first request: " + id);
-        
+       
         const updatedLessonsData = lessonsData.map((lesson) => {
           // Update the lesson object as needed, for example:
           lesson.teacher_tos = id; // or any other modification
@@ -2159,21 +4337,20 @@ const handleSubmit = (e) => {
 
 return api.post("/api/tos-content/", { lessonsDataJson })
   .then((secondRes) => {
-    console.log('secondres: ',secondRes.data)
+
     if (secondRes.status === 201) {
       const ids = secondRes.data.reduce((acc, item) => {
         // Assuming each item in secondRes.data has an `id` property
         acc.push(item.id); // Add each ID to the accumulator (array)
         return acc;
       }, []); // Initialize the accumulator as an empty array
-      
-      console.log('All IDs:', ids);
+    
       
      
       uploadFiles(ids);
 
  
-      console.log("Second request data:", secondRes.data);
+
 
       // Third request example
       const examData =  {
@@ -2182,17 +4359,17 @@ return api.post("/api/tos-content/", { lessonsDataJson })
       };
 
       const examDataJson = JSON.stringify(examData)
-      console.log('examrequest:', examDataJson)
+  
       return api.post("/api/create-exams/", {examDataJson})
       .then((TestPartRes) => { //third
-        console.log(TestPartRes);
+       
         if (TestPartRes.status === 201) {
           
      
          
-          console.log("testpart request data:", TestPartRes.data);
+     
           const exam_id = TestPartRes.data[0].id
-          console.log("exam_id: ",exam_id)
+         
     
           // Third request example
           const itemTestPart = TestPart.reduce((acc,data,index) =>{
@@ -2210,21 +4387,18 @@ return api.post("/api/tos-content/", { lessonsDataJson })
           }, [])
     
           const itemTestPartJson = JSON.stringify(itemTestPart)
-          console.log('examrequest:', itemTestPartJson)
+         
           return api.post("/api/create-testpart/", {itemTestPartJson})
           
       .then((thirdRes) => { //third
-        console.log(thirdRes);
+        
         if (thirdRes.status === 201) {
           
      
-         
-          console.log("third request data:", thirdRes.data);
+     
           const exam_id = thirdRes.data[0].exam_id
          
 
-          console.log('testpartid: ', thirdRes)
-          console.log("exam_id: ",exam_id)
     
           let test_part_id = 0
           // Third request example
@@ -2232,12 +4406,11 @@ return api.post("/api/tos-content/", { lessonsDataJson })
 
 
            
-            console.log("partnum: ",data.test_part_num)
-            console.log("partnum2: ",thirdRes.data[0].test_part_num)
+          
             for(let i = 0; i<thirdRes.data.length;i++){
               if(thirdRes.data[i].test_part_num === data.test_part_num){
                 test_part_id = thirdRes.data[i].id
-                console.log("testpartidd: ",test_part_id,' : ' ,thirdRes.data[i].id)
+         
                 
               }
               
@@ -2260,27 +4433,27 @@ return api.post("/api/tos-content/", { lessonsDataJson })
           }, [])
     
           const itemQuestionJson = JSON.stringify(itemQuestion)
-          console.log('examrequest:', itemQuestionJson)
+     
           return api.post("/api/create-questions/", {itemQuestionJson})
           .then((fourthRes) => {
-            console.log(fourthRes);
+       
             if (fourthRes.status === 201) {
 
 
         
           
-              console.log("fourth request data:", fourthRes.data);
+      
               const question_data = fourthRes.data
-              console.log("question_id: ",question_data)
+            
 
               const ques_len = question_data.length;
-              console.log('lengthques', ques_len);
+           
 
                 let ques_ids = question_data.reduce((accu, data) => {
                   accu.push(data.id);
                   return accu;
                 }, []);
-              console.log('quesids',ques_ids)
+            
 
               let itemAnswers =  examStates.reduce((acc,data,index) =>{
 
@@ -2305,7 +4478,7 @@ return api.post("/api/tos-content/", { lessonsDataJson })
                
           
 
-              console.log('itemAnswers: ',itemAnswers)
+          
         
               // fourth request example
          
@@ -2533,7 +4706,7 @@ const handleSubmitExam = () =>{
   api
     .patch(`/api/tos-info/${id}/update/`, updateStatus)
     .then((res) => {
-      console.log('Status updated', res.data);
+
       getUser(); // Refresh the user list
       setOpenModal(false); // Close the modal
     })
@@ -2541,7 +4714,49 @@ const handleSubmitExam = () =>{
       console.error('Error status:', err);
     });
 }
+const [allocations, setAllocations] = useState([]);
 
+  // Handle the form submission
+  const handleSubmitAllocation = async () => {
+    try {
+      const promises = lessonsData.map(async (l) => {
+        const response = await api.post('/api/taxonomy-allocation/', {
+          objectives: l.learning_outcomes,
+        });
+        return response.data.allocation; // Return the allocation data
+      });
+
+      const allocationsArray = await Promise.all(promises);
+
+
+      // Flatten the array if you have nested arrays in allocations
+      setAllocations((previous) => [...previous, ...allocationsArray.flat()]);
+
+     
+    
+     
+    
+    } catch (error) {
+      console.error('Error processing the file and data:', error);
+    }
+
+
+    setLoadingAllocate(false)
+  };
+
+  const submitAllocation = () =>{
+
+    setLoadingAllocate(true)
+    setAllocations([]);
+    handleSubmitAllocation();
+
+   
+  }
+
+
+
+
+  
 
   return (
     <div >
@@ -2788,6 +5003,13 @@ const handleSubmitExam = () =>{
         removeLesson={removeLesson}
         formData={formData}
         setFormData={setFormData}
+        submit={submitAllocation}
+        handleSubmit={handleSubmitAllocation}
+        allocations={allocations}
+        setAllocations={setAllocations}
+
+
+
        
       />
 <div className="flex gap-3"> 
@@ -2900,6 +5122,11 @@ const handleSubmitExam = () =>{
         {getTotalTaxonomy}%</div></span> 
       
       </div>
+      <div className="my-3">
+      <Button color={'primary'} className="mx-auto" onClick={submitAllocation}  isProcessing={loadingAllocate ? true : false}>
+      {loadingAllocate ? 'Allocating' : 'Allocate'}
+        </Button>
+      </div>
       </Card>
 
       </div>
@@ -2956,7 +5183,7 @@ const handleSubmitExam = () =>{
             </TableHead>
             <TableBody>
               {rows.map((row,index) => (
-                <TableRow role="checkbox" tabIndex={-1} key={index} onClick={(event) => handleModalRow(event, index)} className="cursor-pointer " >
+                <TableRow role="checkbox" tabIndex={-1} key={index}  className="cursor-pointer " >
                   
                   {columns.map((column) => {
                     const value = row[column.id];
@@ -2995,12 +5222,13 @@ const handleSubmitExam = () =>{
                 }
                 </TableCell>
                 <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
-                {Number.isInteger(configTotalanalyze) ? configTotalanalyze : configTotalanalyze.toFixed(2)
+                {Number.isInteger(configTotalapply) ? configTotalapply : configTotalapply.toFixed(2)
                 }
                 </TableCell>
                 <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
-                {Number.isInteger(configTotalapply) ? configTotalapply : configTotalapply.toFixed(2)
+                {Number.isInteger(configTotalanalyze) ? configTotalanalyze : configTotalanalyze.toFixed(2)
                 }
+                
                 </TableCell>
                 <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
                 {Number.isInteger(configTotalevaluate) ? configTotalevaluate : configTotalevaluate.toFixed(2)
@@ -3045,7 +5273,7 @@ const handleSubmitExam = () =>{
       totalItems:0,})}> <AddCircleOutlineIcon className="mr-2 "/>Add Lesson</Button> */}
 
     
-        <Button  color={'failure'} onClick={()=>handleResetAll()}>Reset</Button>
+        {/* <Button  color={'failure'} onClick={()=>handleResetAll()}>Reset</Button> */}
       <Button color="primary" onClick={() => setPdfModal(true)}><VisibilityIcon className="mr-2"/>Preview</Button>
 
  

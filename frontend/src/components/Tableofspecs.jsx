@@ -27,7 +27,7 @@ function Tableofspecs(props) {
             </TableHead>
             <TableBody>
               {props.rows.map((row,index) => (
-                <TableRow hover role="checkbox" tabIndex={-1} key={index} onClick={(event) => props.handleModalRow(event, index)} className="cursor-pointer ">
+                <TableRow hover role="checkbox" tabIndex={-1} key={index}  className="cursor-pointer ">
                   {props.columns.map((column) => {
                     const value = row[column.id];
                     return (
@@ -40,6 +40,55 @@ function Tableofspecs(props) {
                   })}
                 </TableRow>
               ))}
+                        <TableRow >
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                  Total
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                  {props.configTotalHours}
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                {Number.isInteger(props.configTotalAllocation) ? props.configTotalAllocation : props.configTotalAllocation.toFixed(2)
+                }
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                {Number.isInteger(props.configTotal) ? props.configTotal : props.configTotal.toFixed(2)
+                }
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                {Number.isInteger(props.configTotalRemember) ? props.configTotalRemember : props.configTotalRemember.toFixed(2)
+                }
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                {Number.isInteger(props.configTotalunderstand) ? props.configTotalunderstand : props.configTotalunderstand.toFixed(2)
+                }
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                {Number.isInteger(props.configTotalapply) ? props.configTotalapply : props.configTotalapply.toFixed(2)
+                }
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                {Number.isInteger(props.configTotalanalyze) ? props.configTotalanalyze : props.configTotalanalyze.toFixed(2)
+                }
+                
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                {Number.isInteger(props.configTotalevaluate) ? props.configTotalevaluate : props.configTotalevaluate.toFixed(2)
+                }
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                {Number.isInteger(props.configTotalcreate) ? props.configTotalcreate : props.configTotalcreate.toFixed(2)
+                }
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                  {Number.isInteger(props.configTotalTaxonomy) ? props.configTotalTaxonomy : props.configTotalTaxonomy.toFixed(2)
+                  }
+                  
+                </TableCell>
+                <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
+                 
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
