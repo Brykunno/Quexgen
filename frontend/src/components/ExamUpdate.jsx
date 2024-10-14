@@ -15,6 +15,7 @@ import ExampdfUpdate from "./ExampdfUpdate";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SendIcon from '@mui/icons-material/Send';
 import AnswerKeyUpdate from './AnswerKeyUpdate';
+import AutoModeIcon from '@mui/icons-material/AutoMode';
 
 
 
@@ -346,8 +347,9 @@ let num1=1
         </div>
       </div>
       <div className='flex gap-5 justify-center mt-3'>
-    
-    <Button color={'primary'} onClick={() => setModalGenMcq(prev => ({ ...prev, [index]: true }))} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
+      <Tooltip content="Generate another question" style="dark">
+    <Button color={'primary'} onClick={() => setModalGenMcq(prev => ({ ...prev, [index]: true }))} size={'sm'} ><AutoModeIcon/></Button>
+    </Tooltip>
 
 <Modal key={index} size={'4xl'} show={modalGenMcq[index]} onClose={() => setModalGenMcq(prev => ({ ...prev, [index]: false }))}>
         <Modal.Header>Generate {categories[catindex] ? categories[catindex] : ''} question</Modal.Header>
@@ -518,8 +520,9 @@ let num2 =1
       </div>
       <div className='flex gap-5 justify-center mt-3'>
       
-      
-      <Button color={'primary'} onClick={() => setModalGenIden(prev => ({ ...prev, [index]: true }))} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
+      <Tooltip content="Generate another question" style="dark">
+      <Button color={'primary'} onClick={() => setModalGenIden(prev => ({ ...prev, [index]: true }))} size={'sm'} ><AutoModeIcon/></Button>
+      </Tooltip>
 
 <Modal key={index} size={'4xl'} show={modalGenIden[index]} onClose={() => setModalGenIden(prev => ({ ...prev, [index]: false }))}>
        <Modal.Header>Generate {categories[catindex] ? categories[catindex] : ''} question</Modal.Header>
@@ -645,8 +648,9 @@ let num3 = 1
         </div>
       </div>
       <div className='flex gap-5 justify-center mt-3'>
-      
-      <Button color={'primary'} onClick={() => setModalGenTorF(prev => ({ ...prev, [index]: true }))} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button>
+      <Tooltip content="Generate another question" style="dark">
+      <Button color={'primary'} onClick={() => setModalGenTorF(prev => ({ ...prev, [index]: true }))} size={'sm'} ><AutoModeIcon/></Button>
+      </Tooltip>
 
             <Modal key={index} size={'4xl'} show={modalGenTorF[index]} onClose={() => setModalGenTorF(prev => ({ ...prev, [index]: false }))}>
        <Modal.Header>Generate {categories[catindex] ? categories[catindex] : ''} question</Modal.Header>

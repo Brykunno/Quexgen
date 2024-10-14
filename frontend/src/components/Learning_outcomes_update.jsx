@@ -150,41 +150,6 @@ useEffect(()=>{
   },[percent]
 )
 
-useEffect(() => {
-  const updateExaminationType = () => {
-    const creating = Number(Creating);
-    const evaluating = Number(Evaluating);
-    const applying = Number(Applying);
-    
-    // Determine the new examination type
-    let updatedExaminationType = [...formData.ExaminationType];
-
-    // Check if 'Subjective' should be added
-    if (creating > 0 || evaluating > 0 || applying > 0) {
-      if (!updatedExaminationType.includes('Subjective')) {
-        updatedExaminationType.push('Subjective'); // Add 'Subjective'
-      }
-    } else {
-      // Remove 'Subjective' if it exists
-      updatedExaminationType = updatedExaminationType.filter(type => type !== 'Subjective');
-    }
-
-    // Update formData and localStorage
-    setFormData((prev) => {
-      const updatedFormData = {
-        ...prev,
-        ExaminationType: updatedExaminationType,
-      };
-
-      // Update localStorage with the new formData
- 
-
-      return updatedFormData; // Return updated formData to set the state
-    });
-  };
-
-  updateExaminationType();
-},[setFormData]); // Add dependencies to run effect when formData changes
 
 const [currentPage, setCurrentPage] = useState(1);
 const lessonsPerPage = 3; // Number of lessons per page

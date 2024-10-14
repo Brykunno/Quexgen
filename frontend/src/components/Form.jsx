@@ -23,7 +23,7 @@ function Form({ route, method }) {
 
   useEffect(()=>{
     if(localStorage.getItem('user_logged_in')){
-      window.location.href = "/create_exam"
+      window.location.href = "/dashboard_instructor"
     }
 
     if(localStorage.getItem('admin_logged_in')){
@@ -82,7 +82,7 @@ function Form({ route, method }) {
             navigate("/dashboard");
           } else {
             localStorage.setItem('user_logged_in',true)
-            navigate("/create_exam");
+            navigate("/dashboard_instructor");
           }
         } catch (userError) {
           console.error('Error fetching user data:', userError);

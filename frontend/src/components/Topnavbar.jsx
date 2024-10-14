@@ -398,12 +398,21 @@ const eventStyleGetter = (event) => {
                   <div>
                   
                   {
-                      data.tos_data.user.profile_image!=='http://127.0.0.1:8000/apinull'? <img src={img_dir+data.tos_data.user.profile_image_url}  style={{height:'40px',width:'40px', borderRadius:'50%'}}/>:
+ data.tos_data.user.profile_image != null  ? (
+    <img 
+      src={img_dir + data.tos_data.user.profile_image_url} 
+      alt="Profile" 
+      style={{ height: '40px', width: '40px', borderRadius: '50%' }} 
+    />
+  ) : (
+    <Avatar {...stringAvatar(data.tos_data.user.first_name + ' ' + data.tos_data.user.last_name)} size="large" />
+  )
+}
 
-                      <Avatar {...stringAvatar(data.tos_data.user.first_name+' '+data.tos_data.user.last_name)} size='large' />
-                  }
+
                   </div>
                   <div>
+              
               <span className="font-bold">{data.tos_data.user.first_name} {data.tos_data.user.last_name} </span><br/>  {data.notification_text} <span className="font-bold"> {data.tos_data.Title} {data.tos_data.Semester} </span><br/>
               <p className="text-sm">{ formatDateTime(data.notification_date)}</p>
               </div>
@@ -440,7 +449,7 @@ const eventStyleGetter = (event) => {
                   <div>
                   
                   {
-                      data.tos_data.user.profile_image!=='http://127.0.0.1:8000/apinull'? <img src={img_dir+data.tos_data.user.profile_image_url} style={{height:'40px',width:'40px', borderRadius:'50%'}}/>:
+                      data.tos_data.user.profile_image!=null? <img src={img_dir+data.tos_data.user.profile_image_url} style={{height:'40px',width:'40px', borderRadius:'50%'}}/>:
 
                       <Avatar {...stringAvatar(data.tos_data.user.first_name+' '+data.tos_data.user.last_name)} size='large' />
                   }

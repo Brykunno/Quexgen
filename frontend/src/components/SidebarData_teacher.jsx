@@ -7,11 +7,11 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import FolderCopyIcon from '@mui/icons-material/FolderCopy';
 
 export const SidebarData_teacher = [
-    // {
-    //     title: "Dashboard",
-    //     icon: <DashboardIcon />,
-    //     link: "/dashboard",
-    // },
+    {
+        title: "Dashboard",
+        icon: <DashboardIcon />,
+        link: "/dashboard_instructor",
+    },
 
     {
         title: "Create Exam",

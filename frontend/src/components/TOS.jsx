@@ -4020,23 +4020,62 @@ const handleTitle = (event) => {
 
 const options = ['Multiple Choice','Identification','True or False','Subjective'];
 
+const [user, setUser] = useState([]);
+const [formData, setFormData] = useState({
+  Title: '',
+  Semester: '1st Semester',
+  AcademicYear: '',
+  Term: 'Midterm',
+  Campus: 'San Carlos Campus',
+  CourseCode: '',
+  Department: 'IT Department',
+  ExaminationType: [],
+  CourseType: '',
+  ExaminationDate: '',
+  Faculty: '',
+  Chairperson: '',
+  Dean: '',
+  Director: ''
+});
 
-  const [formData, setFormData] = useState({
-    Title: '',
-    Semester: '1st Semester',
-    AcademicYear: '',
-    Term:'Midterm',
-    Campus: 'San Carlos Campus',
-    CourseCode: '',
-    Department: 'Business and Office Administration',
-    ExaminationType: [],
-    CourseType: '',
-    ExaminationDate: '',
-    Faculty: '',
-    Chairperson: '',
-    Dean: '',
-    Director: ''
-  });
+// Fetch user data
+const getUser = () => {
+  api
+    .get(`/api/user/account/`)
+    .then((res) => res.data)
+    .then((data) => {
+      setUser(data); // Set user data in state
+      console.log('name: ', data);
+    })
+    .catch((err) => alert(err));
+};
+
+// Fetch user data on component mount
+useEffect(() => {
+  getUser();
+}, []);
+
+// Update formData with user's full name when user data changes
+useEffect(() => {
+  if (user.length > 0) {
+    const fullName = getFullNames(user); // Get full name of the user
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      Faculty: fullName // Update formData with the full name
+    }));
+  }
+}, [user]); // Only run this effect when 'user' state changes
+
+// Function to get full name of the user
+function getFullNames(users) {
+  let fname = users[0]?.first_name || ''; // Use optional chaining to avoid errors
+  let lname = users[0]?.last_name || '';
+  
+  return `${fname} ${lname}`.trim();
+}
+
+
+
 
 
   const handleChange = (event) => {
@@ -4534,7 +4573,7 @@ return api.post("/api/tos-content/", { lessonsDataJson })
                   AcademicYear: '',
                   Campus: 'San Carlos Campus',
                   CourseCode: '',
-                  Department: 'Business and Office Administration',
+                  Department: 'IT Department',
                   ExaminationType: [],
                   CourseType: '',
                   ExaminationDate: '',
@@ -4549,6 +4588,12 @@ return api.post("/api/tos-content/", { lessonsDataJson })
                 loadDataFromLocalStorageQuestion()
 
         
+                
+          const AdminNotifDataJson = JSON.stringify({
+            notification_text: " submitted ",
+            tos: id,
+          }) 
+          api.post(`api/notification/admin/`, {AdminNotifDataJson});
 
            
                 Submit===true?setSubmitToast(true):setToast(true)
@@ -4672,7 +4717,7 @@ let create = false
 
   switch(step){
     case 1:
-      if(formData.Title == '' || formData.AcademicYear == '' || formData.CourseCode == '' || formData.Faculty == ''|| formData.Chairperson == ''|| formData.Dean == ''|| formData.Director == ''){
+      if(formData.Title == '' || formData.AcademicYear == '' || formData.CourseCode == '' || formData.Faculty == ''|| formData.Chairperson == ''|| formData.Dean == ''|| formData.Director == ''|| formData.ExaminationDate == ''){
         setDisableNext(true)
       }
       break
@@ -4752,6 +4797,40 @@ const [allocations, setAllocations] = useState([]);
 
    
   }
+  useEffect(() => {
+    const creating = Number(Creating);
+    const evaluating = Number(Evaluating);
+    const applying = Number(Applying);
+  
+    // Retain past values and update the examination type
+    setFormData((prevFormData) => {
+      let updatedExaminationType = [...prevFormData.ExaminationType];
+  
+      // Check if 'Subjective' should be added
+      if (creating > 0 || evaluating > 0 || applying > 0) {
+        if (!updatedExaminationType.includes('Subjective')) {
+          updatedExaminationType.push('Subjective'); // Add 'Subjective'
+        }
+      } else {
+        // Remove 'Subjective' if it exists
+        updatedExaminationType = updatedExaminationType.filter(type => type !== 'Subjective');
+      }
+  
+      // Create updated formData
+      const updatedFormData = {
+        ...prevFormData,
+        ExaminationType: updatedExaminationType,
+      };
+  
+      // Update localStorage with the new formData
+      localStorage.setItem('formData', JSON.stringify(updatedFormData));
+  
+      return updatedFormData; // Return updated formData to update the state
+    });
+  
+  }, [Creating, Evaluating, Applying]); // Add dependencies to trigger the effect when necessary
+  
+
 
 
 
@@ -4847,10 +4926,9 @@ const [allocations, setAllocations] = useState([]);
              <Label htmlFor="department" value="Department" />
            </div>
            <Select id="department" name="Department" value={formData.Department} onChange={handleChange} required>
+           <option value=" IT Department"> IT Department</option>
              <option value=" Business and Office Administration"> Business and Office Administration</option>
-             <option value="Mathematics">Mathematics</option>
-             <option value="Physics">Physics</option>
-             <option value="Chemistry">Chemistry</option>
+    
            </Select>
          </div>
        </div>
@@ -4888,6 +4966,7 @@ const [allocations, setAllocations] = useState([]);
          <div className="mb-2 block">
            <Label htmlFor="faculty" value="Instructor" />
          </div>
+         
          <TextInput id="faculty" type="text" name="Faculty" value={formData.Faculty} onChange={handleChange} />
        </div>
        </div>
@@ -5318,7 +5397,7 @@ const [allocations, setAllocations] = useState([]);
  
       <Button size={'sm'}  color={'primary'} onClick={handleNext} disabled={disableNext} className="px-4" > <p style={{marginTop:'0.5px'}}>Next</p> <NavigateNextIcon  /></Button>
       
-    
+   
       </div>
       </div>
     </div>
