@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Textarea, Button, TextInput,Card,Pagination } from 'flowbite-react';
+import { Textarea, Button, TextInput,Card,Pagination,FileInput,Label } from 'flowbite-react';
 import api from '../api';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import LoadingGenerate from './LoadingGenerate';
@@ -17,7 +17,6 @@ function Learning_outcomes({
   setTotalTaxonomy,
   getTotalTaxonomy,
   addLesson,
-  lessonsDataInitial,
   handleLessonDataChange,
   lessonsData,
   removeLesson,
@@ -25,7 +24,7 @@ function Learning_outcomes({
   setFormData,
   submit,
   allocations,
-  setAllocations
+  setAllocations,files,setLessonsDatainitial
   
 }) {
   // State to manage input data
@@ -33,6 +32,8 @@ function Learning_outcomes({
  
   const [percent, setPercent] = useState([]);
   const [loading,setLoading] = useState(false)
+  const [fileInfo,setFileInfo] = useState([])
+  const [read,setRead] = useState(false)
 
 
 
@@ -196,13 +197,69 @@ const handlePageChange = (pageNumber) => {
   setCurrentPage(pageNumber);
 };
 
+const handleReadFile = async () => {
+  const updatedFileInfo = []; // Initialize an array to store file information
+  setRead(true)
+
+  for (let i = 0; i < files.length; i++) {
+    if (!files[i]) {
+      alert('Please select a file.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', files[i]); // Append the selected file
+
+    try {
+      // Make a request to Django to process the file and JSON data
+      const response = await api.post('/api/lesson-info/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Process the response to get the lesson info
+      const dataques = response.data.lesson_info;
+      console.log('Processed response:', dataques);
+
+      // Add the lesson info object to the updated fileInfo array
+      updatedFileInfo.push(dataques);
+
+    } catch (error) {
+      console.error('Error processing the file and data:', error);
+    }
+  }
+
+  // Update the state with the accumulated fileInfo as an array of objects
+  setFileInfo(updatedFileInfo);
+
+  // Update lessons data and save it to localStorage
+  updatedFileInfo.forEach((data, index) => {
+    const newData = [...lessonsData];
+
+    // Update the specific fields in the corresponding lesson object
+    newData[index]['topic'] = data[0].lesson_topic;
+    newData[index]['learning_outcomes'] = data[0].learning_outcomes;
+
+    setLessonsDatainitial(newData);
+
+    // Save the updated lessonsData to localStorage
+    localStorage.setItem('lessonsData', JSON.stringify(newData));
+    setRead(false)
+  });
+};
+
+
+
 
 
   return (
     <Card className="mb-5">
+
+
     {/* Render only the current page of lessons */}
     {currentLessons.map((item, index) => (
-      <div key={indexOfFirstLesson + index}>
+      <Card key={indexOfFirstLesson + index}>
        
         <div className="flex gap-5 mb-4">
           <div className='flex-1'>
@@ -227,6 +284,7 @@ const handlePageChange = (pageNumber) => {
             placeholder="Enter the learning outcomes for the lesson"
           />
           </div>
+         
           <div style={{ flex: 0.1 }}>
             
             <Button
@@ -238,7 +296,22 @@ const handlePageChange = (pageNumber) => {
             </Button>
           </div>
         </div>
+        <div className="mb-3">
+    <div>
+      <div className="mb-2 block">
+        <Label htmlFor="file-upload" > Upload file for Lesson {index+1} <span className='text-red-600'>*</span></Label>
       </div>
+      <FileInput id="file-upload"
+       accept="application/pdf"
+      sizing={'sm'}
+       onChange={(e) => handleLessonDataChange(index, 'study_guide', e.target.files[0])}
+      />
+      {/* {lessonsDataInitial[indexRow] && lessonsDataInitial[indexRow]['study_guide'] && (
+    <p>Selected file: {String(lessonsDataInitial[indexRow]['study_guide'])}</p>  // Display the selected file name
+  )} */}
+    </div>
+    </div>
+      </Card>
     ))}
 
 
@@ -258,9 +331,10 @@ const handlePageChange = (pageNumber) => {
       </div>
     
       <div className="flex ">
+        <div  className="mt-3 mx-auto flex gap-5" >
         <Button
           color={'primary'}
-          className="mt-3 mx-auto"
+          className="mt-3"
           onClick={() =>
             addLesson({
               topic: '',
@@ -282,6 +356,8 @@ const handlePageChange = (pageNumber) => {
         >
           <AddCircleOutlineIcon className="mr-2 " /> Add Lesson
         </Button>
+        <Button color={'primary'}  className="mt-3"  onClick={handleReadFile} isProcessing={read}>{read == true?'Reading files':'Read files'}</Button>
+        </div>
        
       </div>
 
@@ -290,6 +366,7 @@ const handlePageChange = (pageNumber) => {
     {loading && <LoadingGenerate />}
 
     {/* Pagination controls */}
+
   
   </Card>
   );

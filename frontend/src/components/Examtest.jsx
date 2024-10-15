@@ -1421,9 +1421,9 @@ setTestPart([])
 
      
 
-<div className={`flex  gap-10 ${examStates.length > 0?'hidden':'show '}`}>
+<div className={` ${examStates.length > 0?'hidden':'show '}`}>
 
-      <Card className={`justify-center w-96 mx-auto `}>
+      <Card className={`justify-center w-96 mx-auto  `}>
   {/* Multiple Choice */}
   <div className={`flex items-center justify-between mb-4 ${!formData.ExaminationType.includes('Multiple Choice')?'hidden':'show'}`} >
     <div className="block">
@@ -1508,12 +1508,12 @@ setTestPart([])
    disabled={max ==0 && files.length == lessonsData.length?false:true}
 
     >
-      Create Exam
+      Generate Exam
     </Button>
   </div>
 </Card>
 <div className='flex-1'>
-  <Card >
+  <Card  className='hidden'>
   {lessonsData.map((data,index)=>{
 
     return(

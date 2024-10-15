@@ -65,6 +65,7 @@ urlpatterns = [
     path('',  include(router.urls)),     
     path('upload/', views.FileUploadView.as_view(), name='file-upload'),
     path('taxonomy-allocation/', ai_views.taxonomy_allocation, name='taxonomy_allocation'),
+    path('lesson-info/', ai_views.read_pdf, name='lesson_info'),
    
 
     

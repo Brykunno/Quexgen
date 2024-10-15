@@ -10,6 +10,7 @@ import pdfplumber
 import io
 import traceback 
 import time
+import difflib
 
 
 
@@ -94,6 +95,53 @@ prompts = {
     )
 }
 
+identification_prompt = {
+    "Remembering": (
+        "Create an identification question aligned with blooms taxonomy remembering level create questions and answer only from the following context: {context}. "
+        "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
+        "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
+        "Output the question immediately without including any introductory words."
+        "Make the answer only one word or phrase"
+        
+    ),
+    "Understanding": (
+        "Create an identification question aligned with blooms taxonomy understanding level create questions and answer only from the following context: {context}. "   
+        "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
+        "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
+        "Output the question immediately without including any introductory words."
+        "Make the answer only one word or phrase"
+    ),
+    "Applying": (
+        "Create an identification question aligned with blooms taxonomy applying level create questions and answer only from the following context: {context}. "
+        "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
+        "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
+        "Output the question immediately without including any introductory words."
+        "Make the answer only one word or phrase"
+    ),
+    "Analyzing": (
+        "Create an identification question aligned with blooms taxonomy remembering level create questions and answer only from the following context: {context}. "
+        "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
+        "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
+        "Output the question immediately without including any introductory words."
+        "Make the answer only one word or phrase"
+    ),
+    "Evaluating": (
+        "Create an identification question aligned with blooms taxonomy evaluating level create questions and answer only from the following context: {context}. "
+        "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
+        "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
+        "Output the question immediately without including any introductory words."
+        "Make the answer only one word or phrase"
+    ),
+    "Creating": (
+        "Create an identification question aligned with blooms taxonomy creating level create questions and answer only from the following context: {context}. "
+        "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
+        "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
+        "Output the question immediately without including any introductory words."
+        "Make the answer only one word or phrase"
+    )
+}
+
+
 torf_prompts =  {
     "Remembering": (
         "Create a True or False question that aligns with the remembering level of Bloom's Taxonomy based on the following context: {}. "
@@ -137,6 +185,7 @@ torf_prompts =  {
         "Don't use any introductory words or phrase."
     )
 }
+
 def generate_question_ai(level, context_ques, index, test_type, max_retries=5):
     # Select the appropriate prompt based on test type
     if test_type == "trueOrFalse":
@@ -264,6 +313,12 @@ def generate_question_module(level, context_paragraph,test_type):
     
     if test_type =='trueOrFalse':
         prompt = torf_prompts[level].format(context_paragraph)
+    elif test_type =='identification':
+         if level in ["Remembering", "Understanding", "Analyzing"]:
+            prompt = identification_prompt[level].format(context=context_paragraph)  # Format the prompt with the context
+         elif level in ["Applying", "Evaluating", "Creating"]:
+            prompt = f"Create a problem or question that requires {taxonomy_levels[level]} based on the following context: {context_paragraph}. Output the question immediately without any introductory words."
+        
     else:
         if level in ["Remembering", "Understanding", "Analyzing"]:
             prompt = prompts[level].format(context=context_paragraph)  # Format the prompt with the context
@@ -820,3 +875,195 @@ def taxonomy_allocation(request):
             return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+
+def lesson_summary(pdf_path, header_height, footer_height, start_keyword, stop_keyword):
+    # Remove spaces in the keywords for comparison
+    start_keyword_clean = start_keyword.replace(" ", "")
+    stop_keyword_clean = stop_keyword.replace(" ", "")
+    
+    with pdfplumber.open(pdf_path) as pdf:
+        extracting = False  # Flag to indicate when to start and stop extraction
+        extracted_text = []
+
+        for page in pdf.pages:
+            # Define the area without the header and footer
+            bbox = (0, header_height, page.width, page.height - footer_height)
+            cropped_page = page.within_bbox(bbox)
+            text = cropped_page.extract_text()
+
+            if text:  # Ensure there is text before processing
+                # Remove spaces from the extracted text for comparison
+                stripped_text = text.replace(" ", "").strip()
+
+                # Check if the start keyword is found to begin extraction
+                if start_keyword_clean in stripped_text and not extracting:
+                    extracting = True
+                    # Ensure the start keyword is in the text before splitting
+                    if start_keyword in text:
+                        extracted_text.append(text.split(start_keyword, 1)[1].strip())
+                    else:
+                        extracted_text.append(text)  # Fallback if split fails
+
+                # Append text if extraction has started
+                elif extracting:
+                    extracted_text.append(text)
+
+                # Check if the stop keyword is found to end extraction
+                if stop_keyword_clean in stripped_text and extracting:
+                    extracting = False
+                    # Add text up to where the stop keyword is found
+                    if stop_keyword in text:
+                        extracted_text.append(text.split(stop_keyword, 1)[0].strip())
+                    else:
+                        extracted_text.append(text)  # Fallback if split fails
+                    break  # Stop processing further pages after finding the stop keyword
+
+        # Join the extracted text and split into lines
+        lines = '\n'.join(extracted_text).splitlines()
+
+        # Return the second line if it exists, otherwise return an empty string
+        return lines[1].strip() if len(lines) > 1 else ''
+
+def extract_unit_content_first(pdf_path, header_height, footer_height, start_keyword, stop_keyword):
+    with pdfplumber.open(pdf_path) as pdf:
+        extracting = False  # Flag to indicate when to start and stop extraction
+        extracted_text = []
+
+        for page in pdf.pages:
+            # Define the area without the header and footer
+            bbox = (0, header_height, page.width, page.height - footer_height)
+            cropped_page = page.within_bbox(bbox)
+            text = cropped_page.extract_text()
+
+            if text:  # Ensure there is text before processing
+                # Check if the start keyword is found to begin extraction
+                if start_keyword in text and not extracting:
+                    extracting = True
+                    # Add text up to where the start keyword is found
+                    extracted_text.append(text.split(start_keyword, 1)[0])
+
+                # Append text if extraction has started
+                elif extracting:
+                    extracted_text.append(text)
+
+                # Check if the stop keyword is found to end extraction
+                if stop_keyword in text and extracting:
+                    extracting = False
+                    break  # Stop processing further pages after finding the stop keyword
+
+        return '\n'.join(extracted_text)
+
+def extract_unit_content_second(pdf_path, header_height, footer_height, start_keyword, stop_keyword):
+    with pdfplumber.open(pdf_path) as pdf:
+        extracting = False  # Flag to indicate when to start and stop extraction
+        extracted_text = []
+
+        for page in pdf.pages:
+            # Define the area without the header and footer
+            bbox = (0, header_height, page.width, page.height - footer_height)
+            cropped_page = page.within_bbox(bbox)
+            text = cropped_page.extract_text()
+
+            if text:  # Ensure there is text before processing
+                # Check if the start keyword is found to begin extraction
+                if start_keyword in text and not extracting:
+                    extracting = True
+                    # Add text from where the start keyword is found
+                  
+
+                # Append text if extraction has started
+                elif extracting:
+                    extracted_text.append(text)
+
+                # Check if the stop keyword is found to end extraction
+                if stop_keyword in text and extracting:
+                    extracting = False
+                    extracted_text.append(text.split(stop_keyword, 1)[0])
+                    break  # Stop processing further pages after finding the stop keyword
+
+        return '\n'.join(extracted_text)
+
+def compare_extracted_texts(text1, text2):
+    # Split the texts into lists of lines for comparison
+    lines1 = text1.splitlines()
+    lines2 = text2.splitlines()
+
+    # Use difflib to get the differences between the two texts
+    diff = difflib.ndiff(lines1, lines2)
+
+    # Display only the differences in a readable format
+    differences = []
+
+    for line in diff:
+        if line.startswith('- ') or line.startswith('+ '):
+            # Strip the leading '- ' or '+ ' from the line
+            differences.append(line[2:])  # Remove the first two characters
+
+    return '\n'.join(differences)
+
+
+@csrf_exempt
+def read_pdf(request):
+    global ques_gen  # Refer to the global variable
+
+    if request.method == 'POST':
+        try:
+            generated_questions = []
+
+            file = request.FILES.get('file')
+            
+            pdf_path = file
+            header_height = 70
+            footer_height = 50
+            start_keyword_lesson = 'STUDY GUIDE'
+            stop_keyword_lesson = 'MODULE OVERVIEW'
+
+            extracted_text_lesson = lesson_summary(pdf_path, header_height, footer_height, start_keyword_lesson, stop_keyword_lesson)
+            print(extracted_text_lesson)
+            
+            start_keyword = 'MODULE LEARNING OBJECTIVES'
+            stop_keyword = 'LEARNING CONTENTS'
+
+            extracted_text_first = extract_unit_content_first(pdf_path, header_height, footer_height, start_keyword, stop_keyword)
+            extracted_text_second = extract_unit_content_second(pdf_path, header_height, footer_height, start_keyword, stop_keyword)
+
+            # Compare the texts and print the differences
+            differences = compare_extracted_texts(extracted_text_first, extracted_text_second)
+            # Output only from line 3 onward
+            output_lines = differences.splitlines()
+
+            # Store the output from line 3 in a variable
+            learning_outcomes = '\n'.join(output_lines[2:])  # Skip the first two lines
+          
+            if not file:
+                return JsonResponse({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Debug log for file and form data
+            print(f"Received file: {file.name}")
+            
+            generated_questions.append({
+                    "lesson_topic": extracted_text_lesson,
+                    "learning_outcomes": learning_outcomes
+                })
+           
+
+            # Extract text from the PDF
+            
+            if extracted_text_lesson is None:
+                return JsonResponse({"error": "Failed to extract text from the PDF"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            # Debug log for extracted text
+            print(f"Extracted Text: {extracted_text_lesson}")
+
+                           
+            return JsonResponse({"lesson_info": generated_questions}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            print(f"Error during question generation: {e}")
+            return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+

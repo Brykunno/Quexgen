@@ -4722,7 +4722,7 @@ let create = false
       }
       break
     case 2:
-      if(getTotalTaxonomy!=100 || totalItems<10 || topic || outcomes){
+      if(getTotalTaxonomy!=100 || totalItems<10 || topic || outcomes || files.length != lessonsData.length){
         setDisableNext(true)
       }
       break
@@ -5086,6 +5086,9 @@ const [allocations, setAllocations] = useState([]);
         handleSubmit={handleSubmitAllocation}
         allocations={allocations}
         setAllocations={setAllocations}
+        files={files}
+        setLessonsDatainitial={setLessonsDatainitial}
+        
 
 
 
