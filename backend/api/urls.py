@@ -9,6 +9,7 @@ router = DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'context', admin_views.ContextViewSet, basename='context')
 router.register(r'exam-dates', views.ExamDatesCreateView)
+router.register(r'courses', views.CoursesViewSet, basename='courses')
 
 
 
@@ -66,6 +67,7 @@ urlpatterns = [
     path('upload/', views.FileUploadView.as_view(), name='file-upload'),
     path('taxonomy-allocation/', ai_views.taxonomy_allocation, name='taxonomy_allocation'),
     path('lesson-info/', ai_views.read_pdf, name='lesson_info'),
+    path('validate-pdf/', ai_views.validate_pdf, name='validate-pdf'),
    
 
     

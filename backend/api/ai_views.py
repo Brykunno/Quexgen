@@ -58,88 +58,101 @@ iden_taxonomy_levels = {
 # Define prompts for each taxonomy level
 prompts = {
     "Remembering": (
-        "Create a remembering multiple-choice question based on bloom's taxonomy that tests the recall of specific facts, names, dates, or concepts directly mentioned in the following context:{context}."
+        "Create a remembering multiple-choice question based on Bloom's taxonomy that tests the recall of specific facts, names, dates, or concepts directly mentioned in the following context: {context}. "
+        "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
-        "Ensure the options are in plain text without any labels (like letters or numbers) before them."
+        "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
         "Output the question immediately without any introductory words."
     ),
     "Understanding": (
-        "Create a understanding question based on bloom's taxonomy that asks for an explanation of the following context: {context}. "
+        "Create an understanding multiple-choice question based on Bloom's taxonomy that asks for an explanation of the following context: {context}. "
+        "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
-        "Ensure the options are in plain text without any labels (like letters or numbers) before them."
+        "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
         "Output the question immediately without any introductory words."
     ),
     "Applying": (
-        "Create a question for applying based on bloom's taxonomy that requires applying the following context to a new situation: {context}. "
+        "Create an applying multiple-choice question based on Bloom's taxonomy that requires applying the following context to a new situation: {context}. "
+        "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
-        "Ensure the options are in plain text without any labels (like letters or numbers) before them."
-         "Output the question immediately without any introductory words."
+        "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
+        "Output the question immediately without any introductory words."
     ),
     "Analyzing": (
-        "Create a question for analyzing based on bloom's taxonomy that involves analyzing or breaking down the following context: {context}. "
+        "Create an analyzing multiple-choice question based on Bloom's taxonomy that involves analyzing or breaking down the following context: {context}. "
+        "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
-        "Ensure the options are in plain text without any labels (like letters or numbers) before them." 
+        "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
         "Output the question immediately without any introductory words."
     ),
     "Evaluating": (
-        "Create a multiple-choice question for evaluating based on bloom's taxonomy that requires evaluating or making a judgment based on the following context: {context}. "
+        "Create an evaluating multiple-choice question based on Bloom's taxonomy that requires making a judgment based on the following context: {context}. "
+        "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
-        "Ensure the options are in plain text without any labels (like letters or numbers) before them."
+        "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
         "Output the question immediately without any introductory words."
     ),
     "Creating": (
-        "Create a multiple-choice question for creating based on bloom's taxonomy that involves generating new ideas based on the following context: {context}. with four answer options in a list format: the first choice should be the correct answer, followed by three plausible but incorrect options. "
-        "Output the question immediately without any introductory words"
-        "Do not use any indicator letters or numbers for answer and distractors"
-
+        "Create a creating multiple-choice question based on Bloom's taxonomy that involves generating new ideas based on the following context: {context}. "
+        "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
+        "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
+        "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
+        "Output the question immediately without any introductory words."
     )
 }
+
 
 identification_prompt = {
     "Remembering": (
-        "Create an identification question aligned with blooms taxonomy remembering level create questions and answer only from the following context: {context}. "
+        "Create an identification question that aligns with Bloom's Taxonomy at the Remembering level using the following context: {context}. "
+        "The question and answer must be derived solely from the context provided, avoiding any references to figures, images, or visual elements. "
+        "The answer must be a single terminology (a word or a short phrase) rather than a complete sentence. "
         "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
         "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
-        "Output the question immediately without including any introductory words."
-        "Make the answer only one word or phrase"
-        
+        "Output the question directly, without any introductory words."
     ),
     "Understanding": (
-        "Create an identification question aligned with blooms taxonomy understanding level create questions and answer only from the following context: {context}. "   
+        "Create an identification question that aligns with Bloom's Taxonomy at the Understanding level using the following context: {context}. "
+        "The question and answer must be derived solely from the context provided, avoiding any references to figures, images, or visual elements. "
+        "The answer must be a single terminology (a word or a short phrase) rather than a complete sentence. "
         "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
         "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
-        "Output the question immediately without including any introductory words."
-        "Make the answer only one word or phrase"
+        "Output the question directly, without any introductory words."
     ),
     "Applying": (
-        "Create an identification question aligned with blooms taxonomy applying level create questions and answer only from the following context: {context}. "
+        "Create an identification question that aligns with Bloom's Taxonomy at the Applying level using the following context: {context}. "
+        "The question and answer must be derived solely from the context provided, avoiding any references to figures, images, or visual elements. "
+        "The answer must be a single terminology (a word or a short phrase) rather than a complete sentence. "
         "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
         "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
-        "Output the question immediately without including any introductory words."
-        "Make the answer only one word or phrase"
+        "Output the question directly, without any introductory words."
     ),
     "Analyzing": (
-        "Create an identification question aligned with blooms taxonomy remembering level create questions and answer only from the following context: {context}. "
+        "Create an identification question that aligns with Bloom's Taxonomy at the Analyzing level using the following context: {context}. "
+        "The question and answer must be derived solely from the context provided, avoiding any references to figures, images, or visual elements. "
+        "The answer must be a single terminology (a word or a short phrase) rather than a complete sentence. "
         "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
         "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
-        "Output the question immediately without including any introductory words."
-        "Make the answer only one word or phrase"
+        "Output the question directly, without any introductory words."
     ),
     "Evaluating": (
-        "Create an identification question aligned with blooms taxonomy evaluating level create questions and answer only from the following context: {context}. "
+        "Create an identification question that aligns with Bloom's Taxonomy at the Evaluating level using the following context: {context}. "
+        "The question and answer must be derived solely from the context provided, avoiding any references to figures, images, or visual elements. "
+        "The answer must be a single terminology (a word or a short phrase) rather than a complete sentence. "
         "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
         "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
-        "Output the question immediately without including any introductory words."
-        "Make the answer only one word or phrase"
+        "Output the question directly, without any introductory words."
     ),
     "Creating": (
-        "Create an identification question aligned with blooms taxonomy creating level create questions and answer only from the following context: {context}. "
+        "Create an identification question that aligns with Bloom's Taxonomy at the Creating level using the following context: {context}. "
+        "The question and answer must be derived solely from the context provided, avoiding any references to figures, images, or visual elements. "
+        "The answer must be a single terminology (a word or a short phrase) rather than a complete sentence. "
         "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
         "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
-        "Output the question immediately without including any introductory words."
-        "Make the answer only one word or phrase"
+        "Output the question directly, without any introductory words."
     )
 }
+
 
 
 torf_prompts =  {
@@ -343,6 +356,8 @@ def generate_question_module(level, context_paragraph,test_type):
                 top_p=1,
                 response_format=ResponseFormat(type="text")
             )
+            
+            print(f'response: {response}')
 
             if test_type == 'mcq':
                 # Accessing the response attributes directly
@@ -628,27 +643,34 @@ def generate_question(request):
 
 # Extract text from the PDF within specific bounds
 def extract_within_bounds(pdf_file, header_height, footer_height):
+    start_keyword = 'LEARNING CONTENTS'
+    stop_keyword = 'SUMMARY'
     try:
         with pdfplumber.open(pdf_file) as pdf:
-            extracting = False
+            extracting = False  # Flag to indicate when to start and stop extraction
             extracted_text = []
 
             for page in pdf.pages:
+                # Define the area without the header and footer
                 bbox = (0, header_height, page.width, page.height - footer_height)
                 cropped_page = page.within_bbox(bbox)
                 text = cropped_page.extract_text()
 
-                if 'LEARNING CONTENTS' in text:
-                    extracting = True
-                    extracted_text.append(text.split('LEARNING CONTENTS', 1)[1])
+                if text:  # Ensure there is text before processing
+                    # Check if the start keyword is found to begin extraction
+                    if start_keyword in text and not extracting:
+                        extracting = True
+                        # Add text up to where the start keyword is found
+                        extracted_text.append(text.split(start_keyword, 1)[1])
 
-                if extracting:
-                    extracted_text.append(text)
+                    # Append text if extraction has started
+                    elif extracting:
+                        extracted_text.append(text)
 
-                if 'SUMMARY' in text:
-                    extracting = False
-                    break
-
+                    # Check if the stop keyword is found to end extraction
+                    if stop_keyword in text and extracting:
+                        extracting = False
+                        break  # Stop processing further pages after finding the stop keyword
             return '\n'.join(extracted_text)
     except Exception as e:
         print(f"Error during PDF extraction: {e}")
@@ -755,9 +777,9 @@ def generate_question_with_module(request):
                         subtest -= 1
 
                 print(f"Generated Question {i + 1} for {selected_level}:")
-                print(generated_ques)
+                # print(generated_ques)
                 ques_gen.append(generated_ques)  # Append to global ques_gen list
-                print(ques_gen)
+                # print(ques_gen)
                 # Append each generated question to the list
                 generated_questions.append({
                     "question_number": i + 1,
@@ -806,7 +828,7 @@ def extract_taxonomy_levels(response_content):
 # Extract and count Bloom's Taxonomy levels
 
 
-objective_prompt = "Identify the Bloom's taxonomy levels corresponding to these learning objectives: {}. Only respond with one or more of the following levels: Remembering, Understanding, Applying, Analyzing, Evaluating, Creating."
+objective_prompt = "Be consistent. Identify the Bloom's taxonomy levels corresponding to these learning objectives: {}. Only respond with one or more of the following levels: Remembering, Understanding, Applying, Analyzing, Evaluating, Creating."
 
 def objectives_percentage(objectives):
     retries = 0
@@ -1055,7 +1077,7 @@ def read_pdf(request):
                 return JsonResponse({"error": "Failed to extract text from the PDF"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             # Debug log for extracted text
-            print(f"Extracted Text: {extracted_text_lesson}")
+            # print(f"Extracted Text: {extracted_text_lesson}")
 
                            
             return JsonResponse({"lesson_info": generated_questions}, status=status.HTTP_200_OK)
@@ -1066,4 +1088,91 @@ def read_pdf(request):
 
     return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+
+def validate_file(pdf_file, header_height, footer_height):
+    start_keyword = 'LEARNING CONTENTS'
+    stop_keyword = 'SUMMARY'
+    required_keywords = ['LEARNING OBJECTIVES','LEARNING CONTENTS']  # List of required keywords to check for
+
+    try:
+        with pdfplumber.open(pdf_file) as pdf:
+            extracting = False  # Flag to indicate when to start and stop extraction
+            extracted_text = []
+            found_keywords = {key: False for key in required_keywords}  # Track if keywords are found
+
+            for page in pdf.pages:
+                # Define the area without the header and footer
+                bbox = (0, header_height, page.width, page.height - footer_height)
+                cropped_page = page.within_bbox(bbox)
+                text = cropped_page.extract_text()
+
+                if text:  # Ensure there is text before processing
+                    # Check if each required keyword is present in the text
+                    for keyword in required_keywords:
+                        if keyword in text:
+                            found_keywords[keyword] = True
+
+                    # Check if the start keyword is found to begin extraction
+                    if start_keyword in text and not extracting:
+                        extracting = True
+                        # Add text up to where the start keyword is found
+                        extracted_text.append(text.split(start_keyword, 1)[1])
+
+                    # Append text if extraction has started
+                    elif extracting:
+                        extracted_text.append(text)
+
+                    # Check if the stop keyword is found to end extraction
+                    if stop_keyword in text and extracting:
+                        extracting = False
+                        break  # Stop processing further pages after finding the stop keyword
+
+            # Check if all required keywords were found
+            if not all(found_keywords.values()):
+                missing_keywords = [key for key, found in found_keywords.items() if not found]
+                return "Invalid"
+
+            return "Valid"
+
+    except Exception as e:
+        print(f"Error during PDF extraction: {e}")
+        print(traceback.format_exc())
+        return None  # Return None if an error occurs
+    
+
+@csrf_exempt
+def validate_pdf(request):
+    global ques_gen  # Refer to the global variable
+
+    if request.method == 'POST':
+        try:
+            file_status = []
+
+            file = request.FILES.get('file')
+            
+            pdf_path = file
+            header_height = 70
+            footer_height = 50
+
+            if not file:
+                return JsonResponse({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Debug log for file and form data
+            print(f"Received file: {file.name}")
+            
+            file_status.append({"status":validate_file(pdf_path,header_height,footer_height)})
+            
+            print(file_status)
+           
+
+
+                           
+            return JsonResponse({"file_status": file_status}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            print(f"Error during question generation: {e}")
+            return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    
 

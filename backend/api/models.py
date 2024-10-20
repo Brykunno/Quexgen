@@ -194,7 +194,17 @@ class ExamDates(models.Model):
     
     class Meta:
         db_table = 'exam_dates'
+        
+class Courses(models.Model):
+    course_name = models.TextField()
+    course_code = models.TextField()
+    course_type = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
     
+    def __str__(self):
+        return self.course_name
     
+    class Meta:
+        db_table = 'courses'
         
 

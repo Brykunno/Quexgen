@@ -195,3 +195,14 @@ class ExamDatesSerializer(serializers.ModelSerializer):
       class Meta:
         model = ExamDates
         fields = ['id', 'midterm_exam','finals_exam','summer_exam']
+        
+class CoursesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Courses
+        fields = ['id', 'course_name', 'course_code', 'course_type']
+
+    def validate_course_name(self, value):
+        """Check if the course name is appropriate."""
+        if len(value) < 3:
+            raise serializers.ValidationError("Course name must be at least 3 characters long.")
+        return value

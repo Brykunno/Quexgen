@@ -4,6 +4,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ArticleIcon from '@mui/icons-material/Article';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import LogoutIcon from '@mui/icons-material/Logout';
+import SchoolIcon from '@mui/icons-material/School';
 
 export const SidebarData = [
     {
@@ -15,6 +16,11 @@ export const SidebarData = [
         title: "Instructors",
         icon: <AccountCircleIcon />,
         link: "/teachers",
+    },
+    {
+        title: "Courses",
+        icon: <SchoolIcon />,
+        link: "/courses",
     },
 
     {

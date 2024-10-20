@@ -176,7 +176,7 @@ const handlePageChange = (pageNumber) => {
        
         <div className="flex gap-5 mb-4">
           <div className='flex-1'>
-          <div className="ms-2 font-bold mb-2">Lesson {indexOfFirstLesson + index + 1} summary</div>
+          <div className="ms-2 font-bold mb-2">Lesson {indexOfFirstLesson + index + 1}</div>
           <Textarea
             value={lessonsData[indexOfFirstLesson + index]['topic']}
             style={{ height: '100px' }}

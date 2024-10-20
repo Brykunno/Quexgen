@@ -294,6 +294,21 @@ const [termFilter, setTermFilter] = useState('');
     </div>)
   }
 
+  let Ongoing = exam.filter(
+    (item) => item.Status_display === 'Saved'
+  ).length;
+
+  let review = exam.filter(
+    (item) => item.Status_display === 'To review'
+  ).length;
+
+  let revise = exam.filter(
+    (item) => item.Status_display === 'Needs Revision'
+  ).length;
+
+  let approve = exam.filter(
+    (item) => item.Status_display === 'Approved'
+  ).length;
 
   return (
     <div>
@@ -301,20 +316,20 @@ const [termFilter, setTermFilter] = useState('');
     <div className="content">
       
     <Tabs aria-label="Tabs with icons" variant="fullWidth" >
-    <Tabs.Item active title="Ongoing" icon={ManageHistoryIcon} >
+    <Tabs.Item active title={<b>Ongoing {Ongoing}</b>} icon={ManageHistoryIcon} >
       {content(exam,'Saved')}
       {statusFilter}  
       </Tabs.Item>
-      <Tabs.Item  title="For review" icon={RateReviewIcon} >
+      <Tabs.Item  title={<b>For review {review}</b>}  icon={RateReviewIcon} >
       {content(exam,'To review')}
       {statusFilter}
       </Tabs.Item>
-      <Tabs.Item title="To revise" icon={EditNoteIcon}>
+      <Tabs.Item title={<b>To revise {revise}</b>}  icon={EditNoteIcon}>
       {content(exam,'Needs Revision')}
       {statusFilter}
 
       </Tabs.Item>
-      <Tabs.Item title="Approved" icon={RecommendIcon}>
+      <Tabs.Item title={<b>Approved {approve}</b>}  icon={RecommendIcon}>
       {content(exam,'Approved')}
       {statusFilter}  
       </Tabs.Item>

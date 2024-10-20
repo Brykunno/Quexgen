@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import api from "../../api";
-import Add_user from './Add_user';
+import Add_Course from './Add_Course';
 import { Table, Pagination, Button, Modal, Radio, Label, TextInput } from 'flowbite-react';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import SearchIcon from '@mui/icons-material/Search';
@@ -9,30 +10,28 @@ import HideSourceIcon from '@mui/icons-material/HideSource';
 import Topnavbar from '../../components/Topnavbar';
 import ToastMessage from '../../components/Toast';
 
-function Instructors() {
-  const [user, setUser] = useState([]);
+
+function Courses() {
+  const [course, setcourse] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [itemsPerPage] = useState(7);
   const [openModal, setOpenModal] = useState(false);
-  const [username, setUsername] = useState("");
-  const [first_name, setFirstName] = useState("");
-  const [last_name, setLastName] = useState("");
-  const [is_staff, setIsStaff] = useState(false);
-  const [is_superuser, setIsSuperuser] = useState(false);
-  const [email, setEmail] = useState("");
+  const [course_name, setcourse_name] = useState("");
+  const [course_code, setcourse_code] = useState("");
+  const [course_type, setcourse_type] = useState("");
   const [selectedUserId, setSelectedUserId] = useState(null);
 
   useEffect(() => {
     document.title = "Home";
     getUser();
-  });
+  },[]);
 
   const getUser = () => {
-    api.get(`/api/user/account/admin/`)
+    api.get(`/api/courses/`)
       .then((res) => {
-        setUser(res.data);
+        setcourse(res.data);
         
       })
       .catch((err) => {
@@ -52,27 +51,22 @@ function Instructors() {
 
   const openEditModal = (user) => {
     setSelectedUserId(user.id);
-    setUsername(user.username);
-    setFirstName(user.first_name);
-    setLastName(user.last_name);
-    setIsStaff(user.is_staff);
-    setIsSuperuser(user.is_superuser);
-    setEmail(user.email);
+    setcourse_name(user.course_name);
+    setcourse_code(user.course_code);
+    setcourse_type(user.course_type);
+    
     setOpenModal(true);
   };
 
   const handleUserUpdate = () => {
     const updatedUser = {
-      username,
-      first_name,
-      last_name,
-      is_staff,
-      is_superuser,
-      email,
+      course_name,
+      course_code,
+      course_type,
     };
   
     api
-      .put(`/api/users/${selectedUserId}/`, updatedUser)
+      .put(`/api/courses/${selectedUserId}/`, updatedUser)
       .then((res) => {
         console.log('User updated successfully', res.data);
         getUser(); // Refresh the user list
@@ -83,45 +77,25 @@ function Instructors() {
       });
   };
 
-  const filteredUsers = user.filter((user) =>
-    user.username.toLowerCase().includes(searchTerm.toLowerCase())
+  const handleUserDelete = () => {
+    api
+      .delete(`/api/courses/${selectedUserId}/`) // Remove the unnecessary parameter
+      .then((res) => {
+        console.log('User deleted successfully', res.data);
+        getUser(); // Refresh the user list
+        setOpenModal(false); // Close the modal
+      })
+      .catch((err) => {
+        console.error('Error deleting user:', err);
+      });
+  };
+  
+  const filteredUsers = course.filter((user) =>
+    user.course_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleUserArchive = (selectedUserId) => {
-    const updatedUser = {
-      is_active: false
-    };
-    
-    api
-      .patch(`/api/users/${selectedUserId}/`, updatedUser)
-      .then((res) => {
-        console.log('User archived successfully', res.data);
-        getUser(); // Refresh the user list
-        setOpenModal(false); // Close the modal
-      })
-      .catch((err) => {
-        console.error('Error archiving user:', err);
-      });
-  };
-
   
-  const handleUserActivate = (selectedUserId) => {
-    const updatedUser = {
-      is_active: true
-    };
-    
-    api
-      .patch(`/api/users/${selectedUserId}/`, updatedUser)
-      .then((res) => {
-        console.log('User archived successfully', res.data);
-        getUser(); // Refresh the user list
-        setOpenModal(false); // Close the modal
-      })
-      .catch((err) => {
-        console.error('Error archiving user:', err);
-      });
-  };
-
+ 
 
   const indexOfLastUser = currentPage * itemsPerPage;
   const indexOfFirstUser = indexOfLastUser - itemsPerPage;
@@ -130,11 +104,12 @@ function Instructors() {
 
   return (
     <div>
-      <Topnavbar title="Instructors / Users"/>
-    <div className='content'>
-      <div className='flex gap-10 '>
+        <Topnavbar title="Courses"/>
+        <div className="content">
+
+        <div className='flex gap-10 '>
         <div style={{ flex: 0.4 }}>
-          <Add_user setLoading={setLoading}/>
+          <Add_Course setLoading={setLoading}/>
         </div>
         <div className='flex-1'>
           <div className="flex items-center mb-5">
@@ -144,7 +119,7 @@ function Instructors() {
               </span>
               <input
                 type="text"
-                placeholder="Search by username"
+                placeholder="Search by course name"
                 className="p-2 pl-10 border border-gray-300 rounded w-full text-sm"
                 value={searchTerm}
                 onChange={handleSearch} // Real-time search here
@@ -153,23 +128,23 @@ function Instructors() {
           </div>
           <Table striped>
             <Table.Head>
-              <Table.HeadCell>Username</Table.HeadCell>
-              <Table.HeadCell>First Name</Table.HeadCell>
-              <Table.HeadCell>Last Name</Table.HeadCell>
-              <Table.HeadCell>Position</Table.HeadCell>
+              <Table.HeadCell>Course Name</Table.HeadCell>
+              <Table.HeadCell>Course Code</Table.HeadCell>
+              <Table.HeadCell>Course Type</Table.HeadCell>
+           
               <Table.HeadCell>Action</Table.HeadCell>
-              <Table.HeadCell>Status</Table.HeadCell>
+              
             </Table.Head>
             <Table.Body className="divide-y">
               {currentUsers.length > 0 ? (
                 currentUsers.map((user, index) => (
                   <Table.Row key={index} className="bg-white dark:border-gray-700 dark:bg-gray-800">
                     <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                      {user.username}
+                      {user.course_name}
                     </Table.Cell>
-                    <Table.Cell>{user.first_name}</Table.Cell>
-                    <Table.Cell>{user.last_name}</Table.Cell>
-                    <Table.Cell>{user.is_staff ? 'Instructor' : 'Admin'}</Table.Cell>
+                    <Table.Cell>{user.course_code}</Table.Cell>
+                    <Table.Cell>{user.course_type}</Table.Cell>
+                    
                     <Table.Cell className='flex gap-3'>
                       <Button
                         color={'primary'}
@@ -181,9 +156,9 @@ function Instructors() {
                         <p className='mt-1 ml-1'>View</p>
                       </Button>
                      
-                      {user.is_active!==true? <Button size={'xs'} color={'success'} onClick={()=>{handleUserActivate(user.id)}}><PowerSettingsNewIcon/><p className='mt-1 ml-1'>Activate</p></Button>:  <Button size={'xs'} color={'failure'} onClick={()=>{handleUserArchive(user.id)}}><HideSourceIcon/><p className='mt-1 ml-1'>Deactivate</p></Button>}
+                    
                     </Table.Cell>
-                    <Table.Cell>{user.is_active ? <div className='text-green-600 font-bold'>Active</div> : <div className='text-red-600 font-bold'>Deactivated</div>}</Table.Cell>
+                   
                   </Table.Row>
                 ))
               ) : (
@@ -197,78 +172,46 @@ function Instructors() {
           </Table>
 
           <Modal dismissible show={openModal} onClose={() => setOpenModal(false)}>
-            <Modal.Header>User Information</Modal.Header>
+            <Modal.Header>Course Information</Modal.Header>
             <Modal.Body>
               <div className="space-y-6">
                 <div>
-                  <Label htmlFor="uname" value="Username" />
+                  <Label htmlFor="uname" value="Course name" />
                   <TextInput
                     id="uname"
                     type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    value={course_name}
+                    onChange={(e) => setcourse_name(e.target.value)}
                     required
                   />
                 </div>
                 <div>
-                  <Label htmlFor="first_name" value="First Name" />
+                  <Label htmlFor="course_code" value="Course code" />
                   <TextInput
-                    id="first_name"
+                    id="course_code"
                     type="text"
-                    value={first_name}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    value={course_code}
+                    onChange={(e) => setcourse_code(e.target.value)}
                     required
                   />
                 </div>
                 <div>
-                  <Label htmlFor="last_name" value="Last Name" />
+                  <Label htmlFor="course_type" value="Course type" />
                   <TextInput
-                    id="last_name"
+                    id="course_type"
                     type="text"
-                    value={last_name}
-                    onChange={(e) => setLastName(e.target.value)}
+                    value={course_type}
+                    onChange={(e) => setcourse_type(e.target.value)}
                     required
                   />
                 </div>
-                <div className="flex max-w-md flex-col gap-4">
-                  <Label>User Type</Label>
-                  <div className="flex gap-10">
-                    <div className="flex items-center gap-2">
-                      <Radio
-                        id="superuser"
-                        name="account"
-                        value="superuser"
-                        checked={is_superuser}
-                        onChange={() => { setIsSuperuser(true); setIsStaff(false); }}
-                      />
-                      <Label htmlFor="superuser">Admin</Label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Radio
-                        id="teacher"
-                        name="account"
-                        value="teacher"
-                        checked={is_staff}
-                        onChange={() => { setIsSuperuser(false); setIsStaff(true); }}
-                      />
-                      <Label htmlFor="teacher">Instructor</Label>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="email" value="Email" />
-                  <TextInput
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
+               
+              
               </div>
             </Modal.Body>
             <Modal.Footer>
               <Button color={'primary'} onClick={handleUserUpdate}>Update</Button>
+              <Button color={'failure'} onClick={handleUserDelete}>Delete</Button>
               
               <Button color="gray" onClick={() => setOpenModal(false)}>
                 Cancel
@@ -287,8 +230,12 @@ function Instructors() {
           </div>
         </div>
       </div>
-    </div></div>
-  );
+
+            
+        </div>
+      
+    </div>
+  )
 }
 
-export default Instructors;
+export default Courses

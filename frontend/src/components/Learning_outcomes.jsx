@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Textarea, Button, TextInput,Card,Pagination,FileInput,Label } from 'flowbite-react';
+import { Textarea, Button, TextInput,Card,Pagination,FileInput,Label,Spinner } from 'flowbite-react';
 import api from '../api';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import LoadingGenerate from './LoadingGenerate';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ToastError from './ToastError';
+import { HiOutlineXCircle,HiCheckCircle } from 'react-icons/hi';
 
 
 function Learning_outcomes({
@@ -24,7 +26,7 @@ function Learning_outcomes({
   setFormData,
   submit,
   allocations,
-  setAllocations,files,setLessonsDatainitial
+  setAllocations,files,setLessonsDatainitial,lessonsDataInitial
   
 }) {
   // State to manage input data
@@ -34,7 +36,13 @@ function Learning_outcomes({
   const [loading,setLoading] = useState(false)
   const [fileInfo,setFileInfo] = useState([])
   const [read,setRead] = useState(false)
+  const [errorFile,setErrorFile] = useState(false)
+  const [fileStatus,setFileStatus] = useState(false);
 
+
+ 
+  
+  
 
 
 const [tax_alloc, setTax] = useState([]);
@@ -198,12 +206,23 @@ const handlePageChange = (pageNumber) => {
 };
 
 const handleReadFile = async () => {
+
+  
+  if (files.length == 0) {
+  
+    setErrorFile(true)
+ 
+    return;
+  }
   const updatedFileInfo = []; // Initialize an array to store file information
   setRead(true)
 
+
   for (let i = 0; i < files.length; i++) {
     if (!files[i]) {
-      alert('Please select a file.');
+      
+      setErrorFile(true)
+      setRead(false);
       return;
     }
 
@@ -235,20 +254,83 @@ const handleReadFile = async () => {
 
   // Update lessons data and save it to localStorage
   updatedFileInfo.forEach((data, index) => {
-    const newData = [...lessonsData];
+    const newData = [...lessonsDataInitial];
 
     // Update the specific fields in the corresponding lesson object
     newData[index]['topic'] = data[0].lesson_topic;
     newData[index]['learning_outcomes'] = data[0].learning_outcomes;
+    
 
-    setLessonsDatainitial(newData);
+   
 
     // Save the updated lessonsData to localStorage
     localStorage.setItem('lessonsData', JSON.stringify(newData));
+    setLessonsDatainitial(newData);
     setRead(false)
   });
 };
 
+useEffect(() => {
+  if (files.length < 1) {
+    // Create a new array with updated file_status
+    const updatedLessons = lessonsData.map(lesson => ({
+      ...lesson, // Spread the existing lesson data
+      file_status: "", // Set file_status to an empty string
+    }));
+    
+    // Update the state with the new lessons data
+    setLessonsDatainitial(updatedLessons);
+    localStorage.setItem('lessonsData', JSON.stringify(updatedLessons));
+  }
+}, [files.length]); // Dependency on files.length to rerun when it changes
+
+
+
+const handleValidateFile = async (value,index) => {
+ setFileStatus(true)
+  const formData = new FormData();
+  formData.append('file', value); // Append the selected file
+
+  try {
+    // Make an asynchronous request to Django to process the file and JSON data
+    const response = await api.post('/api/validate-pdf/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    const fileStats = response.data.file_status[0].status
+    // Process the response to get the lesson info
+    console.log('Processed response file:',fileStats );
+    const newData = [...lessonsDataInitial]
+
+
+      newData[index]['file_status'] = fileStats
+ 
+    
+    setLessonsDatainitial(newData);
+    setFileStatus(false)
+
+  } catch (error) {
+    // Handle errors that may occur during the request
+    console.error('Error processing the file and data:', error);
+  }
+};
+
+
+const getFileStatus = (fileStatus) => {
+  if (fileStatus === undefined || fileStatus === "") {
+    return <div className='text-red-600 font-semibold flex gap-1'>No file uploaded!</div>;
+  }
+
+  
+  if(fileStatus === "Valid"){
+    return <div className='text-green-600 font-semibold flex gap-1'>Valid file <HiCheckCircle className='mt-1'/></div>
+  } 
+     else if(fileStatus === "Invalid"){
+      return <div className='text-red-600 font-semibold flex gap-1'>Invalid file<HiOutlineXCircle className='mt-1' /></div>;
+     }
+     
+};
 
 
 
@@ -263,7 +345,7 @@ const handleReadFile = async () => {
        
         <div className="flex gap-5 mb-4">
           <div className='flex-1'>
-          <div className="ms-2 font-bold mb-2">Lesson {indexOfFirstLesson + index + 1} summary</div>
+          <div className="ms-2 font-bold mb-2">Lesson {indexOfFirstLesson + index + 1}</div>
           <Textarea
             value={lessonsData[indexOfFirstLesson + index]['topic']}
             style={{ height: '100px' }}
@@ -301,16 +383,25 @@ const handleReadFile = async () => {
       <div className="mb-2 block">
         <Label htmlFor="file-upload" > Upload file for Lesson {index+1} <span className='text-red-600'>*</span></Label>
       </div>
+      <div className='flex gap-5'>
       <FileInput id="file-upload"
        accept="application/pdf"
+       className='flex-1'
       sizing={'sm'}
-       onChange={(e) => handleLessonDataChange(index, 'study_guide', e.target.files[0])}
-      />
-      {/* {lessonsDataInitial[indexRow] && lessonsDataInitial[indexRow]['study_guide'] && (
-    <p>Selected file: {String(lessonsDataInitial[indexRow]['study_guide'])}</p>  // Display the selected file name
-  )} */}
+       onChange={(e) => {handleLessonDataChange(index, 'study_guide', e.target.files[0]);
+
+        handleValidateFile(e.target.files[0],index)
+        }}
+       
+      /><div > { fileStatus && <div><Spinner color={'primary'} /> Validating file...</div>}
+      <span className={fileStatus?'hidden':''} >
+      {getFileStatus(lessonsDataInitial[index]?.file_status)}
+      </span></div>
+      </div>
+     
     </div>
     </div>
+    
       </Card>
     ))}
 
@@ -351,6 +442,7 @@ const handleReadFile = async () => {
               total: 0,
               placement: '',
               totalItems: 0,
+              file_status:''
             })
           }
         >
@@ -364,10 +456,11 @@ const handleReadFile = async () => {
      
     </div>
     {loading && <LoadingGenerate />}
+    {errorFile && <ToastError message="Please upload a file for every lesson" setToast={setErrorFile}/>}
+    
 
     {/* Pagination controls */}
 
-  
   </Card>
   );
 }

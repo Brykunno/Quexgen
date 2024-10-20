@@ -10,6 +10,7 @@ import Add_user from '../pages/Admin/Add_user';
 import Exam_review from '../pages/Admin/Exam_review';
 import Admin_profile from '../pages/Admin/Admin_profile';
 import Login from '../pages/Login';
+import Courses from '../pages/Admin/Courses';
 
 
 
@@ -30,6 +31,10 @@ export const Admin_routes_data = [
     {
         path: "/exams",
         element: <Exams />
+    },
+    {
+        path: "/courses",
+        element: <Courses />
     },
     {
         path: "/exam_review/:id",

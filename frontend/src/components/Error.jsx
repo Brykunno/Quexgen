@@ -15,6 +15,11 @@ function Error(props) {
     if (lesson.learning_outcomes == '') {
         acc.push(`Please input learning outcomes for the lesson ${index + 1}`);
       }
+    
+
+      if(props.files[index]===undefined ){
+        acc.push(`Please upload a file for lesson ${index + 1}`);
+      }
    
 
     return acc;
