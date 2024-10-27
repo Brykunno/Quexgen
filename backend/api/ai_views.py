@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from ai21 import AI21Client
-from ai21.models.chat import ChatMessage, ResponseFormat
+from ai21.models.chat import ChatMessage, ResponseFormat,DocumentSchema
 from rest_framework import status
 import random
 import re
@@ -60,6 +60,7 @@ prompts = {
     "Remembering": (
         "Create a remembering multiple-choice question based on Bloom's taxonomy that tests the recall of specific facts, names, dates, or concepts directly mentioned in the following context: {context}. "
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
+        "Ensure the question is distinct from previous questions by focusing on different facts, concepts, or wording, avoiding similarities with previously generated questions. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
         "Output the question immediately without any introductory words."
@@ -67,6 +68,7 @@ prompts = {
     "Understanding": (
         "Create an understanding multiple-choice question based on Bloom's taxonomy that asks for an explanation of the following context: {context}. "
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
+        "Ensure the question is distinct from previous questions by focusing on different aspects, explanations, or wording, avoiding similarities with previously generated questions. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
         "Output the question immediately without any introductory words."
@@ -74,6 +76,7 @@ prompts = {
     "Applying": (
         "Create an applying multiple-choice question based on Bloom's taxonomy that requires applying the following context to a new situation: {context}. "
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
+        "Ensure the question is distinct from previous questions by focusing on a unique application scenario or wording, avoiding similarities with previously generated questions. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
         "Output the question immediately without any introductory words."
@@ -81,6 +84,7 @@ prompts = {
     "Analyzing": (
         "Create an analyzing multiple-choice question based on Bloom's taxonomy that involves analyzing or breaking down the following context: {context}. "
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
+        "Ensure the question is distinct from previous questions by focusing on a unique analysis or wording, avoiding similarities with previously generated questions. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
         "Output the question immediately without any introductory words."
@@ -88,6 +92,7 @@ prompts = {
     "Evaluating": (
         "Create an evaluating multiple-choice question based on Bloom's taxonomy that requires making a judgment based on the following context: {context}. "
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
+        "Ensure the question is distinct from previous questions by focusing on a unique evaluation aspect or wording, avoiding similarities with previously generated questions. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
         "Output the question immediately without any introductory words."
@@ -95,11 +100,13 @@ prompts = {
     "Creating": (
         "Create a creating multiple-choice question based on Bloom's taxonomy that involves generating new ideas based on the following context: {context}. "
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
+        "Ensure the question is distinct from previous questions by focusing on a unique creative idea or wording, avoiding similarities with previously generated questions. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
         "Output the question immediately without any introductory words."
     )
 }
+
 
 
 identification_prompt = {
@@ -320,7 +327,7 @@ def generate_question_ai(level, context_ques, index, test_type, max_retries=5):
 
     return {"error": "Failed to generate a valid question after multiple attempts."}
 
-def generate_question_module(level, context_paragraph,test_type):
+def generate_question_module(level, context_paragraph,test_type,extracted):
     
     # Choose prompt based on taxonomy level
     
@@ -763,17 +770,17 @@ def generate_question_with_module(request):
                 generated_ques =  {}
                 if selected_level in ['Remembering','Understanding','Analyzing']:
                     if mcq != 0:
-                        generated_ques = generate_question_module(selected_level, paragraphs[i], 'mcq')
+                        generated_ques = generate_question_module(selected_level, paragraphs[i], 'mcq',extracted_text)
                         mcq -= 1
                     elif identification != 0:
-                        generated_ques = generate_question_module(selected_level, paragraphs[i], 'identification')
+                        generated_ques = generate_question_module(selected_level, paragraphs[i], 'identification',extracted_text)
                         identification -= 1
                     elif trueOrFalse != 0:
-                        generated_ques = generate_question_module(selected_level, paragraphs[i], 'trueOrFalse')
+                        generated_ques = generate_question_module(selected_level, paragraphs[i], 'trueOrFalse',extracted_text)
                         trueOrFalse -= 1
                 else:
                     if subtest != 0:
-                        generated_ques = generate_question_module(selected_level, paragraphs[i], 'subjective')
+                        generated_ques = generate_question_module(selected_level, paragraphs[i], 'subjective',extracted_text)
                         subtest -= 1
 
                 print(f"Generated Question {i + 1} for {selected_level}:")
@@ -1092,7 +1099,7 @@ def read_pdf(request):
 def validate_file(pdf_file, header_height, footer_height):
     start_keyword = 'LEARNING CONTENTS'
     stop_keyword = 'SUMMARY'
-    required_keywords = ['LEARNING OBJECTIVES','LEARNING CONTENTS']  # List of required keywords to check for
+    required_keywords = ['LEARNING OBJECTIVES', 'LEARNING CONTENTS']  # List of required keywords to check for
 
     try:
         with pdfplumber.open(pdf_file) as pdf:
@@ -1128,11 +1135,12 @@ def validate_file(pdf_file, header_height, footer_height):
                         break  # Stop processing further pages after finding the stop keyword
 
             # Check if all required keywords were found
-            if not all(found_keywords.values()):
-                missing_keywords = [key for key, found in found_keywords.items() if not found]
-                return "Invalid"
+            missing_keywords = [key for key, found in found_keywords.items() if not found]
 
-            return "Valid"
+            if missing_keywords:
+                return {"status": "Invalid", "missing_keywords": missing_keywords}
+
+            return {"status": "Valid", "missing_keywords": []}
 
     except Exception as e:
         print(f"Error during PDF extraction: {e}")
@@ -1160,13 +1168,11 @@ def validate_pdf(request):
             # Debug log for file and form data
             print(f"Received file: {file.name}")
             
-            file_status.append({"status":validate_file(pdf_path,header_height,footer_height)})
+            validation_result = validate_file(pdf_path, header_height, footer_height)
+            file_status.append(validation_result)
             
             print(file_status)
-           
 
-
-                           
             return JsonResponse({"file_status": file_status}, status=status.HTTP_200_OK)
 
         except Exception as e:

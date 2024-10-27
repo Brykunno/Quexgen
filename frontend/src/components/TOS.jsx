@@ -69,7 +69,7 @@ function createData(
     creating,
     total,
     placement,
-    study_guide
+    study_guide,
    
   };
 }
@@ -99,6 +99,14 @@ totalItems:0,
 study_guide:null,
 tos_teacher: 0,
 file_status:'',
+taxonomy_levels: {
+  Remembering:0,
+  Understanding:0,
+  Applying:0,
+  Analyzing:0,
+  Evaluating:0,
+  Creating:0
+}
 }]));
   } 
 
@@ -2187,15 +2195,22 @@ const [allocations, setAllocations] = useState([]);
       });
 
       const allocationsArray = await Promise.all(promises);
+      
+   // Flatten if allocationsArray contains nested arrays
+   const flatAllocations = allocationsArray.flat();
 
+   // Update lessonsData with new taxonomy_levels
+   const updatedLessonsData = lessonsData.map((lesson, index) => ({
+     ...lesson,
+     taxonomy_levels: flatAllocations[index] || [], // Ensure allocation aligns with lessons
+   }));
 
-      // Flatten the array if you have nested arrays in allocations
-      setAllocations((previous) => [...previous, ...allocationsArray.flat()]);
+   setAllocations((prev) => [...prev, ...flatAllocations]);
+   setLessonsDatainitial(updatedLessonsData);
 
-     
-    
-     
-    
+   // Update localStorage with new lessons data
+   localStorage.setItem('lessonsData', JSON.stringify(updatedLessonsData));
+
     } catch (error) {
       console.error('Error processing the file and data:', error);
     }
@@ -2212,6 +2227,33 @@ const [allocations, setAllocations] = useState([]);
 
    
   }
+  const handletaxlevelChange = (index, field,level, value) => {
+    // Clone the lessonsData array to avoid direct mutation
+    const newData = [...lessonsData];
+    const newDataAllocation = [...allocations]
+  
+    // Update the specific field in the corresponding lesson object
+    newData[index][field][level] = value;
+    newDataAllocation[index][level] = value
+
+
+  
+      // Update the state with the new data
+      setLessonsDatainitial(newData);
+      setAllocations(newDataAllocation)
+      
+  
+      // Save the updated lessonsData to localStorage
+      localStorage.setItem('lessonsData', JSON.stringify(newData));
+  
+  }
+
+  useEffect(() => {
+    setAllocations((prevAllocations) => [
+      ...lessonsData.flatMap((data) => data.taxonomy_levels || [])
+    ]);
+  }, []);
+  
   useEffect(() => {
     const creating = Number(Creating);
     const evaluating = Number(Evaluating);
@@ -2527,6 +2569,8 @@ const [allocations, setAllocations] = useState([]);
         setAllocations={setAllocations}
         files={files}
         setLessonsDatainitial={setLessonsDatainitial}
+        setFiles={setFiles}
+        handletaxlevelChange={handletaxlevelChange}
         
 
 
@@ -2838,7 +2882,7 @@ const [allocations, setAllocations] = useState([]);
 <div>
  
       <Button size={'sm'}  color={'primary'} onClick={handleNext} disabled={disableNext} className="px-4" > <p style={{marginTop:'0.5px'}}>Next</p> <NavigateNextIcon  /></Button>
-      
+  
    {/* {JSON.stringify(allocations)} */}
       </div>
       </div>

@@ -26,7 +26,7 @@ function Courses() {
   useEffect(() => {
     document.title = "Home";
     getUser();
-  },[]);
+  });
 
   const getUser = () => {
     api.get(`/api/courses/`)
@@ -226,7 +226,7 @@ function Courses() {
               onPageChange={handlePageChange}
               showIcons
             />
-            {loading && <ToastMessage message="Instructor successflly added!" setToast={setLoading}/>}
+            {loading && <ToastMessage message="course successfully added!" setToast={setLoading}/>}
           </div>
         </div>
       </div>

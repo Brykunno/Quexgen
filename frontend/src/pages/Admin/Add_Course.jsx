@@ -31,6 +31,10 @@ function Add_Course({setLoading}){
         } finally {
           setLoading(true);
         }
+
+        setcourse_code('');
+        setcourse_name('');
+        setcourse_type('')
       };
 
       

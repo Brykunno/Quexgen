@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Textarea, Button, TextInput,Card,Pagination,FileInput,Label,Spinner } from 'flowbite-react';
+import { Textarea, Button, TextInput,Card,Pagination,FileInput,Label,Spinner,Modal } from 'flowbite-react';
 import api from '../api';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import LoadingGenerate from './LoadingGenerate';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ToastError from './ToastError';
 import { HiOutlineXCircle,HiCheckCircle } from 'react-icons/hi';
+import Error from './Error';
+import InvalidFileError from './InvalidFileError';
 
 
 function Learning_outcomes({
@@ -26,7 +28,7 @@ function Learning_outcomes({
   setFormData,
   submit,
   allocations,
-  setAllocations,files,setLessonsDatainitial,lessonsDataInitial
+  setAllocations,files,setLessonsDatainitial,lessonsDataInitial,setFiles,handletaxlevelChange
   
 }) {
   // State to manage input data
@@ -37,12 +39,22 @@ function Learning_outcomes({
   const [fileInfo,setFileInfo] = useState([])
   const [read,setRead] = useState(false)
   const [errorFile,setErrorFile] = useState(false)
-  const [fileStatus,setFileStatus] = useState(false);
+  const [fileStatus, setFileStatus] = useState(Array(lessonsDataInitial.length).fill(false));
+  const [levelModal,setLevelModal] = useState(false)
+
+    // Add a new state to track which modals are open
+    const [openModals, setOpenModals] = useState([]);
+
+    // Function to toggle a specific modal
+    const toggleModal = (index) => {
+      setOpenModals((prev) => {
+        const updatedModals = [...prev];
+        updatedModals[index] = !updatedModals[index]; // Toggle the specific modal at index
+        return updatedModals;
+      });
+    };
 
 
- 
-  
-  
 
 
 const [tax_alloc, setTax] = useState([]);
@@ -270,6 +282,63 @@ const handleReadFile = async () => {
   });
 };
 
+const handleReadOneFile = async (value,index) => {
+
+  
+  
+
+  setRead(true)
+
+
+  const updatedFileInfo = []; // Initialize an array to store file information
+    
+
+    const formData = new FormData();
+    formData.append('file', value); // Append the selected file
+
+    try {
+      // Make a request to Django to process the file and JSON data
+      const response = await api.post('/api/lesson-info/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Process the response to get the lesson info
+      const dataques = response.data.lesson_info;
+      console.log('Processed response:', dataques);
+
+      // Add the lesson info object to the updated fileInfo array
+      updatedFileInfo.push(dataques);
+
+    } catch (error) {
+      console.error('Error processing the file and data:', error);
+    }
+  
+
+  // Update the state with the accumulated fileInfo as an array of objects
+  setFileInfo(updatedFileInfo);
+
+  // Update lessons data and save it to localStorage
+ 
+  updatedFileInfo.forEach((data) => {
+    const newData = [...lessonsDataInitial];
+
+    // Update the specific fields in the corresponding lesson object
+    newData[index]['topic'] = data[0].lesson_topic;
+    newData[index]['learning_outcomes'] = data[0].learning_outcomes;
+    
+
+   
+
+    // Save the updated lessonsData to localStorage
+    localStorage.setItem('lessonsData', JSON.stringify(newData));
+    setLessonsDatainitial(newData);
+    setRead(false)
+  });
+ 
+};
+
 useEffect(() => {
   if (files.length < 1) {
     // Create a new array with updated file_status
@@ -287,7 +356,12 @@ useEffect(() => {
 
 
 const handleValidateFile = async (value,index) => {
- setFileStatus(true)
+  setFileStatus((prev) => {
+    const newStatus = [...prev];
+    newStatus[index] = true; // Set the specific index to true
+    return newStatus;
+  });
+
   const formData = new FormData();
   formData.append('file', value); // Append the selected file
 
@@ -298,40 +372,60 @@ const handleValidateFile = async (value,index) => {
         'Content-Type': 'multipart/form-data',
       },
     });
-    const fileStats = response.data.file_status[0].status
+
+    console.log('Stats: ',response.data)
+    const fileStats = response.data.file_status[0]
     // Process the response to get the lesson info
     console.log('Processed response file:',fileStats );
     const newData = [...lessonsDataInitial]
 
 
-      newData[index]['file_status'] = fileStats
+      newData[index]['file_status'] = fileStats 
  
     
     setLessonsDatainitial(newData);
-    setFileStatus(false)
+    setFileStatus((prev) => {
+      const newStatus = [...prev];
+      newStatus[index] = false; // Reset the specific index in case of error
+      return newStatus;
+    });
 
   } catch (error) {
     // Handle errors that may occur during the request
     console.error('Error processing the file and data:', error);
+    setFileStatus((prev) => {
+      const newStatus = [...prev];
+      newStatus[index] = false; // Reset the specific index in case of error
+      return newStatus;
+    });
   }
 };
 
 
 const getFileStatus = (fileStatus) => {
-  if (fileStatus === undefined || fileStatus === "") {
+  if (fileStatus === undefined || fileStatus.status === "") {
     return <div className='text-red-600 font-semibold flex gap-1'>No file uploaded!</div>;
   }
 
   
-  if(fileStatus === "Valid"){
+  if(fileStatus.status === "Valid"){
     return <div className='text-green-600 font-semibold flex gap-1'>Valid file <HiCheckCircle className='mt-1'/></div>
   } 
-     else if(fileStatus === "Invalid"){
-      return <div className='text-red-600 font-semibold flex gap-1'>Invalid file<HiOutlineXCircle className='mt-1' /></div>;
+     else if(fileStatus.status === "Invalid"){
+      return <div className='text-red-600 font-semibold '><div className='flex gap-1'>Invalid file     <InvalidFileError lessonsData={lessonsData} getTotalTaxonomy={getTotalTaxonomy} totalItems={totalItems} files={files} missing_keywords={fileStatus.missing_keywords}  /></div> 
+   
+      </div>;
      }
      
 };
 
+const removeFile = (index) => {
+  // Use filter to create a new array excluding the file at the specified index
+  const updatedFiles = files.filter((_, i) => i !== index);
+  
+  // Update the state with the new files array
+  setFiles(updatedFiles);
+};
 
 
 
@@ -342,6 +436,31 @@ const getFileStatus = (fileStatus) => {
     {/* Render only the current page of lessons */}
     {currentLessons.map((item, index) => (
       <Card key={indexOfFirstLesson + index}>
+
+<div className="mb-3">
+    <div>
+      <div className="mb-2 block">
+        <Label htmlFor="file-upload" > Upload file for Lesson {indexOfFirstLesson +index+1} <span className='text-red-600'>*</span></Label>
+      </div>
+      <div className='flex gap-5'>
+      <FileInput id="file-upload"
+       accept="application/pdf"
+       className='flex-1'
+      sizing={'sm'}
+       onChange={(e) => {handleLessonDataChange(indexOfFirstLesson +index, 'study_guide', e.target.files[0]);
+
+        handleValidateFile(e.target.files[0],indexOfFirstLesson +index);
+        handleReadOneFile(e.target.files[0],indexOfFirstLesson +index);
+        }}
+       
+      /><div > { fileStatus[indexOfFirstLesson +index]  && <div><Spinner color={'primary'} /> Validating file...</div>}
+      <span className={fileStatus[indexOfFirstLesson +index] ?'hidden':''} >
+      {getFileStatus(lessonsDataInitial[indexOfFirstLesson +index]?.file_status)}
+      </span></div>
+      </div>
+     
+    </div>
+    </div>
        
         <div className="flex gap-5 mb-4">
           <div className='flex-1'>
@@ -371,38 +490,86 @@ const getFileStatus = (fileStatus) => {
             
             <Button
               color={'failure'}
-              onClick={() => removeLesson(lessonsData, indexOfFirstLesson + index)}
+              onClick={() => {removeLesson(lessonsData, indexOfFirstLesson + index); removeFile(indexOfFirstLesson + index)}}
               className='mt-12'
             >
               <DeleteIcon/>
             </Button>
           </div>
         </div>
-        <div className="mb-3">
-    <div>
-      <div className="mb-2 block">
-        <Label htmlFor="file-upload" > Upload file for Lesson {index+1} <span className='text-red-600'>*</span></Label>
-      </div>
-      <div className='flex gap-5'>
-      <FileInput id="file-upload"
-       accept="application/pdf"
-       className='flex-1'
-      sizing={'sm'}
-       onChange={(e) => {handleLessonDataChange(index, 'study_guide', e.target.files[0]);
 
-        handleValidateFile(e.target.files[0],index)
-        }}
-       
-      /><div > { fileStatus && <div><Spinner color={'primary'} /> Validating file...</div>}
-      <span className={fileStatus?'hidden':''} >
-      {getFileStatus(lessonsDataInitial[index]?.file_status)}
-      </span></div>
-      </div>
-     
-    </div>
-    </div>
-    
+{/* <div>
+            <Button color={'primary'}  onClick={() => toggleModal(indexOfFirstLesson + index)} className='mx-auto'>Identify Levels of taxonomy</Button>
+            </div> */}
+
+            
+<Modal size={'md'} show={openModals[index]} onClose={() =>  toggleModal(index)}>
+        <Modal.Header>Identify taxonomy levels</Modal.Header>
+        <Modal.Body>
+        <div className='flex-1 mb-2'>
+          <div className="ms-2 font-bold mb-2">Learning outcomes</div>
+          <Textarea
+            value={lessonsData[indexOfFirstLesson + index]['learning_outcomes']}
+            style={{ height: '130px' }}
+            onChange={(e) =>
+              handleLessonDataChange(indexOfFirstLesson + index, 'learning_outcomes', e.target.value)
+            }
+            placeholder="Enter the learning outcomes for the lesson"
+          />
+          </div>
+          <div className='mb-2 flex gap-5 justify-between'>
+         <Label>Remembering</Label>
+         <TextInput type='number' className='w-24' onChange={(e)=>{handletaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels','Remembering', e.target.value)}}     value={
+        lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.Remembering
+      }/>
+         </div>
+
+         <div className='mb-2 flex gap-5 justify-between'>
+         <Label>Understanding</Label>
+         <TextInput type='number' className='w-24' onChange={(e)=>{handletaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels','Understanding', e.target.value)}}     value={
+        lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.Understanding
+      }/>
+         </div>
+
+         <div className='mb-2 flex gap-5 justify-between'>
+         <Label>Applying</Label>
+         <TextInput type='number' className='w-24' onChange={(e)=>{handletaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels','Applying', e.target.value)}}     value={
+        lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.Applying
+      }/>
+         </div>
+
+         <div className='mb-2 flex gap-5 justify-between'>
+         <Label>Analyzing</Label>
+         <TextInput type='number' className='w-24' onChange={(e)=>{handletaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels','Analyzing', e.target.value)}}     value={
+        lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.Analyzing
+      }/>
+         </div>
+
+         <div className='mb-2 flex gap-5 justify-between'>
+         <Label>Evaluating</Label>
+         <TextInput type='number' className='w-24' onChange={(e)=>{handletaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels','Evaluating', e.target.value)}}     value={
+        lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.Evaluating
+      }/>
+         </div>
+
+         <div className='mb-2 flex gap-5 justify-between'>
+         <Label>Creating</Label>
+         <TextInput type='number' className='w-24' onChange={(e)=>{handletaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels','Creating', e.target.value)}}     value={
+        lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.Creating
+      }/>
+         </div>
+
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => toggleModal(index)} color={'primary'} className='mx-auto'>Done</Button>
+        </Modal.Footer>
+      </Modal>
+
       </Card>
+
+      
+
+
     ))}
 
 
@@ -442,13 +609,21 @@ const getFileStatus = (fileStatus) => {
               total: 0,
               placement: '',
               totalItems: 0,
-              file_status:''
+              file_status:'',
+              taxonomy_levels:{
+                Remembering:0,
+                Understanding:0,
+                Applying:0,
+                Analyzing:0,
+                Evaluating:0,
+                Creating:0
+              }
             })
           }
         >
           <AddCircleOutlineIcon className="mr-2 " /> Add Lesson
         </Button>
-        <Button color={'primary'}  className="mt-3"  onClick={handleReadFile} isProcessing={read}>{read == true?'Reading files':'Read files'}</Button>
+      
         </div>
        
       </div>
@@ -460,6 +635,7 @@ const getFileStatus = (fileStatus) => {
     
 
     {/* Pagination controls */}
+    {/* {JSON.stringify(lessonsData)} */}
 
   </Card>
   );
