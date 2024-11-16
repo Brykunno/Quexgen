@@ -6,6 +6,8 @@ export default {
 
     colors: {
       'prime':'#060164',
+      'lite':'#4e47d1',
+      
     },
     extend: {
 

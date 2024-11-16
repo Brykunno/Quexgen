@@ -8,7 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import TableRow from "@mui/material/TableRow";
-import { Breadcrumb,Card,Progress,Label, Textarea, TextInput,Button,RangeSlider,Modal,Select,FileInput } from "flowbite-react";
+import { Breadcrumb,Card,Progress,Label, Textarea,ToggleSwitch, TextInput,Button,RangeSlider,Modal,Select,FileInput } from "flowbite-react";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import TOSmodal from "./TOSmodal";
 import Error from "./Error";
@@ -126,6 +126,7 @@ taxonomy_levels: {
   const [Creating, setCreating] = React.useState(0);
   const [TotalTaxonomy, setTotalTaxonomy] = React.useState(0);
   const [PdfModal, setPdfModal] = useState(false);
+  const [specific,setSpecific] = useState(true)
 
   const [indexRow, setIndexRow] = React.useState(0);
   
@@ -200,6 +201,12 @@ taxonomy_levels: {
 
     // Store the updated lessons array in local storage
     localStorage.setItem('lessonsData', JSON.stringify(updatedLessons));
+   
+  };
+
+  const addAllocation = (newAllocation) => {
+    const updatedAllocations = [...allocations, newAllocation];
+    setAllocations(updatedAllocations);
    
   };
 
@@ -338,6 +345,7 @@ const columns = [
 
   let getTotalTaxonomy = Number(Remembering) + Number(Understanding) + Number(Applying) + Number(Analyzing) + Number(Evaluating) + Number(Creating)
   const handleRememberingChange = (event) => {
+    setSpecific(false)
 
     setRemembering(hundred(event.target.value));
     setTotalTaxonomy(getTotalTaxonomy)
@@ -347,30 +355,35 @@ const columns = [
 
 
   const handleUnderstandingChange = (event) => {
+    setSpecific(false)
     setUnderstanding(hundred(event.target.value));
     setTotalTaxonomy(getTotalTaxonomy)
     localStorage.setItem('Understanding', event.target.value);
   };
 
   const handleApplyingChange = (event) => {
+    setSpecific(false)
     setApplying(hundred(event.target.value));
     setTotalTaxonomy(getTotalTaxonomy)
     localStorage.setItem('Applying',event.target.value);
   };
 
   const handleAnalyzingChange = (event) => {
+    setSpecific(false)
     setAnalyzing(hundred(event.target.value));
     setTotalTaxonomy(getTotalTaxonomy)
     localStorage.setItem('Analyzing', event.target.value);
   };
 
   const handleEvaluatingChange = (event) => {
+    setSpecific(false)
     setEvaluating(hundred(event.target.value));
     setTotalTaxonomy(getTotalTaxonomy)
     localStorage.setItem('Evaluating', event.target.value);
   };
 
   const handleCreatingChange = (event) => {
+    setSpecific(false)
     setCreating(hundred(event.target.value));
     setTotalTaxonomy(getTotalTaxonomy)
     localStorage.setItem('Creating', event.target.value);
@@ -502,6 +515,28 @@ function getCreating(Creating,items){
   return roundNum((Creating/100)*items)
 }
 
+function getLevelAllocation(allocations,level,index){
+
+  const Remembering = allocations[index]['Remembering']
+  const Understanding = allocations[index]['Understanding']
+  const Applying = allocations[index]['Applying']
+  const Analyzing = allocations[index]['Analyzing']
+  const Evaluating = allocations[index]['Evaluating']
+  const Creating = allocations[index]['Creating']
+
+  const total = Remembering+Understanding+Applying+Analyzing+Evaluating+Creating
+
+  
+  const percent = Math.round((allocations[index][level]/total)*100)
+
+  console.log('totalAll: ',percent, '|level:',level,'|index:',index)
+
+  return percent
+
+
+
+}
+
 function getTotal(remembering,understanding,applying,analyzing,evaluating,creating){
  const num = remembering+understanding+applying+analyzing+evaluating+creating
   return parseFloat(num.toFixed(2))
@@ -556,12 +591,46 @@ const handleLessonDataChange = (index, field, value) => {
       // Recalculate fields based on the updated teachingHours
       newData[i]['allocation'] = getAllocation(Number(newData[i][field]), getTotalHours());
       newData[i]['items'] = getNumItems(totalItems, newData[i]['allocation']);
-      newData[i]['remembering'] = getRemembering(Remembering, newData[i]['items']);
-      newData[i]['understanding'] = getUnderstanding(Understanding, newData[i]['items']);
-      newData[i]['applying'] = getApplying(Applying, newData[i]['items']);
-      newData[i]['analyzing'] = getAnalyzing(Analyzing, newData[i]['items']);
-      newData[i]['evaluating'] = getEvaluating(Evaluating, newData[i]['items']);
-      newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
+
+      let remembering = 0;
+      let understanding = 0;
+      let applying = 0;
+      let analyzing = 0;
+      let evaluating = 0;
+      let creating = 0;
+      if(specific===true){
+
+      
+       remembering = getLevelAllocation(allocations,'Remembering',i)
+       understanding = getLevelAllocation(allocations,'Understanding',i)
+
+       applying = getLevelAllocation(allocations,'Applying',i)
+
+       analyzing = getLevelAllocation(allocations,'Analyzing',i)
+
+       evaluating = getLevelAllocation(allocations,'Evaluating',i)
+
+       creating = getLevelAllocation(allocations,'Creating',i)
+      }
+      else{
+
+         remembering = Remembering;
+         understanding = Understanding;
+         applying = Applying;
+         analyzing = Analyzing;
+         evaluating = Evaluating;
+         creating = Creating;
+
+      }
+
+
+
+      newData[i]['remembering'] = getRemembering(remembering, newData[i]['items']);
+      newData[i]['understanding'] = getUnderstanding(understanding, newData[i]['items']);
+      newData[i]['applying'] = getApplying(applying, newData[i]['items']);
+      newData[i]['analyzing'] = getAnalyzing(analyzing, newData[i]['items']);
+      newData[i]['evaluating'] = getEvaluating(evaluating, newData[i]['items']);
+      newData[i]['creating'] = getCreating(creating, newData[i]['items']);
       newData[i]['total'] = getTotal(
         newData[i]['remembering'],
         newData[i]['understanding'],
@@ -1408,14 +1477,18 @@ const configTotalTaxonomy = lessonsData.reduce((acc, data) => {
 
   const removeLesson = (lessonsData, index) => {
     let myArray = lessonsData.slice(); // Create a shallow copy of the array
+    let alloc = allocations.slice()
   
     // Check if the index is valid and the array is not empty
     if (myArray && myArray.length > 0 && index >= 0 && index < myArray.length) {
       // Remove the item at the specified index
       myArray.splice(index, 1);
+      alloc.splice(index, 1);
   
       // Update the state with the modified array
       setLessonsDatainitial(myArray);
+      setAllocations(alloc);
+
   
       // Save the updated array back to local storage
       localStorage.setItem('lessonsData', JSON.stringify(myArray));
@@ -1426,10 +1499,19 @@ const configTotalTaxonomy = lessonsData.reduce((acc, data) => {
 
 
 
+  const [settings, setSettings] = useState({
+    chairperson: '',
+    dean: '',
+    director: '',
+    academic_year: '',
+  });
+  
 
 const options = ['Multiple Choice','Identification','True or False','Subjective'];
 
 const [user, setUser] = useState([]);
+
+
 const [formData, setFormData] = useState({
   Title: '',
   Semester: '1st Semester',
@@ -1473,6 +1555,23 @@ useEffect(() => {
       Faculty: fullName // Update formData with the full name
     }));
   }
+
+  api.get(`/api/settings/`)
+  .then((res) => {
+  
+    setFormData(
+      (prevFormData => ({
+        ...prevFormData,
+        Chairperson: res.data[0].chairperson,
+        Dean: res.data[0].dean,
+        Director: res.data[0].director,
+        AcademicYear: res.data[0].academic_year,
+      }))
+    );
+  })
+  .catch((err) => {
+    alert(err);
+  });
 }, [user]); // Only run this effect when 'user' state changes
 
 // Function to get full name of the user
@@ -2005,6 +2104,19 @@ return api.post("/api/tos-content/", { lessonsDataJson })
                   Dean: '',
                   Director: ''
                 })
+                api.get(`/api/settings/`)
+                .then((res) => {
+                
+                  setFormData(
+                    (prevFormData => ({
+                      ...prevFormData,
+                      Chairperson: res.data[0].chairperson,
+                      Dean: res.data[0].dean,
+                      Director: res.data[0].director,
+                      AcademicYear: res.data[0].academic_year,
+                    }))
+                  );
+                })
                 localStorage.removeItem('examData')
                 loadDataFromLocalStorageExam()
                 localStorage.removeItem('questionData')
@@ -2184,6 +2296,8 @@ const handleSubmitExam = () =>{
 }
 const [allocations, setAllocations] = useState([]);
 
+
+
   // Handle the form submission
   const handleSubmitAllocation = async () => {
     try {
@@ -2218,41 +2332,92 @@ const [allocations, setAllocations] = useState([]);
 
     setLoadingAllocate(false)
   };
+  const handleOneAllocation = async (value, index) => {
+    const updatedFileInfo = [];
+    try {
+      // Make the API call and get the response
+      const response = await api.post('/api/taxonomy-allocation/', {
+        objectives: value,
+      });
+  
+      // Extract allocation data from the response
+      let allocationsArray = response.data.allocation;
+  
+     console.log('allocateArray: ', allocationsArray)
+     updatedFileInfo.push(allocationsArray);
+
+
+    } catch (error) {
+      console.error('Error processing the file and data:', error);
+    } finally {
+      // Ensure loading is set to false regardless of the outcome
+      setLoadingAllocate(false);
+    }
+
+    updatedFileInfo.forEach((data) => {
+      const newData = [...allocations];
+  
+      // Update the specific fields in the corresponding lesson object
+      newData[index] = {
+        'Remembering': data['Remembering'],
+        'Understanding': data['Understanding'],
+        'Applying': data['Applying'],
+        'Analyzing': data['Analyzing'],
+        'Evaluating': data['Evaluating'],
+        'Creating': data['Creating'],
+        
+      };
+    
+      setAllocations(newData)
+
+      const newLesson = [...lessonsDataInitial]
+      newLesson[index]['taxonomy_levels'] = newData[index];
+      localStorage.setItem('lessonsData', JSON.stringify(newLesson));
+      // setLessonsDatainitial(newData);
+  
+     
+  
+   
+      
+    });
+  };
+  
 
   const submitAllocation = () =>{
 
     setLoadingAllocate(true)
     setAllocations([]);
     handleSubmitAllocation();
+    setSpecific(true)
 
    
   }
   const handletaxlevelChange = (index, field,level, value) => {
+
+    setSpecific(true)
     // Clone the lessonsData array to avoid direct mutation
     const newData = [...lessonsData];
     const newDataAllocation = [...allocations]
   
     // Update the specific field in the corresponding lesson object
     newData[index][field][level] = value;
-    newDataAllocation[index][level] = value
+    newDataAllocation[index][level] = Number(value)
 
 
   
       // Update the state with the new data
       setLessonsDatainitial(newData);
-      setAllocations(newDataAllocation)
+      
       
   
       // Save the updated lessonsData to localStorage
       localStorage.setItem('lessonsData', JSON.stringify(newData));
+
+      setAllocations(newDataAllocation)
   
   }
 
-  useEffect(() => {
-    setAllocations((prevAllocations) => [
-      ...lessonsData.flatMap((data) => data.taxonomy_levels || [])
-    ]);
-  }, []);
+
   
   useEffect(() => {
     const creating = Number(Creating);
@@ -2291,7 +2456,6 @@ const [allocations, setAllocations] = useState([]);
 
 
 
-
   
 
   return (
@@ -2315,9 +2479,9 @@ const [allocations, setAllocations] = useState([]);
 
 
        {/* Title and Semester */}
-       <div className='w-full mb-3'>
+       <div className='w-full mb-3 flex flex-col sm:flex-row gap-4'>
 
-       <div className="w-full">
+       <div className="">
            <div className="mb-2 block">
              <Label htmlFor="title" value="Course" />
            </div>
@@ -2339,11 +2503,19 @@ const [allocations, setAllocations] = useState([]);
            </Select>
          </div>
 
-           {/* <div className="mb-2 block">
-             <Label htmlFor="title" value="Subject" />
+         <div className=''>
+           <div className="mb-2 block">
+             <Label htmlFor="course-code" value="Course Code" />
            </div>
-           <TextInput id="title" type="text" name="Title" value={formData.Title} onChange={(e)=>{handleChange(e);handleExamTitleChange(e)}} />
-            */}
+           <TextInput readOnly id="course-code" type="text" name="CourseCode" value={formData.CourseCode} onChange={handleChange} />
+         </div>
+
+         <div className=''>
+           <div className="mb-2 block">
+             <Label htmlFor="course-type" value="Course Type" />
+           </div>
+           <TextInput readOnly id="course-type" type="text" name="CourseType" value={formData.CourseType} onChange={handleChange} />
+         </div>
          </div>
        <div className='w-full mb-3 gap-4 flex flex-col sm:flex-row'>
       
@@ -2393,15 +2565,10 @@ const [allocations, setAllocations] = useState([]);
          </div>
        </div>
 
-       {/* Course Code and Department */}
-       <div className='w-full gap-4 flex flex-col mb-3 sm:flex-row'>
-         <div className='w-full'>
-           <div className="mb-2 block">
-             <Label htmlFor="course-code" value="Course Code" />
-           </div>
-           <TextInput readOnly id="course-code" type="text" name="CourseCode" value={formData.CourseCode} onChange={handleChange} />
-         </div>
-         <div className="w-full">
+
+       {/* Type of Examination and Course Type */}
+       <div className='w-full mb-3 gap-4 flex flex-col sm:flex-row'>
+       <div className="w-full">
            <div className="mb-2 block">
              <Label htmlFor="department" value="Department" />
            </div>
@@ -2411,10 +2578,6 @@ const [allocations, setAllocations] = useState([]);
     
            </Select>
          </div>
-       </div>
-
-       {/* Type of Examination and Course Type */}
-       <div className='w-full mb-3 gap-4 flex flex-col sm:flex-row'>
            {/* Date of Examination */}
        <div className='w-full'>
          <div className="mb-2 block">
@@ -2422,12 +2585,7 @@ const [allocations, setAllocations] = useState([]);
          </div>
          <TextInput id="exam-date" type="date" name="ExaminationDate" value={formData.ExaminationDate} onChange={handleChange} />
        </div>
-         <div className='w-full'>
-           <div className="mb-2 block">
-             <Label htmlFor="course-type" value="Course Type" />
-           </div>
-           <TextInput readOnly id="course-type" type="text" name="CourseType" value={formData.CourseType} onChange={handleChange} />
-         </div>
+       
        </div>
 
        <div className='w-full mb-3 gap-4 flex flex-col sm:flex-row'>
@@ -2437,7 +2595,7 @@ const [allocations, setAllocations] = useState([]);
 <div className="mb-2 block">
            <Label htmlFor="executive-director" value="Campus Executive Director" />
          </div>
-         <TextInput id="executive-director" type="text" name="Director" value={formData.Director} onChange={handleChange} />
+         <TextInput disabled id="executive-director" type="text" name="Director" value={formData.Director} onChange={handleChange} />
    
          </div>
 
@@ -2457,7 +2615,7 @@ const [allocations, setAllocations] = useState([]);
          <div className="mb-2 block">
            <Label htmlFor="chairperson" value="Department Chairperson" />
          </div>
-         <TextInput id="chairperson" type="text" name="Chairperson" value={formData.Chairperson} onChange={handleChange} />
+         <TextInput disabled id="chairperson" type="text" name="Chairperson" value={formData.Chairperson} onChange={handleChange} />
        </div>
 
        {/* College Dean */}
@@ -2465,7 +2623,7 @@ const [allocations, setAllocations] = useState([]);
          <div className="mb-2 block">
            <Label htmlFor="dean" value="College Dean" />
          </div>
-         <TextInput id="dean" type="text" name="Dean" value={formData.Dean} onChange={handleChange} />
+         <TextInput disabled id="dean" type="text" name="Dean" value={formData.Dean} onChange={handleChange} />
        </div>
        </div>
 
@@ -2515,6 +2673,7 @@ const [allocations, setAllocations] = useState([]);
 
   
       <Card className={`mb-5 ${step == 2? 'show':'hidden'}`}>
+     
       <div className="flex">
         <div className="flex-1 "> 
 
@@ -2556,7 +2715,9 @@ const [allocations, setAllocations] = useState([]);
         setTotalTaxonomy={setTotalTaxonomy} 
         getTotalTaxonomy={getTotalTaxonomy} 
         Remembering={Remembering}
-        addLesson={addLesson}
+        addLesson={addLesson}sonDa
+addAllocation={addAllocation}
+setSpecific={setSpecific}
         lessonsDataInitial={lessonsDataInitial}
         handleLessonDataChange={handleLessonDataChange}
         lessonsData={lessonsData}
@@ -2571,7 +2732,7 @@ const [allocations, setAllocations] = useState([]);
         setLessonsDatainitial={setLessonsDatainitial}
         setFiles={setFiles}
         handletaxlevelChange={handletaxlevelChange}
-        
+        oneAllocation={handleOneAllocation}
 
 
 
@@ -2582,7 +2743,13 @@ const [allocations, setAllocations] = useState([]);
 
       <Card className=" gap-4 mb-5  w-full p-3"> 
         <div>
+
+        <div>
+        <ToggleSwitch checked={specific} label={specific?'Locked':'Unlocked'} onChange={setSpecific} color={"primary"} className="mx-auto" />
+        </div>
+
       <div className="max-w-md flex gap-5">
+    
         <div className="mt-3" >
           <Label htmlFor="totalItems" className="font-bold" > Total of Items<span className="text-red-600">*</span></Label> 
         </div>
@@ -2594,9 +2761,9 @@ const [allocations, setAllocations] = useState([]);
         <div className="mt-2 block w-32">
           <Label htmlFor="md-range" value="Remembering" />
         </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={Remembering} onChange={handleRememberingChange} />
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Remembering} onChange={handleRememberingChange} disabled={specific} />
         <div className="flex">
-        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Remembering}  onChange={handleRememberingChange} /><span className="mt-2">%</span>
+        <input type="number" disabled={specific}  className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Remembering}  onChange={handleRememberingChange} /><span className="mt-2">%</span>
         </div>
         </div>
       </div>
@@ -2607,9 +2774,9 @@ const [allocations, setAllocations] = useState([]);
         <div className="mt-2 block w-32">
           <Label htmlFor="md-range" value="Understanding" />
         </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={Understanding} onChange={handleUnderstandingChange} />
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Understanding} onChange={handleUnderstandingChange} disabled={specific} />
         <div className="flex">
-        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Understanding}  onChange={handleUnderstandingChange} /><span className="mt-2">%</span>
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Understanding} disabled={specific}  onChange={handleUnderstandingChange} /><span className="mt-2">%</span>
         </div>
         </div>
       </div>
@@ -2620,9 +2787,9 @@ const [allocations, setAllocations] = useState([]);
         <div className="mt-2 block w-32">
           <Label htmlFor="md-range" value="Applying" />
         </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={Applying} onChange={handleApplyingChange} />
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Applying} onChange={handleApplyingChange} disabled={specific} />
         <div className="flex">
-        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Applying}  onChange={handleApplyingChange} /><span className="mt-2">%</span>
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Applying} disabled={specific}  onChange={handleApplyingChange} /><span className="mt-2">%</span>
         </div>
         </div>
       </div>
@@ -2633,9 +2800,9 @@ const [allocations, setAllocations] = useState([]);
         <div className="mt-2 block w-32">
           <Label htmlFor="md-range" value="Analyzing" />
         </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={Analyzing} onChange={handleAnalyzingChange} />
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Analyzing} onChange={handleAnalyzingChange} disabled={specific} />
         <div className="flex">
-        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Analyzing}  onChange={handleAnalyzingChange} /><span className="mt-2">%</span>
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Analyzing} disabled={specific}   onChange={handleAnalyzingChange} /><span className="mt-2">%</span>
         </div>
         </div>
       </div>
@@ -2647,9 +2814,9 @@ const [allocations, setAllocations] = useState([]);
         <div className="mt-2 block w-32">
           <Label htmlFor="md-range" value="Evaluating" />
         </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={Evaluating} onChange={handleEvaluatingChange} />
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Evaluating} onChange={handleEvaluatingChange} disabled={specific} />
         <div className="flex">
-        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Evaluating}  onChange={handleEvaluatingChange} /><span className="mt-2">%</span>
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Evaluating} disabled={specific}  onChange={handleEvaluatingChange} /><span className="mt-2">%</span>
         </div>
         </div>
       </div>
@@ -2660,9 +2827,9 @@ const [allocations, setAllocations] = useState([]);
         <div className="mt-2 block w-32">
           <Label htmlFor="md-range" value="Creating" />
         </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={Creating} onChange={handleCreatingChange} />
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Creating} onChange={handleCreatingChange} disabled={specific} />
         <div className="flex">
-        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Creating}  onChange={handleCreatingChange} /><span className="mt-2">%</span>
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Creating} disabled={specific}   onChange={handleCreatingChange} /><span className="mt-2">%</span>
         </div>
         </div>
       </div>
@@ -2688,9 +2855,9 @@ const [allocations, setAllocations] = useState([]);
       
       </div>
       <div className="my-3">
-      <Button color={'primary'} className="mx-auto" onClick={submitAllocation}  isProcessing={loadingAllocate ? true : false}>
+      {/* <Button color={'primary'} className="mx-auto" onClick={submitAllocation}  isProcessing={loadingAllocate ? true : false}>
       {loadingAllocate ? 'Allocating' : 'Allocate'}
-        </Button>
+        </Button> */}
       </div>
       </Card>
 
@@ -2860,7 +3027,7 @@ const [allocations, setAllocations] = useState([]);
       </Card>
 
         <div className={`mb-5 ${step == 4? 'show':'hidden'}`}>
-      <Examtest saveDataToLocalStorageTestPart={saveDataToLocalStorageTestPart} files={files} setExamTitle={setExamTitle} items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} setLoading={setLoadingGenerate} context={context} setContext={setContext} formData={formData} handleLessonDataChange={handleLessonDataChange}/>
+      <Examtest setTOSPdfModal={setPdfModal} saveDataToLocalStorageTestPart={saveDataToLocalStorageTestPart} files={files} setExamTitle={setExamTitle} items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} setLoading={setLoadingGenerate} context={context} setContext={setContext} formData={formData} handleLessonDataChange={handleLessonDataChange}/>
 
 
     
@@ -2883,7 +3050,7 @@ const [allocations, setAllocations] = useState([]);
  
       <Button size={'sm'}  color={'primary'} onClick={handleNext} disabled={disableNext} className="px-4" > <p style={{marginTop:'0.5px'}}>Next</p> <NavigateNextIcon  /></Button>
   
-   {/* {JSON.stringify(allocations)} */}
+   {/* {JSON.stringify(lessonsDataInitial)} */}
       </div>
       </div>
     </div>

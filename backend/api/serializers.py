@@ -206,3 +206,14 @@ class CoursesSerializer(serializers.ModelSerializer):
         if len(value) < 3:
             raise serializers.ValidationError("Course name must be at least 3 characters long.")
         return value
+    
+class SettingsSerializer(serializers.ModelSerializer):
+     class Meta:
+        model = Settings
+        fields = ['id', 'chairperson', 'dean', 'director','academic_year']
+        
+class LogsSerializer(serializers.ModelSerializer):
+     class Meta:
+         model = Logs
+         fields = ['id','log','status']
+        

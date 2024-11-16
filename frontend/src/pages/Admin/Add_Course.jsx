@@ -98,7 +98,11 @@ function Add_Course({setLoading}){
   
   </Button>
 </form>
+
 </Card>
+
+
+
 </div>
     );
 }

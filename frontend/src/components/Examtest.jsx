@@ -21,7 +21,7 @@ import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 import AutoModeIcon from '@mui/icons-material/AutoMode';
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 
-function Examtest ({handleLessonDataChange, saveDataToLocalStorageTestPart,files,items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext,formData}) {
+function Examtest ({handleLessonDataChange, saveDataToLocalStorageTestPart,files,items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext,formData,setTOSPdfModal}) {
 
 
 
@@ -1360,13 +1360,15 @@ setTestPart([])
  <div className='position: sticky top-0 z-40 rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 p-3'>
 <div className='flex '>
  <div className='flex gap-5 justify-start'>
- <Button color={'primary'} onClick={()=>{setShowPart(1)}} disabled={disableShowPart1} size={'sm'} fontSize='small'><VisibilityIcon className="mr-2"/> Test 1</Button>
-    <Button color={'primary'} onClick={()=>{setShowPart(2)}} disabled={disableShowPart2} size={'sm'} fontSize='small'><VisibilityIcon className="mr-2"/> Test 2</Button>
-    <Button color={'primary'} onClick={()=>{setShowPart(3)}} disabled={disableShowPart3} size={'sm'} fontSize='small'><VisibilityIcon className="mr-2"/> Test 3</Button>
-    <Button color={'primary'} onClick={()=>{setShowPart(4)}} disabled={disableShowPart4} size={'sm'} fontSize='small'><VisibilityIcon className="mr-2"/> Test 4</Button>
+ <Button color={'primary'} onClick={()=>{setShowPart(1)}} disabled={disableShowPart1} size={'sm'} fontSize='small'> Test 1</Button>
+    <Button color={'primary'} onClick={()=>{setShowPart(2)}} disabled={disableShowPart2} size={'sm'} fontSize='small'> Test 2</Button>
+    <Button color={'primary'} onClick={()=>{setShowPart(3)}} disabled={disableShowPart3} size={'sm'} fontSize='small'> Test 3</Button>
+    <Button color={'primary'} onClick={()=>{setShowPart(4)}} disabled={disableShowPart4} size={'sm'} fontSize='small'> Test 4</Button>
+    
   </div>
 
   <div className='flex flex-1 gap-5 justify-end'>
+    <Button color="primary" onClick={() => setTOSPdfModal(true)} size={'sm'} fontSize='small'> <VisibilityIcon className="mr-2"/>TOS</Button>
   <Button  color="blue" onClick={() => setPdfModal(true)}  size={'sm'}><PreviewIcon className="mr-2" fontSize='small'/>Preview</Button>
     <Button  color="blue" onClick={() => setPdfModalAnswer(true)}  size={'sm'}><KeyIcon className="mr-2" fontSize='small'/> Answer keys</Button>
    <Button  color="failure" onClick={()=>{setClearBtn(true)}}><CleaningServicesIcon className="mr-2" size={'sm'} fontSize='small'/> Clear</Button>
@@ -1600,7 +1602,7 @@ setTestPart([])
     <div>test 3: {Test3}</div>
     <div>test 4: {Test4}</div>
     <div>test 4: {JSON.stringify(TestPart)}</div> */}
- {/* {JSON.stringify(TestPart)} */}
+ {/* {JSON.stringify(categories)} */}
    
     {loadingpercent && <LoadingWithPercent percent={percent}/>}
 

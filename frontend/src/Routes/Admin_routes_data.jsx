@@ -11,6 +11,8 @@ import Exam_review from '../pages/Admin/Exam_review';
 import Admin_profile from '../pages/Admin/Admin_profile';
 import Login from '../pages/Login';
 import Courses from '../pages/Admin/Courses';
+import Logs from '../pages/Admin/Logs';
+import Settings from '../pages/Admin/Settings';
 
 
 
@@ -43,6 +45,14 @@ export const Admin_routes_data = [
     {
         path: "/admin_profile",
         element: <Admin_profile />
+    },
+    {
+        path: "/logs",
+        element: <Logs />
+    },
+    {
+        path: "/settings",
+        element: <Settings />
     },
 
 

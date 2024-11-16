@@ -206,5 +206,33 @@ class Courses(models.Model):
     
     class Meta:
         db_table = 'courses'
+
+
+class Settings(models.Model):
+    chairperson = models.TextField()
+    dean = models.TextField()
+    director = models.TextField()
+    academic_year = models.TextField()
+    
+    def __str__(self):
+        return self.academic_year
+    
+    class Meta:
+        db_table = 'settings'
         
+class Logs(models.Model):
+    log = models.TextField()
+    status = models.TextField()
+
+    log_date = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.log
+    
+    class Meta:
+        db_table = 'logs'     
+
+
+
+            
 

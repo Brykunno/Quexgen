@@ -5,10 +5,11 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import LoadingGenerate from './LoadingGenerate';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ToastError from './ToastError';
-import { HiOutlineXCircle,HiCheckCircle } from 'react-icons/hi';
+import { HiOutlineXCircle,HiCheckCircle,HiOutlineX } from 'react-icons/hi';
 import Error from './Error';
 import InvalidFileError from './InvalidFileError';
-
+import CancelIcon from '@mui/icons-material/Cancel';
+import ClearIcon from '@mui/icons-material/Clear';
 
 function Learning_outcomes({
   setRemembering,
@@ -28,7 +29,7 @@ function Learning_outcomes({
   setFormData,
   submit,
   allocations,
-  setAllocations,files,setLessonsDatainitial,lessonsDataInitial,setFiles,handletaxlevelChange
+  setAllocations,files,setLessonsDatainitial,lessonsDataInitial,setFiles,handletaxlevelChange,oneAllocation,addAllocation
   
 }) {
   // State to manage input data
@@ -60,18 +61,31 @@ function Learning_outcomes({
 const [tax_alloc, setTax] = useState([]);
 
   
- // Calculate the percentage of allocations
- const calculatePercentages = (allocations) => {
+const calculatePercentages = (allocations) => {
   const total = Object.values(allocations).reduce((sum, value) => sum + value, 0);
   const percentages = {};
 
+  // Step 1: Calculate initial percentages using Math.floor
+  let sumOfPercentages = 0;
   for (const key in allocations) {
-    percentages[key] = total > 0 ? Math.round((allocations[key] / total) * 100) : 0;
+    percentages[key] = total > 0 ? Math.floor((allocations[key] / total) * 100) : 0;
+    sumOfPercentages += percentages[key];
   }
-  
+
+  // Step 2: Calculate the difference and distribute it
+  let difference = 100 - sumOfPercentages;
+  if (difference > 0) {
+    // Sort keys to ensure a consistent distribution
+    const keys = Object.keys(percentages).sort((a, b) => allocations[b] - allocations[a]);
+    
+    // Distribute the difference using Math.ceil
+    for (let i = 0; i < difference; i++) {
+      percentages[keys[i % keys.length]] += 1;
+    }
+  }
+
   return percentages;
 };
-
 
     
 
@@ -164,7 +178,7 @@ useEffect(()=>{
       localStorage.setItem('Creating',create);
     }
   },[percent]
-)
+)    
 
 useEffect(() => {
   const updateExaminationType = () => {
@@ -328,13 +342,14 @@ const handleReadOneFile = async (value,index) => {
     newData[index]['topic'] = data[0].lesson_topic;
     newData[index]['learning_outcomes'] = data[0].learning_outcomes;
     
-
-   
+    
+   oneAllocation(newData[index]['learning_outcomes'],index)
 
     // Save the updated lessonsData to localStorage
     localStorage.setItem('lessonsData', JSON.stringify(newData));
     setLessonsDatainitial(newData);
     setRead(false)
+    
   });
  
 };
@@ -389,7 +404,7 @@ const handleValidateFile = async (value,index) => {
       newStatus[index] = false; // Reset the specific index in case of error
       return newStatus;
     });
-
+  
   } catch (error) {
     // Handle errors that may occur during the request
     console.error('Error processing the file and data:', error);
@@ -399,7 +414,11 @@ const handleValidateFile = async (value,index) => {
       return newStatus;
     });
   }
+
+  
+  
 };
+
 
 
 const getFileStatus = (fileStatus) => {
@@ -409,6 +428,7 @@ const getFileStatus = (fileStatus) => {
 
   
   if(fileStatus.status === "Valid"){
+    
     return <div className='text-green-600 font-semibold flex gap-1'>Valid file <HiCheckCircle className='mt-1'/></div>
   } 
      else if(fileStatus.status === "Invalid"){
@@ -435,137 +455,114 @@ const removeFile = (index) => {
 
     {/* Render only the current page of lessons */}
     {currentLessons.map((item, index) => (
-      <Card key={indexOfFirstLesson + index}>
+     <Card key={indexOfFirstLesson + index} className="relative">
+     {/* Delete button positioned in the top right */}
+     <div className="absolute top-2 right-2">
+       <Button
+        
+         size={'xs'}
+         color={'failure'}
+        
+       >
+        <ClearIcon  className=" hover:scale-110 transition-transform duration-200"  onClick={() => {removeLesson(lessonsData, indexOfFirstLesson + index); removeFile(indexOfFirstLesson + index)}} />
 
-<div className="mb-3">
-    <div>
-      <div className="mb-2 block">
-        <Label htmlFor="file-upload" > Upload file for Lesson {indexOfFirstLesson +index+1} <span className='text-red-600'>*</span></Label>
-      </div>
-      <div className='flex gap-5'>
-      <FileInput id="file-upload"
-       accept="application/pdf"
-       className='flex-1'
-      sizing={'sm'}
-       onChange={(e) => {handleLessonDataChange(indexOfFirstLesson +index, 'study_guide', e.target.files[0]);
-
-        handleValidateFile(e.target.files[0],indexOfFirstLesson +index);
-        handleReadOneFile(e.target.files[0],indexOfFirstLesson +index);
-        }}
-       
-      /><div > { fileStatus[indexOfFirstLesson +index]  && <div><Spinner color={'primary'} /> Validating file...</div>}
-      <span className={fileStatus[indexOfFirstLesson +index] ?'hidden':''} >
-      {getFileStatus(lessonsDataInitial[indexOfFirstLesson +index]?.file_status)}
-      </span></div>
-      </div>
-     
-    </div>
-    </div>
-       
-        <div className="flex gap-5 mb-4">
-          <div className='flex-1'>
-          <div className="ms-2 font-bold mb-2">Lesson {indexOfFirstLesson + index + 1}</div>
-          <Textarea
-            value={lessonsData[indexOfFirstLesson + index]['topic']}
-            style={{ height: '100px' }}
-            onChange={(e) =>
-              handleLessonDataChange(indexOfFirstLesson + index, 'topic', e.target.value)
-            }
-            placeholder="Enter the summary of the lesson"
-          />
-          </div>
-          <div className='flex-1'>
-          <div className="ms-2 font-bold mb-2">Learning outcomes</div>
-          <Textarea
-            value={lessonsData[indexOfFirstLesson + index]['learning_outcomes']}
-            style={{ height: '100px' }}
-            onChange={(e) =>
-              handleLessonDataChange(indexOfFirstLesson + index, 'learning_outcomes', e.target.value)
-            }
-            placeholder="Enter the learning outcomes for the lesson"
-          />
-          </div>
-         
-          <div style={{ flex: 0.1 }}>
-            
-            <Button
-              color={'failure'}
-              onClick={() => {removeLesson(lessonsData, indexOfFirstLesson + index); removeFile(indexOfFirstLesson + index)}}
-              className='mt-12'
-            >
-              <DeleteIcon/>
-            </Button>
-          </div>
-        </div>
-
-{/* <div>
-            <Button color={'primary'}  onClick={() => toggleModal(indexOfFirstLesson + index)} className='mx-auto'>Identify Levels of taxonomy</Button>
-            </div> */}
-
-            
-<Modal size={'md'} show={openModals[index]} onClose={() =>  toggleModal(index)}>
-        <Modal.Header>Identify taxonomy levels</Modal.Header>
-        <Modal.Body>
-        <div className='flex-1 mb-2'>
-          <div className="ms-2 font-bold mb-2">Learning outcomes</div>
-          <Textarea
-            value={lessonsData[indexOfFirstLesson + index]['learning_outcomes']}
-            style={{ height: '130px' }}
-            onChange={(e) =>
-              handleLessonDataChange(indexOfFirstLesson + index, 'learning_outcomes', e.target.value)
-            }
-            placeholder="Enter the learning outcomes for the lesson"
-          />
-          </div>
-          <div className='mb-2 flex gap-5 justify-between'>
-         <Label>Remembering</Label>
-         <TextInput type='number' className='w-24' onChange={(e)=>{handletaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels','Remembering', e.target.value)}}     value={
-        lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.Remembering
-      }/>
+       </Button>
+     </div>
+   
+     <div className="mb-3">
+       <div>
+         <div className="mb-2 block">
+           <Label htmlFor="file-upload">
+             Upload file for Lesson {indexOfFirstLesson + index + 1} <span className="text-red-600">*</span>
+           </Label>
          </div>
-
-         <div className='mb-2 flex gap-5 justify-between'>
-         <Label>Understanding</Label>
-         <TextInput type='number' className='w-24' onChange={(e)=>{handletaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels','Understanding', e.target.value)}}     value={
-        lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.Understanding
-      }/>
+         <div className="flex gap-5">
+           <FileInput
+             id="file-upload"
+             accept="application/pdf"
+             className="flex-1"
+             sizing="sm"
+             onChange={(e) => {
+               handleLessonDataChange(indexOfFirstLesson + index, 'study_guide', e.target.files[0]);
+               handleValidateFile(e.target.files[0], indexOfFirstLesson + index);
+               handleReadOneFile(e.target.files[0], indexOfFirstLesson + index);
+             }}
+           />
+           <div>
+             {fileStatus[indexOfFirstLesson + index] ? (
+               <div><Spinner color="primary" /> Validating file...</div>
+             ) : (
+               <span>{getFileStatus(lessonsDataInitial[indexOfFirstLesson + index]?.file_status)}</span>
+             )}
+           </div>
          </div>
-
-         <div className='mb-2 flex gap-5 justify-between'>
-         <Label>Applying</Label>
-         <TextInput type='number' className='w-24' onChange={(e)=>{handletaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels','Applying', e.target.value)}}     value={
-        lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.Applying
-      }/>
+       </div>
+     </div>
+   
+     <div className="flex gap-5 mb-4">
+       <div className="flex-1">
+         <div className="ms-2 font-bold mb-2">Lesson {indexOfFirstLesson + index + 1}</div>
+         <Textarea
+           value={lessonsData[indexOfFirstLesson + index]['topic']}
+           style={{ height: '100px' }}
+           onChange={(e) => handleLessonDataChange(indexOfFirstLesson + index, 'topic', e.target.value)}
+           placeholder="Enter the summary of the lesson"
+         />
+       </div>
+       <div className="flex-1">
+         <div className="ms-2 font-bold mb-2">Learning outcomes</div>
+         <Textarea
+           value={lessonsData[indexOfFirstLesson + index]['learning_outcomes']}
+           style={{ height: '100px' }}
+           onChange={(e) => handleLessonDataChange(indexOfFirstLesson + index, 'learning_outcomes', e.target.value)}
+           placeholder="Enter the learning outcomes for the lesson"
+         />
+       </div>
+     </div>
+   
+     <div>
+       <Button
+         color="primary"
+         disabled={item.file_status === ""}
+         onClick={() => toggleModal(indexOfFirstLesson + index)}
+         className="mx-auto"
+       >
+         Identify levels of taxonomy
+       </Button>
+     </div>
+   
+     <Modal size="md" show={openModals[index]} onClose={() => toggleModal(index)}>
+       <Modal.Header>Identify taxonomy levels</Modal.Header>
+       <Modal.Body>
+         <div className="flex-1 mb-2">
+           <div className="ms-2 font-bold mb-2">Learning outcomes</div>
+           <Textarea
+             value={lessonsData[indexOfFirstLesson + index]['learning_outcomes']}
+             style={{ height: '130px' }}
+             onChange={(e) => handleLessonDataChange(indexOfFirstLesson + index, 'learning_outcomes', e.target.value)}
+             placeholder="Enter the learning outcomes for the lesson"
+           />
          </div>
-
-         <div className='mb-2 flex gap-5 justify-between'>
-         <Label>Analyzing</Label>
-         <TextInput type='number' className='w-24' onChange={(e)=>{handletaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels','Analyzing', e.target.value)}}     value={
-        lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.Analyzing
-      }/>
-         </div>
-
-         <div className='mb-2 flex gap-5 justify-between'>
-         <Label>Evaluating</Label>
-         <TextInput type='number' className='w-24' onChange={(e)=>{handletaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels','Evaluating', e.target.value)}}     value={
-        lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.Evaluating
-      }/>
-         </div>
-
-         <div className='mb-2 flex gap-5 justify-between'>
-         <Label>Creating</Label>
-         <TextInput type='number' className='w-24' onChange={(e)=>{handletaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels','Creating', e.target.value)}}     value={
-        lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.Creating
-      }/>
-         </div>
-
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={() => toggleModal(index)} color={'primary'} className='mx-auto'>Done</Button>
-        </Modal.Footer>
-      </Modal>
-
-      </Card>
+         {['Remembering', 'Understanding', 'Applying', 'Analyzing', 'Evaluating', 'Creating'].map((level) => (
+           <div key={level} className="mb-2 flex gap-5 justify-between">
+             <Label>{level}</Label>
+             <TextInput
+               type="number"
+               className="w-24"
+               onChange={(e) => handletaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels', level, e.target.value)}
+               value={lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.[level]}
+             />
+           </div>
+         ))}
+       </Modal.Body>
+       <Modal.Footer>
+         <Button onClick={() => toggleModal(index)} color="primary" className="mx-auto">
+           Done
+         </Button>
+       </Modal.Footer>
+     </Modal>
+   </Card>
+   
 
       
 
@@ -593,7 +590,7 @@ const removeFile = (index) => {
         <Button
           color={'primary'}
           className="mt-3"
-          onClick={() =>
+          onClick={() =>{
             addLesson({
               topic: '',
               learning_outcomes: '',
@@ -618,7 +615,19 @@ const removeFile = (index) => {
                 Evaluating:0,
                 Creating:0
               }
-            })
+            });
+
+            addAllocation(
+              {
+                Remembering:0,
+                Understanding:0,
+                Applying:0,
+                Analyzing:0,
+                Evaluating:0,
+                Creating:0
+              }
+            )
+          }
           }
         >
           <AddCircleOutlineIcon className="mr-2 " /> Add Lesson
@@ -635,7 +644,7 @@ const removeFile = (index) => {
     
 
     {/* Pagination controls */}
-    {/* {JSON.stringify(lessonsData)} */}
+    {/* {JSON.stringify(percent)} */}
 
   </Card>
   );

@@ -44,6 +44,28 @@ const customTheme = {
   },
 
 
+  toggleSwitch:{
+    root:{
+    base: "group flex rounded-lg focus:outline-none",
+    active: {
+      "on": "cursor-pointer",
+      "off": "cursor-not-allowed opacity-50"
+    },
+    "label": "ms-3 mt-0.5 text-start text-sm font-medium text-gray-900 dark:text-gray-300"
+  },
+  toggle: {
+    "base": "relative rounded-full border after:absolute after:rounded-full after:bg-white after:transition-all group-focus:ring-4 group-focus:ring-cyan-500/25",
+    checked: {
+      on: "after:translate-x-full after:border-white rtl:after:-translate-x-full",
+      off: "border-prime bg-lite dark:border-lite dark:bg-lite",
+      color: {
+        primary: "border-prime bg-prime",
+    
+      }
+    },
+  },
+  }
+
 };
 
 

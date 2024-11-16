@@ -23,7 +23,10 @@ max_tokens = 1024
 
 # Split the context into paragraphs
 def split_context_into_paragraphs(context):
-    return context.split('\n')
+    lines = context.split('\n')
+    paragraphs = ['\n'.join(lines[i:i+6]) for i in range(0, len(lines), 6)]
+    return paragraphs
+
 
 # Number of questions to generate
 num_questions = 10
@@ -35,13 +38,19 @@ context = (
 
 # Bloom's Taxonomy levels
 taxonomy_levels = {
-    "Remembering": "Recall basic facts and concepts.",
-    "Understanding": "Explain ideas or concepts.",
-    "Applying": "Use information in new situations.",
-    "Analyzing": "Draw connections among ideas.",
-    "Evaluating": "Justify a decision or course of action.",
-    "Creating": "Generate new ideas or products."
+    "Remembering": "Recall or recognize essential facts, concepts, or principles from memory without needing to interpret or analyze them. This includes tasks like listing important historical events, reciting formulas, or naming the components of a system.",
+    
+    "Understanding": "Grasp the meaning of information and express it clearly in different forms, such as summarizing main ideas, explaining concepts in your own words, or classifying different types of phenomena. This level includes describing how something works or explaining the significance of an idea.",
+    
+    "Applying": "Put learned knowledge into practice in new or familiar situations, demonstrating the ability to execute a concept effectively. This involves solving problems using known strategies, conducting a procedure in a lab, or using principles to develop a project or craft an argument.",
+    
+    "Analyzing": "Examine and break information into parts to understand its structure, relationships, or causes. This might involve differentiating between elements, organizing data to highlight patterns, or making inferences about how parts contribute to the whole. It includes exploring assumptions behind an argument or discovering hidden connections between concepts.",
+    
+    "Evaluating": "Make informed judgments by critiquing ideas, theories, or solutions based on criteria or standards. This involves defending opinions with evidence, debating the merits of various options, or assessing the validity of conclusions. You may be tasked with making decisions in complex scenarios or offering thoughtful recommendations.",
+    
+    "Creating": "Formulate original ideas, products, or systems by integrating diverse elements in a unique way. This requires using creativity to construct solutions, propose new theories, or design something novel. Examples include inventing a new device, developing a business plan, or composing a piece of writing that demonstrates innovation and depth."
 }
+
 
 
 iden_taxonomy_levels = {
@@ -58,7 +67,8 @@ iden_taxonomy_levels = {
 # Define prompts for each taxonomy level
 prompts = {
     "Remembering": (
-        "Create a remembering multiple-choice question based on Bloom's taxonomy that tests the recall of specific facts, names, dates, or concepts directly mentioned in the following context: {context}. "
+        "Develop a thought-provoking multiple-choice question aligned with the 'Remembering' level of Bloom's taxonomy. Aim for questions that require recalling or identifying specific details, yet in a fresh and engaging way. For example, challenge learners to recognize details from the provided context: {context} in a unique format. Ensure questions prompt learners to remember key points, terminology, or data with a twist—consider trivia-style or association-based prompts."
+        "Avoid questions that rely solely on plain repetition, such as 'What is the primary...' or 'What is the purpose...'."
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
         "Ensure the question is distinct from previous questions by focusing on different facts, concepts, or wording, avoiding similarities with previously generated questions. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
@@ -66,7 +76,8 @@ prompts = {
         "Output the question immediately without any introductory words."
     ),
     "Understanding": (
-        "Create an understanding multiple-choice question based on Bloom's taxonomy that asks for an explanation of the following context: {context}. "
+        "Craft a multiple-choice question that aligns with the 'Understanding' level of Bloom's taxonomy. Make the question not only ask for explanations but also apply comparisons, summaries, or interpretations that could spark curiosity: {context}."
+        "Avoid generic phrasing like 'What is the purpose...' and instead aim for questions that require comprehension in an engaging way, such as rephrasing or contextual examples."
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
         "Ensure the question is distinct from previous questions by focusing on different aspects, explanations, or wording, avoiding similarities with previously generated questions. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
@@ -82,7 +93,9 @@ prompts = {
         "Output the question immediately without any introductory words."
     ),
     "Analyzing": (
-        "Create an analyzing multiple-choice question based on Bloom's taxonomy that involves analyzing or breaking down the following context: {context}. "
+        "Formulate an analysis-based multiple-choice question that aligns with the 'Analyzing' level of Bloom's taxonomy. Encourage deeper thought, such as finding causes, comparing elements, or identifying patterns within the context: {context}."
+        "Use analytical tasks, like distinguishing between correct and incorrect assumptions or deconstructing arguments. Steer away from asking simple, purpose-driven questions."
+        "List four possible answers, ensuring the correct answer is followed by credible distractors, and keep options label-free and in plain text."
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
         "Ensure the question is distinct from previous questions by focusing on a unique analysis or wording, avoiding similarities with previously generated questions. "
         "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
@@ -207,6 +220,8 @@ torf_prompts =  {
 }
 
 def generate_question_ai(level, context_ques, index, test_type, max_retries=5):
+    
+  
     # Select the appropriate prompt based on test type
     if test_type == "trueOrFalse":
         prompt = torf_prompts[level].format(context=context_ques)
@@ -329,10 +344,12 @@ def generate_question_ai(level, context_ques, index, test_type, max_retries=5):
 
 def generate_question_module(level, context_paragraph,test_type,extracted):
     
+    print('context: ', context_paragraph)
+    
     # Choose prompt based on taxonomy level
     
     if test_type =='trueOrFalse':
-        prompt = torf_prompts[level].format(context_paragraph)
+        prompt = torf_prompts[level].format(extracted)
     elif test_type =='identification':
          if level in ["Remembering", "Understanding", "Analyzing"]:
             prompt = identification_prompt[level].format(context=context_paragraph)  # Format the prompt with the context
@@ -359,7 +376,7 @@ def generate_question_module(level, context_paragraph,test_type,extracted):
                 ],
                 n=1,
                 max_tokens=max_tokens,
-                temperature=0.4,
+                temperature=0.6,
                 top_p=1,
                 response_format=ResponseFormat(type="text")
             )

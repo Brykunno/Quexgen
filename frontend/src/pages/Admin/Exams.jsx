@@ -136,7 +136,7 @@ const [termFilter, setTermFilter] = useState('');
     } else if (status === 1) {
       return (
         <div className='border border-green-700 rounded-full px-2 py-1 text-green-700 font-bold'>
-          {status_name} <RateReviewIcon className='ml-2'/>
+          For review <RateReviewIcon className='ml-2'/>
         </div>
       );
     } else if (status === 2) {
@@ -148,7 +148,7 @@ const [termFilter, setTermFilter] = useState('');
     } else if (status === 3) {
       return (
         <div className='border border-orange-600 rounded-full px-2 py-1 text-orange-600 font-bold'>
-          {status_name} <EditNoteIcon className='ml-2'/>
+          For revision <EditNoteIcon className='ml-2'/>
         </div>
       );
     } else {
@@ -283,11 +283,11 @@ const [termFilter, setTermFilter] = useState('');
     <div className="content">
 
     <Tabs aria-label="Tabs with icons" variant="fullWidth" >
-      <Tabs.Item active title="To review" icon={RateReviewIcon} >
+      <Tabs.Item active title="For review" icon={RateReviewIcon} >
       {content(exam,'To review')}
       {statusFilter}
       </Tabs.Item>
-      <Tabs.Item title="Needs revision" icon={EditNoteIcon}>
+      <Tabs.Item title="For revision" icon={EditNoteIcon}>
       {content(exam,'Needs Revision')}
       {statusFilter}
 

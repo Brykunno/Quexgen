@@ -10,6 +10,8 @@ router.register(r'users', views.UserViewSet)
 router.register(r'context', admin_views.ContextViewSet, basename='context')
 router.register(r'exam-dates', views.ExamDatesCreateView)
 router.register(r'courses', views.CoursesViewSet, basename='courses')
+router.register(r'settings', views.SettingsViewSet, basename='settings')
+router.register(r'logs', views.LogsViewSet, basename='logs')
 
 
 
