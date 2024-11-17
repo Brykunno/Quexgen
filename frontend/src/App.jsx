@@ -17,9 +17,28 @@ import { Teacher_routes_data } from "./Routes/Teacher_routes_data";
 import { Admin_routes_data } from "./Routes/Admin_routes_data";
 
 import { Flowbite } from 'flowbite-react';
-import { colors } from '@mui/material';
+import { colors, ThemeProvider } from '@mui/material';
 import Reset_password from './pages/reset_password';
 import Reset_form from './components/reset_form';
+
+import { createTheme } from '@mui/material/styles';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      light: '#373383',
+      main: '#060164',
+      dark: '#040046',
+      contrastText: '#fff',
+    },
+    secondary: {
+      light: '#ff7961',
+      main: '#f44336',
+      dark: '#ba000d',
+      contrastText: '#000',
+    },
+  },
+});
 
 const customTheme = {
   button: {
@@ -94,6 +113,7 @@ function App() {
 
 
 <Flowbite theme={{ theme: customTheme }}>
+<ThemeProvider theme={theme}>
 
 <BrowserRouter>
     <Routes>
@@ -142,7 +162,7 @@ function App() {
     </Routes>
   </BrowserRouter>
 
-   
+  </ThemeProvider>
    </Flowbite>
   );
 }

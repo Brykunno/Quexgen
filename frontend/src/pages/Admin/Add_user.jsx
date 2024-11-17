@@ -2,8 +2,9 @@
 import { useState } from "react";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
+import {Button} from "@mui/material";
 
-import { Button, Radio, Label, TextInput,Card } from "flowbite-react";
+import {  Radio, Label, TextInput,Card } from "flowbite-react";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -153,7 +154,7 @@ function Add_user({setLoading}){
 
       </div>
 
-  <Button color={'primary'} type="submit" >
+  <Button color={'primary'} type="submit" variant="contained">
     <PersonAddIcon className="mr-2"/>
     <p style={{marginTop:'0.8px'}}>  ADD USER</p>
   

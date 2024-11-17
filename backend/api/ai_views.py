@@ -234,7 +234,7 @@ def generate_question_ai(level, context_ques, index, test_type, max_retries=5):
     while retry_count < max_retries:
         try:
             response = client.chat.completions.create(
-                model="jamba-1.5-large",
+                model="jamba-1.5-mini",
                 messages=[
                     ChatMessage(
                         role="user",
@@ -874,7 +874,7 @@ def objectives_percentage(objectives):
                 ],
                 n=1,
                 max_tokens=max_tokens,
-                temperature=0.4,
+                temperature=0,
                 top_p=1,
                 response_format=ResponseFormat(type="text")
             )

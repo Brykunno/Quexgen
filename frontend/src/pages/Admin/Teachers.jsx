@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import api from "../../api";
 import Add_user from './Add_user';
-import { Table, Pagination, Button, Modal, Radio, Label, TextInput } from 'flowbite-react';
+import {Button} from "@mui/material";
+import { Table, Pagination, Modal, Radio, Label, TextInput } from 'flowbite-react';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import SearchIcon from '@mui/icons-material/Search';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
@@ -132,12 +133,12 @@ function Instructors() {
     <div>
       <Topnavbar title="Instructors / Users"/>
     <div className='content'>
-      <div className='flex gap-10 '>
-        <div style={{ flex: 0.4 }}>
+      <div className='flex gap-10  '>
+        <div className='w-80'>
           <Add_user setLoading={setLoading}/>
         </div>
         <div className='flex-1'>
-          <div className="flex items-center mb-5">
+          <div className="flex items-center my-5">
             <div className="relative shadow-lg">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <SearchIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -173,15 +174,16 @@ function Instructors() {
                     <Table.Cell className='flex gap-3'>
                       <Button
                         color={'primary'}
-                        size={'xs'}
+                        variant='contained'
+                        size={'small'}
                         onClick={() => openEditModal(user)}
-                        className='flex gap-3'
+                        className='flex gap-1'
                       >
                         <VisibilityIcon />
                         <p className='mt-1 ml-1'>View</p>
                       </Button>
                      
-                      {user.is_active!==true? <Button size={'xs'} color={'success'} onClick={()=>{handleUserActivate(user.id)}}><PowerSettingsNewIcon/><p className='mt-1 ml-1'>Activate</p></Button>:  <Button size={'xs'} color={'failure'} onClick={()=>{handleUserArchive(user.id)}}><HideSourceIcon/><p className='mt-1 ml-1'>Deactivate</p></Button>}
+                      {user.is_active!==true? <Button size={'small'} variant='contained' color={'success'} onClick={()=>{handleUserActivate(user.id)}}><PowerSettingsNewIcon/><p className='mt-1 ml-1'>Activate</p></Button>:  <Button size={'small'} variant='contained' color={'error'} onClick={()=>{handleUserArchive(user.id)}}><HideSourceIcon/><p className='mt-1 ml-1'>Deactivate</p></Button>}
                     </Table.Cell>
                     <Table.Cell>{user.is_active ? <div className='text-green-600 font-bold'>Active</div> : <div className='text-red-600 font-bold'>Deactivated</div>}</Table.Cell>
                   </Table.Row>
@@ -268,9 +270,9 @@ function Instructors() {
               </div>
             </Modal.Body>
             <Modal.Footer>
-              <Button color={'primary'} onClick={handleUserUpdate}>Update</Button>
+              <Button color={'primary'} variant='contained' onClick={handleUserUpdate}>Update</Button>
               
-              <Button color="gray" onClick={() => setOpenModal(false)}>
+              <Button  onClick={() => setOpenModal(false)}>
                 Cancel
               </Button>
             </Modal.Footer>

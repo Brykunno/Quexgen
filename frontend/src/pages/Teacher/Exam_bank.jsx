@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from "../../api";
-import { Card, Button, Table, Pagination, Select,  Dropdown,
+import {Button} from "@mui/material";
+import { Card,  Table, Pagination, Select,  Dropdown,
   DropdownDivider,
   DropdownHeader,
   DropdownItem,TextInput } from "flowbite-react";
@@ -162,7 +163,7 @@ const [termFilter, setTermFilter] = useState('');
           </span>
           <input
             type="text"
-            placeholder="Search by subject"
+            placeholder="Search by course name"
             className="p-2 pl-10 border border-gray-300 rounded w-full text-sm"
             value={searchTerm}
             onChange={handleSearch} // Real-time search here
@@ -266,7 +267,7 @@ const [termFilter, setTermFilter] = useState('');
                 <Table.Cell>{exam.AcademicYear}</Table.Cell>
                 <Table.Cell>
                   <a href={`/tos_view/${exam.id}`} className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
-                    <Button color={'primary'} size={'xs'} className='flex gap-3'>
+                    <Button color={'primary'} size={'small'} variant='contained' className='flex gap-1'>
                       <VisibilityIcon /> <p className='mt-1 ml-1'>View</p>
                     </Button>  
                   </a>
@@ -315,21 +316,21 @@ const [termFilter, setTermFilter] = useState('');
       <Topnavbar title="Exam Bank"/>
     <div className="content">
       
-    <Tabs aria-label="Tabs with icons" variant="fullWidth" >
-    <Tabs.Item active title={<b>Ongoing {Ongoing}</b>} icon={ManageHistoryIcon} >
+    <Tabs aria-label="Tabs with icons" variant="fullWidth"  >
+    <Tabs.Item active title={<b>Ongoing </b>}  icon={ManageHistoryIcon} >
       {content(exam,'Saved')}
       {statusFilter}  
       </Tabs.Item>
-      <Tabs.Item  title={<b>For review {review}</b>}  icon={RateReviewIcon} >
+      <Tabs.Item  title={<b>For review </b>}  icon={RateReviewIcon} >
       {content(exam,'To review')}
       {statusFilter}
       </Tabs.Item>
-      <Tabs.Item title={<b>To revise {revise}</b>}  icon={EditNoteIcon}>
+      <Tabs.Item title={<b>To revise </b>}  icon={EditNoteIcon}>
       {content(exam,'Needs Revision')}
       {statusFilter}
 
       </Tabs.Item>
-      <Tabs.Item title={<b>Approved {approve}</b>}  icon={RecommendIcon}>
+      <Tabs.Item title={<b>Approved </b>}  icon={RecommendIcon}>
       {content(exam,'Approved')}
       {statusFilter}  
       </Tabs.Item>

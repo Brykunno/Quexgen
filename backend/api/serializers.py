@@ -213,7 +213,8 @@ class SettingsSerializer(serializers.ModelSerializer):
         fields = ['id', 'chairperson', 'dean', 'director','academic_year']
         
 class LogsSerializer(serializers.ModelSerializer):
+     log_date = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
      class Meta:
          model = Logs
-         fields = ['id','log','status']
+         fields = ['id','log','status','log_date']
         

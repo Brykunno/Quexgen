@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import api from "../../api";
 import Add_Course from './Add_Course';
-import { Table, Pagination, Button, Modal, Radio, Label, TextInput } from 'flowbite-react';
+import {Button} from "@mui/material";
+import { Table, Pagination,  Modal, Radio, Label, TextInput } from 'flowbite-react';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import SearchIcon from '@mui/icons-material/Search';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
@@ -148,9 +149,10 @@ function Courses() {
                     <Table.Cell className='flex gap-3'>
                       <Button
                         color={'primary'}
-                        size={'xs'}
+                        variant='contained'
+                        size={'small'}
                         onClick={() => openEditModal(user)}
-                        className='flex gap-3'
+                        className='flex gap-1'
                       >
                         <VisibilityIcon />
                         <p className='mt-1 ml-1'>View</p>
@@ -210,10 +212,10 @@ function Courses() {
               </div>
             </Modal.Body>
             <Modal.Footer>
-              <Button color={'primary'} onClick={handleUserUpdate}>Update</Button>
-              <Button color={'failure'} onClick={handleUserDelete}>Delete</Button>
+              <Button color={'primary'} variant='contained' onClick={handleUserUpdate}>Update</Button>
+              <Button color={'error'} variant='contained' onClick={handleUserDelete}>Delete</Button>
               
-              <Button color="gray" onClick={() => setOpenModal(false)}>
+              <Button color="secondary" onClick={() => setOpenModal(false)}>
                 Cancel
               </Button>
             </Modal.Footer>

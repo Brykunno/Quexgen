@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from "../../api";
-import { Card, TextInput, Label, Button } from 'flowbite-react';
+import {Button} from "@mui/material";
+import { Card, TextInput, Label } from 'flowbite-react';
 import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import ArticleIcon from '@mui/icons-material/Article';
@@ -224,8 +225,8 @@ function Dashboard() {
                 eventPropGetter={eventStyleGetter}
               />
             </div>
-            <div >
-              <Button color={'primary'} className='mx-auto' onClick={handleSubmit}>Update</Button>
+            <div className='flex justify-center'>
+              <Button color={'primary'} variant='contained' className='mx-auto' onClick={handleSubmit}>Update</Button>
             </div>
           </Card>
           {loading && <ToastMessage message={"Exam dates successfully updated"} setToast={setLoading}/>}

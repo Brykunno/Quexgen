@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Textarea, Button, TextInput,Card,Pagination,FileInput,Label,Spinner,Modal } from 'flowbite-react';
+import {Button} from "@mui/material";
+import { Textarea, TextInput,Card,Pagination,FileInput,Label,Spinner,Modal } from 'flowbite-react';
 import api from '../api';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import LoadingGenerate from './LoadingGenerate';
@@ -32,7 +33,7 @@ function Learning_outcomes({
   setAllocations,files,setLessonsDatainitial,lessonsDataInitial,setFiles,handletaxlevelChange,oneAllocation,addAllocation
   
 }) {
-  // State to manage input data
+
  
  
   const [percent, setPercent] = useState([]);
@@ -461,7 +462,8 @@ const removeFile = (index) => {
        <Button
         
          size={'xs'}
-         color={'failure'}
+         color={'error'}
+      
         
        >
         <ClearIcon  className=" hover:scale-110 transition-transform duration-200"  onClick={() => {removeLesson(lessonsData, indexOfFirstLesson + index); removeFile(indexOfFirstLesson + index)}} />
@@ -499,7 +501,7 @@ const removeFile = (index) => {
        </div>
      </div>
    
-     <div className="flex gap-5 mb-4">
+     <div className="flex flex-col gap-5 mb-4 md:flex-row">
        <div className="flex-1">
          <div className="ms-2 font-bold mb-2">Lesson {indexOfFirstLesson + index + 1}</div>
          <Textarea
@@ -520,12 +522,14 @@ const removeFile = (index) => {
        </div>
      </div>
    
-     <div>
+     <div className='flex justify-center'>
        <Button
          color="primary"
+         variant='contained'
+
          disabled={item.file_status === ""}
          onClick={() => toggleModal(indexOfFirstLesson + index)}
-         className="mx-auto"
+       
        >
          Identify levels of taxonomy
        </Button>
@@ -555,10 +559,12 @@ const removeFile = (index) => {
            </div>
          ))}
        </Modal.Body>
-       <Modal.Footer>
-         <Button onClick={() => toggleModal(index)} color="primary" className="mx-auto">
+       <Modal.Footer className='flex justify-center '>
+       
+         <Button onClick={() => toggleModal(index)} color="primary" variant='contained' >
            Done
          </Button>
+         
        </Modal.Footer>
      </Modal>
    </Card>
@@ -589,6 +595,7 @@ const removeFile = (index) => {
         <div  className="mt-3 mx-auto flex gap-5" >
         <Button
           color={'primary'}
+          variant='contained'
           className="mt-3"
           onClick={() =>{
             addLesson({

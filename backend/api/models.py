@@ -231,6 +231,28 @@ class Logs(models.Model):
     
     class Meta:
         db_table = 'logs'     
+        
+
+class TaxonomyLevels(models.Model):
+    remembering = models.IntegerField()
+    understanding = models.IntegerField()
+    applying = models.IntegerField()
+    analyzing = models.IntegerField()
+    evaluating = models.IntegerField()
+    creating = models.IntegerField()
+    tos_content_id = models.ForeignKey(TOS_Content, on_delete=models.CASCADE, related_name="tos_content_id")
+    
+
+    
+    def __str__(self):
+        return self.tos_content_id
+    
+    class Meta:
+        db_table = 'taxonomy_levels'     
+        
+        
+
+
 
 
 

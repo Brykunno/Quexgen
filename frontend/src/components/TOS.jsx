@@ -8,7 +8,8 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import TableRow from "@mui/material/TableRow";
-import { Breadcrumb,Card,Progress,Label, Textarea,ToggleSwitch, TextInput,Button,RangeSlider,Modal,Select,FileInput } from "flowbite-react";
+import {Button} from "@mui/material";
+import { Breadcrumb,Card,Progress,Label, Textarea,ToggleSwitch, TextInput,RangeSlider,Modal,Select,FileInput } from "flowbite-react";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import TOSmodal from "./TOSmodal";
 import Error from "./Error";
@@ -35,6 +36,7 @@ import { PDFViewer } from '@react-pdf/renderer';
 import PdfFile from "./PdfFile";
 import Examtest from "./Examtest";
 import LoadingGenerate from "./LoadingGenerate";
+import ToastError from "./ToastError";
 
 
 function createData(
@@ -2048,6 +2050,10 @@ return api.post("/api/tos-content/", { lessonsDataJson })
       
               return api.post("/api/create-answers/", {itemAnswersJson}).then(()=>{
 
+                const log =  formData.Faculty+" submitted "  + formData.Semester +' '+ formData.Term+ ' examination for '+ formData.Title
+                const status = "success"
+                api.post("/api/logs/",{log,status})
+
                 localStorage.setItem('lessonsData',JSON.stringify([{  
                   topic: '',
                 learning_outcomes: '',
@@ -2193,6 +2199,8 @@ const handleBack = () => {
   else{
     setDisableNext(false)
   }
+
+  
 
   let topic = false
 let outcomes = false
@@ -2716,8 +2724,8 @@ const [allocations, setAllocations] = useState([]);
         getTotalTaxonomy={getTotalTaxonomy} 
         Remembering={Remembering}
         addLesson={addLesson}sonDa
-addAllocation={addAllocation}
-setSpecific={setSpecific}
+  addAllocation={addAllocation}
+  setSpecific={setSpecific}
         lessonsDataInitial={lessonsDataInitial}
         handleLessonDataChange={handleLessonDataChange}
         lessonsData={lessonsData}
@@ -2744,7 +2752,7 @@ setSpecific={setSpecific}
       <Card className=" gap-4 mb-5  w-full p-3"> 
         <div>
 
-        <div>
+        <div className="mb-3">
         <ToggleSwitch checked={specific} label={specific?'Locked':'Unlocked'} onChange={setSpecific} color={"primary"} className="mx-auto" />
         </div>
 
@@ -2843,6 +2851,7 @@ setSpecific={setSpecific}
       progressLabelPosition="inside"
   
       color={'primary'}
+      className=" hidden md:block"
     
       size="lg"
      
@@ -3006,7 +3015,7 @@ setSpecific={setSpecific}
 
     
         {/* <Button  color={'failure'} onClick={()=>handleResetAll()}>Reset</Button> */}
-      <Button color="primary" onClick={() => setPdfModal(true)}><VisibilityIcon className="mr-2"/>Preview</Button>
+      <Button color="primary" variant="contained" onClick={() => setPdfModal(true)}><VisibilityIcon className="mr-2"/>Preview</Button>
 
  
       </div>
@@ -3048,9 +3057,11 @@ setSpecific={setSpecific}
 </div>
 <div>
  
-      <Button size={'sm'}  color={'primary'} onClick={handleNext} disabled={disableNext} className="px-4" > <p style={{marginTop:'0.5px'}}>Next</p> <NavigateNextIcon  /></Button>
+      <Button size={'sm'} color={'primary'} onClick={handleNext} disabled={disableNext} className="px-4" > <p style={{marginTop:'0.5px'}}>Next</p> <NavigateNextIcon  /></Button>
   
    {/* {JSON.stringify(lessonsDataInitial)} */}
+   {/* <ToastError message="Invalid file" /> */}
+  
       </div>
       </div>
     </div>

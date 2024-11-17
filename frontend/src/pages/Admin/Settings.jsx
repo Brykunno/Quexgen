@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Topnavbar from '../../components/Topnavbar';
-import { Card, TextInput, Button, Label } from 'flowbite-react';
+import {Button} from "@mui/material";
+import { Card, TextInput,  Label } from 'flowbite-react';
 import api from '../../api';
 
 function Settings() {
@@ -107,9 +108,10 @@ function Settings() {
               </Card>
             </div>
           </div>
-          <div className="mt-4">
+          <div className="mt-4 flex justify-center">
             <Button 
               color="primary" 
+              variant='contained'
               className="mx-auto" 
               onClick={handleSubmit}
               disabled={loading}

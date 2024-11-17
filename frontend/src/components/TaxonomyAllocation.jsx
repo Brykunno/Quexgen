@@ -21,10 +21,10 @@ function TaxonomyAllocation(props) {
       
     </Breadcrumb>
 
-    <Learning_outcomes_update setRemembering={props.setRemembering} setUnderstanding={props.setUnderstanding}  setApplying={props.setApplying} setAnalyzing={props.setAnalyzing} setEvaluating={props.setEvaluating} setCreating={props.setCreating} addLesson={props.addLesson} handleLessonDataChange={props.handleLessonDataChange} lessonsData={props.lessonsData} removeLesson={props.removeLesson} formData={props.formData} setFormData={props.setFormData} allocations={props.allocations} Remembering={props.Remembering} Understanding={props.Understanding} Applying={props.Applying} Analyzing={props.Analyzing} Evaluating={props.Evaluating} Creating={props.Creating} />
-<div className="flex gap-3"> 
+    <Learning_outcomes_update files={props.files} setRemembering={props.setRemembering} setUnderstanding={props.setUnderstanding}  setApplying={props.setApplying} setAnalyzing={props.setAnalyzing} setEvaluating={props.setEvaluating} setCreating={props.setCreating} addLesson={props.addLesson} handleLessonDataChange={props.handleLessonDataChange} lessonsData={props.lessonsData} removeLesson={props.removeLesson} formData={props.formData} setFormData={props.setFormData} allocations={props.allocations} Remembering={props.Remembering} Understanding={props.Understanding} Applying={props.Applying} Analyzing={props.Analyzing} Evaluating={props.Evaluating} Creating={props.Creating}   handletaxlevelChange={props.handletaxlevelChange} lessonsDataInitial={props.lessonsDataInitial} />
+<div className=""> 
   
-        <div className=" max-w-md">
+        <div className=" max-w-40 mb-3">
       <div>
         <div className="mb-2 block">
           <Label htmlFor="totalItems" value="Total of Items" />
@@ -133,9 +133,9 @@ function TaxonomyAllocation(props) {
         {props.getTotalTaxonomy}%</div></span> 
       
       </div>
-      <Button color={'primary'} className="mx-auto" onClick={props.submitAllocation}  isProcessing={props.loadingAllocate ? true : false}>
+      {/* <Button color={'primary'} className="mx-auto" onClick={props.submitAllocation}  isProcessing={props.loadingAllocate ? true : false}>
       {props.loadingAllocate ? 'Allocating' : 'Allocate'}
-        </Button>
+        </Button> */}
       </Card>
 
       </div>

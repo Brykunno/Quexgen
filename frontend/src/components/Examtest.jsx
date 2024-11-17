@@ -1,5 +1,6 @@
 import React, { useState,useEffect } from 'react';
-import { Tooltip,Breadcrumb,Progress, Card, Textarea, Button, TextInput, Label,Radio,Modal,FileInput } from "flowbite-react";
+import {Button} from "@mui/material";
+import { Tooltip,Breadcrumb,Progress, Card, Textarea, TextInput, Label,Radio,Modal,FileInput } from "flowbite-react";
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CloseIcon from '@mui/icons-material/Close';
@@ -20,6 +21,9 @@ import KeyIcon from '@mui/icons-material/Key';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 import AutoModeIcon from '@mui/icons-material/AutoMode';
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+
+import Menu from './Menu'; // Adjust the path based on the file location
+
 
 function Examtest ({handleLessonDataChange, saveDataToLocalStorageTestPart,files,items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext,formData,setTOSPdfModal}) {
 
@@ -291,7 +295,7 @@ acc[index] = num;
         </div>
 
     <div className='mt-3'>
-      <div className='flex  gap-3 mx-auto'>
+      <div className='flex flex-col md:flex-row  gap-3 mx-auto'>
         <div className='w-full'>
           <div className='flex gap-3 w-full mb-3'>
             <Radio
@@ -363,10 +367,10 @@ acc[index] = num;
     </div>
     <div className='flex gap-5 justify-center mt-3'>
     <Tooltip content="Generate another question" style="dark">
-    <Button color={'primary'} onClick={() => setModalGenMcq(prev => ({ ...prev, [index]: true }))} size={'sm'} ><AutoModeIcon sizing={'small'}/></Button>
+    <Button color={'primary'} variant='contained' onClick={() => setModalGenMcq(prev => ({ ...prev, [index]: true }))} size={'sm'} ><AutoModeIcon sizing={'small'}/></Button>
     </Tooltip>
     <Tooltip content="Delete Question" style="dark">
-    <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} size={'sm'}><DeleteIcon sizing={'small'}/></Button>
+    <Button color={'error'} variant='contained' onClick={() =>{handleRemoveLastItemIndex(index)}} size={'sm'}><DeleteIcon sizing={'small'}/></Button>
     </Tooltip>
 <Modal key={index} size={'4xl'} show={modalGenMcq[index]} onClose={() => setModalGenMcq(prev => ({ ...prev, [index]: false }))}>
         <Modal.Header>Generate {categories[catindex] ? categories[catindex] : ''} question</Modal.Header>
@@ -475,8 +479,8 @@ acc[index] = num;
             
           </div>
         </Modal.Body>
-        <Modal.Footer>
-          <Button color={'primary'} onClick={()=>{generateQues(index,"mcq")}} className='mx-auto'>Generate</Button>
+        <Modal.Footer className='flex justify-center'>
+          <Button color={'primary'} variant='contained' onClick={()=>{generateQues(index,"mcq")}} className='mx-auto'>Generate</Button>
         
         </Modal.Footer>
       </Modal>
@@ -547,11 +551,11 @@ acc[index] = num;
       <div className='flex gap-5 justify-center mt-3'>
       
       <Tooltip content="Generate another question" style="dark">
-      <Button color={'primary'} onClick={() => setModalGenIden(prev => ({ ...prev, [index]: true }))} size={'sm'} ><AutoModeIcon sizing={'small'}/></Button>
+      <Button color={'primary'} variant='contained' onClick={() => setModalGenIden(prev => ({ ...prev, [index]: true }))} size={'sm'} ><AutoModeIcon sizing={'small'}/></Button>
       </Tooltip>
 
       <Tooltip content="Delete Question" style="dark">
-      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} size={'sm'}><DeleteIcon sizing={'small'}/></Button>
+      <Button color={'error'} variant='contained' onClick={() =>{handleRemoveLastItemIndex(index)}} size={'sm'}><DeleteIcon sizing={'small'}/></Button>
       </Tooltip>
 
 <Modal key={index} size={'4xl'} show={modalGenIden[index]} onClose={() => setModalGenIden(prev => ({ ...prev, [index]: false }))}>
@@ -608,8 +612,8 @@ acc[index] = num;
            
          </div>
        </Modal.Body>
-       <Modal.Footer>
-         <Button color={'primary'} onClick={()=>{generateQues(index,"identification")}} className='mx-auto'>Generate</Button>
+       <Modal.Footer className='flex justify-center'>
+         <Button color={'primary'} variant='contained' onClick={()=>{generateQues(index,"identification")}} className='mx-auto'>Generate</Button>
        
        </Modal.Footer>
      </Modal>
@@ -654,9 +658,9 @@ acc[index] = num;
             />
           </div>
       <div className='mt-3'>
-        <div className='flex flex-wrap gap-5 mx-auto'>
+        <div className='flex  flex-col  md:flex-row gap-5 mx-auto'>
          
-            <div className='flex gap-3 w-80 mb-3'>
+            <div className='flex gap-3 w-full mb-3'>
               <Radio
                 name={`answers-${index}`}
                 value="True"
@@ -667,7 +671,7 @@ acc[index] = num;
               <span className='mt-2'>True</span>
          
             </div>
-            <div className='flex gap-3 w-80 mb-3'>
+            <div className='flex gap-3 w-full mb-3'>
               <Radio
                 name={`answers-${index}`}
                 value="False"
@@ -684,10 +688,10 @@ acc[index] = num;
       </div>
       <div className='flex gap-5 justify-center mt-3'>
       <Tooltip content="Generate another question" style="dark">
-      <Button color={'primary'} onClick={() => setModalGenTorF(prev => ({ ...prev, [index]: true }))} size={'sm'} ><AutoModeIcon sizing={'small'}/></Button>
+      <Button color={'primary'} variant='contained' onClick={() => setModalGenTorF(prev => ({ ...prev, [index]: true }))} size={'sm'} ><AutoModeIcon sizing={'small'}/></Button>
       </Tooltip>
       <Tooltip content="Delete Question" style="dark">
-      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} ><DeleteIcon/></Button>
+      <Button color={'error'} variant='contained' onClick={() =>{handleRemoveLastItemIndex(index)}} ><DeleteIcon/></Button>
       </Tooltip>
 
             <Modal key={index} size={'4xl'} show={modalGenTorF[index]} onClose={() => setModalGenTorF(prev => ({ ...prev, [index]: false }))}>
@@ -751,8 +755,8 @@ acc[index] = num;
            
          </div>
        </Modal.Body>
-       <Modal.Footer>
-         <Button color={'primary'} onClick={()=>{generateQues(index,"trueOrFalse")}} className='mx-auto'>Generate</Button>
+       <Modal.Footer className='flex justify-center'>
+         <Button color={'primary'} variant='contained' onClick={()=>{generateQues(index,"trueOrFalse")}} className='mx-auto'>Generate</Button>
        
        </Modal.Footer>
      </Modal>
@@ -796,7 +800,7 @@ let num4 = 1
           </div>
       <div className='flex gap-5 justify-center mt-3'>
       
-      {/* <Button color={'primary'} onClick={() => setModalGenTorF(prev => ({ ...prev, [index]: true }))} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button> */}
+      {/* <Button color={'primary'} variant='contained' onClick={() => setModalGenTorF(prev => ({ ...prev, [index]: true }))} size={'sm'} >Generate {categories[catindex] ? categories[catindex] : ''} question</Button> */}
 
             <Modal key={index} size={'4xl'} show={modalGenTorF[index]} onClose={() => setModalGenTorF(prev => ({ ...prev, [index]: false }))}>
        <Modal.Header>Generate {categories[catindex] ? categories[catindex] : ''} question</Modal.Header>
@@ -828,13 +832,13 @@ let num4 = 1
            
          </div>
        </Modal.Body>
-       <Modal.Footer>
-         <Button color={'primary'} onClick={()=>{generateQues(index,"trueOrFalse")}} className='mx-auto'>Generate</Button>
+       <Modal.Footer className='flex justify-center'>
+         <Button color={'primary'} variant='contained' onClick={()=>{generateQues(index,"trueOrFalse")}} className='mx-auto'>Generate</Button>
        
        </Modal.Footer>
      </Modal>
       <Tooltip content="Delete Question" style="dark">
-      <Button color={'failure'} onClick={() =>{handleRemoveLastItemIndex(index)}} ><DeleteIcon/></Button>
+      <Button color={'error'} variant='contained' onClick={() =>{handleRemoveLastItemIndex(index)}} ><DeleteIcon/></Button>
       </Tooltip>
       </div>
         </div>
@@ -870,7 +874,7 @@ let num4 = 1
         {/* <Button
         
           size={'xs'}
-          color={'failure'}
+          color={'error'} variant='contained'
           onClick={() => { handleRemoveLastItemTest(index); }} 
           className="absolute top-2 right-2" // Position the button absolutely
         >
@@ -908,7 +912,7 @@ let num4 = 1
           <div className='flex gap-5 mt-5 justify-center'>
             <Button 
             
-            color={'primary'}
+            color={'primary'} variant='contained'
               onClick={() => { handleAddItem(itemtest.test_type, itemtest.test_part_num, itemtest.exam_id, itemtest.id); }} 
               disabled={disableAdd}
             >
@@ -1316,7 +1320,7 @@ setTestPart([])
     
   </Breadcrumb>
  
- <Progress progress={100} size={'sm'} color={'primary'}/>
+ <Progress progress={100} size={'sm'} color={'primary'} variant='contained'/>
 
 
 
@@ -1329,15 +1333,15 @@ setTestPart([])
 
     <Card  className='w-full mt-5 position: sticky top-0'> 
     
-    <Button color={'primary'} onClick={()=>{setShowPart(1)}} disabled={disableShowPart1}><VisibilityIcon className="mr-2"/> View Test 1</Button>
-    <Button color={'primary'} onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
-    <Button color={'primary'} onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
-    <Button color={'primary'} onClick={()=>{setShowPart(4)}} disabled={disableShowPart4}><VisibilityIcon className="mr-2"/> View Test 4</Button>
+    <Button color={'primary'} variant='contained' onClick={()=>{setShowPart(1)}} disabled={disableShowPart1}><VisibilityIcon className="mr-2"/> View Test 1</Button>
+    <Button color={'primary'} variant='contained' onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
+    <Button color={'primary'} variant='contained' onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
+    <Button color={'primary'} variant='contained' onClick={()=>{setShowPart(4)}} disabled={disableShowPart4}><VisibilityIcon className="mr-2"/> View Test 4</Button>
 
     
     <Button  color="blue" onClick={() => setPdfModal(true)}><PreviewIcon className="mr-2"/> Exam Preview</Button>
     <Button  color="blue" onClick={() => setPdfModalAnswer(true)}><KeyIcon className="mr-2"/> Answer keys</Button>
-   <Button  color="failure" onClick={handleClear}><KeyIcon className="mr-2"/> Clear Exam</Button>
+   <Button  color="error" onClick={handleClear}><KeyIcon className="mr-2"/> Clear Exam</Button>
     <Button  type="submit" onClick={()=>{setSubmit(false)}} color="success"><SaveIcon className='mr-2'/>Save Exam</Button>
     <Button  type="submit" onClick={()=>{setSubmit(true)}} color="success"><SendIcon className='mr-2'/>Submit Exam</Button>
   
@@ -1357,33 +1361,27 @@ setTestPart([])
  <div className=' flex-1'>
 
 
- <div className='position: sticky top-0 z-40 rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 p-3'>
-<div className='flex '>
- <div className='flex gap-5 justify-start'>
- <Button color={'primary'} onClick={()=>{setShowPart(1)}} disabled={disableShowPart1} size={'sm'} fontSize='small'> Test 1</Button>
-    <Button color={'primary'} onClick={()=>{setShowPart(2)}} disabled={disableShowPart2} size={'sm'} fontSize='small'> Test 2</Button>
-    <Button color={'primary'} onClick={()=>{setShowPart(3)}} disabled={disableShowPart3} size={'sm'} fontSize='small'> Test 3</Button>
-    <Button color={'primary'} onClick={()=>{setShowPart(4)}} disabled={disableShowPart4} size={'sm'} fontSize='small'> Test 4</Button>
-    
-  </div>
+ <div>
+      <Menu
+        setShowPart={setShowPart}
+        disableShowPart1={disableShowPart1}
+        disableShowPart2={disableShowPart2}
+        disableShowPart3={disableShowPart3}
+        disableShowPart4={disableShowPart4}
+        setTOSPdfModal={setTOSPdfModal}
+        setPdfModal={setPdfModal}
+        setPdfModalAnswer={setPdfModalAnswer}
+        setClearBtn={setClearBtn}
+        setSubmit={setSubmit}
+        showPart={showPart}
+      />
 
-  <div className='flex flex-1 gap-5 justify-end'>
-    <Button color="primary" onClick={() => setTOSPdfModal(true)} size={'sm'} fontSize='small'> <VisibilityIcon className="mr-2"/>TOS</Button>
-  <Button  color="blue" onClick={() => setPdfModal(true)}  size={'sm'}><PreviewIcon className="mr-2" fontSize='small'/>Preview</Button>
-    <Button  color="blue" onClick={() => setPdfModalAnswer(true)}  size={'sm'}><KeyIcon className="mr-2" fontSize='small'/> Answer keys</Button>
-   <Button  color="failure" onClick={()=>{setClearBtn(true)}}><CleaningServicesIcon className="mr-2" size={'sm'} fontSize='small'/> Clear</Button>
-    <Button  type="submit" onClick={()=>{setSubmit(false)}} color="success"  size={'sm'}><SaveIcon className='mr-2' fontSize='small'/>Save</Button>
-    <Button  type="submit" onClick={()=>{setSubmit(true)}} color="success"  size={'sm'} ><SendIcon className='mr-2' fontSize='small'/>Submit</Button>
-  </div>
-  </div>
-
- 
-
-</div>
+     
+    </div>
 
 <div className='flex gap-5 mt-5 px-5'>
   <div className='flex-1 mt-2'>
-<Progress progress={Math.round(percent)} size={'md'} color={'primary'}/> 
+<Progress progress={Math.round(percent)} size={'md'} color={'primary'} variant='contained'/> 
 </div>
 <div className='flex font-bold text-lg'>
 {Math.round(percent)}%
@@ -1393,7 +1391,7 @@ setTestPart([])
 
 {/* <div className='flex gap-5 mb-5'>
   <div className='flex-1'>
-<Progress progress={100} size={'sm'} color={'primary'}/> 
+<Progress progress={100} size={'sm'} color={'primary'} variant='contained'/> 
 </div>
 <div className='flex-1'>
 90%
@@ -1402,10 +1400,10 @@ setTestPart([])
 </div>
 
 <div className='flex gap-5 mb-5 justify-center'>
-<Button color={'primary'} onClick={()=>{setShowPart(1)}} disabled={disableShowPart1}><VisibilityIcon className="mr-2"/> View Test 1</Button>
-    <Button color={'primary'} onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
-    <Button color={'primary'} onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
-    <Button color={'primary'} onClick={()=>{setShowPart(4)}} disabled={disableShowPart4}><VisibilityIcon className="mr-2"/> View Test 4</Button>
+<Button color={'primary'} variant='contained' onClick={()=>{setShowPart(1)}} disabled={disableShowPart1}><VisibilityIcon className="mr-2"/> View Test 1</Button>
+    <Button color={'primary'} variant='contained' onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
+    <Button color={'primary'} variant='contained' onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
+    <Button color={'primary'} variant='contained' onClick={()=>{setShowPart(4)}} disabled={disableShowPart4}><VisibilityIcon className="mr-2"/> View Test 4</Button>
 
 </div> */}
 
@@ -1485,8 +1483,8 @@ setTestPart([])
       type="number"
       className="max-w-sm"
       value={subtest}
-      
       max={max === 0 ? test.trueOrFalse : 100}
+      disabled
     />
   </div>
 
@@ -1506,6 +1504,7 @@ setTestPart([])
     <Button
       className="mt-3 mx-auto"
       color="primary"
+      variant='contained'
       onClick={handleFileProcessing}
    disabled={max ==0 && files.length == lessonsData.length?false:true}
 
@@ -1579,10 +1578,10 @@ setTestPart([])
               Are you sure you want to clear all the items in the exam?
             </h3>
             <div className="flex justify-center gap-4">
-              <Button color="failure" onClick={() => {setClearBtn(false);handleClear()}}>
+              <Button color="error" variant='contained' onClick={() => {setClearBtn(false);handleClear()}}>
                 {"Yes, I'm sure"}
               </Button>
-              <Button color="gray" onClick={() => setClearBtn(false)}>
+              <Button color="secondary" onClick={() => setClearBtn(false)}>
                 No, cancel
               </Button>
             </div>

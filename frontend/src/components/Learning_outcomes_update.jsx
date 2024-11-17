@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Textarea, Button, TextInput,Card,Pagination } from 'flowbite-react';
+import {Button} from "@mui/material";
+import { Textarea, TextInput,Card,Pagination,Modal,Label } from 'flowbite-react';
 import api from '../api';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import LoadingGenerate from './LoadingGenerate';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import ClearIcon from '@mui/icons-material/Clear';
 
 function Learning_outcomes_update({
   setRemembering,
@@ -30,7 +31,8 @@ function Learning_outcomes_update({
   Applying,
   Analyzing,
   Evaluating,
-  Creating
+  Creating,
+  handletaxlevelChange
   
 }) {
   // State to manage input data
@@ -38,6 +40,7 @@ function Learning_outcomes_update({
  
   const [percent, setPercent] = useState([]);
   const [loading,setLoading] = useState(false)
+  const [openModals, setOpenModals] = useState([]);
 
 
 
@@ -166,13 +169,35 @@ const handlePageChange = (pageNumber) => {
   setCurrentPage(pageNumber);
 };
 
+const toggleModal = (index) => {
+  setOpenModals((prev) => {
+    const updatedModals = [...prev];
+    updatedModals[index] = !updatedModals[index]; // Toggle the specific modal at index
+    return updatedModals;
+  });
+};
 
 
   return (
     <Card className="mb-5">
     {/* Render only the current page of lessons */}
     {currentLessons.map((item, index) => (
-      <div key={indexOfFirstLesson + index}>
+      <Card key={indexOfFirstLesson + index} className="relative">
+
+<div className="absolute top-2 right-2">
+       <Button
+        
+         size={'xs'}
+         color={'error'}
+      
+        
+       >
+        <ClearIcon  className=" hover:scale-110 transition-transform duration-200"  onClick={() => {removeLesson(lessonsData, indexOfFirstLesson + index); removeFile(indexOfFirstLesson + index)}} />
+
+       </Button>
+     </div>
+
+     
        
         <div className="flex gap-5 mb-4">
           <div className='flex-1'>
@@ -199,16 +224,61 @@ const handlePageChange = (pageNumber) => {
           </div>
           <div style={{ flex: 0.1 }}>
             
-            <Button
+            {/* <Button
               color={'failure'}
               onClick={() => removeLesson(lessonsData, indexOfFirstLesson + index)}
               className='mt-12'
             >
               <DeleteIcon/>
-            </Button>
+            </Button> */}
           </div>
         </div>
-      </div>
+        <div className='flex justify-center'>
+       <Button
+         color="primary"
+         variant='contained'
+
+         disabled={item.file_status === ""}
+         onClick={() => toggleModal(indexOfFirstLesson + index)}
+       
+       >
+         Identify levels of taxonomy
+       </Button>
+     </div>
+
+     <Modal size="md" show={openModals[index]} onClose={() => toggleModal(index)}>
+       <Modal.Header>Identify taxonomy levels</Modal.Header>
+       <Modal.Body>
+         <div className="flex-1 mb-2">
+           <div className="ms-2 font-bold mb-2">Learning outcomes</div>
+           <Textarea
+             value={lessonsData[indexOfFirstLesson + index]['learning_outcomes']}
+             style={{ height: '130px' }}
+             onChange={(e) => handleLessonDataChange(indexOfFirstLesson + index, 'learning_outcomes', e.target.value)}
+             placeholder="Enter the learning outcomes for the lesson"
+           />
+         </div>
+         {['Remembering', 'Understanding', 'Applying', 'Analyzing', 'Evaluating', 'Creating'].map((level) => (
+           <div key={level} className="mb-2 flex gap-5 justify-between">
+             <Label>{level}</Label>
+             <TextInput
+               type="number"
+               className="w-24"
+               onChange={(e) => handletaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels', level, e.target.value)}
+               value={lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.[level]}
+             />
+           </div>
+         ))}
+       </Modal.Body>
+       <Modal.Footer className='flex justify-center '>
+       
+         <Button onClick={() => toggleModal(index)} color="primary" variant='contained' >
+           Done
+         </Button>
+         
+       </Modal.Footer>
+     </Modal>
+      </Card>
     ))}
 
 
@@ -227,9 +297,10 @@ const handlePageChange = (pageNumber) => {
      
       </div>
     
-      <div className="flex ">
+      <div className="flex justify-center ">
         <Button
           color={'primary'}
+          variant='contained'
           className="mt-3 mx-auto"
           onClick={() =>
             addLesson({

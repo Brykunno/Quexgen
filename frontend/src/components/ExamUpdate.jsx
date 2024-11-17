@@ -16,6 +16,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SendIcon from '@mui/icons-material/Send';
 import AnswerKeyUpdate from './AnswerKeyUpdate';
 import AutoModeIcon from '@mui/icons-material/AutoMode';
+import Menu_update from './Menu_update';
 
 
 
@@ -1193,28 +1194,20 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
    <div className='flex-1'>
 
 
-    
- <div className='position: sticky top-0 z-40 rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 p-3'>
-<div className='flex '>
- <div className='flex gap-5 justify-start'>
- <Button color={'primary'} onClick={()=>{setShowPart(1)}} disabled={disableShowPart1} size={'sm'} fontSize='small'><VisibilityIcon className="mr-2"/> Test 1</Button>
-    <Button color={'primary'} onClick={()=>{setShowPart(2)}} disabled={disableShowPart2} size={'sm'} fontSize='small'><VisibilityIcon className="mr-2"/> Test 2</Button>
-    <Button color={'primary'} onClick={()=>{setShowPart(3)}} disabled={disableShowPart3} size={'sm'} fontSize='small'><VisibilityIcon className="mr-2"/> Test 3</Button>
-    <Button color={'primary'} onClick={()=>{setShowPart(4)}} disabled={disableShowPart4} size={'sm'} fontSize='small'><VisibilityIcon className="mr-2"/> Test 4</Button>
-  </div>
+   <Menu_update
+        setShowPart={setShowPart}
+        disableShowPart1={disableShowPart1}
+        disableShowPart2={disableShowPart2}
+        disableShowPart3={disableShowPart3}
+        disableShowPart4={disableShowPart4}
+      
+        setPdfModal={setPdfModal}
+        setPdfModalAnswer={setPdfModalAnswer}
+       
+        setSubmit={setSubmit}
+        showPart={showPart}
+      />
 
-  <div className='flex flex-1 gap-5 justify-end'>
-  <Button  color="blue" onClick={() => setPdfModal(true)}  size={'sm'}><PreviewIcon className="mr-2" fontSize='small'/>Preview</Button>
-    <Button  color="blue" onClick={() => setPdfModalAnswer(true)}  size={'sm'}><KeyIcon className="mr-2" fontSize='small'/> Answer keys</Button>
- 
-    <Button  type="submit" onClick={()=>{setSubmit(false)}} color="success"  size={'sm'}><UpdateIcon className='mr-2' fontSize='small'/>Update</Button>
-    <Button  type="submit" onClick={()=>{setSubmit(true)}} color="success"  size={'sm'} ><SendIcon className='mr-2' fontSize='small'/>Submit</Button>
-  </div>
-  </div>
-
- 
-
-</div>
 
         <div className='w-full hidden'>
           <div className="mb-2 block">

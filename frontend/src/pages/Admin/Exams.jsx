@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from "../../api";
-import { Card, Button, Table, Pagination, Select,TextInput } from "flowbite-react";
+import {Button} from "@mui/material";
+import { Card,  Table, Pagination, Select,TextInput } from "flowbite-react";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import SearchIcon from '@mui/icons-material/Search';
 import EditNoteIcon from '@mui/icons-material/EditNote';
@@ -183,7 +184,7 @@ const [termFilter, setTermFilter] = useState('');
           </span>
           <input
             type="text"
-            placeholder="Search by title"
+            placeholder="Search by course name"
             className="p-2 pl-10 border border-gray-300 rounded w-full text-sm"
             value={searchTerm}
             onChange={handleSearch} // Real-time search here
@@ -242,7 +243,7 @@ const [termFilter, setTermFilter] = useState('');
                 <Table.Cell>{exam.AcademicYear}</Table.Cell>
                 <Table.Cell>
                   <a href={`/exam_review/${exam.id}`} className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
-                    <Button color={'primary'} size={'xs'} className='flex gap-3'>
+                    <Button color={'primary'} variant='contained' size={'small'} className='flex gap-1'>
                       <VisibilityIcon /> <p className='mt-1 ml-1'>View</p>
                     </Button>  
                   </a>

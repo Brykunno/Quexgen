@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card,Progress,Label, Textarea, TextInput,Button,RangeSlider,Modal,Select,Breadcrumb } from "flowbite-react";
+import {Button} from "@mui/material";
+import { Card,Progress,Label, Textarea, TextInput,RangeSlider,Modal,Select,Breadcrumb } from "flowbite-react";
 import api from "../api";
 import { HiHome } from "react-icons/hi";
 import TaxonomyAllocation from './TaxonomyAllocation';
@@ -81,6 +82,8 @@ function TOSview() {
   const [loading, setLoading] = useState(false);
   const [Toast, setToast] = useState(false);
   const [TotalItems, setTotalItems] = useState(0);
+
+
   const [formData, setFormData] = useState({
     Title: '',
     Semester: '1st Semester',
@@ -124,7 +127,7 @@ function TOSview() {
   const [examStates, setExamStates] = useState([]);
   const options = ['Multiple Choice ','Identification ','True or False','Subjective'];
 
-
+const [files,setFiles] = useState([])
 
   const { id } = useParams();
   
@@ -428,8 +431,17 @@ if (getQuestion.length && getAnswer.length) {
 
       const formData1 = formData
 
-     formData1.ExaminationType = formData1.ExaminationType.join('/');
-
+      if (Array.isArray(formData1.ExaminationType)) {
+        // It's an array, proceed to join
+        formData1.ExaminationType = formData1.ExaminationType.join('/');
+      } else if (typeof formData1.ExaminationType === 'string') {
+        // It's a string, split into an array and then join
+        formData1.ExaminationType = formData1.ExaminationType.split('/').join('/');
+      } else {
+        // Handle unexpected cases (e.g., null, undefined, etc.)
+        console.error('ExaminationType is not an array or a string:', formData1.ExaminationType);
+      }
+      
       await api.put(`/api/tos-info/${id}/update/`, formData1);
       
 
@@ -954,7 +966,7 @@ function checkTaxonomy(getTotalTaxonomy){
      data.total,
      data.placement,
      <div key={index}>
-     <Button color={'red'} >{data.placement}</Button>
+     <Button color={'error'} >{data.placement}</Button>
 
      </div>,
 
@@ -1114,7 +1126,7 @@ function inputModal(indexRow,lessonData){
 <div className="mb-2 block flex-1">
   <Label htmlFor={`teaching_hours-${indexRow}`} value="Number of Items" />
   <div className="flex gap-3 px-3">
-    <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'items', lessonData[indexRow]['items'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+    <Button color={'error'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'items', lessonData[indexRow]['items'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
     <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'items', lessonData[indexRow]['items'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
   </div>
@@ -1132,7 +1144,7 @@ function inputModal(indexRow,lessonData){
     <div className="mb-2 block flex-1">
       <Label htmlFor={`teaching_hours-${indexRow}`} value={`Knowledge/Remembering `} />
       <div className="flex gap-3 px-3">
-      <Button  color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'remembering', lessonData[indexRow]['remembering'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+      <Button  color={'error'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'remembering', lessonData[indexRow]['remembering'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
       <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'remembering', lessonData[indexRow]['remembering'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
   </div>
@@ -1151,7 +1163,7 @@ function inputModal(indexRow,lessonData){
 <div className="mb-2 block flex-1">
   <Label htmlFor={`teaching_hours-${indexRow}`} value={`Comprehension/Understanding`} />
   <div className="flex gap-3 px-3">
-      <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'understanding', lessonData[indexRow]['understanding'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+      <Button color={'error'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'understanding', lessonData[indexRow]['understanding'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
       <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'understanding', lessonData[indexRow]['understanding'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
   </div>
@@ -1168,7 +1180,7 @@ function inputModal(indexRow,lessonData){
 <div className="mb-2 block flex-1">
   <Label htmlFor={`teaching_hours-${indexRow}`} value={`Application/Applying`} />
   <div className="flex gap-3 px-3">
-      <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'applying', lessonData[indexRow]['applying'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+      <Button color={'error'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'applying', lessonData[indexRow]['applying'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
       <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'applying', lessonData[indexRow]['applying'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
   </div>
@@ -1185,7 +1197,7 @@ function inputModal(indexRow,lessonData){
 <div className="mb-2 block flex-1">
   <Label htmlFor={`teaching_hours-${indexRow}`} value={`Analysis/Analyzing`} />
   <div className="flex gap-3 px-3">
-      <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'analyzing', lessonData[indexRow]['analyzing'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+      <Button color={'error'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'analyzing', lessonData[indexRow]['analyzing'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
       <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'analyzing', lessonData[indexRow]['analyzing'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
   </div>
@@ -1202,7 +1214,7 @@ function inputModal(indexRow,lessonData){
 <div className="mb-2 block flex-1">
   <Label htmlFor={`teaching_hours-${indexRow}`} value={`Synthesis/Evaluating`} />
   <div className="flex gap-3 px-3">
-      <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'evaluating', lessonData[indexRow]['evaluating'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+      <Button color={'error'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'evaluating', lessonData[indexRow]['evaluating'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
       <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'evaluating', lessonData[indexRow]['evaluating'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
   </div>
@@ -1219,7 +1231,7 @@ function inputModal(indexRow,lessonData){
 <div className="mb-2 block flex-1">
   <Label htmlFor={`teaching_hours-${indexRow}`} value={`Evaluation/Creating`} />
   <div className="flex gap-3 px-3">
-      <Button color={'failure'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'creating', lessonData[indexRow]['creating'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
+      <Button color={'error'} size={'xs'} onClick={(e) => handleFloor(indexRow, 'creating', lessonData[indexRow]['creating'])}><ArrowDownwardIcon /> <span className="mt-1">floor</span></Button>
       <Button color={'primary'} size={'xs'} onClick={(e) => handleCeil(indexRow, 'creating', lessonData[indexRow]['creating'])}><ArrowUpwardIcon/> <span className="mt-1">ceil</span></Button>
 
   </div>
@@ -1256,7 +1268,7 @@ function inputModal(indexRow,lessonData){
   {lessonData[indexRow]['placement']}
 </span>
 </div>
-<Button color={'failure'} size={'xs'} onClick={(e) => handleReset(indexRow, 'reset')}><ArrowUpwardIcon/> <span className="mt-1">Reset</span></Button>
+<Button color={'error'} size={'xs'} onClick={(e) => handleReset(indexRow, 'reset')}><ArrowUpwardIcon/> <span className="mt-1">Reset</span></Button>
 </Card>
   </div>
 
@@ -1271,7 +1283,7 @@ function inputModal(indexRow,lessonData){
        <Modal.Footer>
         <div className=" w-full ">
           <div className="mx-auto flex gap-5 justify-center">
-          <Button color="failure" onClick={() => removeLesson(lessonData,indexRow)}><RemoveCircleOutlineIcon className="mr-2"/>Remove Lesson</Button>
+          <Button color="error" onClick={() => removeLesson(lessonData,indexRow)}><RemoveCircleOutlineIcon className="mr-2"/>Remove Lesson</Button>
          <Button onClick={() => setOpenModal(false)}  color={'success'}>Done</Button>
          
          </div>
@@ -2989,11 +3001,65 @@ const [allocations, setAllocations] = useState([]);
    
   }
 
+  const [course, setcourse] = useState([]);
+
+  const getcourse = () => {
+    api.get(`/api/courses/`)
+      .then((res) => {
+        setcourse(res.data);
+        console.log('courses',res.data)
+        
+      })
+      .catch((err) => {
+        alert(err);
+        
+      });
+  };
+  useEffect(() => {
+   
+    getcourse();
+  },[]);
 
 
+  
+
+  const handleCourse = (event, course) => {
+    const { name, value } = event.target;
+  
+    const updatedFormData = {
+      ...formData,
+      [name]: value,
+      CourseCode: course.find((item) => item.course_name === value)?.course_code || '',
+      CourseType: course.find((item) => item.course_name === value)?.course_type || '',
+    };
+  
+    setFormData(updatedFormData);
+    localStorage.setItem('formData', JSON.stringify(updatedFormData));
+  };
 
 
+  const handletaxlevelChange = (index, field,level, value) => {
 
+    setSpecific(true)
+    // Clone the lessonsData array to avoid direct mutation
+    const newData = [...lessonData];
+    const newDataAllocation = [...allocations]
+  
+    // Update the specific field in the corresponding lesson object
+    newData[index][field][level] = value;
+    newDataAllocation[index][level] = Number(value)
+
+
+  
+      // Update the state with the new data
+      setLessonsDatainitial(newData);
+      
+      
+  
+
+      setAllocations(newDataAllocation)
+  
+  }
   return (
     <div className='content'>
       <form  onSubmit={updateTOSinfo}>
@@ -3015,12 +3081,42 @@ const [allocations, setAllocations] = useState([]);
 
 
        {/* Title and Semester */}
-       <div className='w-full mb-3'>
+       <div className='w-full mb-3 flex flex-col sm:flex-row gap-4'>
+       <div className="">
            <div className="mb-2 block">
-             <Label htmlFor="title" value="Subject" />
+             <Label htmlFor="title" value="Course" />
            </div>
-           <TextInput id="title" type="text" name="Title" value={formData.Title} onChange={(e)=>{handleChange(e);handleExamTitleChange(e)}} />
-           
+           <Select id="title" name="Title" value={formData.Title} onChange={(e)=>{handleExamTitleChange(e);handleCourse(e,course)}} color={'gray'} required>
+           <option value={''}>
+     
+    </option>
+           {
+  course.map((data, index) => (
+    <option key={index} value={data.course_name}>
+      {data.course_name}
+    </option>
+  ))
+}
+
+             {JSON.stringify(course)}
+          
+         
+           </Select>
+         </div>
+
+         <div className=''>
+           <div className="mb-2 block">
+             <Label htmlFor="course-code" value="Course Code" />
+           </div>
+           <TextInput id="course-code" type="text" name="CourseCode" value={formData.CourseCode} onChange={handleChange} />
+         </div>
+
+         <div className=''>
+           <div className="mb-2 block">
+             <Label htmlFor="course-type" value="Course Type" />
+           </div>
+           <TextInput id="course-type" type="text" name="CourseType" value={formData.CourseType} onChange={handleChange} />
+         </div>
          </div>
        <div className='w-full gap-4 flex flex-col sm:flex-row'>
       
@@ -3053,12 +3149,12 @@ const [allocations, setAllocations] = useState([]);
 
        {/* Academic Year and Campus */}
        <div className='w-full gap-4 flex flex-col sm:flex-row'>
-         <div className="w-full">
+         {/* <div className="w-full">
            <div className="mb-2 block">
              <Label htmlFor="Academic-year" value="Academic Year" />
            </div>
-           <TextInput id="title" type="text" name="AcademicYear" value={formData.AcademicYear} onChange={handleChange} />
-         </div>
+           <TextInput disabled id="title" type="text" name="AcademicYear" value={formData.AcademicYear} onChange={handleChange} />
+         </div> */}
      
          <div className="w-full">
            <div className="mb-2 block">
@@ -3068,16 +3164,6 @@ const [allocations, setAllocations] = useState([]);
              <option value="San Carlos Campus">San Carlos Campus</option>
              <option value="Lingayen Campus">Lingayen Campus</option>
            </Select>
-         </div>
-       </div>
-
-       {/* Course Code and Department */}
-       <div className='w-full gap-4 flex flex-col sm:flex-row'>
-         <div className='w-full'>
-           <div className="mb-2 block">
-             <Label htmlFor="course-code" value="Course Code" />
-           </div>
-           <TextInput id="course-code" type="text" name="CourseCode" value={formData.CourseCode} onChange={handleChange} />
          </div>
          <div className="w-full">
            <div className="mb-2 block">
@@ -3092,8 +3178,10 @@ const [allocations, setAllocations] = useState([]);
          </div>
        </div>
 
+       {/* Course Code and Department */}
+    
        {/* Type of Examination and Course Type */}
-       <div className='w-full gap-4 flex flex-col sm:flex-row'>
+       {/* <div className='w-full gap-4 flex flex-col sm:flex-row'>
          <div className="w-full">
         
 
@@ -3102,13 +3190,8 @@ const [allocations, setAllocations] = useState([]);
          </div>
          <TextInput id="executive-director" type="text" name="Director" value={formData.Director} onChange={handleChange} />
          </div>
-         <div className='w-full'>
-           <div className="mb-2 block">
-             <Label htmlFor="course-type" value="Course Type" />
-           </div>
-           <TextInput id="course-type" type="text" name="CourseType" value={formData.CourseType} onChange={handleChange} />
-         </div>
-       </div>
+      
+       </div> */}
 
        <div className='w-full gap-4 flex flex-col sm:flex-row'>
        {/* Date of Examination */}
@@ -3116,7 +3199,7 @@ const [allocations, setAllocations] = useState([]);
          <div className="mb-2 block">
            <Label htmlFor="exam-date" value="Date of Examination" />
          </div>
-         <TextInput id="exam-date" type="date" name="ExaminationDate" value={formData.ExaminationDate} onChange={handleChange} />
+         <TextInput  id="exam-date" type="date" name="ExaminationDate" value={formData.ExaminationDate} onChange={handleChange} />
        </div>
 
        {/* Faculty */}
@@ -3130,20 +3213,20 @@ const [allocations, setAllocations] = useState([]);
 
        <div className='w-full gap-4 flex flex-col sm:flex-row'>
        {/* Department Chairperson */}
-       <div className='w-full'>
+       {/* <div className='w-full'>
          <div className="mb-2 block">
            <Label htmlFor="chairperson" value="Department Chairperson" />
          </div>
          <TextInput id="chairperson" type="text" name="Chairperson" value={formData.Chairperson} onChange={handleChange} />
-       </div>
+       </div> */}
 
        {/* College Dean */}
-       <div className='w-full'>
+       {/* <div className='w-full'>
          <div className="mb-2 block">
            <Label htmlFor="dean" value="College Dean" />
          </div>
          <TextInput id="dean" type="text" name="Dean" value={formData.Dean} onChange={handleChange} />
-       </div>
+       </div> */}
        </div>
 
        {/* Campus Executive Director */}
@@ -3221,7 +3304,7 @@ const [allocations, setAllocations] = useState([]);
 
   <TaxonomyAllocation totalItems={TotalItems} handleTotalItemsChange={handleTotalItemsChange} handleRememberingChange={handleRememberingChange} handleUnderstandingChange={handleUnderstandingChange} handleApplyingChange={handleApplyingChange} handleAnalyzingChange={handleAnalyzingChange} handleEvaluatingChange={handleEvaluatingChange} handleCreatingChange={handleCreatingChange} Remembering={Remembering} Understanding={Understanding} Applying={Applying} Analyzing={Analyzing} Evaluating={Evaluating} Creating={Creating} getTotalTaxonomy={getTotalTaxonomy} checkTaxonomy={checkTaxonomy}
   setRemembering={setRemembering} setUnderstanding={setUnderstanding} setApplying={setApplying} setAnalyzing={setAnalyzing} setEvaluating={setEvaluating} setCreating={setCreating} lessonsData={lessonData} addLesson={addLesson}
-  removeLesson={removeLesson} handleLessonDataChange={handleLessonDataChange} formData={formData} setFormData={setFormData} allocations={allocations}
+   files={files} removeLesson={removeLesson} handleLessonDataChange={handleLessonDataChange} formData={formData} setFormData={setFormData} allocations={allocations}
 
   submitAllocation={submitAllocation}
 
@@ -3269,7 +3352,7 @@ const [allocations, setAllocations] = useState([]);
     <div className="w-full">
         <div className="  w-full flex flex-wrap ">
      <div  className=" mt-3 flex gap-3   mx-auto">
-      <Button color={'primary'}  onClick={() => addLesson({  
+      {/* <Button color={'primary'}  onClick={() => addLesson({  
         topic: '',
       learning_outcomes: '',
       teachingHours: 0,
@@ -3285,9 +3368,9 @@ const [allocations, setAllocations] = useState([]);
       placement: '',
       totalItems:0,})}> <AddCircleOutlineIcon className="mr-2 "/>Add Lesson</Button>
 
-     
+      */}
 
-      <Button color="blue" onClick={() => setPdfModal(true)}><VisibilityIcon className="mr-2"/>Preview</Button>
+      <Button color="primary" variant='contained' onClick={() => setPdfModal(true)}><VisibilityIcon className="mr-2"/>Preview</Button>
 
  
       </div>

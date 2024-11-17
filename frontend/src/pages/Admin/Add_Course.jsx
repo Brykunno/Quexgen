@@ -2,8 +2,8 @@
 import { useState } from "react";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
-
-import { Button, Radio, Label, TextInput,Card } from "flowbite-react";
+import {Button} from "@mui/material";
+import {  Radio, Label, TextInput,Card } from "flowbite-react";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -92,7 +92,7 @@ function Add_Course({setLoading}){
  
 
   
-  <Button color={'primary'} type="submit" >
+  <Button color={'primary'} variant='contained' type="submit" >
     <PersonAddIcon className="mr-2"/>
     <p style={{marginTop:'0.8px'}}>  ADD COURSE</p>
   
