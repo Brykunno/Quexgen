@@ -1132,7 +1132,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
   const handleFileProcessing = async () => {
 
     if(testTotal!=items){
-      addToast("The total number of test doesn't match the desired number of items")
+      addToast("The total number of exam items doesn't match the desired number of items.")
       return
     }
 

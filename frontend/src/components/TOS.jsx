@@ -2245,7 +2245,7 @@ const handleNext = () => {
    
 
       if(exist==true){
-        addToast('This exam already exist');
+        addToast('This exam is already exist');
         return
       }
       
