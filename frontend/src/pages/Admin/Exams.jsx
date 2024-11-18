@@ -284,16 +284,16 @@ const [termFilter, setTermFilter] = useState('');
     <div className="content">
 
     <Tabs aria-label="Tabs with icons" variant="fullWidth" >
-      <Tabs.Item active title="For review" icon={RateReviewIcon} >
+    <Tabs.Item  title={<b className='text-green-600'>For review <RateReviewIcon/></b>}   >
       {content(exam,'To review')}
       {statusFilter}
       </Tabs.Item>
-      <Tabs.Item title="For revision" icon={EditNoteIcon}>
+      <Tabs.Item title={<b className='text-orange-600'>To revise <EditNoteIcon/></b>}  >
       {content(exam,'Needs Revision')}
       {statusFilter}
 
       </Tabs.Item>
-      <Tabs.Item title="Approved" icon={RecommendIcon}>
+      <Tabs.Item title={<b className='text-green-700'>Approved <RecommendIcon/></b>}  >
       {content(exam,'Approved')}
       {statusFilter}  
       </Tabs.Item>
