@@ -220,5 +220,5 @@ class LogsSerializer(serializers.ModelSerializer):
         
 class TaxonomySerializer(serializers.ModelSerializer):
      class Meta:
-         model = Logs
+         model = TaxonomyLevels
          fields = ['id','remembering','understanding','applying','analyzing','evaluating','creating','tos_content_id']

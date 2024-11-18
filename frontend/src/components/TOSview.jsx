@@ -3091,7 +3091,7 @@ const [allocations, setAllocations] = useState([]);
       <Breadcrumb.Item href='/exam_bank' >
        Exams
       </Breadcrumb.Item>
-      <Breadcrumb.Item >Course Information</Breadcrumb.Item>
+      <Breadcrumb.Item >TOS Information</Breadcrumb.Item>
 
     </Breadcrumb>
 
@@ -3348,7 +3348,7 @@ const [allocations, setAllocations] = useState([]);
       Exams
       </Breadcrumb.Item>
       <Breadcrumb.Item >
-      Course content
+      TOS Information
       </Breadcrumb.Item>
       <Breadcrumb.Item >
       Taxonomy Allocation

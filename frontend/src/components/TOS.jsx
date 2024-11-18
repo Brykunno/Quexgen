@@ -1916,8 +1916,7 @@ const handleSubmit = (e) => {
         });
         const lessonsDataJson = JSON.stringify(updatedLessonsData);
 
-        
-
+    
         
 
 
@@ -1926,11 +1925,22 @@ return api.post("/api/tos-content/", { lessonsDataJson })
   .then((secondRes) => {
 
     if (secondRes.status === 201) {
-      const ids = secondRes.data.reduce((acc, item) => {
+      const ids = secondRes.data.reduce((acc, item,index) => {
         // Assuming each item in secondRes.data has an `id` property
         acc.push(item.id); // Add each ID to the accumulator (array)
+        const remembering = lessonsData[index].taxonomy_levels.Remembering
+        const understanding = lessonsData[index].taxonomy_levels.Understanding
+        const applying = lessonsData[index].taxonomy_levels.Applying
+        const analyzing = lessonsData[index].taxonomy_levels.Analyzing
+        const evaluating = lessonsData[index].taxonomy_levels.Evaluating
+        const creating = lessonsData[index].taxonomy_levels.Creating
+        const tos_content_id = item.id
+        api.post("/api/taxonomy_levels/",{remembering,understanding,applying,analyzing,evaluating,creating,tos_content_id})
         return acc;
       }, []); // Initialize the accumulator as an empty array
+
+     
+
     
       
      
@@ -2106,6 +2116,7 @@ return api.post("/api/tos-content/", { lessonsDataJson })
                 setEvaluating(0)
                 setCreating(0)
                 setExamTitle('')
+                setFiles([])
              
                 setExamStates([])
                 setContext([])
@@ -2140,6 +2151,7 @@ return api.post("/api/tos-content/", { lessonsDataJson })
                   setFormData(
                     (prevFormData => ({
                       ...prevFormData,
+                      Faculty:getFullNames(user),
                       Chairperson: res.data[0].chairperson,
                       Dean: res.data[0].dean,
                       Director: res.data[0].director,
@@ -2200,6 +2212,26 @@ const [disableNext, setDisableNext] = useState(false);
 
 const [disableBack, setDisableBack] = useState(false);
 
+const [exist,setExist] =useState(false)
+
+useEffect(()=>{
+
+  api
+  .get(`/api/tos-info/detail/`)
+  .then((res) => res.data)
+  .then((data) => {
+    const exists = data.some((lesson) =>
+      lesson.Title === formData.Title &&
+      lesson.Semester === formData.Semester &&
+      lesson.Term === formData.Term &&
+      lesson.AcademicYear === formData.AcademicYear
+    );
+  
+    setExist(exists);
+  })
+  .catch((err) => alert(err));
+
+},[formData])
 
 
 const handleNext = () => {
@@ -2207,6 +2239,15 @@ const handleNext = () => {
   switch(step){
 
     case 1:
+
+    
+    
+   
+
+      if(exist==true){
+        addToast('This exam already exist');
+        return
+      }
       
   if(formData.ExaminationDate==''){
 
@@ -2235,7 +2276,7 @@ const handleNext = () => {
    else{
      setTestError(false)
    }
-   if(formData.Title!='' && formData.ExaminationDate!='' && formData.ExaminationType.length != 0){
+   if(formData.Title!='' && formData.ExaminationDate!='' && formData.ExaminationType.length != 0 && !exist){
      setStep(step + 1);
    }
 
@@ -2580,7 +2621,7 @@ const [allocations, setAllocations] = useState([]);
 
 <Breadcrumb aria-label="Default breadcrumb example">
       <Breadcrumb.Item onClick={()=>{setStep(1)}}>
-      Course Information
+      TOS Information
       </Breadcrumb.Item>
       
     </Breadcrumb>
@@ -2798,7 +2839,7 @@ const [allocations, setAllocations] = useState([]);
 
       <Breadcrumb aria-label="Default breadcrumb example">
       <Breadcrumb.Item onClick={()=>{setStep(1)}} className="cursor-pointer">
-      Course Information
+      TOS Information
       </Breadcrumb.Item>
       <Breadcrumb.Item >
       Taxonomy Allocation
@@ -2993,7 +3034,7 @@ const [allocations, setAllocations] = useState([]);
 
         <Breadcrumb aria-label="Default breadcrumb example">
       <Breadcrumb.Item >
-      Course Information
+      TOS Information
       </Breadcrumb.Item>
       <Breadcrumb.Item >
       Taxonomy Allocation

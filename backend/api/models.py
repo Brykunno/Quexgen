@@ -160,7 +160,7 @@ class Admin_notification(models.Model):
 
 class Context(models.Model):
     question = models.ForeignKey(Questions, on_delete=models.CASCADE, related_name="question_context")
-    context = models.TextField()
+    context = models.TextField(null=True)
     taxonomy_level = models.TextField()
     test_type = models.TextField()
     

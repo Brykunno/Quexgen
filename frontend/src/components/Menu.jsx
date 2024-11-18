@@ -20,7 +20,7 @@ const Menu = ({
   setPdfModalAnswer,
   setClearBtn,
   setSubmit,
-  showPart
+  showPart,examStates
 }) => {
   const [isMenuOpen, setMenuOpen] = useState(false);
 
@@ -68,6 +68,7 @@ const Menu = ({
             disabled={disableShowPart1}
             size="small"
             variant="contained"
+           
           >
             Test 1
           </Button>
@@ -117,6 +118,7 @@ const Menu = ({
             onClick={() => setPdfModal(true)}
             size="small"
             variant="contained"
+            disabled={examStates.length == 0}
           >
             <PreviewIcon className="mr-2" fontSize="small" />
             Preview
@@ -126,6 +128,7 @@ const Menu = ({
             onClick={() => setPdfModalAnswer(true)}
             size="small"
             variant="contained"
+            disabled={examStates.length == 0}
           >
             <KeyIcon className="mr-2" fontSize="small" />
             Answer keys
@@ -135,6 +138,7 @@ const Menu = ({
             onClick={() => setClearBtn(true)}
             size="small"
             variant="contained"
+            disabled={examStates.length == 0}
           >
             <CleaningServicesIcon className="mr-2" size="small" fontSize="small" />
             Clear
@@ -145,6 +149,7 @@ const Menu = ({
             color="success"
             size="small"
             variant="contained"
+            disabled={examStates.length == 0}
           >
             <SaveIcon className="mr-2" fontSize="small" />
             Save
@@ -155,6 +160,7 @@ const Menu = ({
             color="success"
             size="small"
             variant="contained"
+            disabled={examStates.length == 0}
           >
             <SendIcon className="mr-2" fontSize="small" />
             Submit

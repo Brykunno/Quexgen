@@ -15,7 +15,7 @@ function TaxonomyAllocation(props) {
       Exams
       </Breadcrumb.Item>
       <Breadcrumb.Item >
-      Course content
+      TOS Information
       </Breadcrumb.Item>
       <Breadcrumb.Item >
       Taxonomy Allocation

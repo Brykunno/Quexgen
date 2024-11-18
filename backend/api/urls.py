@@ -12,6 +12,9 @@ router.register(r'exam-dates', views.ExamDatesCreateView)
 router.register(r'courses', views.CoursesViewSet, basename='courses')
 router.register(r'settings', views.SettingsViewSet, basename='settings')
 router.register(r'logs', views.LogsViewSet, basename='logs')
+router.register(r'taxonomy_levels', views.TaxonomyViewSet, basename='taxonomy_levels')
+
+
 
 
 

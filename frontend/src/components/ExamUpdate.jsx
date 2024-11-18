@@ -1140,7 +1140,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       Exams
       </Breadcrumb.Item>
       <Breadcrumb.Item >
-      Course Information
+      TOS Information
       </Breadcrumb.Item>
       <Breadcrumb.Item >
       Taxonomy Allocation

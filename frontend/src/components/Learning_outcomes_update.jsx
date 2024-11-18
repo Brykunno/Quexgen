@@ -198,7 +198,7 @@ const toggleModal = (index) => {
      </div>
 
      
-     <div className="mb-3">
+     {/* <div className="mb-3">
        <div>
          <div className="mb-2 block">
            <Label htmlFor="file-upload">
@@ -218,7 +218,7 @@ const toggleModal = (index) => {
            </div>
          </div>
        </div>
-     </div>
+     </div> */}
    
         <div className="flex gap-5 mb-4">
           <div className='flex-1'>
@@ -254,7 +254,7 @@ const toggleModal = (index) => {
             </Button> */}
           </div>
         </div>
-        <div className='flex justify-center'>
+        {/* <div className='flex justify-center'>
        <Button
          color="primary"
          variant='contained'
@@ -265,7 +265,7 @@ const toggleModal = (index) => {
        >
          Identify levels of taxonomy
        </Button>
-     </div>
+     </div> */}
 
      <Modal size="md" show={openModals[index]} onClose={() => toggleModal(index)}>
        <Modal.Header>Identify taxonomy levels</Modal.Header>

@@ -23,6 +23,7 @@ import AutoModeIcon from '@mui/icons-material/AutoMode';
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 import Menu from './Menu'; // Adjust the path based on the file location
+import LoadingGeneratePsu from './LoadingGeneratePsu';
 
 
 function Examtest ({handleLessonDataChange, saveDataToLocalStorageTestPart,files,items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext,formData,setTOSPdfModal,addToast}) {
@@ -480,7 +481,7 @@ acc[index] = num;
           </div>
         </Modal.Body>
         <Modal.Footer className='flex justify-center'>
-          <Button color={'primary'} variant='contained' onClick={()=>{generateQues(index,"mcq")}} className='mx-auto'>Generate</Button>
+          <Button color={'primary'} variant='contained' disabled={getContextValue(index)==''} onClick={()=>{generateQues(index,"mcq")}} className='mx-auto'>Generate</Button>
         
         </Modal.Footer>
       </Modal>
@@ -613,7 +614,7 @@ acc[index] = num;
          </div>
        </Modal.Body>
        <Modal.Footer className='flex justify-center'>
-         <Button color={'primary'} variant='contained' onClick={()=>{generateQues(index,"identification")}} className='mx-auto'>Generate</Button>
+         <Button color={'primary'} variant='contained' disabled={getContextValue(index)==''} onClick={()=>{generateQues(index,"identification")}} className='mx-auto'>Generate</Button>
        
        </Modal.Footer>
      </Modal>
@@ -756,7 +757,7 @@ acc[index] = num;
          </div>
        </Modal.Body>
        <Modal.Footer className='flex justify-center'>
-         <Button color={'primary'} variant='contained' onClick={()=>{generateQues(index,"trueOrFalse")}} className='mx-auto'>Generate</Button>
+         <Button color={'primary'} variant='contained' disabled={getContextValue(index)==''} onClick={()=>{generateQues(index,"trueOrFalse")}} className='mx-auto'>Generate</Button>
        
        </Modal.Footer>
      </Modal>
@@ -833,7 +834,7 @@ let num4 = 1
          </div>
        </Modal.Body>
        <Modal.Footer className='flex justify-center'>
-         <Button color={'primary'} variant='contained' onClick={()=>{generateQues(index,"trueOrFalse")}} className='mx-auto'>Generate</Button>
+         <Button color={'primary'} variant='contained' disabled={getContextValue(index)==null} onClick={()=>{generateQues(index,"trueOrFalse")}} className='mx-auto'>Generate</Button>
        
        </Modal.Footer>
      </Modal>
@@ -1124,6 +1125,8 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
     }
 
   },[examStates,items,percent])
+
+
   const testTotal = Number(test.mcq)+Number(test.identification)+Number(test.trueOrFalse)+subtest
   
   const handleFileProcessing = async () => {
@@ -1303,6 +1306,30 @@ setTestPart([])
 
   const [clearBtn,setClearBtn] =useState(false)
   
+  useEffect(()=>{
+   if(!formData.ExaminationType.includes('Multiple Choice')) {
+    setTest((prevTest) => ({
+      ...prevTest,
+      ['mcq']: 0, 
+    }));
+
+   }
+   if(!formData.ExaminationType.includes('Identification')) {
+    setTest((prevTest) => ({
+      ...prevTest,
+      ['identification']: 0, 
+    }));
+
+   }
+
+   if(!formData.ExaminationType.includes('True or False')) {
+    setTest((prevTest) => ({
+      ...prevTest,
+      ['trueOrFalse']: 0, 
+    }));
+
+   }
+  },[formData])
  
 
 
@@ -1314,7 +1341,7 @@ setTestPart([])
       
     <Breadcrumb aria-label="Default breadcrumb example">
     <Breadcrumb.Item >
-    Course Information
+    TOS Information
     </Breadcrumb.Item>
     <Breadcrumb.Item >
     Taxonomy Allocation
@@ -1382,6 +1409,8 @@ setTestPart([])
         setClearBtn={setClearBtn}
         setSubmit={setSubmit}
         showPart={showPart}
+
+        examStates={examStates}
         
       />
 
@@ -1595,7 +1624,7 @@ setTestPart([])
     <div>test 4: {JSON.stringify(TestPart)}</div> */}
  {/* {JSON.stringify(categories)} */}
    
-    {loadingpercent && <LoadingWithPercent percent={percent}/>}
+    {loadingpercent && <LoadingGeneratePsu percent={percent}/>}
 
     
   </div>
