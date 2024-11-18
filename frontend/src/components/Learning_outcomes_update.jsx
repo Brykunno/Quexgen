@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {Button} from "@mui/material";
-import { Textarea, TextInput,Card,Pagination,Modal,Label } from 'flowbite-react';
+import { Textarea, TextInput,Card,Pagination,FileInput,Label,Spinner,Modal } from 'flowbite-react';
 import api from '../api';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import LoadingGenerate from './LoadingGenerate';
@@ -198,7 +198,28 @@ const toggleModal = (index) => {
      </div>
 
      
-       
+     <div className="mb-3">
+       <div>
+         <div className="mb-2 block">
+           <Label htmlFor="file-upload">
+             Upload file for Lesson {indexOfFirstLesson + index + 1} <span className="text-red-600">*</span>
+           </Label>
+         </div>
+         <div className="flex gap-5">
+           <FileInput
+             id="file-upload"
+             accept="application/pdf"
+             className="flex-1"
+             sizing="sm"
+             
+           />
+           <div>
+             
+           </div>
+         </div>
+       </div>
+     </div>
+   
         <div className="flex gap-5 mb-4">
           <div className='flex-1'>
           <div className="ms-2 font-bold mb-2">Lesson {indexOfFirstLesson + index + 1}</div>

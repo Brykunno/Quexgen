@@ -21,15 +21,15 @@ function Form({ route, method }) {
   const [showPassword, setShowPassword] = useState(false); 
 
 
-  useEffect(()=>{
-    if(localStorage.getItem('user_logged_in')){
-      window.location.href = "/dashboard_instructor"
-    }
+  // useEffect(()=>{
+  //   if(localStorage.getItem('user_logged_in')){
+  //     window.location.href = "/dashboard_instructor"
+  //   }
 
-    if(localStorage.getItem('admin_logged_in')){
-      window.location.href = "/dashboard"
-    }
-  },[])
+  //   if(localStorage.getItem('admin_logged_in')){
+  //     window.location.href = "/dashboard"
+  //   }
+  // },[])
 
   const showSwal = (message) => {
     Swal.fire({

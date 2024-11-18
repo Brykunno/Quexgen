@@ -1,8 +1,10 @@
 import { React, useState,useEffect } from "react";
-import { Breadcrumb,Card,Progress,Label, Textarea, TextInput,Button,RangeSlider,Modal,Select } from "flowbite-react";
+import { Breadcrumb,Card,Progress,Label, Textarea,ToggleSwitch, TextInput,Button,RangeSlider,Modal,Select } from "flowbite-react";
 import Learning_outcomes_update from "./Learning_outcomes_update";
 
 function TaxonomyAllocation(props) {
+
+  const[specific,setSpecific] = useState(true)
 
  
   return (
@@ -26,9 +28,9 @@ function TaxonomyAllocation(props) {
   
         <div className=" max-w-40 mb-3">
       <div>
-        <div className="mb-2 block">
-          <Label htmlFor="totalItems" value="Total of Items" />
-        </div>
+      <div className="mt-3" >
+          <Label htmlFor="totalItems" className="font-bold" > Total of Items<span className="text-red-600">*</span></Label> 
+        </div>  
         <TextInput id="totalItems" type="number" required value={props.totalItems} onChange={props.handleTotalItemsChange} />
       </div>
 
@@ -36,11 +38,14 @@ function TaxonomyAllocation(props) {
 
       <Card className=" gap-4 mb-5  w-full p-3"> 
       <div>
+      <div className="mb-3">
+        <ToggleSwitch checked={specific} label={specific?'Locked':'Unlocked'} onChange={setSpecific} color={"primary"} className="mx-auto" />
+        </div>
         <div className="flex gap-3">
         <div className="mt-2 block w-32">
           <Label htmlFor="md-range" value="Remembering" />
         </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={props.Remembering} onChange={props.handleRememberingChange} />
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={props.Remembering} onChange={props.handleRememberingChange} disabled={specific} />
         <div className="flex">
         <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={props.Remembering}  onChange={props.handleRememberingChange} /><span className="mt-2">%</span>
         </div>
@@ -53,7 +58,7 @@ function TaxonomyAllocation(props) {
         <div className="mt-2 block w-32">
           <Label htmlFor="md-range" value="Understanding" />
         </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={props.Understanding} onChange={props.handleUnderstandingChange} />
+        <RangeSlider disabled={specific} id="md-range" sizing="md" className="mt-2 w-full" value={props.Understanding} onChange={props.handleUnderstandingChange} />
         <div className="flex">
         <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={props.Understanding}  onChange={props.handleUnderstandingChange} /><span className="mt-2">%</span>
         </div>
@@ -66,7 +71,7 @@ function TaxonomyAllocation(props) {
         <div className="mt-2 block w-32">
           <Label htmlFor="md-range" value="Applying" />
         </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={props.Applying} onChange={props.handleApplyingChange} />
+        <RangeSlider disabled={specific} id="md-range" sizing="md" className="mt-2 w-full" value={props.Applying} onChange={props.handleApplyingChange} />
         <div className="flex">
         <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={props.Applying}  onChange={props.handleApplyingChange} /><span className="mt-2">%</span>
         </div>
@@ -79,7 +84,7 @@ function TaxonomyAllocation(props) {
         <div className="mt-2 block w-32">
           <Label htmlFor="md-range" value="Analyzing" />
         </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={props.Analyzing} onChange={props.handleAnalyzingChange} />
+        <RangeSlider disabled={specific} id="md-range" sizing="md" className="mt-2 w-full" value={props.Analyzing} onChange={props.handleAnalyzingChange} />
         <div className="flex">
         <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={props.Analyzing}  onChange={props.handleAnalyzingChange} /><span className="mt-2">%</span>
         </div>
@@ -93,7 +98,7 @@ function TaxonomyAllocation(props) {
         <div className="mt-2 block w-32">
           <Label htmlFor="md-range" value="Evaluating" />
         </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={props.Evaluating} onChange={props.handleEvaluatingChange} />
+        <RangeSlider disabled={specific} id="md-range" sizing="md" className="mt-2 w-full" value={props.Evaluating} onChange={props.handleEvaluatingChange} />
         <div className="flex">
         <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={props.Evaluating}  onChange={props.handleEvaluatingChange} /><span className="mt-2">%</span>
         </div>
@@ -106,7 +111,7 @@ function TaxonomyAllocation(props) {
         <div className="mt-2 block w-32">
           <Label htmlFor="md-range" value="Creating" />
         </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full" value={props.Creating} onChange={props.handleCreatingChange} />
+        <RangeSlider disabled={specific} id="md-range" sizing="md" className="mt-2 w-full" value={props.Creating} onChange={props.handleCreatingChange} />
         <div className="flex">
         <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={props.Creating}  onChange={props.handleCreatingChange} /><span className="mt-2">%</span>
         </div>

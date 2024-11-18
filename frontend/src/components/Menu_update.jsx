@@ -17,6 +17,7 @@ const Menu_update = ({
   disableShowPart4,
 
   setPdfModal,
+  setPdfModalTos,
   setPdfModalAnswer,
   
   setSubmit,
@@ -101,6 +102,15 @@ const Menu_update = ({
           {/* Right Section */}
           <div className="flex flex-col md:flex-row flex-1 gap-5 justify-end">
          
+          <Button
+              color="info"
+              onClick={() => setPdfModalTos(true)}
+              size="small"
+              variant="contained"
+            >
+              <VisibilityIcon className="mr-2" fontSize="small" />
+              TOS
+            </Button>
             <Button
               color="info"
               onClick={() => setPdfModal(true)}

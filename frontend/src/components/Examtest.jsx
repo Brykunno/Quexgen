@@ -25,7 +25,7 @@ import { HiOutlineExclamationCircle } from "react-icons/hi";
 import Menu from './Menu'; // Adjust the path based on the file location
 
 
-function Examtest ({handleLessonDataChange, saveDataToLocalStorageTestPart,files,items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext,formData,setTOSPdfModal}) {
+function Examtest ({handleLessonDataChange, saveDataToLocalStorageTestPart,files,items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext,formData,setTOSPdfModal,addToast}) {
 
 
 
@@ -1124,8 +1124,14 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
     }
 
   },[examStates,items,percent])
+  const testTotal = Number(test.mcq)+Number(test.identification)+Number(test.trueOrFalse)+subtest
   
   const handleFileProcessing = async () => {
+
+    if(testTotal!=items){
+      addToast("The total number of test doesn't match the desired number of items")
+      return
+    }
 
     
     const newTestParts = [];
@@ -1300,6 +1306,8 @@ setTestPart([])
  
 
 
+
+
   return (
     <div >
     <Card>
@@ -1374,6 +1382,7 @@ setTestPart([])
         setClearBtn={setClearBtn}
         setSubmit={setSubmit}
         showPart={showPart}
+        
       />
 
      
@@ -1389,23 +1398,6 @@ setTestPart([])
 
 </div>
 
-{/* <div className='flex gap-5 mb-5'>
-  <div className='flex-1'>
-<Progress progress={100} size={'sm'} color={'primary'} variant='contained'/> 
-</div>
-<div className='flex-1'>
-90%
-</div>
-
-</div>
-
-<div className='flex gap-5 mb-5 justify-center'>
-<Button color={'primary'} variant='contained' onClick={()=>{setShowPart(1)}} disabled={disableShowPart1}><VisibilityIcon className="mr-2"/> View Test 1</Button>
-    <Button color={'primary'} variant='contained' onClick={()=>{setShowPart(2)}} disabled={disableShowPart2}><VisibilityIcon className="mr-2"/> View Test 2</Button>
-    <Button color={'primary'} variant='contained' onClick={()=>{setShowPart(3)}} disabled={disableShowPart3}><VisibilityIcon className="mr-2"/> View Test 3</Button>
-    <Button color={'primary'} variant='contained' onClick={()=>{setShowPart(4)}} disabled={disableShowPart4}><VisibilityIcon className="mr-2"/> View Test 4</Button>
-
-</div> */}
 
       <div className='w-full hidden' >
         <div className="mb-2 block">
@@ -1496,7 +1488,7 @@ setTestPart([])
     <div className="block">
       <Label htmlFor="subjective" value="Total Items" />
     </div>
-   <div>{Number(test.mcq)+Number(test.identification)+Number(test.trueOrFalse)+subtest}/{items}</div>
+   <div>{testTotal}/{items}</div>
   </div>
 
   {/* Button */}
@@ -1506,7 +1498,7 @@ setTestPart([])
       color="primary"
       variant='contained'
       onClick={handleFileProcessing}
-   disabled={max ==0 && files.length == lessonsData.length?false:true}
+
 
     >
       Generate Exam

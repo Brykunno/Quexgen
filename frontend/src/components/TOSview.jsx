@@ -45,7 +45,10 @@ function createData(
   evaluating,
   creating,
   total,
-  placement
+  placement,
+  study_guide
+
+  
 ) {
   return {
     topic,
@@ -61,8 +64,11 @@ function createData(
     creating,
     total,
     placement,
+    study_guide,
+   
   };
 }
+
 
 function TOSview() {
 
@@ -103,20 +109,30 @@ function TOSview() {
 
   const [lessonData,setLessonData] = useState([{  
     topic: '',
-  learning_outcomes: '',
-  teachingHours: 0,
-  allocation: 0,
-  items: 0,
-  remembering: 0,
-  understanding: 0,
-  applying: 0,
-  analyzing: 0,
-  evaluating: 0,
-  creating: 0,
-  total: 0,
-  placement: '',
-  TotalItems:0,
-  teacher_tos: 0,
+learning_outcomes: '',
+teachingHours: 0,
+allocation: 0,
+items: 0,
+remembering: 0,
+understanding: 0,
+applying: 0,
+analyzing: 0,
+evaluating: 0,
+creating: 0,
+total: 0,
+placement: '',
+totalItems:0,
+study_guide:null,
+tos_teacher: 0,
+file_status:'',
+taxonomy_levels: {
+  Remembering:0,
+  Understanding:0,
+  Applying:0,
+  Analyzing:0,
+  Evaluating:0,
+  Creating:0
+}
   }])
   const [getTestPart, setGetTestPart] = useState([]);
   const [TestPart, setTestPart] = useState([]);
@@ -751,8 +767,15 @@ const handleNext = () => {
 };
 
 const handleBack = () => {
+
+  if (step === 1) {
+    window.location.href = "/exam_bank";
+    return; // Exit the function early to avoid decrementing `step`
+  }
   setStep(step - 1);
+  
 };
+
 
 const [Remembering, setRemembering] = React.useState(0);
   const [Understanding, setUnderstanding] = React.useState(0);
@@ -2839,12 +2862,12 @@ const handleTestPartChange = (index,type, value) => {
 
 
  useEffect (() =>{
-  if(step === 1){
-    setDisableBack(true)
-  } 
-  else{
-    setDisableBack(false)
-  }
+  // if(step === 1){
+  //   setDisableBack(true)
+  // } 
+  // else{
+  //   setDisableBack(false)
+  // }
 
   if(step === 4){
     setDisableNext(true)
@@ -3393,13 +3416,13 @@ const [allocations, setAllocations] = useState([]);
    </div>
 
    <div className={`mb-5 ${step == 4? 'show':'hidden'}`}>
-   <ExamUpdate items={TotalItems} lessonsData={lessonData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} exam_id={exam_id} updateTOSinfo={updateTOSinfo} handleSubmitExam={handleSubmitExam} setSubmit={setSubmit} setLoading={setLoadingGenerate} Status={formData.Status} formData={formData}/>
+   <ExamUpdate setPdfModalTos={setPdfModal} items={TotalItems} lessonsData={lessonData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} exam_id={exam_id} updateTOSinfo={updateTOSinfo} handleSubmitExam={handleSubmitExam} setSubmit={setSubmit} setLoading={setLoadingGenerate} Status={formData.Status} formData={formData}/>
 
     </div>
 
     <div className="w-full justify-center mx-auto flex gap-14">
   <div>
-  
+ 
 <Button size={'sm'} color={'primary'} onClick={handleBack} disabled={disableBack} className="px-3"><NavigateBeforeIcon/> <p style={{marginTop:'0.5px'}}>Previous</p></Button>
 </div>
 <div>

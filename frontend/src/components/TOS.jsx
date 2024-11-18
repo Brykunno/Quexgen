@@ -14,7 +14,7 @@ import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import TOSmodal from "./TOSmodal";
 import Error from "./Error";
 import api from "../api";
-import { useNavigate } from "react-router-dom";
+import { json, useNavigate } from "react-router-dom";
 import LoadingPage from "./LoadingPage";
 import LoadingSubmit from "./LoadingSubmit";
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -145,6 +145,24 @@ taxonomy_levels: {
   const[loadingGenerate,setLoadingGenerate] = useState(false)
 
   const [selectedOptions, setSelectedOptions] = useState([]);
+
+  const [courseError,setCourseError] = useState(false);
+  const [dateError,setDateError] = useState(false);
+  const [testError,setTestError] = useState(false);
+  const [totalError,setTotalError] = useState(false);
+
+  const [toasts, setToasts] = useState([]);
+
+  // Function to add a new toast
+  const addToast = (message) => {
+    const id = Date.now(); // Unique ID for the toast
+    setToasts((prevToasts) => [...prevToasts, { id, message }]);
+  };
+
+  // Function to remove a toast
+  const removeToast = (id) => {
+    setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
+  };
 
   function roundNum(num) {
     if (num % 1 >= 0.3 && num % 1 <= 0.7) {
@@ -1682,11 +1700,17 @@ for (let i = 0; i < localStorage.length; i++) {
 
 
 const handleExamTitleChange = (event) => {
+
   setExamTitle(event.target.value)
   const data = {
     ExamTitle: event.target.value,
     tos_id:0
   };
+
+  if(formData.Title!=''){
+    setCourseError(false)
+  }
+  
 
   localStorage.setItem('examData', JSON.stringify(data));
 }
@@ -2176,13 +2200,95 @@ const [disableNext, setDisableNext] = useState(false);
 
 const [disableBack, setDisableBack] = useState(false);
 
+
+
 const handleNext = () => {
-  setStep(step + 1);
+
+  switch(step){
+
+    case 1:
+      
+  if(formData.ExaminationDate==''){
+
+    addToast('Select date');
+    setDateError(true)
+ 
+   } else{
+     setDateError(false)
+   }
+ 
+   if(formData.Title==''){
+ 
+     addToast('Choose course');
+     setCourseError(true)
+ 
+   }
+   else{
+     setCourseError(false)
+   }
+ 
+   if(formData.ExaminationType.length == 0){
+     addToast('Choose a type of examination');
+     setTestError(true)
+ 
+   }
+   else{
+     setTestError(false)
+   }
+   if(formData.Title!='' && formData.ExaminationDate!='' && formData.ExaminationType.length != 0){
+     setStep(step + 1);
+   }
+
+      break
+
+    case 2: 
+    let err = 0
+    lessonsDataInitial.map((data,index)=>{
+      if(data.file_status == ''){
+        addToast(`Please upload a file for lesson ${index+1}`)
+        err++
+      }
+     
+    })
+
+    if(totalItems==0){
+      addToast(`Please input a total number of items`)
+    }
+
+    if(err==0 && totalItems>0){
+      setStep(step + 1);
+    }
+
+    break
+
+    case 3:
+      let err3 = 0
+      lessonsDataInitial.map((data,index)=>{
+        if(data.teachingHours == 0){
+          addToast(`Please input the number of teaching hours for lesson ${index+1}`)
+          err3++
+        }
+      })
+
+      if(err3==0){
+        setStep(step + 1);
+      }
+  
+    break
+
+
+
+
+  }
+
+  
 };
 
 const handleBack = () => {
   setStep(step - 1);
 };
+
+
 
 
  useEffect (() =>{
@@ -2258,23 +2364,23 @@ let create = false
 
   })
 
-  switch(step){
-    case 1:
-      if(formData.Title == '' || formData.AcademicYear == '' || formData.CourseCode == '' || formData.Faculty == ''|| formData.Chairperson == ''|| formData.Dean == ''|| formData.Director == ''|| formData.ExaminationDate == ''){
-        setDisableNext(true)
-      }
-      break
-    case 2:
-      if(getTotalTaxonomy!=100 || totalItems<10 || topic || outcomes || files.length != lessonsData.length){
-        setDisableNext(true)
-      }
-      break
-    case 3:
-      if(items || hours || remember|| understand || analyze || apply || evaluate ||create){
-        setDisableNext(true)
-      }
-      break
-  }
+  // switch(step){
+  //   case 1:
+  //     if(formData.Title == '' || formData.AcademicYear == '' || formData.CourseCode == '' || formData.Faculty == ''|| formData.Chairperson == ''|| formData.Dean == ''|| formData.Director == ''|| formData.ExaminationDate == ''){
+  //       setDisableNext(true)
+  //     }
+  //     break
+  //   case 2:
+  //     if(getTotalTaxonomy!=100 || totalItems<10 || topic || outcomes || files.length != lessonsData.length){
+  //       setDisableNext(true)
+  //     }
+  //     break
+  //   case 3:
+  //     if(items || hours || remember|| understand || analyze || apply || evaluate ||create){
+  //       setDisableNext(true)
+  //     }
+  //     break
+  // }
 
 
 
@@ -2493,7 +2599,7 @@ const [allocations, setAllocations] = useState([]);
            <div className="mb-2 block">
              <Label htmlFor="title" value="Course" />
            </div>
-           <Select id="title" name="Title" value={formData.Title} onChange={(e)=>{handleExamTitleChange(e);handleCourse(e,course)}} color={'gray'} required>
+           <Select id="title" name="Title" value={formData.Title} onChange={(e)=>{handleExamTitleChange(e);handleCourse(e,course)}} color={courseError?'failure':'gray'} required>
            <option value={''}>
      
     </option>
@@ -2591,7 +2697,11 @@ const [allocations, setAllocations] = useState([]);
          <div className="mb-2 block">
            <Label htmlFor="exam-date" value="Date of Examination" />
          </div>
-         <TextInput id="exam-date" type="date" name="ExaminationDate" value={formData.ExaminationDate} onChange={handleChange} />
+         <TextInput  id="exam-date" type="date" name="ExaminationDate" value={formData.ExaminationDate} onChange={handleChange}
+         min={new Date().toISOString().split("T")[0]}
+         color={dateError?'failure':'gray'}
+        
+         />
        </div>
        
        </div>
@@ -2637,10 +2747,11 @@ const [allocations, setAllocations] = useState([]);
 
        {/* Campus Executive Director */}
        <div className=' my-3'>
-       <div className="mb-2 block">
+       <div className="mb-2 block ">
              <Label htmlFor="exam-type" value="Type of Examination" />
            </div>
            <Autocomplete
+       
       multiple
       id="chip-selection"
       name="ExaminationType"
@@ -2661,7 +2772,7 @@ const [allocations, setAllocations] = useState([]);
         ))
       }
       renderInput={(params) => (
-        <TextField {...params} variant="outlined" label="Select type of examination" />
+        <TextField error ={testError} {...params} variant="outlined" label="Select type of examination" />
       )}
     />
 
@@ -3036,7 +3147,7 @@ const [allocations, setAllocations] = useState([]);
       </Card>
 
         <div className={`mb-5 ${step == 4? 'show':'hidden'}`}>
-      <Examtest setTOSPdfModal={setPdfModal} saveDataToLocalStorageTestPart={saveDataToLocalStorageTestPart} files={files} setExamTitle={setExamTitle} items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} setLoading={setLoadingGenerate} context={context} setContext={setContext} formData={formData} handleLessonDataChange={handleLessonDataChange}/>
+      <Examtest setTOSPdfModal={setPdfModal} saveDataToLocalStorageTestPart={saveDataToLocalStorageTestPart} files={files} setExamTitle={setExamTitle} items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} setLoading={setLoadingGenerate} context={context} setContext={setContext} formData={formData} handleLessonDataChange={handleLessonDataChange} addToast={addToast}/>
 
 
     
@@ -3058,10 +3169,18 @@ const [allocations, setAllocations] = useState([]);
 <div>
  
       <Button size={'sm'} color={'primary'} onClick={handleNext} disabled={disableNext} className="px-4" > <p style={{marginTop:'0.5px'}}>Next</p> <NavigateNextIcon  /></Button>
-  
-   {/* {JSON.stringify(lessonsDataInitial)} */}
-   {/* <ToastError message="Invalid file" /> */}
-  
+
+   <div className="fixed top-4 right-4 z-50 space-y-4">
+        {toasts.map((toast,index) => (
+          <ToastError
+            key={toast.id}
+            id={toast.id}
+            message={toast.message}
+            removeToast={removeToast}
+            index={index} // Dynamically adjust position
+          />
+        ))}
+      </div>
       </div>
       </div>
     </div>

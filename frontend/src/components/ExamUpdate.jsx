@@ -23,7 +23,7 @@ import Menu_update from './Menu_update';
 
 
 
-function Examtest ({Status, items, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,exam_id,updateTOSinfo,handleSubmitExam,setSubmit,setLoading,formData}) {
+function Examtest ({Status,setPdfModalTos, items, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,exam_id,updateTOSinfo,handleSubmitExam,setSubmit,setLoading,formData}) {
 
 
 
@@ -1200,6 +1200,8 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
         disableShowPart2={disableShowPart2}
         disableShowPart3={disableShowPart3}
         disableShowPart4={disableShowPart4}
+
+        setPdfModalTos={setPdfModalTos}
       
         setPdfModal={setPdfModal}
         setPdfModalAnswer={setPdfModalAnswer}
