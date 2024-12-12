@@ -852,12 +852,16 @@ def extract_taxonomy_levels(response_content):
 # Extract and count Bloom's Taxonomy levels
 
 
-objective_prompt = "Be consistent. Identify the Bloom's taxonomy levels corresponding to these learning objectives: {}. Only respond with one or more of the following levels: Remembering, Understanding, Applying, Analyzing, Evaluating, Creating."
+objective_prompt = "Be consistent. Identify the Bloom's taxonomy levels corresponding to each of these learning objectives: {}. Only respond with one or more of the following levels: Remembering, Understanding, Applying, Analyzing, Evaluating, Creating."
+
+objective_count = "Make each of these learning outcomes to be in theri own single line:{}. Only respond with the modified learning outcomes nothing else"
+
+
 
 def objectives_percentage(objectives):
     retries = 0
     max_retries = 5
-    max_tokens = 100  # Ensure you set the max_tokens if it's not defined elsewhere
+    
     
     prompt =  objective_prompt.format(objectives)
 
@@ -865,7 +869,7 @@ def objectives_percentage(objectives):
         try:
             # API call to OpenAI or the client
             response = client.chat.completions.create(
-                model="jamba-1.5-large",
+                model="jamba-1.5-mini",
                 messages=[
                     ChatMessage(
                         role="user",
@@ -887,6 +891,7 @@ def objectives_percentage(objectives):
             # Print the raw response for debugging (optional)
             print(f"Raw response: {response}")
             print("objectives: "+objectives)
+            print("content: "+content)
             # Extract taxonomy levels from the response content
             taxonomy_counts = extract_taxonomy_levels(content)
 
@@ -904,6 +909,36 @@ def objectives_percentage(objectives):
     return None
 
 
+def objectives_count(objectives):
+        
+    prompt =  objective_count.format(objectives)
+
+
+            # API call to OpenAI or the client
+    response = client.chat.completions.create(
+                model="jamba-1.5-mini",
+                messages=[
+                    ChatMessage(
+                        role="user",
+                        content=prompt
+                    )
+                ],
+                n=1,
+                max_tokens=max_tokens,
+                temperature=0,
+                top_p=1,
+                response_format=ResponseFormat(type="text")
+            )
+
+    choice = response.choices[0]  # Accessing the first choice
+    message = choice.message  # Accessing the message
+    content = message.content  # Accessing the content of the message
+
+    # Regex to find numbered items and remove the period after the number
+    # Matches patterns like "1.", "2.", "3.", etc., and replaces them with "1 ", "2 ", "3 ", etc.
+    modified_text = content.split("\n")
+    
+    return modified_text
 
 @csrf_exempt
 def taxonomy_allocation(request):
@@ -912,8 +947,12 @@ def taxonomy_allocation(request):
         try:
             data = json.loads(request.body)
             learning_objectives = data.get('objectives', 'leaning_objectives')
+            print('herealloc: ')
             print(learning_objectives)
             allocation = objectives_percentage(learning_objectives)
+            
+            
+
             return JsonResponse({"allocation": allocation}, status=status.HTTP_200_OK)
 
         except Exception as e:
@@ -1198,4 +1237,24 @@ def validate_pdf(request):
 
     return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     
+@csrf_exempt
+def outcomes_count(request):
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            learning_objectives = data.get('objectives', 'leaning_objectives')
+            
+            outcomes= objectives_count(str(learning_objectives))
+            print("here:")
+            print(outcomes)
+
+            return JsonResponse({"outcomes": outcomes}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            print(f"Error during question generation: {e}")
+            return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 

@@ -136,18 +136,22 @@ function checkAnswer(localStore, answer){
 let subtest = 0
 
   const categories = lessonsData.reduce((acc, cat,index) => {
-    const start = stringToIntegerStart(String(cat.placement));
-    const end = stringToIntegerEnd(String(cat.placement));
+
+    for(let k = 0; k<cat.learning_outcomes.length;k++){
+      const start = stringToIntegerStart(String(cat.placement[k]));
+    const end = stringToIntegerEnd(String(cat.placement[k]));
     const ind = index + 1
 
-    let remembering = cat.remembering
-    let understanding = cat.understanding 
-    let applying = cat.applying
-    let evaluating = cat.evaluating 
-    let analyzing = cat.analyzing 
-    let creating = cat.creating 
+    let remembering = cat.remembering[k]
+    let understanding = cat.understanding[k] 
+    let applying = cat.applying[k]
+    let evaluating = cat.evaluating[k] 
+    let analyzing = cat.analyzing[k] 
+    let creating = cat.creating[k] 
 
     for (let i = start; i <= end; i++) {
+
+
       if (remembering) {
         acc[i] = 'Remembering'
         
@@ -188,7 +192,10 @@ let subtest = 0
 
       
     
+ 
+    }
     return acc;
+    
   }, {});
 
   const [max,setMax] = useState(0)
@@ -210,15 +217,21 @@ let subtest = 0
 
   
 const lessons = lessonsData.reduce((acc, cat,index) => {
-  const start = stringToIntegerStart(String(cat.placement));
-  const end = stringToIntegerEnd(String(cat.placement));
 
-let num = 0
-  for (let i = start; i <= end; i++) {
-num++;
-acc[index] = num;
+  let subnum=0
+  for(let k=0;k<cat.learning_outcomes.length;k++){
+    const start = stringToIntegerStart(String(cat.placement[k]));
+    const end = stringToIntegerEnd(String(cat.placement[k]));
+    for (let i = start; i <= end; i++) {
+      subnum++;
+      };
+ 
+  }
+
+acc[index] = subnum;
        
-};
+
+ 
       
     
     return acc;
@@ -1136,6 +1149,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       return
     }
 
+
     
     const newTestParts = [];
     let mcq= test.mcq
@@ -1198,10 +1212,14 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
     
     let num = 0;
 
+
+
   
     for (let i = 0;i<files.length;i++) {
       if (!files[i]) return alert('Please select a file.');
       const formData = new FormData();
+
+      console.log('numberbug:',num)
       
       formData.append('file', files[i]); // Append the selected file
   
@@ -1213,17 +1231,32 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
 
      
         formData.append('test_type', 'Identification');
+
+        const rememberingTotal= lessonsData[num].remembering.reduce((acc, data) => acc + data, 0)
+        const understandingTotal= lessonsData[num].understanding.reduce((acc, data) => acc + data, 0)
+        const applyingTotal= lessonsData[num].applying.reduce((acc, data) => acc + data, 0)
+        const analyzingTotal= lessonsData[num].analyzing.reduce((acc, data) => acc + data, 0)
+        const evaluatingTotal= lessonsData[num].evaluating.reduce((acc, data) => acc + data, 0)
+        const creatingTotal= lessonsData[num].creating.reduce((acc, data) => acc + data, 0)
+
+    
+
+
         formData.append('mcq', mcq);
+
+        console.log("mcqtrail: ",mcq)
         formData.append('identification', identification);
+        
         formData.append('trueOrFalse', trueOrFalse);
         formData.append('subjective', subtest);
         formData.append('numques', lessons[num]);
-        formData.append('Remembering', lessonsData[num].remembering);
-        formData.append('Understanding', lessonsData[num].understanding);
-        formData.append('Applying', lessonsData[num].applying);
-        formData.append('Analyzing', lessonsData[num].analyzing);
-        formData.append('Evaluating', lessonsData[num].evaluating);
-        formData.append('Creating', lessonsData[num].creating);
+        console.log("numtrail: ",lessons[num])
+        formData.append('Remembering', rememberingTotal);
+        formData.append('Understanding', understandingTotal);
+        formData.append('Applying', applyingTotal);
+        formData.append('Analyzing', analyzingTotal);
+        formData.append('Evaluating', evaluatingTotal);
+        formData.append('Creating', creatingTotal);
 
         if(i === files.length-1){
           formData.append('last', 1);
@@ -1292,7 +1325,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       num++;
   
     }
-    
+  
     setLoadingPercent(false)
   
   };
@@ -1623,6 +1656,7 @@ setTestPart([])
     <div>test 4: {Test4}</div>
     <div>test 4: {JSON.stringify(TestPart)}</div> */}
  {/* {JSON.stringify(categories)} */}
+
    
     {loadingpercent && <LoadingGeneratePsu percent={percent}/>}
 

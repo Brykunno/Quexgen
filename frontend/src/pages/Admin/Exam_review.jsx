@@ -15,13 +15,22 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import LoadingSubmit from '../../components/LoadingSubmit';
 import BreadCrumb from '../../components/BreadCrumb';
 import Topnavbar from '../../components/Topnavbar';
+import PdfViewer from '../../components/PdfViewer';
+
+
+
+import { Document, Page } from "react-pdf";
+
 
 function Exam_review() {
   const { id } = useParams();
   const [TOSContent, setTOSContent] = useState([]);  
   const [TOSInfo, setTOSInfo] = useState([]);
+  const [syllabus, setSyllabus] = useState(false);
   const [loading,setLoading] = useState(false)
   const [swal,setSwal] =useState(false)
+  const [learningOutcomes, setLearningOutcomes] = useState([]);  
+
 
   const [Comment,setComment] = useState([{
     comment:'',
@@ -34,6 +43,44 @@ function Exam_review() {
   
 
   const [TotalItems, setTotalItems] = useState(0);
+  const [course, setcourse] = useState([]);
+
+  const [coursepath,setcoursepath] = useState("")
+
+  
+  const getLearningOutcomes = () =>{
+    api.get(`/api/learning_outcomes/`)
+    .then((res) => {
+      setLearningOutcomes(res.data);
+    })
+    .catch((err) => {
+      alert(err);
+      
+    });
+  }
+
+  const getCourse= () => {
+    api.get(`/api/courses/`)
+      .then((res) => {
+        setcourse(res.data);
+        
+      })
+      .catch((err) => {
+        alert(err);
+        
+      });
+  };
+
+  
+  useEffect(() => {
+   
+    getCourse();
+    
+
+
+  },[]);
+
+
   const [formData, setFormData] = useState({
     Title: '',
     Semester: '1st Semester',
@@ -53,18 +100,18 @@ function Exam_review() {
 
   const [lessonData,setLessonData] = useState([{  
     topic: '',
-  learning_outcomes: '',
-  teachingHours: 0,
-  allocation: 0,
-  items: 0,
-  remembering: 0,
-  understanding: 0,
-  applying: 0,
-  analyzing: 0,
-  evaluating: 0,
-  creating: 0,
-  total: 0,
-  placement: '',
+  learning_outcomes: [],
+  teachingHours: [],
+  allocation: [],
+  items: [],
+  remembering: [],
+  understanding: [],
+  applying: [],
+  analyzing: [],
+  evaluating: [],
+  creating: [],
+  total: [],
+  placement: [],
   TotalItems:0,
   teacher_tos: 0,
   }])
@@ -106,6 +153,7 @@ function Exam_review() {
       getTOSInfo();
       getExam();
       getComment();
+      getLearningOutcomes();
     
     }
   }, [id]);
@@ -141,42 +189,108 @@ function Exam_review() {
         Director: TOSInfo[0].Director,
         Status: TOSInfo[0].Status
       });
+
+      if(course.length){
+        const pathData=course.filter(path => path.course_name == TOSInfo[0].Title)
+      
+        const fileName = pathData[0]?.course_syllabus?.split("/").pop();
+        setcoursepath(fileName)
+      }
+      
     }
   
     if (TOSContent.length) {
       // Map over TOSContent to update lessonData
-      const updatedLessonData = TOSContent.map((content) => ({
+      const updatedLessonData = TOSContent.map((content) => {
+
+        const outcomes =  learningOutcomes.filter(data => data.tos_content.id == content.id).sort((a, b) => b.id - a.id);
+        const l_outcome = outcomes.map((data)=>{
+          let out = []
+          out.push(data.learning_outcomes)
+          return out
+        })
+
+
+        const thours = learningOutcomes
+  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .map(data => data.teachingHours);
+
+  const allocation = learningOutcomes
+  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .map(data => data.allocation);
+
+  const items = learningOutcomes
+  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .map(data => data.items);
+
+  const remembering = learningOutcomes
+  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .map(data => data.remembering);
+
+  const understanding = learningOutcomes
+  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .map(data => data.understanding);
+
+  const applying = learningOutcomes
+  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .map(data => data.applying);
+
+  const analyzing = learningOutcomes
+  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .map(data => data.analyzing);
+
+  const evaluating = learningOutcomes
+  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .map(data => data.evaluating);
+
+  const creating = learningOutcomes
+  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .map(data => data.creating);
+
+  const placement = learningOutcomes
+  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .map(data => data.placement);
+
+  const total = learningOutcomes
+  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .map(data => data.total);
+
+
+        
+        
+        return{
         id:content.id,
         topic: content.topic,
-        learning_outcomes: content.learning_outcomes || '',
-        teachingHours: content.teachingHours || 0,
-        allocation: content.allocation || 0,
-        items: content.items || 0,
-        remembering: content.remembering || 0,
-        understanding: content.understanding || 0,
-        applying: content.applying || 0,
-        analyzing: content.analyzing || 0,
-        evaluating: content.evaluating || 0,
-        creating: content.creating || 0,
-        total: content.total || 0,
-        placement: content.placement || '',
-        TotalItems: content.TotalItems || 0,
+        learning_outcomes: l_outcome || [],
+        teachingHours: thours || [],
+        allocation: allocation || [],
+        items: items || [],
+        remembering: remembering || [],
+        understanding: understanding || [],
+        applying: applying || [],
+        analyzing: analyzing || [],
+        evaluating: evaluating || [],
+        creating: creating || [],
+        total: total || [],
+        placement: placement || [],
+        TotalItems: total.reduce((total,content)=> total +content,0) || 0,
         teacher_tos: content.teacher_tos || 0,
        
-      }));
+      }});
 
-      const updateTotalItems = TOSContent.reduce((total, content) => total + content.items, 0);
+      const updateTotalItems = updatedLessonData.reduce((total, content) => total + content.TotalItems, 0);
 
       const calculatePercentage = (totalValue, TotalItems) => (totalValue / TotalItems) * 100;
 
 
 // Sum for each category
-const totalRemembering = TOSContent.reduce((total, content) => total + content.remembering, 0);
-const totalUnderstanding = TOSContent.reduce((total, content) => total + content.understanding, 0);
-const totalApplying = TOSContent.reduce((total, content) => total + content.applying, 0);
-const totalAnalyzing = TOSContent.reduce((total, content) => total + content.analyzing, 0);
-const totalEvaluating = TOSContent.reduce((total, content) => total + content.evaluating, 0);
-const totalCreating = TOSContent.reduce((total, content) => total + content.creating, 0);
+const totalRemembering = updatedLessonData.reduce((total, content) => total + content.remembering.reduce((total2, content2) => total2 + content2, 0), 0);
+
+const totalUnderstanding = updatedLessonData.reduce((total, content) => total + content.understanding.reduce((total2, content2) => total2 + content2, 0), 0);
+const totalApplying = updatedLessonData.reduce((total, content) => total + content.applying.reduce((total2, content2) => total2 + content2, 0), 0);
+const totalAnalyzing = updatedLessonData.reduce((total, content) => total + content.analyzing.reduce((total2, content2) => total2 + content2, 0), 0);
+const totalEvaluating = updatedLessonData.reduce((total, content) => total + content.evaluating.reduce((total2, content2) => total2 + content2, 0), 0);
+const totalCreating = updatedLessonData.reduce((total, content) => total + content.creating.reduce((total2, content2) => total2 + content2, 0), 0);
 
 // Calculate percentages
 const updateRemembering = calculatePercentage(totalRemembering, updateTotalItems);
@@ -403,12 +517,12 @@ if (getQuestion.length && getAnswer.length) {
   const [ExamPdfModal, setExamPdfModal] = useState(false);
 
   const charData = [
-    { id: 0, value: lessonData.reduce((acc, data) => acc + data.remembering, 0), label: 'Remembering' },
-    { id: 1, value: lessonData.reduce((acc, data) => acc + data.understanding, 0), label: 'Understanding' },
-    { id: 2, value: lessonData.reduce((acc, data) => acc + data.applying, 0), label: 'Applying' },
-    { id: 3, value: lessonData.reduce((acc, data) => acc + data.analyzing, 0), label: 'Analyzing' },
-    { id: 4, value: lessonData.reduce((acc, data) => acc + data.evaluating, 0), label: 'Evaluating' },
-    { id: 5, value: lessonData.reduce((acc, data) => acc + data.creating, 0), label: 'Creating' },
+    { id: 0, value: lessonData.reduce((acc, data) => acc + data.remembering.reduce((acc2, data2) => acc2 + data2, 0), 0), label: 'Remembering' },
+    { id: 1, value: lessonData.reduce((acc, data) => acc + data.understanding.reduce((acc2, data2) => acc2 + data2, 0), 0), label: 'Understanding' },
+    { id: 2, value: lessonData.reduce((acc, data) => acc + data.applying.reduce((acc2, data2) => acc2 + data2, 0), 0), label: 'Applying' },
+    { id: 3, value: lessonData.reduce((acc, data) => acc + data.analyzing.reduce((acc2, data2) => acc2 + data2, 0), 0), label: 'Analyzing' },
+    { id: 4, value: lessonData.reduce((acc, data) => acc + data.evaluating.reduce((acc2, data2) => acc2 + data2, 0), 0), label: 'Evaluating' },
+    { id: 5, value: lessonData.reduce((acc, data) => acc + data.creating.reduce((acc2, data2) => acc2 + data2, 0), 0), label: 'Creating' },
   ];
 
   
@@ -580,6 +694,13 @@ if (getQuestion.length && getAnswer.length) {
 
    
     <div className="overflow-x-auto h-full">
+      
+
+      {/* <PdfViewer  path={coursepath} /> */}
+ 
+
+    
+   
     <Table className="text-center ">
 
   <Table.Head>
@@ -607,15 +728,23 @@ if (getQuestion.length && getAnswer.length) {
                   </Table.Row>
                 )}
   </Table.Body>
+  
 </Table>
-<div className="flex justify-center absolute bottom-0 w-full pb-4">
+<div className='absolute bottom-12 w-full pb-4 '>
+    
+    <Button color={'primary'} onClick={()=>{setSyllabus(true)}} className='mx-auto' ><VisibilityIcon className='mr-2'/> View Syllabus</Button>
+    </div>
+<div className="flex  justify-center absolute bottom-0 w-full pb-4">
     <Pagination
     className='shadow-lg'
       currentPage={currentPage}
       totalPages={Math.ceil(lessonData.length / rowsPerPage)}
       onPageChange={handlePageChange}
     />
+ 
   </div>
+
+ 
 
 
     </div>
@@ -649,7 +778,19 @@ if (getQuestion.length && getAnswer.length) {
           </div>
         </Modal.Body>
       </Modal>
+
+      <Modal show={syllabus} size={'7xl'}  onClose={() => setSyllabus(false)} className="h-screen">
+        <Modal.Header>Syllabus</Modal.Header>
+        <Modal.Body  className="p-0">
+          <div className="min-h-96 "  style={{height:'575px'}}>
+          <PdfViewer path={coursepath}/>
+      
+          </div>
+        </Modal.Body>
+      </Modal>
+
       </div>
+     
     </div></div>
   )
   ReactDOM.render(<TOSview />, document.getElementById('root'));

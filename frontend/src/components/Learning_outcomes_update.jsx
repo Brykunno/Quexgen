@@ -6,6 +6,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import LoadingGenerate from './LoadingGenerate';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 function Learning_outcomes_update({
   setRemembering,
@@ -32,7 +33,8 @@ function Learning_outcomes_update({
   Analyzing,
   Evaluating,
   Creating,
-  handletaxlevelChange
+  handletaxlevelChange,
+  setTosModal,totalItems,handleTotalItemsChange,handleInnerLessonDataChange
   
 }) {
   // State to manage input data
@@ -180,6 +182,12 @@ const toggleModal = (index) => {
 
   return (
     <Card className="mb-5">
+       <div className="max-w-md flex gap-5 mx-auto">
+      <div className="mt-3" >
+          <Label htmlFor="totalItems" className="font-bold" > Total of Items<span className="text-red-600">*</span></Label> 
+        </div>  
+        <TextInput id="totalItems" type="number" required value={totalItems} onChange={handleTotalItemsChange} />
+      </div>
     {/* Render only the current page of lessons */}
     {currentLessons.map((item, index) => (
       <Card key={indexOfFirstLesson + index} className="relative">
@@ -234,15 +242,40 @@ const toggleModal = (index) => {
           </div>
           <div className='flex-1'>
           <div className="ms-2 font-bold mb-2">Learning outcomes</div>
-          <Textarea
-            value={lessonsData[indexOfFirstLesson + index]['learning_outcomes']}
-            style={{ height: '100px' }}
-            onChange={(e) =>
-              handleLessonDataChange(indexOfFirstLesson + index, 'learning_outcomes', e.target.value)
-            }
-            placeholder="Enter the learning outcomes for the lesson"
-          />
+          {lessonsData[indexOfFirstLesson + index]['learning_outcomes'].map((line, lineIndex) => (
+    <div key={lineIndex} style={{ marginBottom: '20px' }}>
+      <Textarea
+        key={lineIndex}
+        value={line}
+        onChange={(e)=>handleInnerLessonDataChange(indexOfFirstLesson + index,lineIndex,'learning_outcomes',e.target.value)}
+        style={{ height: '100px', width: '300px', marginBottom: '10px' }}
+        placeholder={`Enter value for line ${lineIndex}`}
+      />
+    </div>
+  ))}
           </div>
+
+          <div className="flex-1">
+         <div className="ms-2 font-bold mb-2">Number of teaching hours</div>
+
+
+         {lessonsData[indexOfFirstLesson + index]['teachingHours']
+  .map((line, lineIndex) => (
+    <div key={lineIndex} style={{ marginBottom: '20px' }}>
+      <TextInput
+        key={lineIndex}
+        name={`teachingHours-${indexOfFirstLesson + index}-${lineIndex}`}
+        onChange={(e)=>handleInnerLessonDataChange(indexOfFirstLesson + index,lineIndex,'teachingHours',Number(e.target.value))}
+        value={line}
+        type='number'
+        style={{ height: '100px', width: '300px', marginBottom: '10px' }}
+        placeholder={`Enter value for line ${lineIndex}`}
+      />
+      
+    </div>
+  ))}
+
+       </div>
           <div style={{ flex: 0.1 }}>
             
             {/* <Button
@@ -318,32 +351,33 @@ const toggleModal = (index) => {
      
       </div>
     
-      <div className="flex justify-center ">
-        <Button
+      <div className="flex justify-center gap-5">
+        {/* <Button
           color={'primary'}
           variant='contained'
           className="mt-3 mx-auto"
           onClick={() =>
             addLesson({
               topic: '',
-              learning_outcomes: '',
-              teachingHours: 0,
-              allocation: 0,
-              items: 0,
-              remembering: 0,
-              understanding: 0,
-              applying: 0,
-              analyzing: 0,
-              evaluating: 0,
-              creating: 0,
-              total: 0,
-              placement: '',
+              learning_outcomes: [],
+              teachingHours: [],
+              allocation: [],
+              items: [],
+              remembering: [],
+              understanding: [],
+              applying: [],
+              analyzing: [],
+              evaluating: [],
+              creating: [],
+              total: [],
+              placement: [],
               totalItems: 0,
             })
           }
         >
           <AddCircleOutlineIcon className="mr-2 " /> Add Lesson
-        </Button>
+        </Button> */}
+        <Button color="primary" variant='contained' onClick={() => setTosModal(true)}><VisibilityIcon className="mr-2"/>Preview TOS</Button>
        
       </div>
 

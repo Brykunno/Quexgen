@@ -296,44 +296,75 @@ function PdfFile(props) {
                  <View style={[styles.tableCol]}>
                   <Text style={styles.tableCell}>{lesson.topic}</Text>
                 </View>
-                <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{lesson.learning_outcomes}</Text>
+                <View style={[styles.tableCol,{flexDirection:'column',justifyContent:'space-evenly',paddingTop:5,paddingBottom:5,alignItems:'center'}]}>
+                  {lesson.learning_outcomes.map((outcomes,index)=>(
+ <Text key={index} style={styles.tableCell}>{outcomes}</Text>
+                  ))}
+                 
                 </View>
-                <View style={[styles.tableCol,{flex:0.8}]}>
-                  <Text style={styles.tableCell}>{lesson.teachingHours}</Text>
+                <View style={[styles.tableCol,{flex:0.8,flexDirection:'column',justifyContent:'space-evenly',paddingTop:5,paddingBottom:5,alignItems:'center'}]}>
+                {lesson.teachingHours.map((outcomes,index)=>(
+ <Text key={index} style={styles.tableCell}>{outcomes}</Text>
+                  ))}
                 </View>
-                <View style={[styles.tableCol,{flex:0.8}]}>
-                  <Text style={styles.tableCell}>{lesson.allocation}%</Text>
+                  <View style={[styles.tableCol,{flex:0.8,flexDirection:'column',justifyContent:'space-evenly',paddingTop:5,paddingBottom:5,alignItems:'center'}]}>
+                {lesson.allocation.map((outcomes,index)=>(
+ <Text key={index} style={styles.tableCell}>{outcomes}</Text>
+                  ))}
                 </View>
-                <View style={[styles.tableCol,{flex:0.5}]}>
-                  <Text style={styles.tableCell}>{lesson.items}</Text>
+
+                  <View style={[styles.tableCol,{flex:0.5,flexDirection:'column',justifyContent:'space-evenly',paddingTop:5,paddingBottom:5,alignItems:'center'}]}>
+                {lesson.items.map((outcomes,index)=>(
+ <Text key={index} style={styles.tableCell}>{outcomes}</Text>
+                  ))}
                 </View>
-                <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{lesson.remembering}</Text>
+
+             <View style={[styles.tableCol,{flexDirection:'column',justifyContent:'space-evenly',paddingTop:5,paddingBottom:5,alignItems:'center'}]}>
+                {lesson.remembering.map((outcomes,index)=>(
+ <Text key={index} style={styles.tableCell}>{outcomes!=0?outcomes:0}</Text>
+                  ))}
                 </View>
-                <View style={[styles.tableCol,{flex:1.2}]}>
-                  <Text style={styles.tableCell}>{lesson.understanding}</Text>
+
+                <View style={[styles.tableCol,{flex:1.2,flexDirection:'column',justifyContent:'space-evenly',paddingTop:5,paddingBottom:5,alignItems:'center'}]}>
+                {lesson.understanding.map((outcomes,index)=>(
+  <Text key={index} style={styles.tableCell}>{outcomes!=0?outcomes:0}</Text>
+                  ))}
                 </View>
-                <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{lesson.applying}</Text>
+
+                <View style={[styles.tableCol,{flexDirection:'column',justifyContent:'space-evenly',paddingTop:5,paddingBottom:5,alignItems:'center'}]}>
+                {lesson.applying.map((outcomes,index)=>(
+  <Text key={index} style={styles.tableCell}>{outcomes!=0?outcomes:0}</Text>
+                  ))}
                 </View>
-                <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{lesson.analyzing}</Text>
+                <View style={[styles.tableCol,{flexDirection:'column',justifyContent:'space-evenly',paddingTop:5,paddingBottom:5,alignItems:'center'}]}>
+                {lesson.analyzing.map((outcomes,index)=>(
+  <Text key={index} style={styles.tableCell}>{outcomes!=0?outcomes:0}</Text>
+                  ))}
                 </View>
-                <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{lesson.evaluating}</Text>
+                <View style={[styles.tableCol,{flexDirection:'column',justifyContent:'space-evenly',paddingTop:5,paddingBottom:5,alignItems:'center'}]}>
+                {lesson.evaluating.map((outcomes,index)=>(
+  <Text key={index} style={styles.tableCell}>{outcomes!=0?outcomes:0}</Text>
+                  ))}
                 </View>
-                <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{lesson.creating}</Text>
+                <View style={[styles.tableCol,{flexDirection:'column',justifyContent:'space-evenly',paddingTop:5,paddingBottom:5,alignItems:'center'}]}>
+                {lesson.creating.map((outcomes,index)=>(
+  <Text key={index} style={styles.tableCell}>{outcomes!=0?outcomes:0}</Text>
+                  ))}
                 </View>
-                <View style={[styles.tableCol,{flex:0.8}]}>
-                  <Text style={styles.tableCell}>{lesson.total}</Text>
+                <View style={[styles.tableCol,{flex:0.8,flexDirection:'column',justifyContent:'space-evenly',paddingTop:5,paddingBottom:5,alignItems:'center'}]}>
+                {lesson.total.map((outcomes,index)=>(
+ <Text key={index} style={styles.tableCell}>{outcomes}</Text>
+                  ))}
                 </View>
-                <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{lesson.placement}</Text>
+                <View style={[styles.tableCol,{flexDirection:'column',justifyContent:'space-evenly',paddingTop:5,paddingBottom:5,alignItems:'center'}]}>
+                {lesson.placement.map((outcomes,index)=>(
+ <Text key={index} style={styles.tableCell}>{outcomes}</Text>
+                  ))}
                 </View>
               </View>
             ))}
+
+
               <View style={styles.tableRow}>
             <View style={[styles.tableCol,{height:5,backgroundColor:'grey'}]}>
                 

@@ -76,9 +76,17 @@ class TOSContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = TOS_Content
         fields = [
-            'id', 'topic', 'learning_outcomes', 'teachingHours', 'allocation', 
+            'id', 'topic','totalItems','teacher_tos'
+        ]
+        
+class LearningOutcomesSerializer(serializers.ModelSerializer):
+    tos_content = TOSContentSerializer()
+    class Meta:
+        model = Learning_Outcomes
+        fields = [
+            'id','learning_outcomes' ,'teachingHours', 'allocation', 
             'items', 'remembering', 'understanding', 'applying', 'analyzing', 
-            'evaluating', 'creating', 'total', 'placement','totalItems','teacher_tos'
+            'evaluating', 'creating', 'total', 'placement','tos_content'
         ]
         
 class TOSInfoSerializer(serializers.ModelSerializer):
@@ -199,7 +207,7 @@ class ExamDatesSerializer(serializers.ModelSerializer):
 class CoursesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Courses
-        fields = ['id', 'course_name', 'course_code', 'course_type']
+        fields = ['id', 'course_name', 'course_code', 'course_type','course_syllabus']
 
     def validate_course_name(self, value):
         """Check if the course name is appropriate."""
@@ -222,3 +230,9 @@ class TaxonomySerializer(serializers.ModelSerializer):
      class Meta:
          model = TaxonomyLevels
          fields = ['id','remembering','understanding','applying','analyzing','evaluating','creating','tos_content_id']
+         
+         
+class TeacherCourseSerializer(serializers.ModelSerializer):
+     class Meta:
+         model = Teacher_Course
+         fields = ['id','user_id','course_id']

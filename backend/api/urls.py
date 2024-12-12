@@ -13,6 +13,9 @@ router.register(r'courses', views.CoursesViewSet, basename='courses')
 router.register(r'settings', views.SettingsViewSet, basename='settings')
 router.register(r'logs', views.LogsViewSet, basename='logs')
 router.register(r'taxonomy_levels', views.TaxonomyViewSet, basename='taxonomy_levels')
+router.register(r'teacherCourse', views.TeacherCourseViewSet, basename='teacherCourse')
+router.register(r'learning_outcomes', views.LearningOutcomesViewset, basename='learningOutcomes')
+
 
 
 
@@ -73,6 +76,7 @@ urlpatterns = [
     path('taxonomy-allocation/', ai_views.taxonomy_allocation, name='taxonomy_allocation'),
     path('lesson-info/', ai_views.read_pdf, name='lesson_info'),
     path('validate-pdf/', ai_views.validate_pdf, name='validate-pdf'),
+    path('count_outcomes/', ai_views.outcomes_count, name='count_outcomes'),
    
 
     

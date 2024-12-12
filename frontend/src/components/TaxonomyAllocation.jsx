@@ -23,24 +23,19 @@ function TaxonomyAllocation(props) {
       
     </Breadcrumb>
 
-    <Learning_outcomes_update files={props.files} setRemembering={props.setRemembering} setUnderstanding={props.setUnderstanding}  setApplying={props.setApplying} setAnalyzing={props.setAnalyzing} setEvaluating={props.setEvaluating} setCreating={props.setCreating} addLesson={props.addLesson} handleLessonDataChange={props.handleLessonDataChange} lessonsData={props.lessonsData} removeLesson={props.removeLesson} formData={props.formData} setFormData={props.setFormData} allocations={props.allocations} Remembering={props.Remembering} Understanding={props.Understanding} Applying={props.Applying} Analyzing={props.Analyzing} Evaluating={props.Evaluating} Creating={props.Creating}   handletaxlevelChange={props.handletaxlevelChange} lessonsDataInitial={props.lessonsDataInitial} />
+    <Learning_outcomes_update files={props.files} setRemembering={props.setRemembering} setUnderstanding={props.setUnderstanding}  setApplying={props.setApplying} setAnalyzing={props.setAnalyzing} setEvaluating={props.setEvaluating} setCreating={props.setCreating} addLesson={props.addLesson} handleLessonDataChange={props.handleLessonDataChange} lessonsData={props.lessonsData} removeLesson={props.removeLesson} formData={props.formData} setFormData={props.setFormData} allocations={props.allocations} Remembering={props.Remembering} Understanding={props.Understanding} Applying={props.Applying} Analyzing={props.Analyzing} Evaluating={props.Evaluating} Creating={props.Creating}   handletaxlevelChange={props.handletaxlevelChange} lessonsDataInitial={props.lessonsDataInitial} setTosModal={props.setTosModal} totalItems={props.totalItems} handleTotalItemsChange={props.handleTotalItemsChange} handleInnerLessonDataChange={props.handleInnerLessonDataChange}/>
 <div className=""> 
   
         <div className=" max-w-40 mb-3">
-      <div>
-      <div className="mt-3" >
-          <Label htmlFor="totalItems" className="font-bold" > Total of Items<span className="text-red-600">*</span></Label> 
-        </div>  
-        <TextInput id="totalItems" type="number" required value={props.totalItems} onChange={props.handleTotalItemsChange} />
-      </div>
+     
 
       </div>
 
       <Card className=" gap-4 mb-5  w-full p-3"> 
       <div>
-      <div className="mb-3">
+      {/* <div className="mb-3">
         <ToggleSwitch checked={specific} label={specific?'Locked':'Unlocked'} onChange={setSpecific} color={"primary"} className="mx-auto" />
-        </div>
+        </div> */}
         <div className="flex gap-3">
         <div className="mt-2 block w-32">
           <Label htmlFor="md-range" value="Remembering" />

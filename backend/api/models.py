@@ -48,18 +48,18 @@ class TOS_info(models.Model):
  
 class TOS_Content(models.Model):
     topic = models.TextField()
-    learning_outcomes = models.TextField()
-    teachingHours = models.IntegerField()
-    allocation = models.IntegerField()
-    items = models.IntegerField()
-    remembering = models.IntegerField()
-    understanding = models.IntegerField()
-    applying = models.IntegerField()
-    analyzing = models.IntegerField()
-    evaluating = models.IntegerField()
-    creating = models.IntegerField()
-    total = models.IntegerField()
-    placement = models.CharField(max_length=100)
+    learning_outcomes = models.TextField(null=True)
+    teachingHours = models.FloatField(null=True)
+    allocation = models.IntegerField(null=True)
+    items = models.IntegerField(null=True)
+    remembering = models.IntegerField(null=True)
+    understanding = models.IntegerField(null=True)
+    applying = models.IntegerField(null=True)
+    analyzing = models.IntegerField(null=True)
+    evaluating = models.IntegerField(null=True)
+    creating = models.IntegerField(null=True)
+    total = models.IntegerField(null=True)
+    placement = models.CharField(max_length=100,null=True)
     totalItems = models.IntegerField(null=True)
     tos_date_added = models.DateTimeField(auto_now_add=True,null=True)
     teacher_tos = models.ForeignKey(TOS_info, on_delete=models.CASCADE, related_name="teacher_tos", null=True)
@@ -70,7 +70,27 @@ class TOS_Content(models.Model):
     class Meta:
         db_table = 'tos_content'
         
+class Learning_Outcomes(models.Model):
+    learning_outcomes = models.TextField()
+    teachingHours = models.FloatField()
+    allocation = models.IntegerField()
+    items = models.IntegerField()
+    remembering = models.IntegerField()
+    understanding = models.IntegerField()
+    applying = models.IntegerField()
+    analyzing = models.IntegerField()
+    evaluating = models.IntegerField()
+    creating = models.IntegerField()
+    total = models.IntegerField()
+    placement = models.CharField(max_length=100)
+    tos_content =  models.ForeignKey(TOS_Content, on_delete=models.CASCADE, related_name="tos_content_lo", null=True)
+    
+    def __str__(self):
+        return self.learning_outcomes
 
+    class Meta:
+        db_table = 'learning_outcomes'
+    
 
 class Exam(models.Model):
     exam_title = models.CharField(max_length=100)
@@ -199,6 +219,7 @@ class Courses(models.Model):
     course_name = models.TextField()
     course_code = models.TextField()
     course_type = models.TextField()
+    course_syllabus = models.FileField(upload_to='syllabus/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
@@ -250,6 +271,21 @@ class TaxonomyLevels(models.Model):
     class Meta:
         db_table = 'taxonomy_levels'     
         
+        
+class Teacher_Course(models.Model):
+    user_id= models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_id")
+    course_id= models.ForeignKey(Courses, on_delete=models.CASCADE, related_name="course_id")
+
+    
+    def __str__(self):
+        return self.user_id
+    
+    class Meta:
+        db_table = 'teacher_course'     
+        
+        
+        
+
         
 
 

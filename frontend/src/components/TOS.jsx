@@ -8,7 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import TableRow from "@mui/material/TableRow";
-import {Button} from "@mui/material";
+import {Button, keyframes} from "@mui/material";
 import { Breadcrumb,Card,Progress,Label, Textarea,ToggleSwitch, TextInput,RangeSlider,Modal,Select,FileInput } from "flowbite-react";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import TOSmodal from "./TOSmodal";
@@ -37,6 +37,7 @@ import PdfFile from "./PdfFile";
 import Examtest from "./Examtest";
 import LoadingGenerate from "./LoadingGenerate";
 import ToastError from "./ToastError";
+import Tostest from "./Tostest";
 
 
 function createData(
@@ -85,19 +86,19 @@ function createData(
     
 localStorage.setItem('lessonsData',JSON.stringify([{  
   topic: '',
-learning_outcomes: '',
-teachingHours: 0,
-allocation: 0,
-items: 0,
-remembering: 0,
-understanding: 0,
-applying: 0,
-analyzing: 0,
-evaluating: 0,
-creating: 0,
-total: 0,
-placement: '',
-totalItems:0,
+learning_outcomes: [],
+teachingHours: [],
+allocation: [],
+items: [],
+remembering: [],
+understanding: [],
+applying: [],
+analyzing: [],
+evaluating: [],
+creating: [],
+total: [],
+placement: [],
+totalItems:[],
 study_guide:null,
 tos_teacher: 0,
 file_status:'',
@@ -119,6 +120,7 @@ taxonomy_levels: {
   const [lesson, setLesson] = React.useState(0);
   const [totalItems, setTotalItems] = React.useState(0);
   const [lessonsDataInitial, setLessonsDatainitial] = React.useState([]);
+  const [allocations, setAllocations] = useState([]);
 
   const [Remembering, setRemembering] = React.useState(0);
   const [Understanding, setUnderstanding] = React.useState(0);
@@ -129,7 +131,7 @@ taxonomy_levels: {
   const [TotalTaxonomy, setTotalTaxonomy] = React.useState(0);
   const [PdfModal, setPdfModal] = useState(false);
   const [specific,setSpecific] = useState(true)
-
+  const [countOutcomes,setCountOutcomes] = useState([])
   const [indexRow, setIndexRow] = React.useState(0);
   
   const [loading, setLoading] = useState(false);
@@ -151,6 +153,7 @@ taxonomy_levels: {
   const [testError,setTestError] = useState(false);
   const [totalError,setTotalError] = useState(false);
 
+  const [user, setUser] = useState([]);
   const [toasts, setToasts] = useState([]);
 
   // Function to add a new toast
@@ -448,27 +451,74 @@ const columns = [
   
   }
 
+  function getInnerAllocation(hours,totalHours,max){
+    let result = (hours / totalHours) * max;
+
+    if (result % 1 >= 0.3 && result % 1 <= 0.7) {
+      return parseFloat(result.toFixed(2)); 
+    }
+    return Math.round(parseFloat(result.toFixed(2))); 
+  }
+
 
   const [course, setcourse] = useState([]);
 
+// Fetch user data
+const getUser = () => {
+  api
+    .get(`/api/user/account/`)
+    .then((res) => res.data)
+    .then((data) => {
+      setUser(data); // Set user data in state
+      console.log('name: ', data);
+    })
+    .catch((err) => alert(err));
+};
 
+const user_id = user
 
-  const getcourse = () => {
+useEffect(()=>{
+  getUser()
+},[])
+
+  const getcourse = (user) => {
     api.get(`/api/courses/`)
       .then((res) => {
-        setcourse(res.data);
-        console.log('courses',res.data)
-        
+        console.log('courses', res.data);
+let user_id = getUserId(user)
+
+         
+  
+        api.get(`/api/teacherCourse/`)
+          .then((data) => {
+            // Filter the teacherCourses data to match the user_id
+            const teacherCourses = data.data.filter(course => course.user_id === user_id);
+            console.log('Teacher Courses:', teacherCourses);
+  
+            // Create a list of course_ids from teacherCourses
+            const teacherCourseIds = teacherCourses.map(course => course.course_id);
+  
+            // Now filter the courses based on the course_ids
+            const filteredCourses = res.data.filter(course => teacherCourseIds.includes(course.id));
+            console.log('Filtered Teacher Courses:', filteredCourses);
+  
+            // Do something with the filtered data
+            setcourse(filteredCourses); // Update state with filtered courses
+          })
+          .catch((err) => {
+            console.error('Error fetching teacher courses:', err);
+          });
       })
       .catch((err) => {
         alert(err);
-        
       });
   };
+  
   useEffect(() => {
-   
-    getcourse();
-  },[]);
+    getcourse(user);
+  }, [user]);
+  
+  
 
 function getTotalHours(){
  let hours= lessonsData.reduce((acc, data) => {
@@ -480,12 +530,32 @@ function getTotalHours(){
   return hours
 }
 
+function getInnerTotalHours() {
+  const hours = lessonsData.reduce((acc, data) => {
+    // If teachingHours is valid, sum up its numbers
+    const totalTeachingHours = data.teachingHours?.reduce((sum, val) => sum + Number(val), 0) || 0;
+
+    return acc + totalTeachingHours;
+  }, 0);
+
+  return hours;
+}
+
+
 
 function getNumItems(totalItems,allocation){
   const allocationDecimal = allocation / 100;
   return roundNumItems(totalItems * allocationDecimal)
  
 
+}
+
+function getInnerNumItems(totalItems,allocation){
+ 
+  const allocationDecimal = Number(allocation) / 100;
+
+  return roundNumItems(totalItems * allocationDecimal)
+ 
 }
 
 function getRemembering(remembering,items){
@@ -535,6 +605,30 @@ function getCreating(Creating,items){
   return roundNum((Creating/100)*items)
 }
 
+function getInnerLevelAllocation(allocations,level,index,subIndex){
+
+
+  const Remembering = allocations[index][subIndex]['Remembering']
+
+  console.log('heremember:',Remembering,' index:',index)
+  const Understanding = allocations[index][subIndex]['Understanding']
+  const Applying = allocations[index][subIndex]['Applying']
+  const Analyzing = allocations[index][subIndex]['Analyzing']
+  const Evaluating = allocations[index][subIndex]['Evaluating']
+  const Creating = allocations[index][subIndex]['Creating']
+
+  const total = Remembering+Understanding+Applying+Analyzing+Evaluating+Creating
+
+  
+  const percent = Math.round((allocations[index][subIndex][level]/total)*100)
+
+  console.log('totalAll: ',percent, '|level:',level,'|index:',index)
+
+  return percent
+
+}
+
+
 function getLevelAllocation(allocations,level,index){
 
   const Remembering = allocations[index]['Remembering']
@@ -552,8 +646,6 @@ function getLevelAllocation(allocations,level,index){
   console.log('totalAll: ',percent, '|level:',level,'|index:',index)
 
   return percent
-
-
 
 }
 
@@ -575,6 +667,17 @@ function getPlacement(total,placements){
   let start=0;
   let end =0;
 
+  if(total===1){
+
+    return `${placements.splice(0,total)}`;
+  }
+  else if(total===0){
+    return "0";
+  }
+  else{
+
+
+
   start = placements.splice(0,total-1)[0];
   end = placements.splice(0,1);
   if(start === undefined || end === undefined){
@@ -583,10 +686,929 @@ function getPlacement(total,placements){
   else{
     return `${start} - ${end}`;
   }
+}
     
   
 
 }
+
+const handleInnerLessonDataChange = (index,subIndex, field, value) => {
+  // Clone the lessonsData array to avoid direct mutation
+  const newData = [...lessonsData];
+  
+  
+  // Update the specific field in the corresponding lesson object
+  newData[index][field][subIndex] = value;
+
+
+
+  if (field === 'teachingHours') {
+    for (let i = 0; i < newData.length; i++) {
+
+      const sumHours =  newData[i][field].reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+      
+      const lessonAlloc = getAllocation(Number(sumHours),getInnerTotalHours())
+
+      for(let k=0;k<newData[i]['allocation'].length;k++){
+        newData[i]['allocation'][k] = getInnerAllocation(Number(newData[i][field][k]),sumHours,lessonAlloc)
+      }
+    
+      const sumAlloc =  newData[i]['allocation'].reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+      const lessonItem = getNumItems(totalItems,sumAlloc)
+      console.log('showitems:l',lessonItem)
+      for(let k=0;k<newData[i]['items'].length;k++){
+        newData[i]['items'][k] = getInnerNumItems(totalItems,newData[i]['allocation'][k])
+        console.log('showitems:',newData[i]['items'][k])
+        console.log('showitems:a',newData[i]['allocation'][k])
+     
+        console.log('showitems:s',sumAlloc)
+      }
+    
+      
+    
+      
+
+      let remembering = Array(newData[i]['allocation']?.length || 0).fill(0);
+      let understanding = Array(newData[i]['allocation']?.length || 0).fill(0);
+      let applying = Array(newData[i]['allocation']?.length || 0).fill(0);
+      let analyzing = Array(newData[i]['allocation']?.length || 0).fill(0);
+      let evaluating = Array(newData[i]['allocation']?.length || 0).fill(0);
+      let creating = Array(newData[i]['allocation']?.length || 0).fill(0);
+      if(specific===true){
+
+      
+        for(let k=0;k<newData[i]['allocation'].length;k++){
+          remembering[k] = getInnerLevelAllocation(allocations,'Remembering',i,k)
+          understanding[k] = getInnerLevelAllocation(allocations,'Understanding',i,k)
+   
+          applying[k] = getInnerLevelAllocation(allocations,'Applying',i,k)
+   
+          analyzing[k] = getInnerLevelAllocation(allocations,'Analyzing',i,k)
+   
+          evaluating[k] = getInnerLevelAllocation(allocations,'Evaluating',i,k)
+   
+          creating[k] = getInnerLevelAllocation(allocations,'Creating',i,k)
+        }
+
+        console.log('uprob: ',understanding)
+     
+      }
+      else{
+
+         remembering = Remembering;
+         understanding = Understanding;
+         applying = Applying;
+         analyzing = Analyzing;
+         evaluating = Evaluating;
+         creating = Creating;
+
+      }
+
+      for (let z = 0; z < newData.length; z++) {
+        if (!newData[z]['remembering']) {
+          newData[z]['remembering'] = Array(newData[z]['allocation']?.length || 0).fill(0);;
+        }
+        if (!newData[z]['understanding']) {
+          newData[z]['understanding'] = Array(newData[z]['allocation']?.length || 0).fill(0);;
+        }
+        if (!newData[z]['applying']) {
+          newData[z]['applying'] = Array(newData[z]['allocation']?.length || 0).fill(0);;
+        }
+        if (!newData[z]['analyzing']) {
+          newData[z]['analyzing'] = Array(newData[z]['allocation']?.length || 0).fill(0);;
+        }
+        if (!newData[z]['evaluating']) {
+          newData[z]['evaluating'] = Array(newData[z]['allocation']?.length || 0).fill(0);;
+        }
+        if (!newData[z]['creating']) {
+          newData[z]['creating'] = Array(newData[z]['allocation']?.length || 0).fill(0);;
+        }
+      }
+      
+
+      console.log('nowrem:',remembering)
+       console.log('definedData?: ',newData[i])
+        console.log('defined?: ',newData[i]['remembering'])
+      for (let k = 0; k < newData[i]['allocation'].length; k++) {
+
+       
+        newData[i]['remembering'][k] = getRemembering(remembering[k], newData[i]['items'][k]);
+        newData[i]['understanding'][k] = getUnderstanding(understanding[k], newData[i]['items'][k]);
+        newData[i]['applying'][k] = getApplying(applying[k], newData[i]['items'][k]);
+        newData[i]['analyzing'][k] = getAnalyzing(analyzing[k], newData[i]['items'][k]);
+        newData[i]['evaluating'][k] = getEvaluating(evaluating[k], newData[i]['items'][k]);
+        newData[i]['creating'][k] = getCreating(creating[k], newData[i]['items'][k]);
+        newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+      }
+      
+     
+
+    
+    }
+
+    for (let i = 0; i < newData.length; i++) {
+
+   
+      for(let k=0;k<newData[i]['allocation'].length;k++){
+   
+      let overall = 0
+    
+      let percent = 0
+      for (let j = 0; j < newData.length; j++) {
+        for(let h=0;h<newData[j]['items'].length;h++){
+          overall += newData[j]['items'][h]
+        }
+      }
+
+     
+
+
+      for (let j = 0; j < newData.length; j++) {
+        for(let h=0;h<newData[j]['allocation'].length;h++){
+
+          percent += newData[j]['allocation'][h]
+        }
+    }
+
+    console.log('percenthere:',percent)
+
+    if(percent<100){
+
+        newData[i]['allocation'][k] = Math.ceil(newData[i]['allocation'][k]);
+      
+    }
+    else if(percent>100){
+    
+      newData[i]['allocation'][k] = Math.floor(newData[i]['allocation'][k]);
+      
+    }
+    else if(percent==100){
+    
+      newData[i]['allocation'][k] = Math.round(newData[i]['allocation'][k]);
+      
+    }
+    
+
+
+
+    
+      console.log('overall: ',overall)
+      console.log('total items: ',totalItems)
+
+            
+    console.log('overall: ',overall,' total items: ',totalItems)
+   
+      
+      if(overall<totalItems){
+
+        
+        newData[i]['items'][k] = Math.ceil(newData[i]['items'][k]);
+        console.log('remembertrailll',k,': ',newData[i]['remembering'][k])
+        console.log('true?: ',newData[i]['items'][k] ,':', newData[i]['total'][k])
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['remembering'][k])){
+
+         
+          console.log('remembertraillls',k,': ',newData[i]['remembering'][k])
+          newData[i]['remembering'][k] = Math.round(newData[i]['remembering'][k]);
+         
+
+
+         
+         
+            newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+          newData[i]['remembering'][k] = Math.floor(newData[i]['remembering'][k]);
+          console.log('remembertrailllss',k,': ',newData[i]['remembering'][k])
+            newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          console.log('larger?: ',newData[i]['items'][k] ,':', newData[i]['total'][k])
+          newData[i]['remembering'][k] = Math.ceil(newData[i]['remembering'][k]);
+          console.log('remembertrailllsss',k,': ',newData[i]['remembering'][k])
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['understanding'][k])){
+          newData[i]['understanding'][k] = Math.round(newData[i]['understanding'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+          newData[i]['understanding'][k] = Math.floor(newData[i]['understanding'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          newData[i]['understanding'][k] = Math.ceil(newData[i]['understanding'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['applying'][k])){
+          newData[i]['applying'][k] = Math.round(newData[i]['applying'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+          newData[i]['applying'][k] = Math.floor(newData[i]['applying'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          newData[i]['applying'][k] = Math.ceil(newData[i]['applying'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['analyzing'][k])){
+          newData[i]['analyzing'][k] = Math.round(newData[i]['analyzing'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+          newData[i]['analyzing'][k] = Math.floor(newData[i]['analyzing'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          newData[i]['analyzing'][k] = Math.ceil(newData[i]['analyzing'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['evaluating'][k])){
+          newData[i]['evaluating'][k] = Math.round(newData[i]['evaluating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+          newData[i]['evaluating'][k] = Math.floor(newData[i]['evaluating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          newData[i]['evaluating'][k] = Math.ceil(newData[i]['evaluating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['creating'][k])){
+          newData[i]['creating'][k] = Math.round(newData[i]['creating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+          newData[i]['creating'][k] = Math.floor(newData[i]['creating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          newData[i]['creating'][k] = Math.ceil(newData[i]['creating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+      
+      }
+      else if(overall>totalItems){
+
+        
+        newData[i]['items'][k] = Math.floor(newData[i]['items'][k]);
+    
+    
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['remembering'][k])){
+          newData[i]['remembering'][k] = Math.round(newData[i]['remembering'][k]);
+          console.log('rememberround2',k,': ',newData[i]['remembering'][k])
+            newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+        
+          
+          newData[i]['remembering'][k] = Math.floor(newData[i]['remembering'][k]);
+          console.log('rememberfloor2',k,': ',newData[i]['remembering'][k])
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          newData[i]['remembering'][k] = Math.ceil(newData[i]['remembering'][k]);
+          console.log('rememberceil2',k,': ',newData[i]['remembering'][k])
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['understanding'][k])){
+          newData[i]['understanding'][k] = Math.round(newData[i]['understanding'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+          newData[i]['understanding'][k] = Math.floor(newData[i]['understanding'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          newData[i]['understanding'][k] = Math.ceil(newData[i]['understanding'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['applying'][k])){
+          newData[i]['applying'][k] = Math.round(newData[i]['applying'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+          newData[i]['applying'][k] = Math.floor(newData[i]['applying'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          newData[i]['applying'][k] = Math.ceil(newData[i]['applying'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['analyzing'][k])){
+          newData[i]['analyzing'][k] = Math.round(newData[i]['analyzing'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+          newData[i]['analyzing'][k] = Math.floor(newData[i]['analyzing'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          newData[i]['analyzing'][k] = Math.ceil(newData[i]['analyzing'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['evaluating'][k])){
+          newData[i]['evaluating'][k] = Math.round(newData[i]['evaluating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+          newData[i]['evaluating'][k] = Math.floor(newData[i]['evaluating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          newData[i]['evaluating'][k] = Math.ceil(newData[i]['evaluating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['creating'][k])){
+          newData[i]['creating'][k] = Math.round(newData[i]['creating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+          newData[i]['creating'][k] = Math.floor(newData[i]['creating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          newData[i]['creating'][k] = Math.ceil(newData[i]['creating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+      
+      
+      }
+      else if(overall==totalItems){
+
+    
+        
+        
+
+        newData[i]['items'][k] = Math.round(newData[i]['items'][k]);
+        
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['remembering'][k])){
+          newData[i]['remembering'][k] = Math.round(newData[i]['remembering'][k]);
+          console.log('rememberround3',k,': ',newData[i]['remembering'][k])
+            newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+          newData[i]['remembering'][k] = Math.floor(newData[i]['remembering'][k]);
+          console.log('rememberfloor3',k,': ',newData[i]['remembering'][k])
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          newData[i]['remembering'][k] = Math.ceil(newData[i]['remembering'][k]);
+          console.log('rememberceil3',k,': ',newData[i]['remembering'][k])
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['understanding'][k])){
+          newData[i]['understanding'][k] = Math.round(newData[i]['understanding'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+          newData[i]['understanding'][k] = Math.floor(newData[i]['understanding'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          newData[i]['understanding'][k] = Math.ceil(newData[i]['understanding'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['applying'][k])){
+          newData[i]['applying'][k] = Math.round(newData[i]['applying'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+          newData[i]['applying'][k] = Math.floor(newData[i]['applying'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          newData[i]['applying'][k] = Math.ceil(newData[i]['applying'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['analyzing'][k])){
+          newData[i]['analyzing'][k] = Math.round(newData[i]['analyzing'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+          newData[i]['analyzing'][k] = Math.floor(newData[i]['analyzing'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          newData[i]['analyzing'][k] = Math.ceil(newData[i]['analyzing'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+        }
+    
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['evaluating'][k])){
+          newData[i]['evaluating'][k] = Math.round(newData[i]['evaluating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+          newData[i]['evaluating'][k] = Math.floor(newData[i]['evaluating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          newData[i]['evaluating'][k] = Math.ceil(newData[i]['evaluating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['creating'][k])){
+          newData[i]['creating'][k] = Math.round(newData[i]['creating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+        else if(newData[i]['items'][k] < newData[i]['total'][k]){
+          newData[i]['creating'][k] = Math.floor(newData[i]['creating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+    
+        else if(newData[i]['items'][k] > newData[i]['total'][k]){
+          newData[i]['creating'][k] = Math.ceil(newData[i]['creating'][k]);
+             newData[i]['total'][k] = getTotal(
+          newData[i]['remembering'][k],
+          newData[i]['understanding'][k],
+          newData[i]['applying'][k],
+          newData[i]['analyzing'][k],
+          newData[i]['evaluating'][k],
+          newData[i]['creating'][k]
+        );
+    
+        }
+      
+      }
+      
+    
+     
+      newData[i]['placement'][k] = getPlacement(newData[i]['total'][k], placements);
+      newData[i]['totalItems'] = totalItems;
+      
+    }
+    }
+    
+  }
+
+  // Update the state with the new data
+  setLessonsDatainitial(newData);
+
+  // Save the updated lessonsData to localStorage
+  localStorage.setItem('lessonsData', JSON.stringify(newData));
+};
 
 const handleLessonDataChange = (index, field, value) => {
   // Clone the lessonsData array to avoid direct mutation
@@ -622,7 +1644,7 @@ const handleLessonDataChange = (index, field, value) => {
 
       
        remembering = getLevelAllocation(allocations,'Remembering',i)
-       understanding = getLevelAllocation(allocations,'Understanding',i)
+       understanding = getLevelAllocation(allocations,'Understanding',i,)
 
        applying = getLevelAllocation(allocations,'Applying',i)
 
@@ -1307,7 +2329,6 @@ const handleLessonDataChange = (index, field, value) => {
           newData[i]['evaluating'],
           newData[i]['creating']
         );
-    
         }
     
         if(newData[i]['items'] == newData[i]['total'] && !Number.isInteger(newData[i]['evaluating'])){
@@ -1455,16 +2476,13 @@ const configTotalTaxonomy = lessonsData.reduce((acc, data) => {
   const rows = lessonsData.map((data, index) =>
     createData(
     <div className="max-w-36  max-h-10  overflow-hidden" style={{maxHeight:'100'}} key={index}><b> {index+1}</b></div>,
-    <div className="max-w-36  overflow-hidden" style={{maxHeight:'100'}} key={index}> {data.learning_outcomes}</div>,
-    <div className={`${data.teachingHours==0?'bg-red-500 rounded-lg text-white':''} text-center`} key={index} >  <TextInput
-    min={0}
-      id={`teaching_hours-${index}`}
-      type="number"
-      style={{maxWidth:'200px'}}
-      value={lessonsData[index]['teachingHours']}
-      onChange={(e) => handleLessonDataChange(index, 'teachingHours', e.target.value)}
-      required
-    /></div>,
+    <div className="max-w-36 overflow-hidden" style={{ maxHeight: '100' }} key={index}>
+    {data.learning_outcomes}
+  </div>,
+  <div className={`${data.teachingHours.length === 0 ? 'bg-red-500 rounded-lg text-white' : ''} text-center`} key={index}>
+   
+  </div>
+  ,
      
     <div className={`${!Number.isInteger(data.allocation)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.allocation}%</div>,
      <div className={`${!Number.isInteger(data.items)?'bg-red-500 rounded-lg text-white':''} text-center`}>{data.items}</div>,
@@ -1529,7 +2547,6 @@ const configTotalTaxonomy = lessonsData.reduce((acc, data) => {
 
 const options = ['Multiple Choice','Identification','True or False','Subjective'];
 
-const [user, setUser] = useState([]);
 
 
 const [formData, setFormData] = useState({
@@ -1549,22 +2566,7 @@ const [formData, setFormData] = useState({
   Director: ''
 });
 
-// Fetch user data
-const getUser = () => {
-  api
-    .get(`/api/user/account/`)
-    .then((res) => res.data)
-    .then((data) => {
-      setUser(data); // Set user data in state
-      console.log('name: ', data);
-    })
-    .catch((err) => alert(err));
-};
 
-// Fetch user data on component mount
-useEffect(() => {
-  getUser();
-}, []);
 
 // Update formData with user's full name when user data changes
 useEffect(() => {
@@ -1602,7 +2604,27 @@ function getFullNames(users) {
   return `${fname} ${lname}`.trim();
 }
 
+function getUserId(users){
+  return users[0]?.id || 0;
+}
 
+
+
+
+
+const sendDataToBackendLearningOutcomes = async (data) => {
+  try {
+    const response = await api.post('/api/learning_outcomes/', data, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log(response.data); // Handle the response
+  } catch (error) {
+    console.error('Error sending data:', error);
+  }
+};
 
 
 
@@ -1924,6 +2946,34 @@ const handleSubmit = (e) => {
 return api.post("/api/tos-content/", { lessonsDataJson })
   .then((secondRes) => {
 
+    lessonsData.map((item, idx) => {
+      item.learning_outcomes.map((data, index) => {
+        // Prepare the query using the correct index
+        const query = {
+          learning_outcomes: data,
+          teachingHours: item.teachingHours[index], // Use the correct index here
+          allocation: item.allocation[index],
+          items: item.items[index],
+          remembering: item.remembering[index],
+          understanding: item.understanding[index],
+          applying: item.applying[index],
+          analyzing: item.analyzing[index],
+          evaluating: item.evaluating[index],
+          creating: item.creating[index],
+          total: item.total[index],
+          placement: item.placement[index],
+          tos_content: secondRes.data[idx].id, // Correct reference for the `tos_content`
+        };
+    
+        // Send data to backend
+        sendDataToBackendLearningOutcomes(query);
+      });
+    });
+    
+
+   
+
+
     if (secondRes.status === 201) {
       const ids = secondRes.data.reduce((acc, item,index) => {
         // Assuming each item in secondRes.data has an `id` property
@@ -1946,10 +2996,6 @@ return api.post("/api/tos-content/", { lessonsDataJson })
      
       uploadFiles(ids);
 
- 
-
-
-      // Third request example
       const examData =  {
         exam_title: ExamTitle,
         tos_id: id_tos
@@ -2090,19 +3136,19 @@ return api.post("/api/tos-content/", { lessonsDataJson })
 
                 localStorage.setItem('lessonsData',JSON.stringify([{  
                   topic: '',
-                learning_outcomes: '',
-                teachingHours: 0,
-                allocation: 0,
-                items: 0,
-                remembering: 0,
-                understanding: 0,
-                applying: 0,
-                analyzing: 0,
-                evaluating: 0,
-                creating: 0,
-                total: 0,
-                placement: '',
-                totalItems:0,
+                learning_outcomes: [],
+                teachingHours: [],
+                allocation: [],
+                items: [],
+                remembering: [],
+                understanding: [],
+                applying: [],
+                analyzing: [],
+                evaluating: [],
+                creating: [],
+                total: [],
+                placement: [],
+                totalItems:[],
                 tos_teacher: 0,
                 }]));
                   
@@ -2296,26 +3342,26 @@ const handleNext = () => {
       addToast(`Please input a total number of items`)
     }
 
-    if(err==0 && totalItems>0){
-      setStep(step + 1);
-    }
+   
 
-    break
-
-    case 3:
-      let err3 = 0
+    let err3 = 0
       lessonsDataInitial.map((data,index)=>{
-        if(data.teachingHours == 0){
-          addToast(`Please input the number of teaching hours for lesson ${index+1}`)
-          err3++
-        }
+        data.teachingHours.map((hours,idx)=>{
+          if(hours == 0){
+            addToast(`Please input the number of teaching hours for lesson ${index+1}, learning outcome ${idx+1}`)
+            err3++
+          }
+        })
+        
       })
 
-      if(err3==0){
+      if(err3==0 && err==0 && totalItems>0){
         setStep(step + 1);
       }
-  
+
     break
+
+    
 
 
 
@@ -2340,7 +3386,7 @@ const handleBack = () => {
     setDisableBack(false)
   }
 
-  if(step === 4){
+  if(step === 3){
     setDisableNext(true)
   } 
   else{
@@ -2449,93 +3495,122 @@ const handleSubmitExam = () =>{
       console.error('Error status:', err);
     });
 }
-const [allocations, setAllocations] = useState([]);
 
 
 
   // Handle the form submission
   const handleSubmitAllocation = async () => {
     try {
-      const promises = lessonsData.map(async (l) => {
-        const response = await api.post('/api/taxonomy-allocation/', {
-          objectives: l.learning_outcomes,
+      // Create a promise for each lesson
+      const promises = lessonsData.map(async (lesson) => {
+        // Create a promise for each learning outcome in the lesson
+        const outcomePromises = lesson.learning_outcomes.map(async (outcome) => {
+          const response = await api.post('/api/taxonomy-allocation/', {
+            objectives: outcome,
+          });
+          console.log('heresss: ',outcome)
+          return response.data.allocation; 
         });
-        return response.data.allocation; // Return the allocation data
+  
+        // Resolve all promises for this lesson's outcomes
+        const allocations = await Promise.all(outcomePromises);
+  
+        // Flatten allocations into a single array
+        return allocations.flat();
       });
-
+  
+      // Wait for all lessons' allocations to resolve
       const allocationsArray = await Promise.all(promises);
-      
-   // Flatten if allocationsArray contains nested arrays
-   const flatAllocations = allocationsArray.flat();
-
-   // Update lessonsData with new taxonomy_levels
-   const updatedLessonsData = lessonsData.map((lesson, index) => ({
-     ...lesson,
-     taxonomy_levels: flatAllocations[index] || [], // Ensure allocation aligns with lessons
-   }));
-
-   setAllocations((prev) => [...prev, ...flatAllocations]);
-   setLessonsDatainitial(updatedLessonsData);
-
-   // Update localStorage with new lessons data
-   localStorage.setItem('lessonsData', JSON.stringify(updatedLessonsData));
-
+  
+      // Flatten if allocationsArray contains nested arrays
+      const flatAllocations = allocationsArray.flat();
+  
+      // Update lessonsData with new taxonomy_levels
+      const updatedLessonsData = lessonsData.map((lesson, index) => ({
+        ...lesson,
+        taxonomy_levels: allocationsArray[index] || [], // Ensure allocation aligns with lessons
+      }));
+  
+      setAllocations((prev) => [...prev, ...flatAllocations]);
+      setLessonsDatainitial(updatedLessonsData);
+  
+      // Update localStorage with new lessons data
+      localStorage.setItem('lessonsData', JSON.stringify(updatedLessonsData));
+  
     } catch (error) {
       console.error('Error processing the file and data:', error);
     }
-
-
-    setLoadingAllocate(false)
+  
+    setLoadingAllocate(false);
   };
-  const handleOneAllocation = async (value, index) => {
-    const updatedFileInfo = [];
+  
+
+  const handleSubmitCount = async () => {
+
     try {
-      // Make the API call and get the response
-      const response = await api.post('/api/taxonomy-allocation/', {
-        objectives: value,
+      // Create an array of promises for the API calls
+      const promises_out = lessonsData.map((l) =>
+        api.post('/api/count_outcomes/', {
+          objectives: l.learning_outcomes,
+        })
+      );
+  
+      // Wait for all promises to resolve
+      const responses = await Promise.all(promises_out);
+  
+      // Extract the outcomes from the responses
+      const allocationsArray = responses.map((response) => response.data.outcomes);
+  
+      // Flatten if allocationsArray contains nested arrays
+      const flatAllocations = allocationsArray.flat();
+  
+      console.log('hereout:', flatAllocations);
+    } catch (error) {
+      console.error('Error processing the file and data herout:', error);
+    }
+  };
+  
+
+
+  const handleOneAllocation = async (value, index) => {
+    try {
+      // Make the API call for each outcome and collect all responses
+      const allocationsPromises = value.map(async (outcomes) => {
+        const response = await api.post('/api/taxonomy-allocation/', {
+          objectives: outcomes,
+        });
+        return response.data.allocation; // Extract allocation from response
       });
   
-      // Extract allocation data from the response
-      let allocationsArray = response.data.allocation;
+      // Wait for all outcomes to resolve
+      const allocationsArray = await Promise.all(allocationsPromises);
   
-     console.log('allocateArray: ', allocationsArray)
-     updatedFileInfo.push(allocationsArray);
-
-
+      // Combine allocations into a single object if needed (flatten or process further)
+      const combinedAllocations = allocationsArray.flat();
+  
+      console.log('Allocations Array: ', combinedAllocations);
+  
+      // Update the specific lesson with the new taxonomy levels
+      const updatedLessonsData = [...lessonsDataInitial];
+      updatedLessonsData[index]['taxonomy_levels'] = combinedAllocations;
+  
+      // Update state and localStorage
+      setLessonsDatainitial(updatedLessonsData);
+      localStorage.setItem('lessonsData', JSON.stringify(updatedLessonsData));
+  
+      // Update allocations
+      setAllocations((prev) => {
+        const newAllocations = [...prev];
+        newAllocations[index] = combinedAllocations;
+        return newAllocations;
+      });
     } catch (error) {
       console.error('Error processing the file and data:', error);
     } finally {
-      // Ensure loading is set to false regardless of the outcome
       setLoadingAllocate(false);
     }
-
-    updatedFileInfo.forEach((data) => {
-      const newData = [...allocations];
-  
-      // Update the specific fields in the corresponding lesson object
-      newData[index] = {
-        'Remembering': data['Remembering'],
-        'Understanding': data['Understanding'],
-        'Applying': data['Applying'],
-        'Analyzing': data['Analyzing'],
-        'Evaluating': data['Evaluating'],
-        'Creating': data['Creating'],
-        
-      };
-    
-      setAllocations(newData)
-
-      const newLesson = [...lessonsDataInitial]
-      newLesson[index]['taxonomy_levels'] = newData[index];
-      localStorage.setItem('lessonsData', JSON.stringify(newLesson));
-      // setLessonsDatainitial(newData);
-  
-     
-  
-   
-      
-    });
   };
+  
   
 
   const submitAllocation = () =>{
@@ -2543,6 +3618,7 @@ const [allocations, setAllocations] = useState([]);
     setLoadingAllocate(true)
     setAllocations([]);
     handleSubmitAllocation();
+    handleSubmitCount();
     setSpecific(true)
 
    
@@ -2558,13 +3634,9 @@ const [allocations, setAllocations] = useState([]);
     newData[index][field][level] = value;
     newDataAllocation[index][level] = Number(value)
 
-
-  
       // Update the state with the new data
       setLessonsDatainitial(newData);
       
-      
-  
       // Save the updated lessonsData to localStorage
       localStorage.setItem('lessonsData', JSON.stringify(newData));
 
@@ -2572,6 +3644,27 @@ const [allocations, setAllocations] = useState([]);
   
   }
 
+
+  const handleinnertaxlevelChange = (index, field,level,subIndex, value) => {
+
+    setSpecific(true)
+    // Clone the lessonsData array to avoid direct mutation
+    const newData = [...lessonsData];
+    const newDataAllocation = [...allocations]
+  
+    // Update the specific field in the corresponding lesson object
+    newData[index][field][subIndex][level] = value;
+    newDataAllocation[index][subIndex][level] = Number(value)
+
+      // Update the state with the new data
+      setLessonsDatainitial(newData);
+      
+      // Save the updated lessonsData to localStorage
+      localStorage.setItem('lessonsData', JSON.stringify(newData));
+
+      setAllocations(newDataAllocation)
+  
+  }
 
   
   useEffect(() => {
@@ -2866,6 +3959,11 @@ const [allocations, setAllocations] = useState([]);
    
    <br />
    <Learning_outcomes 
+   setTosModal={setPdfModal}
+   handleinnertaxlevelChange={handleinnertaxlevelChange}
+   overallItems={totalItems}
+   handleTotalItemsChange={handleTotalItemsChange}
+        countOutcomes={countOutcomes}
         setRemembering={setRemembering} 
         setUnderstanding={setUnderstanding}
         setAnalyzing={setAnalyzing}
@@ -2878,6 +3976,7 @@ const [allocations, setAllocations] = useState([]);
         addLesson={addLesson}sonDa
   addAllocation={addAllocation}
   setSpecific={setSpecific}
+  handleInnerLessonDataChange={handleInnerLessonDataChange}
         lessonsDataInitial={lessonsDataInitial}
         handleLessonDataChange={handleLessonDataChange}
         lessonsData={lessonsData}
@@ -2886,6 +3985,7 @@ const [allocations, setAllocations] = useState([]);
         setFormData={setFormData}
         submit={submitAllocation}
         handleSubmit={handleSubmitAllocation}
+        handleSubmitCount={handleSubmitCount}
         allocations={allocations}
         setAllocations={setAllocations}
         files={files}
@@ -2905,16 +4005,16 @@ const [allocations, setAllocations] = useState([]);
         <div>
 
         <div className="mb-3">
-        <ToggleSwitch checked={specific} label={specific?'Locked':'Unlocked'} onChange={setSpecific} color={"primary"} className="mx-auto" />
+        {/* <ToggleSwitch checked={specific} label={specific?'Locked':'Unlocked'} onChange={setSpecific} color={"primary"} className="mx-auto" /> */}
         </div>
 
-      <div className="max-w-md flex gap-5">
+      {/* <div className="max-w-md flex gap-5">
     
         <div className="mt-3" >
           <Label htmlFor="totalItems" className="font-bold" > Total of Items<span className="text-red-600">*</span></Label> 
         </div>
         <TextInput id="totalItems" type="number" className="max-w-32 " required value={totalItems} min={'0'} onChange={handleTotalItemsChange} />
-      </div>
+      </div> */}
       </div>
       <div>
         <div className="flex gap-3">
@@ -3027,7 +4127,7 @@ const [allocations, setAllocations] = useState([]);
        
       </Card>
 
-      <Card className={`mb-5 ${step == 3? 'show':'hidden'}`}>
+      <Card className={'hidden'}>
 
       <div className="flex">
         <div className="flex-1 "> 
@@ -3091,7 +4191,7 @@ const [allocations, setAllocations] = useState([]);
                 </TableRow>
               ))}
 
-              <TableRow >
+              {/* <TableRow >
                 <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
                   Total
                 </TableCell>
@@ -3139,7 +4239,7 @@ const [allocations, setAllocations] = useState([]);
                 <TableCell style={{textAlign:'center',fontWeight:'bold'}}>
                  
                 </TableCell>
-              </TableRow>
+              </TableRow> */}
             </TableBody>
           </Table>
         </TableContainer>
@@ -3149,24 +4249,7 @@ const [allocations, setAllocations] = useState([]);
     
         <div className="  w-full flex flex-wrap ">
      <div  className=" mt-3 flex gap-3   mx-auto">
-      {/* <Button color={'primary'}  onClick={() => addLesson({  
-        topic: '',
-      learning_outcomes: '',
-      teachingHours: 0,
-      allocation: 0,
-      items: 0,
-      remembering: 0,
-      understanding: 0,
-      applying: 0,
-      analyzing: 0,
-      evaluating: 0,
-      creating: 0,
-      total: 0,
-      placement: '',
-      totalItems:0,})}> <AddCircleOutlineIcon className="mr-2 "/>Add Lesson</Button> */}
-
-    
-        {/* <Button  color={'failure'} onClick={()=>handleResetAll()}>Reset</Button> */}
+   
       <Button color="primary" variant="contained" onClick={() => setPdfModal(true)}><VisibilityIcon className="mr-2"/>Preview</Button>
 
  
@@ -3187,7 +4270,7 @@ const [allocations, setAllocations] = useState([]);
       </Modal>
       </Card>
 
-        <div className={`mb-5 ${step == 4? 'show':'hidden'}`}>
+        <div className={`mb-5 ${step == 3? 'show':'hidden'}`}>
       <Examtest setTOSPdfModal={setPdfModal} saveDataToLocalStorageTestPart={saveDataToLocalStorageTestPart} files={files} setExamTitle={setExamTitle} items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} setLoading={setLoadingGenerate} context={context} setContext={setContext} formData={formData} handleLessonDataChange={handleLessonDataChange} addToast={addToast}/>
 
 
@@ -3206,13 +4289,15 @@ const [allocations, setAllocations] = useState([]);
   <div>
    
 <Button size={'sm'} color={'primary'} onClick={handleBack} disabled={disableBack} className="px-3"><NavigateBeforeIcon/> <p style={{marginTop:'0.5px'}}>Previous</p></Button>
+
 </div>
 <div>
  
       <Button size={'sm'} color={'primary'} onClick={handleNext} disabled={disableNext} className="px-4" > <p style={{marginTop:'0.5px'}}>Next</p> <NavigateNextIcon  /></Button>
 
+    
    <div className="fixed top-4 right-4 z-50 space-y-4">
-        {toasts.map((toast,index) => (
+   {toasts.map((toast,index) => (
           <ToastError
             key={toast.id}
             id={toast.id}

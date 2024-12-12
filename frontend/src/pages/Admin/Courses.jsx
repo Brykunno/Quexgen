@@ -3,13 +3,22 @@ import React, { useState, useEffect } from 'react';
 import api from "../../api";
 import Add_Course from './Add_Course';
 import {Button} from "@mui/material";
-import { Table, Pagination,  Modal, Radio, Label, TextInput } from 'flowbite-react';
+import { Table, Pagination,FileInput,  Modal, Radio, Label, TextInput } from 'flowbite-react';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import SearchIcon from '@mui/icons-material/Search';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import HideSourceIcon from '@mui/icons-material/HideSource';
 import Topnavbar from '../../components/Topnavbar';
 import ToastMessage from '../../components/Toast';
+import { Worker } from '@react-pdf-viewer/core';  // Import the Worker component
+import { Viewer } from '@react-pdf-viewer/core';  // Import the Viewer component
+import '@react-pdf-viewer/core/lib/styles/index.css';  // Import necessary styles
+
+
+
+// Import the styles
+import '@react-pdf-viewer/core/lib/styles/index.css';
+
 
 
 function Courses() {
@@ -22,6 +31,7 @@ function Courses() {
   const [course_name, setcourse_name] = useState("");
   const [course_code, setcourse_code] = useState("");
   const [course_type, setcourse_type] = useState("");
+  const [course_syllabus, setcourse_syllabus] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
 
   useEffect(() => {
@@ -60,23 +70,34 @@ function Courses() {
   };
 
   const handleUserUpdate = () => {
-    const updatedUser = {
-      course_name,
-      course_code,
-      course_type,
-    };
+    const formData = new FormData();
+  
+    // Append all form data to the FormData object
+    formData.append("course_name", course_name);
+    formData.append("course_code", course_code);
+    formData.append("course_type", course_type);
+  
+    // Append file only if it's selected (not null)
+    if (course_syllabus) {
+      formData.append("course_syllabus", course_syllabus);
+    }
   
     api
-      .put(`/api/courses/${selectedUserId}/`, updatedUser)
+      .put(`/api/courses/${selectedUserId}/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
       .then((res) => {
-        console.log('User updated successfully', res.data);
-        getUser(); // Refresh the user list
+        console.log("Course updated successfully", res.data);
+        getUser(); // Refresh the course list
         setOpenModal(false); // Close the modal
       })
       .catch((err) => {
-        console.error('Error updating user:', err);
+        console.error("Error updating course:", err);
       });
   };
+  
 
   const handleUserDelete = () => {
     api
@@ -102,6 +123,11 @@ function Courses() {
   const indexOfFirstUser = indexOfLastUser - itemsPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]; // Get the selected file
+    setcourse_syllabus(file); // Update state with the file
+  };
 
   return (
     <div>
@@ -207,6 +233,15 @@ function Courses() {
                     required
                   />
                 </div>
+
+                <div>
+  <Label htmlFor="course_syllabus" value="Course syllabus" />
+  <FileInput
+    id="course_syllabus"
+    onChange={handleFileChange} // Calls the file change handler
+    required={false} // Not required for updates
+  />
+</div>
                
               
               </div>

@@ -9,6 +9,8 @@ import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import HideSourceIcon from '@mui/icons-material/HideSource';
 import Topnavbar from '../../components/Topnavbar';
 import ToastMessage from '../../components/Toast';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import { Autocomplete, TextField, Chip } from '@mui/material';
 
 function Instructors() {
   const [user, setUser] = useState([]);
@@ -17,6 +19,7 @@ function Instructors() {
   const [searchTerm, setSearchTerm] = useState('');
   const [itemsPerPage] = useState(7);
   const [openModal, setOpenModal] = useState(false);
+  const [openModalAdd, setOpenModalAdd] = useState(false);
   const [username, setUsername] = useState("");
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
@@ -24,17 +27,64 @@ function Instructors() {
   const [is_superuser, setIsSuperuser] = useState(false);
   const [email, setEmail] = useState("");
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [testError,setTestError] = useState(false);
+  const [options,setOptions] = useState([]);
+  const [teacherCourse,setTeacherCourse] = useState([])
+  const [updateTC,setUpdateTC] = useState([])
+
+  const [courses,setCourses] = useState([])
+
+  const [updateOptions,setUpdateOptions] = useState([]);
+
+
+
+
+  useEffect(() => {
+    api.get(`/api/courses/`)
+      .then((res) => {
+        const courseNames = res.data.map((course) => course.course_name); // Extract course names
+        setOptions(courseNames); // Update state once with the full array
+        setCourses(res.data)
+      })
+      .catch((err) => {
+        console.error("Error fetching courses:", err);
+      });
+
+      api.get(`/api/teacherCourse/`)
+      .then((res) => {
+       
+        setTeacherCourse(res.data);
+      })
+      .catch((err) => {
+        console.error("Error fetching courses:", err);
+      });
+
+
+  }, []);
+  
+
+  useEffect(() => {
+    api.get(`/api/courses/`)
+      .then((res) => {
+        const courseNames = res.data.map((course) => course.course_name); // Extract course names
+        setOptions(courseNames); // Update state once with the full array
+ 
+      })
+      .catch((err) => {
+        console.error("Error fetching courses:", err);
+      });
+  }, []);
 
   useEffect(() => {
     document.title = "Home";
     getUser();
-  });
+  },[]);
 
   const getUser = () => {
     api.get(`/api/user/account/admin/`)
       .then((res) => {
         setUser(res.data);
-        
+      
       })
       .catch((err) => {
         alert(err);
@@ -51,7 +101,12 @@ function Instructors() {
     setCurrentPage(1);
   };
 
-  const openEditModal = (user) => {
+  const openEditModal = (user,courses,tc) => {
+
+    const teacherCourses = tc.filter(course => course.user_id === user.id);
+    const teacherCourseIds = teacherCourses .map(course => course.course_id);
+    const filteredCourses = courses.filter(course => teacherCourseIds.includes(course.id));
+    setUpdateOptions(filteredCourses.map(course => course.course_name))
     setSelectedUserId(user.id);
     setUsername(user.username);
     setFirstName(user.first_name);
@@ -59,6 +114,7 @@ function Instructors() {
     setIsStaff(user.is_staff);
     setIsSuperuser(user.is_superuser);
     setEmail(user.email);
+    setUpdateTC()
     setOpenModal(true);
   };
 
@@ -72,17 +128,62 @@ function Instructors() {
       email,
     };
   
+    // Get the course IDs associated with the selected user
+    const tcIds = teacherCourse
+      .filter(course => course.user_id == selectedUserId) // Filter the courses matching the user_id
+      .map(course => course.id); // Get the ids of the matching courses
+  
+    console.log('Teacher Course IDs:', tcIds);
+  
+    // Update the user details
     api
       .put(`/api/users/${selectedUserId}/`, updatedUser)
       .then((res) => {
         console.log('User updated successfully', res.data);
-        getUser(); // Refresh the user list
-        setOpenModal(false); // Close the modal
+        getUser(); // Refresh the user list after the update
       })
       .catch((err) => {
         console.error('Error updating user:', err);
       });
+  
+    // Delete the teacher courses
+    tcIds.forEach((courseId) => {
+      api
+        .delete(`/api/teacherCourse/${courseId}/`)
+        .then((res) => {
+          console.log(`Teacher course with ID ${courseId} deleted successfully`);
+          // Optionally, refresh the teacher courses if needed
+          getUser(); // Refresh the teacher courses
+          setOpenModal(false); // Close the modal
+        })
+        .catch((err) => {
+          console.error('Error deleting teacher course:', err);
+        });
+    });
+  
+    // Now, add new teacher courses based on the selected courses (updateOptions)
+    const user_id = selectedUserId;
+  
+    // Loop through courses and add the selected ones
+    updateOptions.forEach((courseName) => {
+      const course = courses.find(course => course.course_name === courseName);
+      if (course) {
+        const course_id = course.id;
+        // Assign the teacher to the new course
+        api
+          .post(`/api/teacherCourse/`, { user_id, course_id })
+          .then((res) => {
+            console.log(`Teacher assigned to new course: ${courseName}`);
+            getUser(); // Refresh the teacher courses after assignment
+          })
+          .catch((err) => {
+            console.error('Error assigning teacher to course:', err);
+          });
+      }
+    });
   };
+  
+  
 
   const filteredUsers = user.filter((user) =>
     user.username.toLowerCase().includes(searchTerm.toLowerCase())
@@ -133,12 +234,11 @@ function Instructors() {
     <div>
       <Topnavbar title="Instructors / Users"/>
     <div className='content'>
-      <div className='flex gap-10  '>
-        <div className='w-80'>
-          <Add_user setLoading={setLoading}/>
-        </div>
+      <div className='flex gap-10 '>
+     
         <div className='flex-1'>
-          <div className="flex items-center my-5">
+        
+          <div className="flex items-center my-5 justify-between">
             <div className="relative shadow-lg">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <SearchIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -151,6 +251,18 @@ function Instructors() {
                 onChange={handleSearch} // Real-time search here
               />
             </div>
+
+            <Button
+                        color={'primary'}
+                        variant='contained'
+                        size={'small'}
+                        onClick={() => setOpenModalAdd(true)}
+                        className='flex gap-1'
+                      >
+                        <PersonAddIcon />
+                        <p className='mt-1 ml-1'>Add user</p>
+                      </Button>
+                     
           </div>
           <Table striped>
             <Table.Head>
@@ -176,7 +288,7 @@ function Instructors() {
                         color={'primary'}
                         variant='contained'
                         size={'small'}
-                        onClick={() => openEditModal(user)}
+                        onClick={() => openEditModal(user,courses,teacherCourse)}
                         className='flex gap-1'
                       >
                         <VisibilityIcon />
@@ -257,6 +369,37 @@ function Instructors() {
                     </div>
                   </div>
                 </div>
+
+                <div>
+                <Autocomplete
+  multiple
+  id="chip-selection"
+  name="ExaminationType"
+  options={options} // List of options
+  value={updateOptions} // Current selected options
+  onChange={(event, newValue) => {
+    setUpdateOptions(newValue); // Directly set the updated list
+  }}
+  renderTags={(value, getTagProps) =>
+    value.map((option, index) => (
+      <Chip
+        variant="outlined"
+        label={option}
+        {...getTagProps({ index })}
+        key={index}
+      />
+    ))
+  }
+  renderInput={(params) => (
+    <TextField
+      error={testError}
+      {...params}
+      variant="outlined"
+      label="Courses"
+    />
+  )}
+/>
+                </div>
                 <div>
                   <Label htmlFor="email" value="Email" />
                   <TextInput
@@ -267,6 +410,7 @@ function Instructors() {
                     required
                   />
                 </div>
+               
               </div>
             </Modal.Body>
             <Modal.Footer>
@@ -277,6 +421,8 @@ function Instructors() {
               </Button>
             </Modal.Footer>
           </Modal>
+
+      <Add_user setOpenModalAdd={setOpenModalAdd} openModalAdd={openModalAdd} setLoading={setLoading}/>
 
           <div className="flex justify-center mt-4">
             <Pagination

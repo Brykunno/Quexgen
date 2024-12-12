@@ -11,6 +11,7 @@ import Error from './Error';
 import InvalidFileError from './InvalidFileError';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ClearIcon from '@mui/icons-material/Clear';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 function Learning_outcomes({
   setRemembering,
@@ -29,8 +30,8 @@ function Learning_outcomes({
   formData,
   setFormData,
   submit,
-  allocations,
-  setAllocations,files,setLessonsDatainitial,lessonsDataInitial,setFiles,handletaxlevelChange,oneAllocation,addAllocation
+  allocations,setTosModal,
+  setAllocations,files,setLessonsDatainitial,lessonsDataInitial,setFiles,handletaxlevelChange,oneAllocation,addAllocation,countOutcomes,handleInnerLessonDataChange,overallItems,handleTotalItemsChange,handleinnertaxlevelChange
   
 }) {
 
@@ -47,16 +48,24 @@ function Learning_outcomes({
     // Add a new state to track which modals are open
     const [openModals, setOpenModals] = useState([]);
 
-    // Function to toggle a specific modal
-    const toggleModal = (index) => {
+
+    const toggleModal = (lessonIndex, modalIndex) => {
       setOpenModals((prev) => {
-        const updatedModals = [...prev];
-        updatedModals[index] = !updatedModals[index]; // Toggle the specific modal at index
-        return updatedModals;
+        const newModals = [...prev]; // Create a shallow copy of the top-level array
+    
+        // Ensure the nested array exists for the specified lesson
+        if (!Array.isArray(newModals[lessonIndex])) {
+          newModals[lessonIndex] = [];
+        }
+    
+        // Ensure the specific modal state exists
+        newModals[lessonIndex] = [...newModals[lessonIndex]]; // Clone the nested array
+        newModals[lessonIndex][modalIndex] = !newModals[lessonIndex][modalIndex]; // Toggle the specific modal state
+    
+        return newModals;
       });
     };
-
-
+    
 
 
 const [tax_alloc, setTax] = useState([]);
@@ -66,8 +75,11 @@ const calculatePercentages = (allocations) => {
   const total = Object.values(allocations).reduce((sum, value) => sum + value, 0);
   const percentages = {};
 
+  
   // Step 1: Calculate initial percentages using Math.floor
   let sumOfPercentages = 0;
+
+
   for (const key in allocations) {
     percentages[key] = total > 0 ? Math.floor((allocations[key] / total) * 100) : 0;
     sumOfPercentages += percentages[key];
@@ -88,12 +100,54 @@ const calculatePercentages = (allocations) => {
   return percentages;
 };
 
-    
+const calculateSums = (allocations) => {
+  // Validate input
+  if (!Array.isArray(allocations) || allocations.length === 0 || !Array.isArray(allocations[0])) {
+    console.error("Invalid input structure: allocations must be a non-empty array of arrays.");
+    return {};
+  }
+
+  // Initialize sum variables
+  let sumRemembering = 0;
+  let sumUnderstanding = 0;
+  let sumApplying = 0;
+  let sumAnalyzing = 0;
+  let sumEvaluating = 0;
+  let sumCreating = 0;
+
+  // Iterate over the first array of objects and calculate sums
+  allocations[0].forEach(item => {
+    sumRemembering += item.Remembering || 0;
+    sumUnderstanding += item.Understanding || 0;
+    sumApplying += item.Applying || 0;
+    sumAnalyzing += item.Analyzing || 0;
+    sumEvaluating += item.Evaluating || 0;
+    sumCreating += item.Creating || 0;
+  });
+
+  // Aggregate sums into an object
+  return {
+    "Remembering": sumRemembering,
+    "Understanding": sumUnderstanding,
+    "Applying": sumApplying,
+    "Analyzing": sumAnalyzing,
+    "Evaluating": sumEvaluating,
+    "Creating": sumCreating,
+  };
+};
+
+
 
 useEffect(()=>{
+
   
+
  // Calculate the total allocations
- const tax_allocation = allocations.reduce((acc, data) => {
+// Flatten the nested arrays into a single array
+const flattenedAllocations = allocations.flat();
+
+// Calculate the total sums using reduce
+const tax_allocation = flattenedAllocations.reduce((acc, data) => {
   acc.Remembering = (acc.Remembering || 0) + (data.Remembering || 0);
   acc.Understanding = (acc.Understanding || 0) + (data.Understanding || 0);
   acc.Analyzing = (acc.Analyzing || 0) + (data.Analyzing || 0);
@@ -103,6 +157,7 @@ useEffect(()=>{
   return acc;
 }, {});
 
+console.log('taxAlloc: ',tax_allocation)
 
   const percentages = calculatePercentages(tax_allocation);
   setTax(tax_allocation)
@@ -260,6 +315,7 @@ const handleReadFile = async () => {
       // Make a request to Django to process the file and JSON data
       const response = await api.post('/api/lesson-info/', formData, {
         headers: {
+          
           'Content-Type': 'multipart/form-data',
         },
       });
@@ -286,6 +342,8 @@ const handleReadFile = async () => {
     // Update the specific fields in the corresponding lesson object
     newData[index]['topic'] = data[0].lesson_topic;
     newData[index]['learning_outcomes'] = data[0].learning_outcomes;
+
+
     
 
    
@@ -335,14 +393,41 @@ const handleReadOneFile = async (value,index) => {
   setFileInfo(updatedFileInfo);
 
   // Update lessons data and save it to localStorage
+
+  
  
-  updatedFileInfo.forEach((data) => {
+  updatedFileInfo.forEach( async (data) => {
     const newData = [...lessonsDataInitial];
 
     // Update the specific fields in the corresponding lesson object
     newData[index]['topic'] = data[0].lesson_topic;
-    newData[index]['learning_outcomes'] = data[0].learning_outcomes;
     
+  const response_out = await api.post('/api/count_outcomes/', {
+    objectives: data[0].learning_outcomes,
+  });
+
+  let outArray = response_out.data.outcomes;
+
+  console.log('hereout: ', outArray)
+    newData[index]['learning_outcomes'] = outArray;
+    newData[index]['teachingHours'] = Array(outArray?.length || 0).fill(0);
+    newData[index]['allocation'] = Array(outArray?.length || 0).fill(0);
+    newData[index]['items'] = Array(outArray?.length || 0).fill(0);
+    newData[index]['remembering'] = Array(outArray?.length || 0).fill(0);
+    newData[index]['understanding'] = Array(outArray?.length || 0).fill(0);
+    newData[index]['applying'] = Array(outArray?.length || 0).fill(0);
+    newData[index]['analyzing'] = Array(outArray?.length || 0).fill(0);
+    newData[index]['evaluating'] = Array(outArray?.length || 0).fill(0);
+    newData[index]['creating'] = Array(outArray?.length || 0).fill(0);
+    newData[index]['total'] = Array(outArray?.length || 0).fill(0);
+    newData[index]['placement'] = Array(outArray?.length || '').fill('');
+    newData[index]['totalItems'] = Array(outArray?.length || 0).fill(0);
+    newData[index]['taxonomy_levels']['Remembering'] = Array(outArray?.length || 0).fill(0);
+    newData[index]['taxonomy_levels']['Understanding'] = Array(outArray?.length || 0).fill(0);
+    newData[index]['taxonomy_levels']['Analyzing'] = Array(outArray?.length || 0).fill(0);
+    newData[index]['taxonomy_levels']['Applying'] = Array(outArray?.length || 0).fill(0);
+    newData[index]['taxonomy_levels']['Evaluating'] = Array(outArray?.length || 0).fill(0);
+    newData[index]['taxonomy_levels']['Creating'] = Array(outArray?.length || 0).fill(0);
     
    oneAllocation(newData[index]['learning_outcomes'],index)
 
@@ -453,11 +538,19 @@ const removeFile = (index) => {
   return (
     <Card className="mb-5">
 
-
+<div className="max-w-md flex gap-5 mx-auto">
+    
+    <div className="mt-3" >
+      <Label htmlFor="totalItems" className="font-bold" > Total of Items<span className="text-red-600">*</span></Label> 
+    </div>
+    <TextInput id="totalItems" type="number" className="max-w-32 " required value={overallItems} min={'0'} onChange={handleTotalItemsChange} />
+  </div>
     {/* Render only the current page of lessons */}
     {currentLessons.map((item, index) => (
      <Card key={indexOfFirstLesson + index} className="relative">
      {/* Delete button positioned in the top right */}
+
+     
      <div className="absolute top-2 right-2">
        <Button
         
@@ -472,7 +565,9 @@ const removeFile = (index) => {
      </div>
    
      <div className="mb-3">
+      
        <div>
+      
          <div className="mb-2 block">
            <Label htmlFor="file-upload">
              Upload file for Lesson {indexOfFirstLesson + index + 1} <span className="text-red-600">*</span>
@@ -504,6 +599,7 @@ const removeFile = (index) => {
      <div className="flex flex-col gap-5 mb-4 md:flex-row">
        <div className="flex-1">
          <div className="ms-2 font-bold mb-2">Lesson {indexOfFirstLesson + index + 1}</div>
+         
          <Textarea
            value={lessonsData[indexOfFirstLesson + index]['topic']}
            style={{ height: '100px' }}
@@ -513,16 +609,68 @@ const removeFile = (index) => {
        </div>
        <div className="flex-1">
          <div className="ms-2 font-bold mb-2">Learning outcomes</div>
-         <Textarea
-           value={lessonsData[indexOfFirstLesson + index]['learning_outcomes']}
-           style={{ height: '100px' }}
-           onChange={(e) => handleLessonDataChange(indexOfFirstLesson + index, 'learning_outcomes', e.target.value)}
-           placeholder="Enter the learning outcomes for the lesson"
-         />
+
+
+         {lessonsData[indexOfFirstLesson + index]['learning_outcomes']
+  .map((line, lineIndex) => (
+    <div key={lineIndex} style={{ marginBottom: '20px' }}>
+      <Textarea
+        key={lineIndex}
+        value={line}
+        onChange={(e)=>handleInnerLessonDataChange(indexOfFirstLesson + index,lineIndex,'learning_outcomes',e.target.value)}
+        style={{ height: '100px', width: '300px', marginBottom: '10px' }}
+        placeholder={`Enter value for line ${lineIndex}`}
+      />
+    </div>
+  ))}
+
        </div>
+       <div className="flex-1">
+         <div className="ms-2 font-bold mb-2">Taxonomy Levels</div>
+
+
+         {lessonsData[indexOfFirstLesson + index]['teachingHours']
+  .map((line, lineIndex) => (
+    <div key={lineIndex} style={{ marginBottom: '20px' }} className='justify-evenly'>
+      <Button
+         color="primary"
+         variant='contained'
+
+         disabled={item.file_status === ""}
+         onClick={() => toggleModal(indexOfFirstLesson + index,lineIndex)}
+       
+       >
+         Identify levels of taxonomy
+       </Button>
+    </div>
+  ))}
+
+       </div>
+       <div className="flex-1">
+         <div className="ms-2 font-bold mb-2">Number of teaching hours</div>
+
+
+         {lessonsData[indexOfFirstLesson + index]['teachingHours']
+  .map((line, lineIndex) => (
+    <div key={lineIndex} style={{ marginBottom: '20px' }}>
+      <TextInput
+        key={lineIndex}
+        name={`teachingHours-${indexOfFirstLesson + index}-${lineIndex}`}
+        onChange={(e)=>handleInnerLessonDataChange(indexOfFirstLesson + index,lineIndex,'teachingHours',Number(e.target.value))}
+        value={line}
+        type='number'
+        style={{ height: '100px', width: '300px', marginBottom: '10px' }}
+        placeholder={`Enter value for line ${lineIndex}`}
+      />
+      
+    </div>
+  ))}
+
+       </div>
+    
      </div>
    
-     <div className='flex justify-center'>
+     {/* <div className='flex justify-center'>
        <Button
          color="primary"
          variant='contained'
@@ -533,17 +681,19 @@ const removeFile = (index) => {
        >
          Identify levels of taxonomy
        </Button>
-     </div>
+     </div> */}
    
-     <Modal size="md" show={openModals[index]} onClose={() => toggleModal(index)}>
+         {lessonsData[indexOfFirstLesson + index]['teachingHours']
+  .map((line, lineIndex) => (
+     <Modal size="md" show={openModals[index]?.[lineIndex]} onClose={() => toggleModal(index,lineIndex)}>
        <Modal.Header>Identify taxonomy levels</Modal.Header>
        <Modal.Body>
          <div className="flex-1 mb-2">
            <div className="ms-2 font-bold mb-2">Learning outcomes</div>
            <Textarea
-             value={lessonsData[indexOfFirstLesson + index]['learning_outcomes']}
+             value={lessonsData[indexOfFirstLesson + index]['learning_outcomes'][lineIndex]}
              style={{ height: '130px' }}
-             onChange={(e) => handleLessonDataChange(indexOfFirstLesson + index, 'learning_outcomes', e.target.value)}
+             onChange={(e) => handleInnerLessonDataChange(indexOfFirstLesson + index, 'learning_outcomes', e.target.value)}
              placeholder="Enter the learning outcomes for the lesson"
            />
          </div>
@@ -553,20 +703,21 @@ const removeFile = (index) => {
              <TextInput
                type="number"
                className="w-24"
-               onChange={(e) => handletaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels', level, e.target.value)}
-               value={lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.[level]}
+               onChange={(e) => handleinnertaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels', level,lineIndex, e.target.value)}
+               value={lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.[lineIndex]?.[level]}
              />
            </div>
          ))}
        </Modal.Body>
        <Modal.Footer className='flex justify-center '>
        
-         <Button onClick={() => toggleModal(index)} color="primary" variant='contained' >
+         <Button onClick={() => toggleModal(index,lineIndex)} color="primary" variant='contained' >
            Done
          </Button>
          
        </Modal.Footer>
      </Modal>
+     ))}
    </Card>
    
 
@@ -593,6 +744,7 @@ const removeFile = (index) => {
     
       <div className="flex ">
         <div  className="mt-3 mx-auto flex gap-5" >
+       
         <Button
           color={'primary'}
           variant='contained'
@@ -600,10 +752,10 @@ const removeFile = (index) => {
           onClick={() =>{
             addLesson({
               topic: '',
-              learning_outcomes: '',
-              teachingHours: 0,
+              learning_outcomes: [],
+              teachingHours: [],
               allocation: 0,
-              items: 0,
+              items: [],
               remembering: 0,
               understanding: 0,
               applying: 0,
@@ -639,6 +791,8 @@ const removeFile = (index) => {
         >
           <AddCircleOutlineIcon className="mr-2 " /> Add Lesson
         </Button>
+
+        <Button color="primary" variant="contained" onClick={() => setTosModal(true)}><VisibilityIcon className="mr-2"/>Preview TOS</Button>
       
         </div>
        
@@ -651,7 +805,7 @@ const removeFile = (index) => {
     
 
     {/* Pagination controls */}
-    {/* {JSON.stringify(percent)} */}
+    {/* {JSON.stringify(lessonsData)} */}
 
   </Card>
   );

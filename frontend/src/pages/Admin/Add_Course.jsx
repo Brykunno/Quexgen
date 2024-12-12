@@ -1,109 +1,116 @@
-
 import { useState } from "react";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
-import {Button} from "@mui/material";
-import {  Radio, Label, TextInput,Card } from "flowbite-react";
+import { Button } from "@mui/material";
+import { Radio, Label, TextInput, Card, FileInput } from "flowbite-react";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
+function Add_Course({ setLoading }) {
+  const [course_name, setCourseName] = useState("");
+  const [course_code, setCourseCode] = useState("");
+  const [course_type, setCourseType] = useState("");
+  const [course_syllabus, setCourseSyllabus] = useState(null);
 
-function Add_Course({setLoading}){
-    // return <Add_form route="/api/create_user/" method="add_user"/>
+  const navigate = useNavigate();
 
-    const [course_name, setcourse_name] = useState("");
-    const [course_code, setcourse_code] = useState("");
-    const [course_type, setcourse_type] = useState("");
-   
-   
-    const navigate = useNavigate();
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]; // Get the selected file
+    setCourseSyllabus(file); // Update state with the file
+  };
 
-    const handleSubmit = async (e) => {
-        setLoading(true);
-        e.preventDefault();
-    
-        try {
-        await api.post('/api/courses/', {course_name,course_code, course_type });
-        
-        } catch (error) {
-          alert(error);
-        } finally {
-          setLoading(true);
-        }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-        setcourse_code('');
-        setcourse_name('');
-        setcourse_type('')
-      };
+    try {
+      const formData = new FormData();
+      formData.append("course_name", course_name);
+      formData.append("course_code", course_code);
+      formData.append("course_type", course_type);
+      formData.append("course_syllabus", course_syllabus);
 
-      
-      
-    return(
+      await api.post("/api/courses/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-        <div >
-        
-    <Card className="max-w-sm w-auto   ">
-    <div className="text-center text-xl font-bold"><h1>ADD COURSE</h1></div>
-<form onSubmit={handleSubmit} className="flex max-w-md flex-col gap-4">
-<div>
-    <div className="mb-2 block">
-      <Label htmlFor="course_name" value="Course Name" />
+      alert("Course added successfully!");
+      setCourseName("");
+      setCourseCode("");
+      setCourseType("");
+      setCourseSyllabus(null);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to add course. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <Card className="max-w-sm w-auto">
+        <div className="text-center text-xl font-bold">
+          <h1>ADD COURSE</h1>
+        </div>
+        <form onSubmit={handleSubmit} className="flex max-w-md flex-col gap-4">
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="course_name" value="Course Name" />
+            </div>
+            <TextInput
+              id="course_name"
+              type="text"
+              value={course_name}
+              onChange={(e) => setCourseName(e.target.value)}
+              required
+              placeholder="Enter course name"
+            />
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="course_code" value="Course Code" />
+            </div>
+            <TextInput
+              id="course_code"
+              type="text"
+              value={course_code}
+              onChange={(e) => setCourseCode(e.target.value)}
+              required
+              placeholder="Enter course code"
+            />
+          </div>
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="course_type" value="Course Type" />
+            </div>
+            <TextInput
+              id="course_type"
+              type="text"
+              value={course_type}
+              onChange={(e) => setCourseType(e.target.value)}
+              required
+              placeholder="Enter course type"
+            />
+          </div>
+          <div>
+            <Label htmlFor="course_syllabus" value="Course Syllabus" />
+            <FileInput
+              id="course_syllabus"
+              sizing="sm"
+              onChange={handleFileChange}
+              required
+            />
+          </div>
+          <Button color="primary" variant="contained" type="submit">
+            <PersonAddIcon className="mr-2" />
+            <span style={{ marginTop: "0.8px" }}>ADD COURSE</span>
+          </Button>
+        </form>
+      </Card>
     </div>
-    <TextInput
-      id="course_name"
-      type="text"
-      value={course_name}
-      onChange={(e) => setcourse_name(e.target.value)}
-     
-      required
-    />
-  </div>
-<div>
-    <div className="mb-2 block">
-      <Label htmlFor="course_code" value="Course Code" />
-    </div>
-   
-    <TextInput
-      id="course_code"
-      type="text"
-      value={course_code}
-      onChange={(e) => setcourse_code(e.target.value)}
-      
-      required
-    />
-  </div>
-
-  <div>
-    <div className="mb-2 block">
-      <Label htmlFor="course_type" value="Course Type" />
-    </div>
-   
-    <TextInput
-      id="course_type"
-      type="text"
-      value={course_type}
-      onChange={(e) => setcourse_type(e.target.value)}
-      
-      required
-    />
-  </div>
-
- 
-
-  
-  <Button color={'primary'} variant='contained' type="submit" >
-    <PersonAddIcon className="mr-2"/>
-    <p style={{marginTop:'0.8px'}}>  ADD COURSE</p>
-  
-  </Button>
-</form>
-
-</Card>
-
-
-
-</div>
-    );
+  );
 }
-export default Add_Course
+
+export default Add_Course;
