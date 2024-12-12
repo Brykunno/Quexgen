@@ -31,7 +31,7 @@ function Learning_outcomes({
   setFormData,
   submit,
   allocations,setTosModal,
-  setAllocations,files,setLessonsDatainitial,lessonsDataInitial,setFiles,handletaxlevelChange,oneAllocation,addAllocation,countOutcomes,handleInnerLessonDataChange,overallItems,handleTotalItemsChange,handleinnertaxlevelChange
+  setAllocations,files,setLessonsDatainitial,lessonsDataInitial,setFiles,handletaxlevelChange,oneAllocation,addAllocation,countOutcomes,handleInnerLessonDataChange,overallItems,handleTotalItemsChange,handleinnertaxlevelChange,addToast
   
 }) {
 
@@ -44,6 +44,8 @@ function Learning_outcomes({
   const [errorFile,setErrorFile] = useState(false)
   const [fileStatus, setFileStatus] = useState(Array(lessonsDataInitial.length).fill(false));
   const [levelModal,setLevelModal] = useState(false)
+
+  const [maximum,setMaximum] = useState([])
 
     // Add a new state to track which modals are open
     const [openModals, setOpenModals] = useState([]);
@@ -142,6 +144,8 @@ useEffect(()=>{
 
   
 
+  
+
  // Calculate the total allocations
 // Flatten the nested arrays into a single array
 const flattenedAllocations = allocations.flat();
@@ -235,6 +239,11 @@ console.log('taxAlloc: ',tax_allocation)
     }
   },[percent]
 )    
+
+
+useEffect(()=>{
+setMaximum(Array(lessonsData?.length || 0).fill(0))
+},[])
 
 useEffect(() => {
   const updateExaminationType = () => {
@@ -533,6 +542,15 @@ const removeFile = (index) => {
   setFiles(updatedFiles);
 };
 
+function handleMaximum(index,values){
+
+  const newData = [...maximum]
+
+  newData[index] = values
+
+  setMaximum(newData)
+
+}
 
 
   return (
@@ -550,7 +568,13 @@ const removeFile = (index) => {
      <Card key={indexOfFirstLesson + index} className="relative">
      {/* Delete button positioned in the top right */}
 
-     
+     <div className="max-w-md flex gap-5 mx-auto">
+    
+    <div className="mt-3" >
+      <Label htmlFor="totalItems" className="font-bold" > Maximum teaching hours of lesson {index+1}</Label> 
+    </div>
+    <TextInput id="totalItems" type="number" className="max-w-32 " required value={maximum[indexOfFirstLesson + index]} min={'0'} onChange={(e) =>handleMaximum([indexOfFirstLesson + index],e.target.value)} />
+  </div>
      <div className="absolute top-2 right-2">
        <Button
         
@@ -559,7 +583,11 @@ const removeFile = (index) => {
       
         
        >
-        <ClearIcon  className=" hover:scale-110 transition-transform duration-200"  onClick={() => {removeLesson(lessonsData, indexOfFirstLesson + index); removeFile(indexOfFirstLesson + index)}} />
+        <ClearIcon  className=" hover:scale-110 transition-transform duration-200"  onClick={() => {removeLesson(lessonsData, indexOfFirstLesson + index); removeFile(indexOfFirstLesson + index)
+
+setMaximum((prevMaximum) => prevMaximum.slice(0, prevMaximum.length - 1));
+
+        }} />
 
        </Button>
      </div>
@@ -613,7 +641,7 @@ const removeFile = (index) => {
 
          {lessonsData[indexOfFirstLesson + index]['learning_outcomes']
   .map((line, lineIndex) => (
-    <div key={lineIndex} style={{ marginBottom: '20px' }}>
+    <div key={lineIndex} style={{ marginBottom: '20px', height:100 }}>
       <Textarea
         key={lineIndex}
         value={line}
@@ -631,7 +659,7 @@ const removeFile = (index) => {
 
          {lessonsData[indexOfFirstLesson + index]['teachingHours']
   .map((line, lineIndex) => (
-    <div key={lineIndex} style={{ marginBottom: '20px' }} className='justify-evenly'>
+    <div key={lineIndex} style={{ marginBottom: '20px', height:100 }} className='justify-evenly'>
       <Button
          color="primary"
          variant='contained'
@@ -652,17 +680,23 @@ const removeFile = (index) => {
 
          {lessonsData[indexOfFirstLesson + index]['teachingHours']
   .map((line, lineIndex) => (
-    <div key={lineIndex} style={{ marginBottom: '20px' }}>
+    <div key={lineIndex} style={{ marginBottom: '20px', height:100 }}>
       <TextInput
-        key={lineIndex}
-        name={`teachingHours-${indexOfFirstLesson + index}-${lineIndex}`}
-        onChange={(e)=>handleInnerLessonDataChange(indexOfFirstLesson + index,lineIndex,'teachingHours',Number(e.target.value))}
-        value={line}
-        type='number'
-        style={{ height: '100px', width: '300px', marginBottom: '10px' }}
-        placeholder={`Enter value for line ${lineIndex}`}
-      />
-      
+  key={lineIndex}
+  name={`teachingHours-${indexOfFirstLesson + index}-${lineIndex}`}
+  onChange={(e) => {handleInnerLessonDataChange(indexOfFirstLesson + index, lineIndex, 'teachingHours', Number(e.target.value))
+    
+  }}
+  value={line}
+  type='number'
+  min={0}
+  max={Number(line)+Number(maximum[indexOfFirstLesson + index]) - (lessonsData[indexOfFirstLesson + index]?.teachingHours || []).reduce((acc, data) => acc + (typeof data === 'number' ? data : 0), 0)}
+  
+  style={{ height: '100px', width: '300px', marginBottom: '10px' }}
+  placeholder={`Enter value for line ${lineIndex}`}
+/>
+
+
     </div>
   ))}
 
@@ -705,6 +739,7 @@ const removeFile = (index) => {
                className="w-24"
                onChange={(e) => handleinnertaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels', level,lineIndex, e.target.value)}
                value={lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.[lineIndex]?.[level]}
+               min={'0'}
              />
            </div>
          ))}
@@ -786,6 +821,9 @@ const removeFile = (index) => {
                 Creating:0
               }
             )
+
+            setMaximum((prevMaximum) => [...prevMaximum, 0]);
+
           }
           }
         >
@@ -806,6 +844,7 @@ const removeFile = (index) => {
 
     {/* Pagination controls */}
     {/* {JSON.stringify(lessonsData)} */}
+     {/* {JSON.stringify(maximum)} */}
 
   </Card>
   );

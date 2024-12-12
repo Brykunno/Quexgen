@@ -3291,7 +3291,7 @@ const handleNext = () => {
    
 
       if(exist==true){
-        addToast('This exam is already exist');
+        addToast('This exam already exists.');
         return
       }
       
@@ -3959,6 +3959,7 @@ const handleSubmitExam = () =>{
    
    <br />
    <Learning_outcomes 
+   addToast={addToast}
    setTosModal={setPdfModal}
    handleinnertaxlevelChange={handleinnertaxlevelChange}
    overallItems={totalItems}
