@@ -20,6 +20,7 @@ import PdfViewer from '../../components/PdfViewer';
 
 
 import { Document, Page } from "react-pdf";
+import Learning_outcomes from '../../components/Learning_outcomes';
 
 
 function Exam_review() {
@@ -79,6 +80,28 @@ function Exam_review() {
 
 
   },[]);
+
+  function sortByPlacement(data) {
+    return data.sort((a, b) => {
+      const placementA = parsePlacement(a.placement);
+      const placementB = parsePlacement(b.placement);
+  
+      return placementA - placementB;
+    });
+  }
+  
+  // Helper function to parse the placement string
+  function parsePlacement(placement) {
+    // Check if the placement is a range (e.g., "12 - 13")
+    const rangeMatch = placement.match(/^(\d+)\s*-\s*(\d+)$/);
+    if (rangeMatch) {
+      // If it's a range, return the first number for sorting
+      return parseInt(rangeMatch[1], 10);
+    }
+    // If it's a single number, return that as a number
+    return parseInt(placement, 10);
+  }
+  
 
 
   const [formData, setFormData] = useState({
@@ -203,7 +226,7 @@ function Exam_review() {
       // Map over TOSContent to update lessonData
       const updatedLessonData = TOSContent.map((content) => {
 
-        const outcomes =  learningOutcomes.filter(data => data.tos_content.id == content.id).sort((a, b) => b.id - a.id);
+        const outcomes =  learningOutcomes.filter(data => data.tos_content == content.id);
         const l_outcome = outcomes.map((data)=>{
           let out = []
           out.push(data.learning_outcomes)
@@ -212,47 +235,49 @@ function Exam_review() {
 
 
         const thours = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.teachingHours);
 
+  console.log('logtrails:',thours)
+
   const allocation = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.allocation);
 
   const items = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.items);
 
   const remembering = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.remembering);
 
   const understanding = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.understanding);
 
   const applying = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.applying);
 
   const analyzing = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.analyzing);
 
   const evaluating = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.evaluating);
 
   const creating = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.creating);
 
   const placement = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.placement);
 
   const total = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.total);
 
 
@@ -790,6 +815,9 @@ if (getQuestion.length && getAnswer.length) {
       </Modal>
 
       </div>
+
+
+   
      
     </div></div>
   )

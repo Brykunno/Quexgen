@@ -2611,21 +2611,27 @@ function getUserId(users){
 
 
 
-
-const sendDataToBackendLearningOutcomes = async (data) => {
+const sendDataToBackendLearningOutcomes = async (dataArray) => {
   try {
-    const response = await api.post('/api/learning_outcomes/', data, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const requests = dataArray.map(data => 
+      api.post('/api/learning_outcomes/', data, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    );
 
-    console.log(response.data); // Handle the response
+    // Wait for all requests to finish
+    const responses = await Promise.all(requests);
+
+    // Handle the responses in order
+    responses.forEach(response => {
+      console.log(response.data);
+    });
   } catch (error) {
     console.error('Error sending data:', error);
   }
 };
-
 
 
   const handleChange = (event) => {
@@ -2944,14 +2950,13 @@ const handleSubmit = (e) => {
 
 
 return api.post("/api/tos-content/", { lessonsDataJson })
-  .then((secondRes) => {
+  .then(async(secondRes) => {
 
-    lessonsData.map((item, idx) => {
-      item.learning_outcomes.map((data, index) => {
-        // Prepare the query using the correct index
-        const query = {
+    const dataArray = lessonsData.map((item, idx) => {
+      return item.learning_outcomes.map((data, index) => {
+        return {
           learning_outcomes: data,
-          teachingHours: item.teachingHours[index], // Use the correct index here
+          teachingHours: item.teachingHours[index],
           allocation: item.allocation[index],
           items: item.items[index],
           remembering: item.remembering[index],
@@ -2962,13 +2967,13 @@ return api.post("/api/tos-content/", { lessonsDataJson })
           creating: item.creating[index],
           total: item.total[index],
           placement: item.placement[index],
-          tos_content: secondRes.data[idx].id, // Correct reference for the `tos_content`
+          tos_content: secondRes.data[idx].id,
         };
-    
-        // Send data to backend
-        sendDataToBackendLearningOutcomes(query);
       });
-    });
+    }).flat();
+    
+    await sendDataToBackendLearningOutcomes(dataArray);
+    
     
 
    
@@ -4309,6 +4314,7 @@ const handleSubmitExam = () =>{
         ))}
       </div>
       </div>
+     
       </div>
     </div>
   );

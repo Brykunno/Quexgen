@@ -199,7 +199,7 @@ const [files,setFiles] = useState([])
       // Map over TOSContent to update lessonData
       const updatedLessonData = TOSContent.map((content) => {
 
-        const outcomes =  learningOutcomes.filter(data => data.tos_content.id == content.id).sort((a, b) => b.id - a.id);
+        const outcomes =  learningOutcomes.filter(data => data.tos_content == content.id);
         const l_outcome = outcomes.map((data)=>{
           let out = []
           out.push(data.learning_outcomes)
@@ -208,47 +208,47 @@ const [files,setFiles] = useState([])
 
 
         const thours = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.teachingHours);
 
   const allocation = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.allocation);
 
   const items = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.items);
 
   const remembering = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.remembering);
 
   const understanding = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.understanding);
 
   const applying = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.applying);
 
   const analyzing = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.analyzing);
 
   const evaluating = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.evaluating);
 
   const creating = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.creating);
 
   const placement = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.placement);
 
   const total = learningOutcomes
-  .filter(data => data.tos_content.id === content.id).sort((a, b) => b.id - a.id)
+  .filter(data => data.tos_content === content.id)
   .map(data => data.total);
 
 

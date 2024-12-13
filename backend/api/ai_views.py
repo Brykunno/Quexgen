@@ -71,7 +71,7 @@ prompts = {
         "Avoid questions that rely solely on plain repetition, such as 'What is the primary...' or 'What is the purpose...'."
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
         "Ensure the question is distinct from previous questions by focusing on different facts, concepts, or wording, avoiding similarities with previously generated questions. "
-        "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
+        "Provide a question followed by five answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
         "Output the question immediately without any introductory words."
     ),
@@ -80,7 +80,7 @@ prompts = {
         "Avoid generic phrasing like 'What is the purpose...' and instead aim for questions that require comprehension in an engaging way, such as rephrasing or contextual examples."
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
         "Ensure the question is distinct from previous questions by focusing on different aspects, explanations, or wording, avoiding similarities with previously generated questions. "
-        "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
+        "Provide a question followed by five answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
         "Output the question immediately without any introductory words."
     ),
@@ -88,17 +88,17 @@ prompts = {
         "Create an applying multiple-choice question based on Bloom's taxonomy that requires applying the following context to a new situation: {context}. "
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
         "Ensure the question is distinct from previous questions by focusing on a unique application scenario or wording, avoiding similarities with previously generated questions. "
-        "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
+        "Provide a question followed by five answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
         "Output the question immediately without any introductory words."
     ),
     "Analyzing": (
         "Formulate an analysis-based multiple-choice question that aligns with the 'Analyzing' level of Bloom's taxonomy. Encourage deeper thought, such as finding causes, comparing elements, or identifying patterns within the context: {context}."
         "Use analytical tasks, like distinguishing between correct and incorrect assumptions or deconstructing arguments. Steer away from asking simple, purpose-driven questions."
-        "List four possible answers, ensuring the correct answer is followed by credible distractors, and keep options label-free and in plain text."
+        "List five possible answers, ensuring the correct answer is followed by credible distractors, and keep options label-free and in plain text."
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
         "Ensure the question is distinct from previous questions by focusing on a unique analysis or wording, avoiding similarities with previously generated questions. "
-        "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
+        "Provide a question followed by five answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
         "Output the question immediately without any introductory words."
     ),
@@ -106,7 +106,7 @@ prompts = {
         "Create an evaluating multiple-choice question based on Bloom's taxonomy that requires making a judgment based on the following context: {context}. "
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
         "Ensure the question is distinct from previous questions by focusing on a unique evaluation aspect or wording, avoiding similarities with previously generated questions. "
-        "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
+        "Provide a question followed by five answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
         "Output the question immediately without any introductory words."
     ),
@@ -114,7 +114,7 @@ prompts = {
         "Create a creating multiple-choice question based on Bloom's taxonomy that involves generating new ideas based on the following context: {context}. "
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
         "Ensure the question is distinct from previous questions by focusing on a unique creative idea or wording, avoiding similarities with previously generated questions. "
-        "Provide a question followed by four answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
+        "Provide a question followed by five answer options in a list format: the correct answer first, followed by three plausible but incorrect options. "
         "Ensure the options are in plain text without any labels (like letters or numbers) before them. "
         "Output the question immediately without any introductory words."
     )
@@ -127,7 +127,7 @@ identification_prompt = {
         "Create an identification question that aligns with Bloom's Taxonomy at the Remembering level using the following context: {context}. "
         "The question and answer must be derived solely from the context provided, avoiding any references to figures, images, or visual elements. "
         "The answer must be a single terminology (a word or a short phrase) rather than a complete sentence. "
-        "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
+        "Provide a question followed by five answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
         "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
         "Output the question directly, without any introductory words."
     ),
@@ -135,7 +135,7 @@ identification_prompt = {
         "Create an identification question that aligns with Bloom's Taxonomy at the Understanding level using the following context: {context}. "
         "The question and answer must be derived solely from the context provided, avoiding any references to figures, images, or visual elements. "
         "The answer must be a single terminology (a word or a short phrase) rather than a complete sentence. "
-        "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
+        "Provide a question followed by five answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
         "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
         "Output the question directly, without any introductory words."
     ),
@@ -143,7 +143,7 @@ identification_prompt = {
         "Create an identification question that aligns with Bloom's Taxonomy at the Applying level using the following context: {context}. "
         "The question and answer must be derived solely from the context provided, avoiding any references to figures, images, or visual elements. "
         "The answer must be a single terminology (a word or a short phrase) rather than a complete sentence. "
-        "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
+        "Provide a question followed by five answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
         "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
         "Output the question directly, without any introductory words."
     ),
@@ -151,7 +151,7 @@ identification_prompt = {
         "Create an identification question that aligns with Bloom's Taxonomy at the Analyzing level using the following context: {context}. "
         "The question and answer must be derived solely from the context provided, avoiding any references to figures, images, or visual elements. "
         "The answer must be a single terminology (a word or a short phrase) rather than a complete sentence. "
-        "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
+        "Provide a question followed by five answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
         "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
         "Output the question directly, without any introductory words."
     ),
@@ -159,7 +159,7 @@ identification_prompt = {
         "Create an identification question that aligns with Bloom's Taxonomy at the Evaluating level using the following context: {context}. "
         "The question and answer must be derived solely from the context provided, avoiding any references to figures, images, or visual elements. "
         "The answer must be a single terminology (a word or a short phrase) rather than a complete sentence. "
-        "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
+        "Provide a question followed by five answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
         "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
         "Output the question directly, without any introductory words."
     ),
@@ -167,7 +167,7 @@ identification_prompt = {
         "Create an identification question that aligns with Bloom's Taxonomy at the Creating level using the following context: {context}. "
         "The question and answer must be derived solely from the context provided, avoiding any references to figures, images, or visual elements. "
         "The answer must be a single terminology (a word or a short phrase) rather than a complete sentence. "
-        "Provide a question followed by four answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
+        "Provide a question followed by five answer options in a list format. The correct term should be listed first, followed by three plausible but incorrect terms. "
         "Ensure that the options are presented in plain text without any labels such as letters or numbers preceding them. "
         "Output the question directly, without any introductory words."
     )
@@ -270,7 +270,7 @@ def generate_question_ai(level, context_ques, index, test_type, max_retries=5):
             
             if test_type == "mcq":
                 correct_answer = lines[2]  # First option is the correct answer
-                choices = lines[2:]  # All four options including the correct answer
+                choices = lines[2:]  # All five options including the correct answer
                 choices = [re.sub(r'^\w+\)\s*', '', choice.replace('*', '').strip()) for choice in choices]  # Clean choices
                 
            
@@ -376,7 +376,7 @@ def generate_question_module(level, context_paragraph,test_type,extracted):
                 ],
                 n=1,
                 max_tokens=max_tokens,
-                temperature=0.6,
+                temperature=0.7,
                 top_p=1,
                 response_format=ResponseFormat(type="text")
             )

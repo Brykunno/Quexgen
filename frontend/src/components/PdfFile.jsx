@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     fontFamily: 'Arial',
     paddingTop: '70px',
-    paddingBottom: '50px'
+    paddingBottom: '70px'
 
   },
   section: {

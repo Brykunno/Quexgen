@@ -80,7 +80,7 @@ class TOSContentSerializer(serializers.ModelSerializer):
         ]
         
 class LearningOutcomesSerializer(serializers.ModelSerializer):
-    tos_content = TOSContentSerializer()
+    tos_content = serializers.PrimaryKeyRelatedField(queryset=TOS_Content.objects.all())
     class Meta:
         model = Learning_Outcomes
         fields = [
