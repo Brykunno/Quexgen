@@ -548,9 +548,66 @@ function handleMaximum(index,values){
 
   newData[index] = values
 
+  const newDataLesson = [...lessonsData]
+
+  newDataLesson[index]['teachingHours'].map((data,idx)=>{
+    newDataLesson[index]['teachingHours'][idx] = 0
+  })
+
+    // Update the state with the new data
+    setLessonsDatainitial(newDataLesson);
+
+    // Save the updated lessonsData to localStorage
+    localStorage.setItem('lessonsData', JSON.stringify(newDataLesson));
+
+     
+
   setMaximum(newData)
 
 }
+
+
+function checkMaxMin(index,max){
+  const newData =[...lessonsData]
+
+  const totalHours = newData[index]['teachingHours'].reduce((acc, current) => acc + current, 0);
+if(max<totalHours){
+  addToast(`Total allocation of teaching hours exceeds the maximum teaching hours for lesson ${index+1}`)
+}
+
+
+}
+
+function checkBelow(){
+
+  const newData =[...lessonsData]
+  const length = newData.length
+  const totalHours = newData[length-1]['teachingHours'].reduce((acc, current) => acc + current, 0);
+  if(maximum>totalHours){
+
+    return true
+  }
+  else{
+    return false
+  }
+
+}
+
+function checkAbove(){
+
+  const newData =[...lessonsData]
+  const length = newData.length
+  const totalHours = newData[length-1]['teachingHours'].reduce((acc, current) => acc + current, 0);
+  if(maximum<totalHours){
+
+    return true
+  }
+  else{
+    return false
+  }
+
+}
+
 
 
   return (
@@ -685,7 +742,7 @@ setMaximum((prevMaximum) => prevMaximum.slice(0, prevMaximum.length - 1));
   key={lineIndex}
   name={`teachingHours-${indexOfFirstLesson + index}-${lineIndex}`}
   onChange={(e) => {handleInnerLessonDataChange(indexOfFirstLesson + index, lineIndex, 'teachingHours', Number(e.target.value))
-    
+    checkMaxMin(indexOfFirstLesson + index,maximum)
   }}
   value={line}
   type='number'
@@ -785,6 +842,11 @@ setMaximum((prevMaximum) => prevMaximum.slice(0, prevMaximum.length - 1));
           variant='contained'
           className="mt-3"
           onClick={() =>{
+           
+            if(checkBelow() == false && checkAbove() == false || lessonsData.length ==0){
+              
+            
+            
             addLesson({
               topic: '',
               learning_outcomes: [],
@@ -823,8 +885,16 @@ setMaximum((prevMaximum) => prevMaximum.slice(0, prevMaximum.length - 1));
             )
 
             setMaximum((prevMaximum) => [...prevMaximum, 0]);
-
+          
           }
+          else if(checkBelow()== true){
+            addToast(`The total allocation of teaching hours is below the maximum teaching hours allowed for the lesson ${ lessonsData.length}`)
+          }
+          else if(checkAbove()== true){
+            addToast(`The total allocation of teaching hours is above the maximum teaching hours allowed for the lesson ${ lessonsData.length}`)
+          }
+         
+        }
           }
         >
           <AddCircleOutlineIcon className="mr-2 " /> Add Lesson
