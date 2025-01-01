@@ -24,8 +24,25 @@ import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 import Menu from './Menu'; // Adjust the path based on the file location
 import LoadingGeneratePsu from './LoadingGeneratePsu';
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import CircularProgress, {
+  circularProgressClasses,
+} from '@mui/material/CircularProgress';
+import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 
-
+const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+  height: 10,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 5,
+    backgroundColor: theme.palette.mode === 'light' ? 'primary' : '#308fe8',
+  },
+}));
 function Examtest ({handleLessonDataChange, saveDataToLocalStorageTestPart,files,items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext,formData,setTOSPdfModal,addToast}) {
 
 
@@ -1452,7 +1469,11 @@ setTestPart([])
 
 <div className='flex gap-5 mt-5 px-5'>
   <div className='flex-1 mt-2'>
-<Progress progress={Math.round(percent)} size={'md'} color={'primary'} variant='contained'/> 
+
+<Stack spacing={2} sx={{ flexGrow: 1 }}>
+   
+        <BorderLinearProgress variant="determinate"  value={Math.round(percent)}  />
+    </Stack>
 </div>
 <div className='flex font-bold text-lg'>
 {Math.round(percent)}%
