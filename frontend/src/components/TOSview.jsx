@@ -76,6 +76,7 @@ function TOSview() {
 
   const [stats,setStats] = useState(0)
   const [TOSContent, setTOSContent] = useState([]);
+  const [TaxonomyLevel, setTaxonomyLevel] = useState([]);
   const [TOSInfo, setTOSInfo] = useState([]);
   const [Comment,setComment]=useState([]);
 
@@ -135,6 +136,7 @@ creating: [],
 total: [],
 placement: [],
 totalItems:0,
+max:0,
 study_guide:null,
 tos_teacher: 0,
 file_status:'',
@@ -206,6 +208,9 @@ const [files,setFiles] = useState([])
           return out
         })
 
+        const lid = learningOutcomes
+  .filter(data => data.tos_content === content.id)
+  .map(data => data.id);
 
         const thours = learningOutcomes
   .filter(data => data.tos_content === content.id)
@@ -252,11 +257,17 @@ const [files,setFiles] = useState([])
   .map(data => data.total);
 
 
+
+  const taxonomy = TaxonomyLevel.filter(data => data.Tos_content_id === content.id)
+
+
+
         
         
         return{
         id:content.id,
         topic: content.topic,
+        learning_outcomes_id: lid || [],
         learning_outcomes: l_outcome || [],
         teachingHours: thours || [],
         allocation: allocation || [],
@@ -269,11 +280,13 @@ const [files,setFiles] = useState([])
         creating: creating || [],
         total: total || [],
         placement: placement || [],
+        taxonomy_levels:taxonomy || [],
         TotalItems: total.reduce((total,content)=> total +content,0) || 0,
         teacher_tos: content.teacher_tos || 0,
        
       }});
 
+      setAllocations(updatedLessonData.map((data)=>{return data.taxonomy_levels}))
       const updateTotalItems = updatedLessonData.reduce((total, content) => total + content.TotalItems, 0);
 
       const calculatePercentage = (totalValue, TotalItems) => Math.round((totalValue / TotalItems) * 100);
@@ -411,16 +424,62 @@ if (getQuestion.length && getAnswer.length) {
 
   }, [TOSInfo, TOSContent,exam,getTestPart,getQuestion,getAnswer]);
   
-
-  const getTOSContent = () => {
-    api
-      .get(`/api/tos-content/${id}/detail/`)
-      .then((res) => res.data)
-      .then((data) => {setTOSContent(data)
-        console.log('toscontent: ', data);
-      })
-      .catch((err) => alert(err));
+  const getTOSContent = async () => {
+    try {
+      // Fetch TOS content
+      const tosResponse = await api.get(`/api/tos-content/${id}/detail/`);
+      const tosData = tosResponse.data;
+      setTOSContent(tosData);
+      console.log('tosContent:', tosData);
+  
+      // Fetch taxonomy levels for all topics in parallel
+      const taxonomyRequests = tosData.map((item) =>
+        api.get(`/api/taxonomy_levels/by-topic/${item.id}/`)
+      );
+  
+      const taxonomyResponses = await Promise.all(taxonomyRequests);
+  
+      // Flatten and process taxonomy levels
+      const taxonomyLevels = taxonomyResponses.flatMap((res) =>
+        res.data.map((item) => ({
+          id: item.id,
+          Remembering: item.remembering,
+          Understanding: item.understanding,
+          Applying: item.applying,
+          Analyzing: item.analyzing,
+          Evaluating: item.evaluating,
+          Creating: item.creating,
+          Tos_content_id: item.tos_content_id,
+        }))
+      );
+  
+      setTaxonomyLevel(taxonomyLevels);
+      console.log('taxonomyLevels:', taxonomyLevels);
+    } catch (error) {
+      console.error('Error fetching TOS content or taxonomy levels:', error);
+      alert('Failed to fetch data. Please try again later.');
+    }
   };
+  
+  const handleinnertaxlevelChange = (index, field,level,subIndex, value) => {
+
+    setSpecific(true)
+    // Clone the lessonsData array to avoid direct mutation
+    const newData = [...lessonData];
+    const newDataAllocation = [...allocations]
+  
+    // Update the specific field in the corresponding lesson object
+    newData[index][field][subIndex][level] = value;
+    newDataAllocation[index][subIndex][level] = Number(value)
+
+      // Update the state with the new data
+      setLessonData(newData);
+      
+
+
+      setAllocations(newDataAllocation)
+  
+  }
 
   function comment(Comment){
     let comment_text;
@@ -585,6 +644,150 @@ if (getQuestion.length && getAnswer.length) {
          } catch (error) {
            console.error('Error in updating or creating tos content:', error);
          }
+
+         const updateOrCreateTaxonomyLevel = async (data) => {
+          try {
+            // Update existing learning outcomes
+            const updatePromises = data.learning_outcomes.map((item, index) => {
+              const learningContent = {
+                learning_outcomes: item[0],
+                teachingHours: data.teachingHours[index],
+                allocation: data.allocation[index],
+                items: data.items[index],
+                remembering: data.remembering[index],
+                understanding: data.understanding[index],
+                applying: data.applying[index],
+                analyzing: data.analyzing[index],
+                evaluating: data.evaluating[index],
+                creating: data.creating[index],
+                total: data.total[index],
+                placement: data.placement[index],
+                tos_content: data.id,
+              };
+        
+              // Perform the PUT request
+
+              console.log('learningcontentupdate:',learningContent)
+              return api.put(`/api/learning_outcomes/${data.learning_outcomes_id[index]}/`, learningContent);
+            });
+        
+            // Wait for all PUT requests to complete
+            await Promise.all(updatePromises);
+            return "Update successful";
+          } catch (error) {
+            // Handle specific 404 errors
+            if (error.response && error.response.status === 404) {
+              try {
+                // Create new learning outcomes if not found
+                const createPromises = data.learning_outcomes.map((item, index) => {
+                  const learningContent = {
+                    learning_outcomes: item,
+                    teachingHours: data.teachingHours[index],
+                    allocation: data.allocation[index],
+                    items: data.items[index],
+                    remembering: data.remembering[index],
+                    understanding: data.understanding[index],
+                    applying: data.applying[index],
+                    analyzing: data.analyzing[index],
+                    evaluating: data.evaluating[index],
+                    creating: data.creating[index],
+                    total: data.total[index],
+                    placement: data.placement[index],
+                  };
+        
+                  // Perform the POST request
+                  return api.post("/api/learning_outcomes/", learningContent);
+                });
+        
+                // Wait for all POST requests to complete
+                await Promise.all(createPromises);
+                return "Creation successful";
+              } catch (postError) {
+                throw new Error("Failed to create taxonomy levels during POST.");
+              }
+            } else {
+              throw new Error("An error occurred during the update or create process.");
+            }
+          }
+        };
+        
+        // Execute the update or create function for all lesson data
+        try {
+          const updatePromisesTaxonomyLevel = lessonData.map(updateOrCreateTaxonomyLevel);
+          const results = await Promise.all(updatePromisesTaxonomyLevel);
+          console.log("Responses:", results); // Log all responses
+        } catch (error) {
+          console.error("Error in updating or creating taxonomy levels:", error);
+        }
+        
+        const updateOrCreateTaxlevels = async (data) => {
+          try {
+            // Update existing learning outcomes
+            const updatePromises = data.taxonomy_levels.map((item, index) => {
+              const learningContent = {
+                remembering:item.Remembering,
+                understanding:item.Understanding,
+                applying:item.Applying,
+                analyzing:item.Analyzing,
+                evaluating:item.Evaluating,
+                creating:item.Creating,
+                tos_content_id:item.Tos_content_id
+
+              };
+        
+              // Perform the PUT request
+              return api.put(`/api/taxonomy_levels/${item.id}/`, learningContent);
+            });
+        
+            // Wait for all PUT requests to complete
+            await Promise.all(updatePromises);
+            return "Update successful";
+          } catch (error) {
+            // Handle specific 404 errors
+            if (error.response && error.response.status === 404) {
+              try {
+                // Create new learning outcomes if not found
+                const createPromises = data.taxonomy_levels.map((item, index) => {
+                  const learningContent = {
+                    remembering:item.Remembering,
+                    understanding:item.Understanding,
+                    applying:item.Applying,
+                    analyzing:item.Analyzing,
+                    evaluating:item.Evaluating,
+                    creating:item.Creating,
+                    tos_content_id:item.Tos_content_id
+                  };
+        
+                  // Perform the POST request
+                  return api.post("/api/taxonomy_levels/", learningContent);
+                });
+        
+                // Wait for all POST requests to complete
+                await Promise.all(createPromises);
+                return "Creation successful";
+              } catch (postError) {
+                throw new Error("Failed to create taxonomy levels during POST.");
+              }
+            } else {
+              throw new Error("An error occurred during the update or create process.");
+            }
+          }
+        };
+        
+        // Execute the update or create function for all lesson data
+        try {
+          const updatePromisesTaxlevels = lessonData.map(updateOrCreateTaxlevels);
+          const results = await Promise.all(updatePromisesTaxlevels);
+          console.log("Responses:", results); // Log all responses
+        } catch (error) {
+          console.error("Error in updating or creating taxonomy levels:", error);
+        }
+        
+
+
+         
+
+
 
          
 
@@ -800,12 +1003,6 @@ if (getQuestion.length && getAnswer.length) {
         }
         
 
-      //   const updatePromisesAnswerChoices = answerChoices.map((data) => 
-      //     api.put(`/api/answers/${data.answer_id}/update/`, data)
-      //   );
-
-      // const ans = await Promise.all(updatePromisesAnswerChoices);
-      //  console.log("ansdebug :", ans)
 
 
 
@@ -1446,10 +1643,20 @@ for(let i = 1; i<=TotalItems; i++){
 }
 
  
- function getPlacement(total,placements){
+ 
+function getPlacement(total,placements){
 
   let start=0;
   let end =0;
+
+  if(total===1){
+
+    return `${placements.splice(0,total)}`;
+  }
+  else if(total===0){
+    return "0";
+  }
+  else{
 
   start = placements.splice(0,total-1)[0];
   end = placements.splice(0,1);
@@ -1459,6 +1666,7 @@ for(let i = 1; i<=TotalItems; i++){
   else{
     return `${start} - ${end}`;
   }
+}
     
   
 
@@ -1546,10 +1754,10 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
       }
     
       const sumAlloc =  newData[i]['allocation'].reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-      const lessonItem = getNumItems(totalItems,sumAlloc)
+      const lessonItem = getNumItems(TotalItems,sumAlloc)
       console.log('showitems:l',lessonItem)
       for(let k=0;k<newData[i]['items'].length;k++){
-        newData[i]['items'][k] = getInnerNumItems(totalItems,newData[i]['allocation'][k])
+        newData[i]['items'][k] = getInnerNumItems(TotalItems,newData[i]['allocation'][k])
         console.log('showitems:',newData[i]['items'][k])
         console.log('showitems:a',newData[i]['allocation'][k])
      
@@ -1566,7 +1774,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
       let analyzing = Array(newData[i]['allocation']?.length || 0).fill(0);
       let evaluating = Array(newData[i]['allocation']?.length || 0).fill(0);
       let creating = Array(newData[i]['allocation']?.length || 0).fill(0);
-      if(specific===true){
+      
 
       
         for(let k=0;k<newData[i]['allocation'].length;k++){
@@ -1584,36 +1792,29 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
 
         console.log('uprob: ',understanding)
      
-      }
-      else{
+    
 
-         remembering = Remembering;
-         understanding = Understanding;
-         applying = Applying;
-         analyzing = Analyzing;
-         evaluating = Evaluating;
-         creating = Creating;
-
-      }
-
+      
       for (let z = 0; z < newData.length; z++) {
+      
         if (!newData[z]['remembering']) {
-          newData[z]['remembering'] = Array(newData[z]['allocation']?.length || 0).fill(0);;
+          newData[z]['remembering'] = Array(newData[z]['allocation']?.length || 0).fill(0);
+        
         }
         if (!newData[z]['understanding']) {
-          newData[z]['understanding'] = Array(newData[z]['allocation']?.length || 0).fill(0);;
+          newData[z]['understanding'] = Array(newData[z]['allocation']?.length || 0).fill(0);
         }
         if (!newData[z]['applying']) {
-          newData[z]['applying'] = Array(newData[z]['allocation']?.length || 0).fill(0);;
+          newData[z]['applying'] = Array(newData[z]['allocation']?.length || 0).fill(0);
         }
         if (!newData[z]['analyzing']) {
-          newData[z]['analyzing'] = Array(newData[z]['allocation']?.length || 0).fill(0);;
+          newData[z]['analyzing'] = Array(newData[z]['allocation']?.length || 0).fill(0);
         }
         if (!newData[z]['evaluating']) {
-          newData[z]['evaluating'] = Array(newData[z]['allocation']?.length || 0).fill(0);;
+          newData[z]['evaluating'] = Array(newData[z]['allocation']?.length || 0).fill(0);
         }
         if (!newData[z]['creating']) {
-          newData[z]['creating'] = Array(newData[z]['allocation']?.length || 0).fill(0);;
+          newData[z]['creating'] = Array(newData[z]['allocation']?.length || 0).fill(0);
         }
       }
       
@@ -1625,6 +1826,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
 
        
         newData[i]['remembering'][k] = getRemembering(remembering[k], newData[i]['items'][k]);
+        
         newData[i]['understanding'][k] = getUnderstanding(understanding[k], newData[i]['items'][k]);
         newData[i]['applying'][k] = getApplying(applying[k], newData[i]['items'][k]);
         newData[i]['analyzing'][k] = getAnalyzing(analyzing[k], newData[i]['items'][k]);
@@ -1659,7 +1861,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
         }
       }
 
-     
+   
 
 
       for (let j = 0; j < newData.length; j++) {
@@ -1692,13 +1894,13 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
 
     
       console.log('overall: ',overall)
-      console.log('total items: ',totalItems)
+      console.log('total items: ',TotalItems)
 
             
-    console.log('overall: ',overall,' total items: ',totalItems)
+    console.log('overall: ',overall,' total items: ',TotalItems)
    
-      
-      if(overall<totalItems){
+   
+      if(overall<TotalItems){
 
         
         newData[i]['items'][k] = Math.ceil(newData[i]['items'][k]);
@@ -1706,7 +1908,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
         console.log('true?: ',newData[i]['items'][k] ,':', newData[i]['total'][k])
         if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['remembering'][k])){
 
-         
+          
           console.log('remembertraillls',k,': ',newData[i]['remembering'][k])
           newData[i]['remembering'][k] = Math.round(newData[i]['remembering'][k]);
          
@@ -1944,7 +2146,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
         }
       
       }
-      else if(overall>totalItems){
+      else if(overall>TotalItems){
 
         
         newData[i]['items'][k] = Math.floor(newData[i]['items'][k]);
@@ -2185,7 +2387,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
       
       
       }
-      else if(overall==totalItems){
+      else if(overall==TotalItems){
 
     
         
@@ -2428,7 +2630,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
     
      
       newData[i]['placement'][k] = getPlacement(newData[i]['total'][k], placements);
-      newData[i]['totalItems'] = totalItems;
+      newData[i]['totalItems'] = TotalItems;
       
     }
     }
@@ -4036,29 +4238,47 @@ const [allocations, setAllocations] = useState([]);
   // Handle the form submission
   const handleSubmitAllocation = async () => {
     try {
-      const promises = lessonData.map(async (l) => {
-        const response = await api.post('/api/taxonomy-allocation/', {
-          objectives: l.learning_outcomes,
+      // Create a promise for each lesson
+      const promises = lessonData.map(async (lesson) => {
+        // Create a promise for each learning outcome in the lesson
+        const outcomePromises = lesson.learning_outcomes.map(async (outcome) => {
+          const response = await api.post('/api/taxonomy-allocation/', {
+            objectives: outcome,
+          });
+          console.log('heresss: ',outcome)
+          return response.data.allocation; 
         });
-        return response.data.allocation; // Return the allocation data
+  
+        // Resolve all promises for this lesson's outcomes
+        const allocations = await Promise.all(outcomePromises);
+  
+        // Flatten allocations into a single array
+        return allocations.flat();
       });
-
+  
+      // Wait for all lessons' allocations to resolve
       const allocationsArray = await Promise.all(promises);
-
-
-      // Flatten the array if you have nested arrays in allocations
-      setAllocations((previous) => [...previous, ...allocationsArray.flat()]);
-
-     
-    
-     
-    
+  
+      // Flatten if allocationsArray contains nested arrays
+      const flatAllocations = allocationsArray.flat();
+  
+      // Update lessonsData with new taxonomy_levels
+      const updatedLessonsData = lessonData.map((lesson, index) => ({
+        ...lesson,
+        taxonomy_levels: allocationsArray[index] || [], // Ensure allocation aligns with lessons
+      }));
+  
+      setAllocations((prev) => [...prev, ...flatAllocations]);
+      setLessonData(updatedLessonsData);
+  
+      // Update localStorage with new lessons data
+  
+  
     } catch (error) {
       console.error('Error processing the file and data:', error);
     }
-
-
-    setLoadingAllocate(false)
+  
+    setLoadingAllocate(false);
   };
 
   const submitAllocation = () =>{
@@ -4167,7 +4387,7 @@ const [allocations, setAllocations] = useState([]);
   ))
 }
 
-             {JSON.stringify(course)}
+       
           
          
            </Select>
@@ -4383,7 +4603,7 @@ const [allocations, setAllocations] = useState([]);
   setLoadingAllocate={setLoadingAllocate}
 
   setTosModal={setPdfModal}
-  
+  handleinnertaxlevelChange={handleinnertaxlevelChange}
   />
 
  
@@ -4489,6 +4709,7 @@ const [allocations, setAllocations] = useState([]);
 
       {/* <Button href='/exam_bank'> Back to list</Button> */}
       </form>
+   
     </div>
   );
   ReactDOM.render(<TOSview />, document.getElementById('root'));

@@ -552,6 +552,7 @@ function handleMaximum(index,values){
 
   newDataLesson[index]['teachingHours'].map((data,idx)=>{
     newDataLesson[index]['teachingHours'][idx] = 0
+    newDataLesson[index]['max'] = values
   })
 
     // Update the state with the new data
@@ -578,12 +579,15 @@ if(max<totalHours){
 
 }
 
-function checkBelow(){
+function checkBelow(index){
+  if(index<0){
+    return false
+  }
 
   const newData =[...lessonsData]
   const length = newData.length
   const totalHours = newData[length-1]['teachingHours'].reduce((acc, current) => acc + current, 0);
-  if(maximum>totalHours){
+  if(newData[index]['max']>totalHours){
 
     return true
   }
@@ -593,12 +597,16 @@ function checkBelow(){
 
 }
 
-function checkAbove(){
+function checkAbove(index){
 
+
+  if(index<0){
+    return false
+  }
   const newData =[...lessonsData]
   const length = newData.length
   const totalHours = newData[length-1]['teachingHours'].reduce((acc, current) => acc + current, 0);
-  if(maximum<totalHours){
+  if(newData[index]['max']<totalHours){
 
     return true
   }
@@ -625,13 +633,7 @@ function checkAbove(){
      <Card key={indexOfFirstLesson + index} className="relative">
      {/* Delete button positioned in the top right */}
 
-     <div className="max-w-md flex gap-5 mx-auto">
     
-    <div className="mt-3" >
-      <Label htmlFor="totalItems" className="font-bold" > Maximum teaching hours of lesson {index+1}</Label> 
-    </div>
-    <TextInput id="totalItems" type="number" className="max-w-32 " required value={maximum[indexOfFirstLesson + index]} min={'0'} onChange={(e) =>handleMaximum([indexOfFirstLesson + index],e.target.value)} />
-  </div>
      <div className="absolute top-2 right-2">
        <Button
         
@@ -652,12 +654,15 @@ setMaximum((prevMaximum) => prevMaximum.slice(0, prevMaximum.length - 1));
      <div className="mb-3">
       
        <div>
+
+        
       
          <div className="mb-2 block">
            <Label htmlFor="file-upload">
              Upload file for Lesson {indexOfFirstLesson + index + 1} <span className="text-red-600">*</span>
            </Label>
          </div>
+         
          <div className="flex gap-5">
            <FileInput
              id="file-upload"
@@ -679,6 +684,13 @@ setMaximum((prevMaximum) => prevMaximum.slice(0, prevMaximum.length - 1));
            </div>
          </div>
        </div>
+        <div className="max-w-md flex gap-5 mt-3">
+    
+    <div className="mt-3" >
+      <Label htmlFor="totalItems" className="font-bold" > Maximum teaching hours of lesson {index+1}</Label> 
+    </div>
+    <TextInput id="totalItems" type="number" className="max-w-32 " required value={lessonsData[indexOfFirstLesson + index]['max']} min={'0'} onChange={(e) =>handleMaximum([indexOfFirstLesson + index],e.target.value)} />
+  </div>
      </div>
    
      <div className="flex flex-col gap-5 mb-4 md:flex-row">
@@ -742,12 +754,12 @@ setMaximum((prevMaximum) => prevMaximum.slice(0, prevMaximum.length - 1));
   key={lineIndex}
   name={`teachingHours-${indexOfFirstLesson + index}-${lineIndex}`}
   onChange={(e) => {handleInnerLessonDataChange(indexOfFirstLesson + index, lineIndex, 'teachingHours', Number(e.target.value))
-    checkMaxMin(indexOfFirstLesson + index,maximum)
+    checkMaxMin(indexOfFirstLesson + index,lessonsData[indexOfFirstLesson + index]['max'])
   }}
   value={line}
   type='number'
   min={0}
-  max={Number(line)+Number(maximum[indexOfFirstLesson + index]) - (lessonsData[indexOfFirstLesson + index]?.teachingHours || []).reduce((acc, data) => acc + (typeof data === 'number' ? data : 0), 0)}
+  max={Number(line)+Number(lessonsData[indexOfFirstLesson + index]['max'][indexOfFirstLesson + index]) - (lessonsData[indexOfFirstLesson + index]?.teachingHours || []).reduce((acc, data) => acc + (typeof data === 'number' ? data : 0), 0)}
   
   style={{ height: '100px', width: '300px', marginBottom: '10px' }}
   placeholder={`Enter value for line ${lineIndex}`}
@@ -843,7 +855,7 @@ setMaximum((prevMaximum) => prevMaximum.slice(0, prevMaximum.length - 1));
           className="mt-3"
           onClick={() =>{
            
-            if(checkBelow() == false && checkAbove() == false || lessonsData.length ==0){
+            if(checkBelow(lessonsData.length-1) == false && checkAbove(lessonsData.length-1) == false || lessonsData.length ==0){
               
             
             
@@ -862,6 +874,7 @@ setMaximum((prevMaximum) => prevMaximum.slice(0, prevMaximum.length - 1));
               total: 0,
               placement: '',
               totalItems: 0,
+              max:0,
               file_status:'',
               taxonomy_levels:{
                 Remembering:0,
@@ -887,10 +900,10 @@ setMaximum((prevMaximum) => prevMaximum.slice(0, prevMaximum.length - 1));
             setMaximum((prevMaximum) => [...prevMaximum, 0]);
           
           }
-          else if(checkBelow()== true){
+          else if(checkBelow(lessonsData.length-1)== true){
             addToast(`The total allocation of teaching hours is below the maximum teaching hours allowed for the lesson ${ lessonsData.length}`)
           }
-          else if(checkAbove()== true){
+          else if(checkAbove(lessonsData.length-1)== true){
             addToast(`The total allocation of teaching hours is above the maximum teaching hours allowed for the lesson ${ lessonsData.length}`)
           }
          

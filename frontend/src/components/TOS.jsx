@@ -99,6 +99,7 @@ creating: [],
 total: [],
 placement: [],
 totalItems:[],
+max:0,
 study_guide:null,
 tos_teacher: 0,
 file_status:'',
@@ -2980,17 +2981,21 @@ return api.post("/api/tos-content/", { lessonsDataJson })
 
 
     if (secondRes.status === 201) {
+
       const ids = secondRes.data.reduce((acc, item,index) => {
         // Assuming each item in secondRes.data has an `id` property
         acc.push(item.id); // Add each ID to the accumulator (array)
-        const remembering = lessonsData[index].taxonomy_levels.Remembering
-        const understanding = lessonsData[index].taxonomy_levels.Understanding
-        const applying = lessonsData[index].taxonomy_levels.Applying
-        const analyzing = lessonsData[index].taxonomy_levels.Analyzing
-        const evaluating = lessonsData[index].taxonomy_levels.Evaluating
-        const creating = lessonsData[index].taxonomy_levels.Creating
-        const tos_content_id = item.id
-        api.post("/api/taxonomy_levels/",{remembering,understanding,applying,analyzing,evaluating,creating,tos_content_id})
+        lessonsData[index].taxonomy_levels.map((data,idx)=>{
+          const remembering = data.Remembering
+          const understanding = data.Understanding
+          const applying = data.Applying
+          const analyzing = data.Analyzing
+          const evaluating = data.Evaluating
+          const creating = data.Creating
+          const tos_content_id = item.id
+          api.post("/api/taxonomy_levels/",{remembering,understanding,applying,analyzing,evaluating,creating,tos_content_id})
+        })
+       
         return acc;
       }, []); // Initialize the accumulator as an empty array
 
@@ -3153,6 +3158,7 @@ return api.post("/api/tos-content/", { lessonsDataJson })
                 creating: [],
                 total: [],
                 placement: [],
+                max:0,
                 totalItems:[],
                 tos_teacher: 0,
                 }]));
@@ -4314,6 +4320,8 @@ const handleSubmitExam = () =>{
         ))}
       </div>
       </div>
+
+ 
      
       </div>
     </div>

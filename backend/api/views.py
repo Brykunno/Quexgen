@@ -847,6 +847,18 @@ class TaxonomyViewSet(viewsets.ModelViewSet):
             # Return detailed validation errors for update
             print("Validation errors:", serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    @action(detail=False, methods=['get'], url_path='by-topic/(?P<foreign_key_value>[^/.]+)')
+    def get_by_foreign_key(self, request, foreign_key_value=None):
+        """
+        Custom action to retrieve taxonomy levels by a foreign key.
+        """
+        try:
+            # Adjust the filter to match your foreign key field
+            matched_items = self.queryset.filter(tos_content_id=foreign_key_value)
+            serializer = self.get_serializer(matched_items, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except TaxonomyLevels.DoesNotExist:
+            return Response({'detail': 'No taxonomy levels found for the given foreign key.'}, status=status.HTTP_404_NOT_FOUND)
 
 class TeacherCourseViewSet(viewsets.ModelViewSet):
     queryset = Teacher_Course.objects.all()

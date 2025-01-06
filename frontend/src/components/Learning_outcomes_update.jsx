@@ -11,6 +11,11 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 function Learning_outcomes_update({
   setRemembering,
   Remembering,
+  Understanding,
+  Analyzing,
+  Applying,
+  Evaluating,
+  Creating,
   setUnderstanding,
   setAnalyzing,
   setApplying,
@@ -28,13 +33,9 @@ function Learning_outcomes_update({
   submit,
   allocations,
   setAllocations,
-  Understanding,
-  Applying,
-  Analyzing,
-  Evaluating,
-  Creating,
+
   handletaxlevelChange,
-  setTosModal,totalItems,handleTotalItemsChange,handleInnerLessonDataChange
+  setTosModal,totalItems,handleTotalItemsChange,handleInnerLessonDataChange,handleinnertaxlevelChange
   
 }) {
   // State to manage input data
@@ -171,13 +172,126 @@ const handlePageChange = (pageNumber) => {
   setCurrentPage(pageNumber);
 };
 
-const toggleModal = (index) => {
+
+const toggleModal = (lessonIndex, modalIndex) => {
   setOpenModals((prev) => {
-    const updatedModals = [...prev];
-    updatedModals[index] = !updatedModals[index]; // Toggle the specific modal at index
-    return updatedModals;
+    const newModals = [...prev]; // Create a shallow copy of the top-level array
+
+    // Ensure the nested array exists for the specified lesson
+    if (!Array.isArray(newModals[lessonIndex])) {
+      newModals[lessonIndex] = [];
+    }
+
+    // Ensure the specific modal state exists
+    newModals[lessonIndex] = [...newModals[lessonIndex]]; // Clone the nested array
+    newModals[lessonIndex][modalIndex] = !newModals[lessonIndex][modalIndex]; // Toggle the specific modal state
+
+    return newModals;
   });
 };
+
+
+
+useEffect(()=>{
+
+  
+
+  
+
+ // Calculate the total allocations
+// Flatten the nested arrays into a single array
+const flattenedAllocations = allocations.flat();
+
+// Calculate the total sums using reduce
+const tax_allocation = flattenedAllocations.reduce((acc, data) => {
+  acc.Remembering = (acc.Remembering || 0) + (data.Remembering || 0);
+  acc.Understanding = (acc.Understanding || 0) + (data.Understanding || 0);
+  acc.Analyzing = (acc.Analyzing || 0) + (data.Analyzing || 0);
+  acc.Applying = (acc.Applying || 0) + (data.Applying || 0);
+  acc.Evaluating = (acc.Evaluating || 0) + (data.Evaluating || 0);
+  acc.Creating = (acc.Creating || 0) + (data.Creating || 0);
+  return acc;
+}, {});
+
+console.log('taxAlloc: ',tax_allocation)
+
+  const percentages = calculatePercentages(tax_allocation);
+  setTax(tax_allocation)
+  const updatedPercents = percentages
+  
+  setPercent(updatedPercents);
+},[allocations])
+
+  useEffect(()=>{
+    
+    const remember = Remembering||0;
+    const understand = Understanding||0;
+    const apply = Applying||0;
+    const analyze = Analyzing||0;
+    const evaluate = Evaluating||0;
+    const create = Creating||0;
+    
+   
+
+    if(percent.Remembering || percent.Remembering==0){
+      setRemembering(percent.Remembering);
+     
+    }else{
+      setRemembering(remember);
+    
+    }
+   
+
+    if(percent.Understanding || percent.Understanding==0){
+      setUnderstanding(percent.Understanding);
+
+    }else{
+      setUnderstanding(understand);
+      
+    }
+
+    
+
+    if(percent.Applying || percent.Applying==0){
+      
+      setApplying(percent.Applying);
+    }else{
+      setApplying(apply);
+
+    }
+
+  
+
+    if(percent.Analyzing || percent.Analyzing==0){
+      setAnalyzing(percent.Analyzing);
+   
+    }
+    else{
+      setAnalyzing(analyze);
+   
+    }
+  
+
+    if(percent.Evaluating || percent.Evaluating==0){
+      setEvaluating(percent.Evaluating);
+   
+    }else{
+      setEvaluating(evaluate);
+
+    }
+    
+
+    if(percent.Creating || percent.Creating==0){
+      setCreating(percent.Creating);
+      
+    }
+    else{
+      setCreating(create);
+    
+    }
+  },[percent]
+)    
+
 
 
   return (
@@ -254,7 +368,27 @@ const toggleModal = (index) => {
     </div>
   ))}
           </div>
+   <div className="flex-1">
+         <div className="ms-2 font-bold mb-2">Taxonomy Levels</div>
 
+
+         {lessonsData[indexOfFirstLesson + index]['teachingHours']
+  .map((line, lineIndex) => (
+    <div key={lineIndex} style={{ marginBottom: '20px', height:100 }} className='justify-evenly'>
+      <Button
+         color="primary"
+         variant='contained'
+
+         disabled={item.file_status === ""}
+         onClick={() => toggleModal(indexOfFirstLesson + index,lineIndex)}
+       
+       >
+         Identify levels of taxonomy
+       </Button>
+    </div>
+  ))}
+
+       </div>
           <div className="flex-1">
          <div className="ms-2 font-bold mb-2">Number of teaching hours</div>
 
@@ -276,62 +410,46 @@ const toggleModal = (index) => {
   ))}
 
        </div>
-          <div style={{ flex: 0.1 }}>
-            
-            {/* <Button
-              color={'failure'}
-              onClick={() => removeLesson(lessonsData, indexOfFirstLesson + index)}
-              className='mt-12'
-            >
-              <DeleteIcon/>
-            </Button> */}
-          </div>
+        
         </div>
-        {/* <div className='flex justify-center'>
-       <Button
-         color="primary"
-         variant='contained'
-
-         disabled={item.file_status === ""}
-         onClick={() => toggleModal(indexOfFirstLesson + index)}
        
-       >
-         Identify levels of taxonomy
-       </Button>
-     </div> */}
 
-     <Modal size="md" show={openModals[index]} onClose={() => toggleModal(index)}>
-       <Modal.Header>Identify taxonomy levels</Modal.Header>
-       <Modal.Body>
-         <div className="flex-1 mb-2">
-           <div className="ms-2 font-bold mb-2">Learning outcomes</div>
-           <Textarea
-             value={lessonsData[indexOfFirstLesson + index]['learning_outcomes']}
-             style={{ height: '130px' }}
-             onChange={(e) => handleLessonDataChange(indexOfFirstLesson + index, 'learning_outcomes', e.target.value)}
-             placeholder="Enter the learning outcomes for the lesson"
-           />
-         </div>
-         {['Remembering', 'Understanding', 'Applying', 'Analyzing', 'Evaluating', 'Creating'].map((level) => (
-           <div key={level} className="mb-2 flex gap-5 justify-between">
-             <Label>{level}</Label>
-             <TextInput
-               type="number"
-               className="w-24"
-               onChange={(e) => handletaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels', level, e.target.value)}
-               value={lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.[level]}
-             />
-           </div>
-         ))}
-       </Modal.Body>
-       <Modal.Footer className='flex justify-center '>
-       
-         <Button onClick={() => toggleModal(index)} color="primary" variant='contained' >
-           Done
-         </Button>
-         
-       </Modal.Footer>
-     </Modal>
+      {lessonsData[indexOfFirstLesson + index]['teachingHours']
+     .map((line, lineIndex) => (
+        <Modal size="md" show={openModals[index]?.[lineIndex]} onClose={() => toggleModal(index,lineIndex)}>
+          <Modal.Header>Identify taxonomy levels</Modal.Header>
+          <Modal.Body>
+            <div className="flex-1 mb-2">
+              <div className="ms-2 font-bold mb-2">Learning outcomes</div>
+              <Textarea
+                value={lessonsData[indexOfFirstLesson + index]['learning_outcomes'][lineIndex]}
+                style={{ height: '130px' }}
+                onChange={(e) => handleInnerLessonDataChange(indexOfFirstLesson + index, 'learning_outcomes', e.target.value)}
+                placeholder="Enter the learning outcomes for the lesson"
+              />
+            </div>
+            {['Remembering', 'Understanding', 'Applying', 'Analyzing', 'Evaluating', 'Creating'].map((level) => (
+              <div key={level} className="mb-2 flex gap-5 justify-between">
+                <Label>{level}</Label>
+                <TextInput
+                  type="number"
+                  className="w-24"
+                  onChange={(e) => handleinnertaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels', level,lineIndex, e.target.value)}
+                  value={lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.[lineIndex]?.[level]}
+                  min={'0'}
+                />
+              </div>
+            ))}
+          </Modal.Body>
+          <Modal.Footer className='flex justify-center '>
+          
+            <Button onClick={() => toggleModal(index,lineIndex)} color="primary" variant='contained' >
+              Done
+            </Button>
+            
+          </Modal.Footer>
+        </Modal>
+        ))}
       </Card>
     ))}
 
