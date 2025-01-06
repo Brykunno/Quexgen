@@ -49,6 +49,28 @@ function Exam_review() {
   const [coursepath,setcoursepath] = useState("")
 
   
+
+  // Function to sort each topic
+const sortTopicData = (topic) => {
+  // Create an array of indices sorted by learning outcome numbers
+  const indices = topic.learning_outcomes
+    .map((outcome, index) => ({
+      index,
+      number: parseInt(outcome[0].match(/^\d+/)[0], 10)
+    }))
+    .sort((a, b) => a.number - b.number)
+    .map(item => item.index);
+
+  // Sort all related arrays using the sorted indices
+  const sortedTopic = { ...topic };
+  for (const key of Object.keys(topic)) {
+    if (Array.isArray(topic[key]) && topic[key].length === topic.learning_outcomes.length) {
+      sortedTopic[key] = indices.map(i => topic[key][i]);
+    }
+  }
+
+  return sortedTopic;
+};
   const getLearningOutcomes = () =>{
     api.get(`/api/learning_outcomes/`)
     .then((res) => {
@@ -281,6 +303,8 @@ function Exam_review() {
   .map(data => data.total);
 
 
+
+
         
         
         return{
@@ -333,7 +357,7 @@ setAnalyzing(updateAnalyzing);
 setEvaluating(updateEvaluating);
 setCreating(updateCreating);
       setTotalItems(updateTotalItems);
-      setLessonData(updatedLessonData);  // Replace the entire lessonData with the mapped content
+      setLessonData(updatedLessonData.map(sortTopicData));  // Replace the entire lessonData with the mapped content
     }
 
 
@@ -666,6 +690,17 @@ if (getQuestion.length && getAnswer.length) {
    
   }
   const crumbItem = [{ title:'Exams', link:'/exams'},{title:'Exam review', link:`/exam_review/${id}`}]
+
+
+  const text = "10. Explain why it’s important to start a new firm when its “window  11 of opportunity”";
+
+  // Use a regular expression to match the first number
+  const match = text.match(/\d+/);
+  
+  // Extract the first number if a match is found
+  const firstNumber = match ? parseInt(match[0], 10) : null;
+  
+  console.log(firstNumber); // Output: 1
  
   return (
     <div > 
@@ -741,7 +776,9 @@ if (getQuestion.length && getAnswer.length) {
                      
                       </Table.Cell>
                       <Table.Cell className="whitespace-pre-wrap font-medium   text-gray-900 dark:text-white text-left p-2 leading-relaxed">
-                        {data.learning_outcomes}
+                        {data.learning_outcomes.map((item)=>{
+                          return <div>{item}</div>
+                        })}
                       </Table.Cell>
                     </Table.Row>
                   ))
@@ -817,7 +854,7 @@ if (getQuestion.length && getAnswer.length) {
       </div>
 
 
-   
+
      
     </div></div>
   )

@@ -161,6 +161,28 @@ taxonomy_levels: {
 const [files,setFiles] = useState([])
 
   const { id } = useParams();
+
+  // Function to sort each topic
+const sortTopicData = (topic) => {
+  // Create an array of indices sorted by learning outcome numbers
+  const indices = topic.learning_outcomes
+    .map((outcome, index) => ({
+      index,
+      number: parseInt(outcome[0].match(/^\d+/)[0], 10)
+    }))
+    .sort((a, b) => a.number - b.number)
+    .map(item => item.index);
+
+  // Sort all related arrays using the sorted indices
+  const sortedTopic = { ...topic };
+  for (const key of Object.keys(topic)) {
+    if (Array.isArray(topic[key]) && topic[key].length === topic.learning_outcomes.length) {
+      sortedTopic[key] = indices.map(i => topic[key][i]);
+    }
+  }
+
+  return sortedTopic;
+};
   
   const[exam_id,setExam_ID] = useState([]);
   useEffect(() => {
@@ -318,7 +340,7 @@ setAnalyzing(updateAnalyzing);
 setEvaluating(updateEvaluating);
 setCreating(updateCreating);
       setTotalItems(updateTotalItems);
-      setLessonData(updatedLessonData);  // Replace the entire lessonData with the mapped content
+      setLessonData(updatedLessonData.map(sortTopicData));  // Replace the entire lessonData with the mapped content
     }
 
 
