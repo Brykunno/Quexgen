@@ -1,5 +1,5 @@
 asgiref
-Django
+Django==5.0.6
 django-cors-headers
 djangorestframework
 djangorestframework-simplejwt
@@ -8,3 +8,8 @@ pytz
 sqlparse
 psycopg2-binary
 python-dotenv
+mysqlclient
+djoser
+pdfplumber
+ai21
+python-dotenv 

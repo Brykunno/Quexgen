@@ -230,13 +230,14 @@ class Courses(models.Model):
 
 
 class Settings(models.Model):
-    chairperson = models.TextField()
-    dean = models.TextField()
-    director = models.TextField()
-    academic_year = models.TextField()
-    
+    chairperson = models.TextField(default="Dr. Reyjohn Frias")
+    dean = models.TextField(default="Dr. Marmie Poquiz")
+    director = models.TextField(default="Dr. Liza L. Quimson")
+    academic_year = models.TextField(default="2025-2026")  
+
     def __str__(self):
         return self.academic_year
+
     
     class Meta:
         db_table = 'settings'
