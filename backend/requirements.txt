@@ -13,3 +13,4 @@ djoser
 pdfplumber
 ai21
 python-dotenv 
+django_extensions
