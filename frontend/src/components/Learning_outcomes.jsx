@@ -546,13 +546,13 @@ function handleMaximum(index,values){
 
   const newData = [...maximum]
 
-  newData[index] = values
+  newData[index] = Number(values)
 
   const newDataLesson = [...lessonsData]
 
   newDataLesson[index]['teachingHours'].map((data,idx)=>{
     newDataLesson[index]['teachingHours'][idx] = 0
-    newDataLesson[index]['max'] = values
+    newDataLesson[index]['max'] = Number(values)
   })
 
     // Update the state with the new data
@@ -688,6 +688,7 @@ setMaximum((prevMaximum) => prevMaximum.slice(0, prevMaximum.length - 1));
     
     <div className="mt-3" >
       <Label htmlFor="totalItems" className="font-bold" > Maximum teaching hours of lesson {index+1}</Label> 
+     
     </div>
     <TextInput id="totalItems" type="number" className="max-w-32 " required value={lessonsData[indexOfFirstLesson + index]['max']} min={'0'} onChange={(e) =>handleMaximum([indexOfFirstLesson + index],e.target.value)} />
   </div>

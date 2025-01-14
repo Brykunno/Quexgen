@@ -22,9 +22,9 @@ max_tokens = 1024
 
 
 # Split the context into paragraphs
-def split_context_into_paragraphs(context):
+def split_context_into_paragraphs(context,extracted_lines):
     lines = context.split('\n')
-    paragraphs = ['\n'.join(lines[i:i+6]) for i in range(0, len(lines), 6)]
+    paragraphs = ['\n'.join(lines[i:i+extracted_lines]) for i in range(0, len(lines), extracted_lines)]
     return paragraphs
 
 
@@ -755,7 +755,12 @@ def generate_question_with_module(request):
 
             # Debug log for extracted text
             print(f"Extracted Text: {extracted_text}")
-            paragraphs = split_context_into_paragraphs(extracted_text)
+            
+            lines = len(extracted_text.splitlines())
+            extracted_lines = int(lines/numques)
+            print("extracted_lines")
+            print(extracted_lines)
+            paragraphs = split_context_into_paragraphs(extracted_text,extracted_lines)
 
             # Initialize list to store all generated questions
             
