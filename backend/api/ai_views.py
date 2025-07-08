@@ -14,7 +14,7 @@ import difflib
 
 
 
-api_key = "psXbkP0lnnojkAVlf9Y1AR7yQlD4uuZW"
+api_key = "f197bb64-d6d1-42f9-b5f5-a2278bf08c9d"
 client = AI21Client(api_key=api_key)
 
 # Token limit for the Jamba model (rough estimate of word-to-token ratio)
@@ -22,11 +22,15 @@ max_tokens = 1024
 
 
 # Split the context into paragraphs
+# def split_context_into_paragraphs(context,extracted_lines):
+#     lines = context.split('\n')
+#     paragraphs = ['\n'.join(lines[i:i+extracted_lines]) for i in range(0, len(lines), extracted_lines)]
+#     return paragraphs
+
 def split_context_into_paragraphs(context,extracted_lines):
     lines = context.split('\n')
     paragraphs = ['\n'.join(lines[i:i+extracted_lines]) for i in range(0, len(lines), extracted_lines)]
     return paragraphs
-
 
 # Number of questions to generate
 num_questions = 10
@@ -234,7 +238,7 @@ def generate_question_ai(level, context_ques, index, test_type, max_retries=5):
     while retry_count < max_retries:
         try:
             response = client.chat.completions.create(
-                model="jamba-1.5-mini",
+                model="jamba-large-1.6",
                 messages=[
                     ChatMessage(
                         role="user",
@@ -360,14 +364,15 @@ def generate_question_module(level, context_paragraph,test_type,extracted):
         if level in ["Remembering", "Understanding", "Analyzing"]:
             prompt = prompts[level].format(context=context_paragraph)  # Format the prompt with the context
         elif level in ["Applying", "Evaluating", "Creating"]:
-            prompt = f"Create a problem or question that requires {taxonomy_levels[level]} based on the following context: {context_paragraph}. Output the question immediately without any introductory words."
+            prompt = f"Generate a question for a subjective test that requires {taxonomy_levels[level]}-level thinking, based on the following context: {context_paragraph}. Output only the question—do not include any labels or introductory text like 'Question:' or similar."
+
 
     retries = 0
     max_retries = 5
     while retries < max_retries:
         try:
             response = client.chat.completions.create(
-                model="jamba-1.5-large",
+                model="jamba-large-1.6",
                 messages=[
                     ChatMessage(
                         role="user",
@@ -382,7 +387,7 @@ def generate_question_module(level, context_paragraph,test_type,extracted):
             )
             
             print(f'response: {response}')
-
+            total_tokens = response.usage.total_tokens
             if test_type == 'mcq':
                 # Accessing the response attributes directly
                 choice = response.choices[0]  # Accessing the first choice
@@ -414,7 +419,7 @@ def generate_question_module(level, context_paragraph,test_type,extracted):
                     # Determine the letter for the correct answer based on its content after cleaning
                     correct_answer_letter = next(
                         letter for letter, choice in zip(letters, choice_dict) if choice == correct_answer.strip())
-
+                    
                     # Create a dictionary to store the question, choices, correct answer, and letter for correct answer
                     question_dict = {
                         "question": question,
@@ -422,7 +427,8 @@ def generate_question_module(level, context_paragraph,test_type,extracted):
                         "choices": choice_dict,  # Use the dictionary that maps letters to choices
                         # "index": index,  uncomment mo nalang sayo ta ayaw gumana dito baka may dependency na wala dito.hahaha
                         "answer": correct_answer_letter,
-                        "test_type": 'mcq'
+                        "test_type": 'mcq',
+                        "total_tokens": total_tokens
                     }
 
 
@@ -436,7 +442,8 @@ def generate_question_module(level, context_paragraph,test_type,extracted):
                     question_dict = {
                         "question": question,
                         "test_type": 'subjective',
-                        "from" : 'mcq'
+                        "from" : 'mcq',
+                        "total_tokens": total_tokens
                     }
 
                 return question_dict
@@ -479,7 +486,8 @@ def generate_question_module(level, context_paragraph,test_type,extracted):
                         "choices": choice_dict,  # Use the dictionary that maps letters to choices
                         # "index": index,  uncomment mo nalang sayo ta ayaw gumana dito baka may dependency na wala dito.hahaha
                         "answer": correct_answer_letter,
-                        "test_type": 'identification'
+                        "test_type": 'identification',
+                        "total_tokens": total_tokens
                        
                     }
 
@@ -494,7 +502,8 @@ def generate_question_module(level, context_paragraph,test_type,extracted):
                     question_dict = {
                         "question": question,
                          "test_type": 'subjective',
-                          "from" : 'identification'
+                          "from" : 'identification',
+                        "total_tokens": total_tokens
                     }
 
                 return question_dict
@@ -535,6 +544,7 @@ def generate_question_module(level, context_paragraph,test_type,extracted):
                     question_dict = {
                         "question": question,
                          "test_type": 'subjective',
+                        "total_tokens": total_tokens
                           
                     }
 
@@ -550,6 +560,7 @@ def generate_question_module(level, context_paragraph,test_type,extracted):
                     question_dict = {
                         "question": question,
                          "test_type": 'subjective',
+                        "total_tokens": total_tokens
                           
                     }
 
@@ -583,7 +594,8 @@ def generate_question_module(level, context_paragraph,test_type,extracted):
                             question_dict = {
                                 "question": statement_with_answer,
                                 "answer": true_false,
-                                "test_type": 'trueOrFalse'
+                                "test_type": 'trueOrFalse',
+                                "total_tokens": total_tokens
                                 # "index":index
                             }
                             return question_dict
@@ -596,7 +608,8 @@ def generate_question_module(level, context_paragraph,test_type,extracted):
                     question_dict = {
                         "question": raw_content,
                          "test_type": 'subjective',
-                         "from": 'trueOrFalse'
+                         "from": 'trueOrFalse',
+                        "total_tokens": total_tokens
                     }
 
                 return question_dict
@@ -758,8 +771,10 @@ def generate_question_with_module(request):
             
             lines = len(extracted_text.splitlines())
             extracted_lines = int(lines/numques)
+            # extracted_lines = 6
             print("extracted_lines")
             print(extracted_lines)
+            print("numques", numques)
             paragraphs = split_context_into_paragraphs(extracted_text,extracted_lines)
 
             # Initialize list to store all generated questions
@@ -874,7 +889,7 @@ def objectives_percentage(objectives):
         try:
             # API call to OpenAI or the client
             response = client.chat.completions.create(
-                model="jamba-1.5-mini",
+                model="jamba-mini-1.6",
                 messages=[
                     ChatMessage(
                         role="user",
@@ -894,12 +909,14 @@ def objectives_percentage(objectives):
             content = message.content  # Accessing the content of the message
             
             # Print the raw response for debugging (optional)
-            print(f"Raw response: {response}")
-            print("objectives: "+objectives)
-            print("content: "+content)
+            # print(f"Raw response: {response}")
+            # print("objectives: "+objectives)
+            # print("content: "+content)
+            total_tokens = response.usage.total_tokens
             # Extract taxonomy levels from the response content
             taxonomy_counts = extract_taxonomy_levels(content)
-
+            taxonomy_counts['total_tokens'] = total_tokens
+            print("taxonomy_counts: ",taxonomy_counts)
             # Output the result
             print(f"Taxonomy counts: {taxonomy_counts}")
             return taxonomy_counts  # Return the counts if needed
@@ -921,7 +938,7 @@ def objectives_count(objectives):
 
             # API call to OpenAI or the client
     response = client.chat.completions.create(
-                model="jamba-1.5-mini",
+                model="jamba-mini-1.6",
                 messages=[
                     ChatMessage(
                         role="user",

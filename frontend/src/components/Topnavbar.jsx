@@ -127,7 +127,7 @@ const getUser = () => {
     .then((res) => res.data)
     .then((data) => {
       setUser(data);
-      console.log(data);
+
     })
     .catch((err) => alert(err));
 };
@@ -173,8 +173,6 @@ function getFullNames(users) {
   }
 
 
-console.log(admin_account(user));
-console.log(getFullNames(user));
 const admin = admin_account(user);
 const full_name = getFullNames(user);
 const email = getEmail(user);
@@ -241,7 +239,7 @@ const getNotifContent = () => {
     .get(`api/notification/detail/admin/`)
     .then((res) => res.data)
     .then((data) => {setNotifData(data)
-      console.log('notification: ', data);
+     
       const unreadCount = data.filter(notification => notification.is_read === false).length;
         
         setNotifnum(unreadCount); // Set the count of unread notifications
@@ -254,7 +252,7 @@ const getNotifContent = () => {
     .get(`api/notification/detail/teacher/`)
     .then((res) => res.data)
     .then((data) => {setNotifData(data)
-      console.log('notification: ', data);
+     
       const unreadCount = data.filter(notification => notification.is_read === false).length;
         
         setNotifnum(unreadCount); // Set the count of unread notifications
@@ -316,7 +314,7 @@ const sampleEvents = [
 
 
 const eventStyleGetter = (event) => {
-  let backgroundColor = '#060164'; // Default color
+  let backgroundColor = '#0f23a5'; // Default color
   return {
     style: {
       backgroundColor,
@@ -333,7 +331,7 @@ const eventStyleGetter = (event) => {
 
 
   return (
-    <Navbar fluid rounded className="topnavbar">
+    <Navbar fluid rounded className="topnavbar ">
       <NavbarBrand href="https://flowbite-react.com">
  
       
@@ -474,18 +472,20 @@ const eventStyleGetter = (event) => {
           arrowIcon={false}
           inline
           label={
-            profile!=='http://127.0.0.1:8000/apinull'? <img src={profile} style={{height:'40px',width:'40px', borderRadius:'50%'}}/>:
+            profile!==img_dir+'null'? <img src={profile} style={{height:'40px',width:'40px', borderRadius:'50%'}}/>:
 
             <Avatar {...stringAvatar(full_name)} size='large' /> 
           }
         
         >
           <DropdownHeader>
+        
             <span className="block text-sm">{full_name}</span>
             <span className="block truncate text-sm font-medium">{email}</span>
           </DropdownHeader>
      
           <DropdownItem href={admin===true?`/admin_profile`:`/profile`}>Profile </DropdownItem>
+           <DropdownItem href='/logout'>Logout </DropdownItem>
         
         </Dropdown>
         <NavbarToggle />

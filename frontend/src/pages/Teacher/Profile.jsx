@@ -92,7 +92,7 @@ function Profile() {
     })
     .then((res) => res.data)
     .then((data) => {
-      console.log(data);
+      console.log("profile",data);
       setLoading(false);
       getUser(); // Optionally refresh the user data after update
     })
@@ -115,10 +115,12 @@ function Profile() {
     <div>
           <Topnavbar title="Profile"/>
     <div className="content">
+    
       <Card style={{ width: '700px' }} className=' mx-auto mt-24'>
         <div className="flex gap-5">
           <div style={{ flex: 1 }}>
-            {userInfo.profile_image || userInfo.profile_image_url ? (
+     
+            {userInfo.profile_image && userInfo.profile_image_url ? (
               <img
               src={typeof userInfo.profile_image === 'object' && userInfo.profile_image !== null && !Array.isArray(userInfo.profile_image) ? URL.createObjectURL(userInfo.profile_image) : userInfo.profile_image_url}
                 alt="Profile"

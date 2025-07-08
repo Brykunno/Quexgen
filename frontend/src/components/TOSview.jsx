@@ -31,6 +31,8 @@ import LoadingSubmit from "./LoadingSubmit";
 import ToastMessage from "./Toast";
 import LoadingGenerate from "./LoadingGenerate";
 
+import { useSnackbar } from 'notistack';
+
 
 function createData(
   topic,
@@ -71,6 +73,8 @@ function createData(
 
 
 function TOSview() {
+
+    const { enqueueSnackbar } = useSnackbar();
 
   const [modalComment,setModalComment]=useState(false)
 
@@ -285,7 +289,6 @@ const sortTopicData = (topic) => {
 
 
         
-        
         return{
         id:content.id,
         topic: content.topic,
@@ -323,6 +326,15 @@ const totalAnalyzing = updatedLessonData.reduce((total, content) => total + cont
 const totalEvaluating = updatedLessonData.reduce((total, content) => total + content.evaluating.reduce((total2, content2) => total2 + content2, 0), 0);
 const totalCreating = updatedLessonData.reduce((total, content) => total + content.creating.reduce((total2, content2) => total2 + content2, 0), 0);
 
+console.log('updateTotalItems:', updateTotalItems);
+console.log('totalRemembering:', totalRemembering);
+console.log('totalUnderstanding:', totalUnderstanding);
+console.log('totalApplying:', totalApplying);
+console.log('totalAnalyzing:', totalAnalyzing); 
+console.log('totalEvaluating:', totalEvaluating);
+console.log('totalCreating:', totalCreating);
+
+
 
 // Calculate percentages
 const updateRemembering = calculatePercentage(totalRemembering, updateTotalItems);
@@ -332,6 +344,15 @@ const updateAnalyzing = calculatePercentage(totalAnalyzing, updateTotalItems);
 const updateEvaluating = calculatePercentage(totalEvaluating, updateTotalItems);
 const updateCreating = calculatePercentage(totalCreating, updateTotalItems);
 
+console.log('updateRemembering:', updateRemembering);
+console.log('updateUnderstanding:', updateUnderstanding);
+console.log('updateApplying:', updateApplying);
+console.log('updateAnalyzing:', updateAnalyzing);
+console.log('updateEvaluating:', updateEvaluating);
+console.log('updateCreating:', updateCreating);
+
+
+
 // Set state for each percentage
 setRemembering(updateRemembering);
 setUnderstanding(updateUnderstanding);
@@ -340,7 +361,8 @@ setAnalyzing(updateAnalyzing);
 setEvaluating(updateEvaluating);
 setCreating(updateCreating);
       setTotalItems(updateTotalItems);
-      setLessonData(updatedLessonData.map(sortTopicData));  // Replace the entire lessonData with the mapped content
+      setLessonData(updatedLessonData.map(sortTopicData));
+      // Replace the entire lessonData with the mapped content
     }
 
 
@@ -382,7 +404,7 @@ if (getQuestion.length && getAnswer.length) {
       correspondingAnswers.forEach((answer) => {
         // Match the choices A, B, C, D to the answer_text
         
-        console.log('answerdebug',answer.id)
+
         answerid.push(answer.id)
       
         switch (answer.choices) {
@@ -1029,7 +1051,8 @@ if (getQuestion.length && getAnswer.length) {
 
 
       setLoading(false);
-      Submit===true?setSubmitToast(true):setToast(true)
+      Submit===true?enqueueSnackbar('Exam successfully submitted!',{variant:'success'}):enqueueSnackbar('Exam successfully updated!',{variant:'success'})
+      
         
     } catch (error) {
       console.error('Error updating TOSInfo:', error);
@@ -4384,6 +4407,7 @@ const [allocations, setAllocations] = useState([]);
     </Breadcrumb>
 
 
+
     
 
       <Card className='max-w-3xl mx-auto ' >
@@ -4725,9 +4749,8 @@ const [allocations, setAllocations] = useState([]);
  
       {loadingGenerate  && <LoadingGenerate/>}
       {loading  && <LoadingSubmit/>}
-      {Toast  && <ToastMessage  message = "Exam successfully updated!" setToast={setToast}/>}
-      {submitToast  && <ToastMessage  message = "Exam successfully submitted!" setToast={setSubmitToast}/>}
-    
+  
+           
 
       {/* <Button href='/exam_bank'> Back to list</Button> */}
       </form>

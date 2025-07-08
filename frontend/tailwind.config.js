@@ -5,7 +5,7 @@ export default {
   theme: {
 
     colors: {
-      'prime':'#060164',
+      'prime':'#0f23a5',
       'lite':'#4e47d1',
       
     },

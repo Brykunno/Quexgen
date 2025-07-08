@@ -22,7 +22,7 @@ const Reset_password = () => {
      
       icon: status,
       confirmButtonText: "Proceed",
-      confirmButtonColor: '#060164',
+      confirmButtonColor: '#0f23a5',
       preConfirm: () => {
         setSwal(false); 
         setFail(false)

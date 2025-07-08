@@ -21,6 +21,7 @@ function PdfViewer({ path }) {
   // Build the full path to the PDF file
   const pdfPath = new URL(`../../../backend/media/syllabus/${path}`, import.meta.url).toString();
 
+
   // Handle successful document load
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);

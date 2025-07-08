@@ -33,11 +33,12 @@ function Courses() {
   const [course_type, setcourse_type] = useState("");
   const [course_syllabus, setcourse_syllabus] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [refresh,setRefresh] = useState(false);
 
   useEffect(() => {
     document.title = "Home";
     getUser();
-  });
+  },[refresh]);
 
   const getUser = () => {
     api.get(`/api/courses/`)
@@ -134,9 +135,9 @@ function Courses() {
         <Topnavbar title="Courses"/>
         <div className="content">
 
-        <div className='flex gap-10 '>
+        <div className='flex flex-col xl:flex-row gap-10 '>
         <div style={{ flex: 0.4 }}>
-          <Add_Course setLoading={setLoading}/>
+          <Add_Course setLoading={setLoading} setRefresh={setRefresh}/>
         </div>
         <div className='flex-1'>
           <div className="flex items-center mb-5">
@@ -157,7 +158,7 @@ function Courses() {
             <Table.Head>
               <Table.HeadCell>Course Name</Table.HeadCell>
               <Table.HeadCell>Course Code</Table.HeadCell>
-              <Table.HeadCell>Course Type</Table.HeadCell>
+              <Table.HeadCell className="hidden lg:table-cell" >Course Type</Table.HeadCell>
            
               <Table.HeadCell>Action</Table.HeadCell>
               
@@ -170,7 +171,7 @@ function Courses() {
                       {user.course_name}
                     </Table.Cell>
                     <Table.Cell>{user.course_code}</Table.Cell>
-                    <Table.Cell>{user.course_type}</Table.Cell>
+                    <Table.Cell className="hidden lg:table-cell">{user.course_type}</Table.Cell>
                     
                     <Table.Cell className='flex gap-3'>
                       <Button

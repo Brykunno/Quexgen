@@ -3,7 +3,7 @@ import api from "../../api";
 import {Button} from "@mui/material";
 import { Card, TextInput, Label } from 'flowbite-react';
 import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
-
+import Grid from '@mui/material/Grid';
 import ArticleIcon from '@mui/icons-material/Article';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
@@ -111,7 +111,7 @@ function Dashboard() {
   
 
   const eventStyleGetter = (event) => {
-    let backgroundColor = '#060164'; // Default color
+    let backgroundColor = '#0f23a5'; // Default color
     return {
       style: {
         backgroundColor,

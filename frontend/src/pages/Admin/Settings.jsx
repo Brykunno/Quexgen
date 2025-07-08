@@ -3,8 +3,10 @@ import Topnavbar from '../../components/Topnavbar';
 import {Button} from "@mui/material";
 import { Card, TextInput,  Label } from 'flowbite-react';
 import api from '../../api';
+import { useSnackbar } from 'notistack';
 
 function Settings() {
+  const { enqueueSnackbar } = useSnackbar();
   const [settings, setSettings] = useState({
     chairperson: '',
     dean: '',
@@ -46,7 +48,7 @@ function Settings() {
         director: settings.director,
         academic_year: settings.academic_year,
       });
-      alert("Settings saved successfully!");
+      enqueueSnackbar("Changes saved successfully!",{variant: 'success'});
     } catch (error) {
       alert(error);
     } finally {
@@ -67,7 +69,7 @@ function Settings() {
       <Topnavbar title="Settings" />
       <div className="content">
         <Card>
-          <div className='flex gap-5'>
+          <div className='flex flex-col lg:flex-row gap-5'>
             <div className='flex-1'>
               <Card>
                 <h1 className='font-bold'>Administrative Officials</h1>

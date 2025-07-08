@@ -376,7 +376,7 @@ function Create_taxonomy_allocation({rows,columns,handleModalRow,lessonsData,ind
             // Recalculate fields based on the updated teachingHours
             if(i == index){
               newData[i]['remembering'] = Math.ceil(getRemembering(Remembering, newData[i]['items']));
-              console.log('indexremember: ',index)
+        
            
             }
             else{
@@ -580,12 +580,12 @@ function Create_taxonomy_allocation({rows,columns,handleModalRow,lessonsData,ind
             // Recalculate fields based on the updated teachingHours
             if(i == index){
               newData[i]['creating'] = Math.ceil(getCreating(Creating, newData[i]['items']));
-              console.log('indexcreate: ',index,' : ', Math.ceil(getCreating(Creating, newData[i]['items'])),' : ', newData[i]['creating'])
+             
            
             }
             else{
               if (newData[i]['creating'] % 1 !== 0) {
-                console.log('olddatacreate: ',newData[i]['creating']);
+            
                 newData[i]['creating'] = getCreating(Creating, newData[i]['items']);
               }
             }

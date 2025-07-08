@@ -154,7 +154,7 @@ function PdfUpdate(props) {
 
 <View style={[styles.tableCol,{padding:5}]}>
   
-    <Text style={[styles.tableCell,{fontSize:10,margin:'auto',fontWeight: 'extrabold'}]}>{props.formData.Term.toUpperCase()} EXAMINATION IN {props.formData.Title}</Text>
+    <Text style={[styles.tableCell,{fontSize:10,margin:'auto',fontWeight: 'extrabold'}]}>{props.formData.Term} EXAMINATION IN {props.formData.Title}</Text>
     <Text style={[styles.tableCell,{fontSize:10,margin:'auto',fontWeight: 'extrabold'}]}>{props.formData.Semester} AY {props.formData.AcademicYear}</Text>
   </View>
 
@@ -257,40 +257,29 @@ function PdfUpdate(props) {
               <View style={[styles.tableCol,{flex:0.5}]}>
                 <Text style={[styles.tableCell,{fontSize:8,margin:'auto'}]}>ITEMS</Text>
               </View>
-              <View style={[styles.tableCol, { flex: 7.1 }]}>
-                <Text style={styles.tableCellCenter}>ITEM SPECIFICATION PER TAXONOMY OF LEARNING</Text>
-                <View style={{ flexDirection: 'row' }}>
-                  <View style={[styles.tableCol,{borderBottomWidth:0}]}>
-                    <Text style={[styles.tableCell,{fontSize:8}]}>KNOWLEDGE /{'\n'}REMEMBERING</Text>
-                    <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Remembering}%</Text>
-                  </View>
-                  <View style={[styles.tableCol,{borderBottomWidth:0,flex:1.2}]}>
-                    <Text style={[styles.tableCell,{fontSize:8}]}>COMPREHENSION /{'\n'}UNDERSTANDING</Text>
-                    <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Understanding}%</Text>
-                  </View>
-                  <View style={[styles.tableCol,{borderBottomWidth:0}]}>
-                    <Text style={[styles.tableCell,{fontSize:8}]}>APPLICATION /{'\n'}APPLYING</Text>
-                    <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Applying}%</Text>
-                  </View>
-                  <View style={[styles.tableCol,{borderBottomWidth:0}]}>
-                    <Text style={[styles.tableCell,{fontSize:8}]}>ANALYSIS /{'\n'}ANALYZING</Text>
-                    <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Analyzing}%</Text>
-                  </View>
-                  <View style={[styles.tableCol,{borderBottomWidth:0}]}>
-                    <Text style={[styles.tableCell,{fontSize:8}]}>SYNTHESIS /{'\n'}EVALUATING</Text>
-                    <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Evaluating}%</Text>
-                  </View>
-                  <View style={[styles.tableCol,{borderBottomWidth:0}]}>
-                    <Text style={[styles.tableCell,{fontSize:8}]}>EVALUATION /{'\n'}CREATING</Text>
-                    <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Creating}%</Text>
-                  </View>
-                  <View style={[styles.tableCol,{borderBottomWidth:0,borderRightWidth:0,flex:0.8}]}>
-                    <Text style={[styles.tableCell,{fontSize:8,margin: 'auto', padding:0}]}>TOTAL</Text>
-                  </View>
-                </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCellCenter}>REMEMBERING</Text>
+              </View>
+              <View style={[styles.tableCol,{flex:1.2}]}>
+                <Text style={styles.tableCellCenter}>UNDERSTANDING</Text>
               </View>
               <View style={styles.tableCol}>
-                <Text style={[styles.tableCell,{fontSize:8,margin: 'auto'}]}>ITEM {'\n'}PLACEMENT</Text>
+                <Text style={styles.tableCellCenter}>APPLYING</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCellCenter}>ANALYZING</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCellCenter}>EVALUATING</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCellCenter}>CREATING</Text>
+              </View>
+              <View style={[styles.tableCol,{flex:0.8}]}>
+                <Text style={styles.tableCellCenter}>TOTAL</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCellCenter}>ITEM {'\n'}PLACEMENT</Text>
               </View>
             </View>
             <View style={styles.tableRow}>

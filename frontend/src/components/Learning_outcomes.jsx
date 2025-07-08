@@ -9,9 +9,10 @@ import ToastError from './ToastError';
 import { HiOutlineXCircle,HiCheckCircle,HiOutlineX } from 'react-icons/hi';
 import Error from './Error';
 import InvalidFileError from './InvalidFileError';
-import CancelIcon from '@mui/icons-material/Cancel';
+import LearningOutcomeTabs from './tabs/LearningOutcomeTabs';
 import ClearIcon from '@mui/icons-material/Clear';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { useSnackbar } from 'notistack';
 
 function Learning_outcomes({
   setRemembering,
@@ -32,11 +33,11 @@ function Learning_outcomes({
   submit,
   allocations,setTosModal,
   setAllocations,files,setLessonsDatainitial,lessonsDataInitial,setFiles,handletaxlevelChange,oneAllocation,addAllocation,countOutcomes,handleInnerLessonDataChange,overallItems,handleTotalItemsChange,handleinnertaxlevelChange,addToast
-  
+  ,taxonomyRange
 }) {
 
  
- 
+ const { enqueueSnackbar } = useSnackbar();
   const [percent, setPercent] = useState([]);
   const [loading,setLoading] = useState(false)
   const [fileInfo,setFileInfo] = useState([])
@@ -141,11 +142,6 @@ const calculateSums = (allocations) => {
 
 
 useEffect(()=>{
-
-  
-
-  
-
  // Calculate the total allocations
 // Flatten the nested arrays into a single array
 const flattenedAllocations = allocations.flat();
@@ -161,7 +157,7 @@ const tax_allocation = flattenedAllocations.reduce((acc, data) => {
   return acc;
 }, {});
 
-console.log('taxAlloc: ',tax_allocation)
+
 
   const percentages = calculatePercentages(tax_allocation);
   setTax(tax_allocation)
@@ -331,7 +327,7 @@ const handleReadFile = async () => {
 
       // Process the response to get the lesson info
       const dataques = response.data.lesson_info;
-      console.log('Processed response:', dataques);
+  
 
       // Add the lesson info object to the updated fileInfo array
       updatedFileInfo.push(dataques);
@@ -352,11 +348,6 @@ const handleReadFile = async () => {
     newData[index]['topic'] = data[0].lesson_topic;
     newData[index]['learning_outcomes'] = data[0].learning_outcomes;
 
-
-    
-
-   
-
     // Save the updated lessonsData to localStorage
     localStorage.setItem('lessonsData', JSON.stringify(newData));
     setLessonsDatainitial(newData);
@@ -365,16 +356,8 @@ const handleReadFile = async () => {
 };
 
 const handleReadOneFile = async (value,index) => {
-
-  
-  
-
   setRead(true)
-
-
   const updatedFileInfo = []; // Initialize an array to store file information
-    
-
     const formData = new FormData();
     formData.append('file', value); // Append the selected file
 
@@ -388,7 +371,7 @@ const handleReadOneFile = async (value,index) => {
 
       // Process the response to get the lesson info
       const dataques = response.data.lesson_info;
-      console.log('Processed response:', dataques);
+
 
       // Add the lesson info object to the updated fileInfo array
       updatedFileInfo.push(dataques);
@@ -417,7 +400,7 @@ const handleReadOneFile = async (value,index) => {
 
   let outArray = response_out.data.outcomes;
 
-  console.log('hereout: ', outArray)
+
     newData[index]['learning_outcomes'] = outArray;
     newData[index]['teachingHours'] = Array(outArray?.length || 0).fill(0);
     newData[index]['allocation'] = Array(outArray?.length || 0).fill(0);
@@ -483,10 +466,10 @@ const handleValidateFile = async (value,index) => {
       },
     });
 
-    console.log('Stats: ',response.data)
+
     const fileStats = response.data.file_status[0]
     // Process the response to get the lesson info
-    console.log('Processed response file:',fileStats );
+
     const newData = [...lessonsDataInitial]
 
 
@@ -527,7 +510,7 @@ const getFileStatus = (fileStatus) => {
     return <div className='text-green-600 font-semibold flex gap-1'>Valid file <HiCheckCircle className='mt-1'/></div>
   } 
      else if(fileStatus.status === "Invalid"){
-      return <div className='text-red-600 font-semibold '><div className='flex gap-1'>Invalid file     <InvalidFileError lessonsData={lessonsData} getTotalTaxonomy={getTotalTaxonomy} totalItems={totalItems} files={files} missing_keywords={fileStatus.missing_keywords}  /></div> 
+      return <div className='text-red-600 font-semibold '><div className='flex gap-1'>Invalid file    <InvalidFileError lessonsData={lessonsData} getTotalTaxonomy={getTotalTaxonomy} totalItems={totalItems} files={files} missing_keywords={fileStatus.missing_keywords}  /></div> 
    
       </div>;
      }
@@ -573,7 +556,7 @@ function checkMaxMin(index,max){
 
   const totalHours = newData[index]['teachingHours'].reduce((acc, current) => acc + current, 0);
 if(max<totalHours){
-  addToast(`Total allocation of teaching hours exceeds the maximum teaching hours for lesson ${index+1}`)
+  enqueueSnackbar(`Total allocation of teaching hours exceeds the maximum teaching hours for lesson ${index+1}`,{variant:"warning"})
 }
 
 
@@ -619,238 +602,18 @@ function checkAbove(index){
 
 
   return (
-    <Card className="mb-5">
-
-<div className="max-w-md flex gap-5 mx-auto">
-    
-    <div className="mt-3" >
-      <Label htmlFor="totalItems" className="font-bold" > Total of Items<span className="text-red-600">*</span></Label> 
-    </div>
-    <TextInput id="totalItems" type="number" className="max-w-32 " required value={overallItems} min={'0'} onChange={handleTotalItemsChange} />
-  </div>
-    {/* Render only the current page of lessons */}
-    {currentLessons.map((item, index) => (
-     <Card key={indexOfFirstLesson + index} className="relative">
-     {/* Delete button positioned in the top right */}
-
-    
-     <div className="absolute top-2 right-2">
-       <Button
-        
-         size={'xs'}
-         color={'error'}
-      
-        
-       >
-        <ClearIcon  className=" hover:scale-110 transition-transform duration-200"  onClick={() => {removeLesson(lessonsData, indexOfFirstLesson + index); removeFile(indexOfFirstLesson + index)
-
-setMaximum((prevMaximum) => prevMaximum.slice(0, prevMaximum.length - 1));
-
-        }} />
-
-       </Button>
-     </div>
-   
-     <div className="mb-3">
-      
-       <div>
-
-        
-      
-         <div className="mb-2 block">
-           <Label htmlFor="file-upload">
-             Upload file for Lesson {indexOfFirstLesson + index + 1} <span className="text-red-600">*</span>
-           </Label>
-         </div>
-         
-         <div className="flex gap-5">
-           <FileInput
-             id="file-upload"
-             accept="application/pdf"
-             className="flex-1"
-             sizing="sm"
-             onChange={(e) => {
-               handleLessonDataChange(indexOfFirstLesson + index, 'study_guide', e.target.files[0]);
-               handleValidateFile(e.target.files[0], indexOfFirstLesson + index);
-               handleReadOneFile(e.target.files[0], indexOfFirstLesson + index);
-             }}
-           />
-           <div>
-             {fileStatus[indexOfFirstLesson + index] ? (
-               <div><Spinner color="primary" /> Validating file...</div>
-             ) : (
-               <span>{getFileStatus(lessonsDataInitial[indexOfFirstLesson + index]?.file_status)}</span>
-             )}
-           </div>
-         </div>
-       </div>
-        <div className="max-w-md flex gap-5 mt-3">
-    
-    <div className="mt-3" >
-      <Label htmlFor="totalItems" className="font-bold" > Maximum teaching hours of lesson {index+1}</Label> 
-     
-    </div>
-    <TextInput id="totalItems" type="number" className="max-w-32 " required value={lessonsData[indexOfFirstLesson + index]['max']} min={'0'} onChange={(e) =>handleMaximum([indexOfFirstLesson + index],e.target.value)} />
-  </div>
-     </div>
-   
-     <div className="flex flex-col gap-5 mb-4 md:flex-row">
-       <div className="flex-1">
-         <div className="ms-2 font-bold mb-2">Lesson {indexOfFirstLesson + index + 1}</div>
-         
-         <Textarea
-           value={lessonsData[indexOfFirstLesson + index]['topic']}
-           style={{ height: '100px' }}
-           onChange={(e) => handleLessonDataChange(indexOfFirstLesson + index, 'topic', e.target.value)}
-           placeholder="Enter the summary of the lesson"
-         />
-       </div>
-       <div className="flex-1">
-         <div className="ms-2 font-bold mb-2">Learning outcomes</div>
-
-
-         {lessonsData[indexOfFirstLesson + index]['learning_outcomes']
-  .map((line, lineIndex) => (
-    <div key={lineIndex} style={{ marginBottom: '20px', height:100 }}>
-      <Textarea
-        key={lineIndex}
-        value={line}
-        onChange={(e)=>handleInnerLessonDataChange(indexOfFirstLesson + index,lineIndex,'learning_outcomes',e.target.value)}
-        style={{ height: '100px', width: '300px', marginBottom: '10px' }}
-        placeholder={`Enter value for line ${lineIndex}`}
-      />
-    </div>
-  ))}
-
-       </div>
-       <div className="flex-1">
-         <div className="ms-2 font-bold mb-2">Taxonomy Levels</div>
-
-
-         {lessonsData[indexOfFirstLesson + index]['teachingHours']
-  .map((line, lineIndex) => (
-    <div key={lineIndex} style={{ marginBottom: '20px', height:100 }} className='justify-evenly'>
-      <Button
-         color="primary"
-         variant='contained'
-
-         disabled={item.file_status === ""}
-         onClick={() => toggleModal(indexOfFirstLesson + index,lineIndex)}
+    <div className="mb-5">
+       <div className="flex justify-end">
+        <div  className="  flex gap-5" >
        
-       >
-         Identify levels of taxonomy
-       </Button>
-    </div>
-  ))}
-
-       </div>
-       <div className="flex-1">
-         <div className="ms-2 font-bold mb-2">Number of teaching hours</div>
-
-
-         {lessonsData[indexOfFirstLesson + index]['teachingHours']
-  .map((line, lineIndex) => (
-    <div key={lineIndex} style={{ marginBottom: '20px', height:100 }}>
-      <TextInput
-  key={lineIndex}
-  name={`teachingHours-${indexOfFirstLesson + index}-${lineIndex}`}
-  onChange={(e) => {handleInnerLessonDataChange(indexOfFirstLesson + index, lineIndex, 'teachingHours', Number(e.target.value))
-    checkMaxMin(indexOfFirstLesson + index,lessonsData[indexOfFirstLesson + index]['max'])
-  }}
-  value={line}
-  type='number'
-  min={0}
-  max={Number(line)+Number(lessonsData[indexOfFirstLesson + index]['max'][indexOfFirstLesson + index]) - (lessonsData[indexOfFirstLesson + index]?.teachingHours || []).reduce((acc, data) => acc + (typeof data === 'number' ? data : 0), 0)}
-  
-  style={{ height: '100px', width: '300px', marginBottom: '10px' }}
-  placeholder={`Enter value for line ${lineIndex}`}
-/>
-
-
-    </div>
-  ))}
-
-       </div>
-    
-     </div>
-   
-     {/* <div className='flex justify-center'>
-       <Button
-         color="primary"
-         variant='contained'
-
-         disabled={item.file_status === ""}
-         onClick={() => toggleModal(indexOfFirstLesson + index)}
-       
-       >
-         Identify levels of taxonomy
-       </Button>
-     </div> */}
-   
-         {lessonsData[indexOfFirstLesson + index]['teachingHours']
-  .map((line, lineIndex) => (
-     <Modal size="md" show={openModals[index]?.[lineIndex]} onClose={() => toggleModal(index,lineIndex)}>
-       <Modal.Header>Identify taxonomy levels</Modal.Header>
-       <Modal.Body>
-         <div className="flex-1 mb-2">
-           <div className="ms-2 font-bold mb-2">Learning outcomes</div>
-           <Textarea
-             value={lessonsData[indexOfFirstLesson + index]['learning_outcomes'][lineIndex]}
-             style={{ height: '130px' }}
-             onChange={(e) => handleInnerLessonDataChange(indexOfFirstLesson + index, 'learning_outcomes', e.target.value)}
-             placeholder="Enter the learning outcomes for the lesson"
-           />
-         </div>
-         {['Remembering', 'Understanding', 'Applying', 'Analyzing', 'Evaluating', 'Creating'].map((level) => (
-           <div key={level} className="mb-2 flex gap-5 justify-between">
-             <Label>{level}</Label>
-             <TextInput
-               type="number"
-               className="w-24"
-               onChange={(e) => handleinnertaxlevelChange(indexOfFirstLesson + index, 'taxonomy_levels', level,lineIndex, e.target.value)}
-               value={lessonsData[indexOfFirstLesson + index]?.taxonomy_levels?.[lineIndex]?.[level]}
-               min={'0'}
-             />
-           </div>
-         ))}
-       </Modal.Body>
-       <Modal.Footer className='flex justify-center '>
-       
-         <Button onClick={() => toggleModal(index,lineIndex)} color="primary" variant='contained' >
-           Done
-         </Button>
-         
-       </Modal.Footer>
-     </Modal>
-     ))}
-   </Card>
-   
-
+ 
       
-
-
-    ))}
-
-
-    {/* Add Lesson and Allocate buttons */}
-    <div className="">
-    <div className=" mb-3  flex">
       
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          showIcons // If supported by the component
-          className='mx-auto '
-        />
-
-     
+        </div>
+       
       </div>
-    
-      <div className="flex ">
-        <div  className="mt-3 mx-auto flex gap-5" >
-       
-        <Button
+<LearningOutcomeTabs 
+addLesson={       <Button
           color={'primary'}
           variant='contained'
           className="mt-3"
@@ -902,10 +665,10 @@ setMaximum((prevMaximum) => prevMaximum.slice(0, prevMaximum.length - 1));
           
           }
           else if(checkBelow(lessonsData.length-1)== true){
-            addToast(`The total allocation of teaching hours is below the maximum teaching hours allowed for the lesson ${ lessonsData.length}`)
+            enqueueSnackbar(`The total allocation of teaching hours is below the maximum teaching hours allowed for the lesson ${ lessonsData.length}`)
           }
           else if(checkAbove(lessonsData.length-1)== true){
-            addToast(`The total allocation of teaching hours is above the maximum teaching hours allowed for the lesson ${ lessonsData.length}`)
+            enqueueSnackbar(`The total allocation of teaching hours is above the maximum teaching hours allowed for the lesson ${ lessonsData.length}`)
           }
          
         }
@@ -913,24 +676,27 @@ setMaximum((prevMaximum) => prevMaximum.slice(0, prevMaximum.length - 1));
         >
           <AddCircleOutlineIcon className="mr-2 " /> Add Lesson
         </Button>
+} previewTOS={ <Button color="primary" variant="contained" onClick={() => setTosModal(true)}><VisibilityIcon className="mr-2"/>Preview TOS</Button>} handleinnertaxlevelChange={handleinnertaxlevelChange} checkMaxMin={checkMaxMin} handleMaximum={handleMaximum} handleInnerLessonDataChange={handleInnerLessonDataChange} handleReadOneFile={handleReadOneFile} handleValidateFile={handleValidateFile} setMaximum={setMaximum} removeFile={removeFile} handleLessonDataChange={handleLessonDataChange} removeLesson={removeLesson} lessonsData = {lessonsData} fileStatus={fileStatus} getFileStatus={getFileStatus} lessonsDataInitial={lessonsDataInitial}
+taxonomyRange={taxonomyRange}
 
-        <Button color="primary" variant="contained" onClick={() => setTosModal(true)}><VisibilityIcon className="mr-2"/>Preview TOS</Button>
-      
-        </div>
-       
-      </div>
-
-     
+totalOfItems={<div className=" flex gap-5 mx-auto justify-between">
+    
+    <div className="mt-3" >
+      <Label htmlFor="totalItems" className="font-bold" >Overall Total of Items<span className="text-red-600">*</span></Label> 
     </div>
+    <TextInput id="totalItems" type="number" className="max-w-32 " required value={overallItems} min={'0'} onChange={handleTotalItemsChange} />
+  </div>}
+
+/>
+
     {loading && <LoadingGenerate />}
     {errorFile && <ToastError message="Please upload a file for every lesson" setToast={setErrorFile}/>}
-    
-
+  
     {/* Pagination controls */}
     {/* {JSON.stringify(lessonsData)} */}
      {/* {JSON.stringify(maximum)} */}
 
-  </Card>
+  </div>
   );
 }
 

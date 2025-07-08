@@ -30,7 +30,7 @@ import ErrorHandling from "./ErrorHandling";
 import { useState,useEffect } from "react";
 import ToastMessage from "./Toast";
 import Exam from "./Exam";
-
+import { useSnackbar } from 'notistack';
 import ReactDOM from 'react-dom';
 import { PDFViewer } from '@react-pdf/renderer';
 import PdfFile from "./PdfFile";
@@ -55,8 +55,6 @@ function createData(
   total,
   placement,
   study_guide
-
-  
 ) {
   return {
     topic,
@@ -73,7 +71,6 @@ function createData(
     total,
     placement,
     study_guide,
-   
   };
 }
 
@@ -81,11 +78,12 @@ function createData(
 
 
  function TOS() {
+   const { enqueueSnackbar } = useSnackbar();
 
   if (localStorage.getItem('lessonsData') === null) {
     
-localStorage.setItem('lessonsData',JSON.stringify([{  
-  topic: '',
+localStorage.setItem('lessonsData',JSON.stringify([{ 
+topic: '',
 learning_outcomes: [],
 teachingHours: [],
 allocation: [],
@@ -93,7 +91,7 @@ items: [],
 remembering: [],
 understanding: [],
 applying: [],
-analyzing: [],
+analyzing: [], 
 evaluating: [],
 creating: [],
 total: [],
@@ -110,7 +108,8 @@ taxonomy_levels: {
   Analyzing:0,
   Evaluating:0,
   Creating:0
-}
+},
+total_tokens:0
 }]));
   } 
 
@@ -560,9 +559,6 @@ function getInnerNumItems(totalItems,allocation){
 }
 
 function getRemembering(remembering,items){
-
-
-
   return roundNum((remembering/100)*items)
 }
 
@@ -677,8 +673,6 @@ function getPlacement(total,placements){
   }
   else{
 
-
-
   start = placements.splice(0,total-1)[0];
   end = placements.splice(0,1);
   if(start === undefined || end === undefined){
@@ -689,8 +683,6 @@ function getPlacement(total,placements){
   }
 }
     
-  
-
 }
 
 const handleInnerLessonDataChange = (index,subIndex, field, value) => {
@@ -713,8 +705,11 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
       for(let k=0;k<newData[i]['allocation'].length;k++){
         newData[i]['allocation'][k] = getInnerAllocation(Number(newData[i][field][k]),sumHours,lessonAlloc)
       }
-    
+      if (!Array.isArray(newData[i]['allocation'])) {
+  newData[i]['allocation'] = Array(newData[i][field].length).fill(0);
+}
       const sumAlloc =  newData[i]['allocation'].reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
       const lessonItem = getNumItems(totalItems,sumAlloc)
       console.log('showitems:l',lessonItem)
       for(let k=0;k<newData[i]['items'].length;k++){
@@ -2564,7 +2559,8 @@ const [formData, setFormData] = useState({
   Faculty: '',
   Chairperson: '',
   Dean: '',
-  Director: ''
+  Director: '',
+  total_tokens:0
 });
 
 
@@ -2633,6 +2629,8 @@ const sendDataToBackendLearningOutcomes = async (dataArray) => {
     console.error('Error sending data:', error);
   }
 };
+
+
 
 
   const handleChange = (event) => {
@@ -3230,8 +3228,8 @@ return api.post("/api/tos-content/", { lessonsDataJson })
           api.post(`api/notification/admin/`, {AdminNotifDataJson});
 
            
-                Submit===true?setSubmitToast(true):setToast(true)
-                
+                Submit===true? enqueueSnackbar("Exam created and submitted successfully!",{variant:"success"}):enqueueSnackbar("Exam successfully created!",{variant:"success"})
+               
                 setStep(1)
 
             
@@ -3281,9 +3279,16 @@ useEffect(()=>{
       lesson.Title === formData.Title &&
       lesson.Semester === formData.Semester &&
       lesson.Term === formData.Term &&
-      lesson.AcademicYear === formData.AcademicYear
+      lesson.ExaminationDate === formData.ExaminationDate
+      
     );
-  
+
+    data.map((lesson) =>
+
+  console.log("acadyear",lesson.ExaminationDate,formData.ExaminationDate )
+    );
+ 
+
     setExist(exists);
   })
   .catch((err) => alert(err));
@@ -3302,13 +3307,13 @@ const handleNext = () => {
    
 
       if(exist==true){
-        addToast('This exam already exists.');
+        enqueueSnackbar('This exam already exists.',{variant:"warning"});
         return
       }
       
   if(formData.ExaminationDate==''){
 
-    addToast('Select date');
+    enqueueSnackbar('Select date',{variant:"warning"});
     setDateError(true)
  
    } else{
@@ -3317,7 +3322,7 @@ const handleNext = () => {
  
    if(formData.Title==''){
  
-     addToast('Choose course');
+     enqueueSnackbar('Choose course',{variant:"warning"});
      setCourseError(true)
  
    }
@@ -3326,7 +3331,7 @@ const handleNext = () => {
    }
  
    if(formData.ExaminationType.length == 0){
-     addToast('Choose a type of examination');
+     enqueueSnackbar('Choose a type of examination',{variant:"warning"});
      setTestError(true)
  
    }
@@ -3343,14 +3348,14 @@ const handleNext = () => {
     let err = 0
     lessonsDataInitial.map((data,index)=>{
       if(data.file_status == ''){
-        addToast(`Please upload a file for lesson ${index+1}`)
+        enqueueSnackbar(`Please upload a file for lesson ${index+1}`,{variant:"warning"})
         err++
       }
      
     })
 
     if(totalItems==0){
-      addToast(`Please input a total number of items`)
+      enqueueSnackbar(`Please input a total number of items`,{variant:"warning"})
     }
 
    
@@ -3359,7 +3364,7 @@ const handleNext = () => {
       lessonsDataInitial.map((data,index)=>{
         data.teachingHours.map((hours,idx)=>{
           if(hours == 0){
-            addToast(`Please input the number of teaching hours for lesson ${index+1}, learning outcome ${idx+1}`)
+           enqueueSnackbar(`Please input the number of teaching hours for lesson ${index+1}, learning outcome ${idx+1}`,{variant:"warning"})
             err3++
           }
         })
@@ -3599,7 +3604,7 @@ const handleSubmitExam = () =>{
       // Combine allocations into a single object if needed (flatten or process further)
       const combinedAllocations = allocationsArray.flat();
   
-      console.log('Allocations Array: ', combinedAllocations);
+      console.log('Allocations Arraytos2: ', combinedAllocations);
   
       // Update the specific lesson with the new taxonomy levels
       const updatedLessonsData = [...lessonsDataInitial];
@@ -3720,6 +3725,7 @@ const handleSubmitExam = () =>{
   return (
     <div >
 <form onSubmit={handleSubmit}>
+
   
 <Card className={`mb-5 ${step == 1? 'show':'hidden'}`} > 
 
@@ -3756,7 +3762,7 @@ const handleSubmitExam = () =>{
   ))
 }
 
-             {JSON.stringify(course)}
+          
           
          
            </Select>
@@ -4007,18 +4013,17 @@ const handleSubmitExam = () =>{
         oneAllocation={handleOneAllocation}
 
 
-
-       
-      />
-<div className="flex gap-3"> 
-     
-
+        taxonomyRange={
+          <div className="flex gap-3"> 
       <Card className=" gap-4 mb-5  w-full p-3"> 
         <div>
-
         <div className="mb-3">
         {/* <ToggleSwitch checked={specific} label={specific?'Locked':'Unlocked'} onChange={setSpecific} color={"primary"} className="mx-auto" /> */}
         </div>
+<h1>
+
+</h1>
+        <h1 className='text-center font-bold'>Overall Taxonomy Allocation</h1>
 
       {/* <div className="max-w-md flex gap-5">
     
@@ -4133,8 +4138,126 @@ const handleSubmitExam = () =>{
         </Button> */}
       </div>
       </Card>
+      </div> 
+        }
+       
+      />
+{/* <div className="flex gap-3"> 
+     
+
+      <Card className=" gap-4 mb-5  w-full p-3"> 
+        <div>
+        <div className="mb-3">
+    
+        </div>
+
 
       </div>
+      <div>
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Remembering" />
+        </div>
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Remembering} onChange={handleRememberingChange} disabled={specific} />
+        <div className="flex">
+        <input type="number" disabled={specific}  className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Remembering}  onChange={handleRememberingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
+      </div>
+
+
+      <div>
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Understanding" />
+        </div>
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Understanding} onChange={handleUnderstandingChange} disabled={specific} />
+        <div className="flex">
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Understanding} disabled={specific}  onChange={handleUnderstandingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
+      </div>
+
+
+      <div>
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Applying" />
+        </div>
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Applying} onChange={handleApplyingChange} disabled={specific} />
+        <div className="flex">
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Applying} disabled={specific}  onChange={handleApplyingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
+      </div>
+
+
+      <div>
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Analyzing" />
+        </div>
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Analyzing} onChange={handleAnalyzingChange} disabled={specific} />
+        <div className="flex">
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Analyzing} disabled={specific}   onChange={handleAnalyzingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
+      </div>
+
+
+
+      <div>
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Evaluating" />
+        </div>
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Evaluating} onChange={handleEvaluatingChange} disabled={specific} />
+        <div className="flex">
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Evaluating} disabled={specific}  onChange={handleEvaluatingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
+      </div>
+
+
+      <div>
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Creating" />
+        </div>
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Creating} onChange={handleCreatingChange} disabled={specific} />
+        <div className="flex">
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Creating} disabled={specific}   onChange={handleCreatingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
+      </div>
+      <hr  />
+      <div className=" flex justify-between"> 
+      <span className="max-w-96 mr-20">Total:</span>
+      <span className="w-full text-center">
+      <Progress
+      
+      progress={getTotalTaxonomy}
+      progressLabelPosition="inside"
+  
+      color={'primary'}
+      className=" hidden md:block"
+    
+      size="lg"
+     
+    />
+   
+      {checkTaxonomy(getTotalTaxonomy)} </span>
+      <span className="max-w-96 ml-6 flex justify-end ">
+        <div className="w-10 font-bold">
+        {getTotalTaxonomy}%</div></span> 
+      
+      </div>
+      <div className="my-3">
+
+      </div>
+      </Card>
+
+      </div> */}
 
        
       </Card>
@@ -4283,7 +4406,7 @@ const handleSubmitExam = () =>{
       </Card>
 
         <div className={`mb-5 ${step == 3? 'show':'hidden'}`}>
-      <Examtest setTOSPdfModal={setPdfModal} saveDataToLocalStorageTestPart={saveDataToLocalStorageTestPart} files={files} setExamTitle={setExamTitle} items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} setLoading={setLoadingGenerate} context={context} setContext={setContext} formData={formData} handleLessonDataChange={handleLessonDataChange} addToast={addToast}/>
+      <Examtest updateformData={formData} setFormData={setFormData} setTOSPdfModal={setPdfModal} saveDataToLocalStorageTestPart={saveDataToLocalStorageTestPart} files={files} setExamTitle={setExamTitle} items={totalItems} tos_id={tos_id} lessonsData={lessonsData} examStates={examStates} setExamStates={setExamStates} handleStateChange={handleStateChange} ExamTitle={ExamTitle} handleExamTitleChange={handleExamTitleChange} handleRadioAnswer={handleRadioAnswer} TestPart={TestPart} setTestPart={setTestPart} handleTestPartChange={handleTestPartChange} saveDataToLocalStorageQuestion={saveDataToLocalStorageQuestion} setSubmit={setSubmit} setLoading={setLoadingGenerate} context={context} setContext={setContext} formData={formData} handleLessonDataChange={handleLessonDataChange} addToast={addToast}/>
 
 
     
@@ -4321,8 +4444,9 @@ const handleSubmitExam = () =>{
       </div>
       </div>
 
- 
-     
+
+
+
       </div>
     </div>
   );

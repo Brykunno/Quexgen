@@ -11,8 +11,10 @@ import Topnavbar from '../../components/Topnavbar';
 import ToastMessage from '../../components/Toast';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { Autocomplete, TextField, Chip } from '@mui/material';
+import { useSnackbar } from 'notistack';
 
 function Instructors() {
+  const { enqueueSnackbar } = useSnackbar();
   const [user, setUser] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -35,7 +37,7 @@ function Instructors() {
   const [courses,setCourses] = useState([])
 
   const [updateOptions,setUpdateOptions] = useState([]);
-
+  const [refresh,setRefresh] = useState(false)
 
 
 
@@ -49,8 +51,7 @@ function Instructors() {
       .catch((err) => {
         console.error("Error fetching courses:", err);
       });
-
-      api.get(`/api/teacherCourse/`)
+api.get(`/api/teacherCourse/`)
       .then((res) => {
        
         setTeacherCourse(res.data);
@@ -59,8 +60,9 @@ function Instructors() {
         console.error("Error fetching courses:", err);
       });
 
-
   }, []);
+
+  
   
 
   useEffect(() => {
@@ -78,7 +80,7 @@ function Instructors() {
   useEffect(() => {
     document.title = "Home";
     getUser();
-  },[]);
+  },[refresh]);
 
   const getUser = () => {
     api.get(`/api/user/account/admin/`)
@@ -139,7 +141,7 @@ function Instructors() {
     api
       .put(`/api/users/${selectedUserId}/`, updatedUser)
       .then((res) => {
-        console.log('User updated successfully', res.data);
+
         getUser(); // Refresh the user list after the update
       })
       .catch((err) => {
@@ -181,6 +183,8 @@ function Instructors() {
           });
       }
     });
+
+    enqueueSnackbar("User successfully updated!", { variant: 'success' });
   };
   
   
@@ -267,11 +271,11 @@ function Instructors() {
           <Table striped>
             <Table.Head>
               <Table.HeadCell>Username</Table.HeadCell>
-              <Table.HeadCell>First Name</Table.HeadCell>
-              <Table.HeadCell>Last Name</Table.HeadCell>
-              <Table.HeadCell>Position</Table.HeadCell>
+              <Table.HeadCell className="hidden lg:table-cell">First Name</Table.HeadCell>
+              <Table.HeadCell className="hidden lg:table-cell">Last Name</Table.HeadCell>
+              <Table.HeadCell className="hidden lg:table-cell">Position</Table.HeadCell>
               <Table.HeadCell>Action</Table.HeadCell>
-              <Table.HeadCell>Status</Table.HeadCell>
+              <Table.HeadCell >Status</Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
               {currentUsers.length > 0 ? (
@@ -280,10 +284,10 @@ function Instructors() {
                     <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                       {user.username}
                     </Table.Cell>
-                    <Table.Cell>{user.first_name}</Table.Cell>
-                    <Table.Cell>{user.last_name}</Table.Cell>
-                    <Table.Cell>{user.is_staff ? 'Instructor' : 'Admin'}</Table.Cell>
-                    <Table.Cell className='flex gap-3'>
+                    <Table.Cell className="hidden lg:table-cell">{user.first_name}</Table.Cell>
+                    <Table.Cell className="hidden lg:table-cell">{user.last_name}</Table.Cell>
+                    <Table.Cell className="hidden lg:table-cell">{user.is_staff ? 'Instructor' : 'Admin'}</Table.Cell>
+                    <Table.Cell className="flex gap-3">
                       <Button
                         color={'primary'}
                         variant='contained'
@@ -297,7 +301,13 @@ function Instructors() {
                      
                       {user.is_active!==true? <Button size={'small'} variant='contained' color={'success'} onClick={()=>{handleUserActivate(user.id)}}><PowerSettingsNewIcon/><p className='mt-1 ml-1'>Activate</p></Button>:  <Button size={'small'} variant='contained' color={'error'} onClick={()=>{handleUserArchive(user.id)}}><HideSourceIcon/><p className='mt-1 ml-1'>Deactivate</p></Button>}
                     </Table.Cell>
-                    <Table.Cell>{user.is_active ? <div className='text-green-600 font-bold'>Active</div> : <div className='text-red-600 font-bold'>Deactivated</div>}</Table.Cell>
+                    <Table.Cell >
+                      {user.is_active ? (
+                        <div className='text-green-600 font-bold'>Active</div>
+                      ) : (
+                        <div className='text-red-600 font-bold'>Deactivated</div>
+                      )}
+                    </Table.Cell>
                   </Table.Row>
                 ))
               ) : (
@@ -422,7 +432,7 @@ function Instructors() {
             </Modal.Footer>
           </Modal>
 
-      <Add_user setOpenModalAdd={setOpenModalAdd} openModalAdd={openModalAdd} setLoading={setLoading}/>
+      <Add_user refresh={refresh} setRefresh={setRefresh} setOpenModalAdd={setOpenModalAdd} openModalAdd={openModalAdd} setLoading={setLoading}/>
 
           <div className="flex justify-center mt-4">
             <Pagination
@@ -431,7 +441,7 @@ function Instructors() {
               onPageChange={handlePageChange}
               showIcons
             />
-            {loading && <ToastMessage message="Instructor successflly added!" setToast={setLoading}/>}
+
           </div>
         </div>
       </div>

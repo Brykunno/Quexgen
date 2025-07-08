@@ -1,10 +1,19 @@
-from django.contrib.auth.models import User
+
 from rest_framework import serializers
 from .models import *
 from django.conf import settings
 
 from djoser.email import PasswordResetEmail
 from django.core.mail import send_mail
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMessage
+from email.mime.image import MIMEImage
+import os
+
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -16,31 +25,68 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 from django.contrib.auth.hashers import make_password
 
+
+class CoursesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Courses
+        fields = ['id', 'course_name', 'course_code', 'course_type','status','course_syllabus']
+
+    def validate_course_name(self, value):
+        """Check if the course name is appropriate."""
+        if len(value) < 3:
+            raise serializers.ValidationError("Course name must be at least 3 characters long.")
+        return value
+    
+
+class TeacherCourseSerializer(serializers.ModelSerializer):
+
+     class Meta:
+         model = Teacher_Course
+         fields = ['id','user_id','course_id']
+
 class UserSerializer(serializers.ModelSerializer):
     profile_image = serializers.ImageField(source='profile.profile_image', required=False)
     profile_image_url = serializers.SerializerMethodField()
-
+    full_name = serializers.SerializerMethodField()
+    associated_courses = serializers.SerializerMethodField()
     class Meta:
         model = User
         fields = [
             "id",
             "username",
             "first_name",
+            "middle_name",
             "last_name",
+            "full_name",
             "email",
             "is_staff",
             "is_superuser",
             "is_active",
             "profile_image",
             "profile_image_url",
-            "password"
+            "password",
+            "associated_courses"
         ]
         extra_kwargs = {"password": {"write_only": True}}
 
+    def get_full_name(self, obj):
+        middle_name = obj.middle_name if hasattr(obj, "middle_name") and obj.middle_name else ""
+        if middle_name != "":
+            return f"{obj.first_name} {middle_name} {obj.last_name}".strip()
+        else:
+             return f"{obj.first_name} {obj.last_name}".strip()
+    
     def get_profile_image_url(self, obj):
         if hasattr(obj, 'profile') and obj.profile.profile_image:
             return obj.profile.profile_image.url
         return None
+    
+    def get_associated_courses(self, obj):
+        # Fetch the courses associated with the user
+        teacher_courses = Teacher_Course.objects.filter(user_id=obj.id)
+        course_ids = teacher_courses.values_list('course_id', flat=True)
+        courses = Courses.objects.filter(id__in=course_ids)
+        return CoursesSerializer(courses, many=True).data
 
     def create(self, validated_data):
         # Hash the password before saving the user
@@ -90,7 +136,7 @@ class LearningOutcomesSerializer(serializers.ModelSerializer):
         ]
         
 class TOSInfoSerializer(serializers.ModelSerializer):
-    
+    tos_info_date_added = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
     Status_display = serializers.CharField(source='get_Status_display', read_only=True)
     user = UserSerializer(read_only=True, source='teacher_tos_info')
     class Meta:
@@ -110,7 +156,9 @@ class TOSInfoSerializer(serializers.ModelSerializer):
             'Director',
             'user',
             'Status',
-            'Status_display'
+            'Status_display',
+            'total_tokens',
+            'tos_info_date_added'
         ]
         
 class ExamSerializer(serializers.ModelSerializer):
@@ -169,31 +217,66 @@ class CustomPasswordResetEmail(PasswordResetEmail):
     def send(self, *args, **kwargs):
         context = self.get_context_data()
         user = context.get('user')
-        reset_url = context['url']  # URL for password reset
+        reset_url = context['url']
 
-        # Compose the email message
-        email_message = f"""
-        You're receiving this email because you requested a password reset for your user account at Quexgen.com.
-
-        Please go to the following page and choose a new password:
-        http://localhost:5173/{reset_url}
-
-        Your username, in case you've forgotten: {user.username}
-
-        Thanks for using our site!
-
-        The Quexgen team
+        # Compose HTML email with image CID reference
+        html_message = f"""
+        <div style="font-family: Arial, sans-serif; background: #f4f4f4; padding: 40px 0;">
+          <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0001; padding: 32px;">
+            <div style="text-align: center; margin-bottom: 24px;">
+              <img src="cid:quexgen_logo" alt="Quexgen Logo" style="width: 64px; height: 64px; margin-bottom: 8px;" />
+              <h2 style="color: #1a237e; margin: 0;">Quexgen Password Reset</h2>
+            </div>
+              <p style="font-size: 16px; color: #333;">
+              You're receiving this email because you requested a password reset for your user account at <b>Quexgen.com</b>.
+            </p>
+            <p style="font-size: 16px; color: #333;">
+              Please click the button below to choose a new password:
+            </p>
+            <div style="text-align: center; margin: 32px 0;">
+              <a href="http://localhost:5173/{reset_url}" style="background: #3949ab; color: #fff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 16px; font-weight: bold;">
+                Reset Password
+              </a>
+            </div>
+            <p style="font-size: 15px; color: #333;"><b>Your username:</b> {user.username}</p>
+            <p style="font-size: 14px; color: #888; margin-top: 32px;">
+              If you did not request a password reset, please ignore this email.<br><br>Thanks for using our site!<br><b>The Quexgen Team</b>
+            </p>
+          </div>
+        </div>
         """
 
-        # Send the email
-        send_mail(
+        text_message = f"""
+You're receiving this email because you requested a password reset at Quexgen.com.
+
+Go here to reset your password:
+http://localhost:5173/{reset_url}
+
+Username: {user.username}
+
+Thanks!
+The Quexgen Team
+        """
+
+        # Create the email object
+        email = EmailMultiAlternatives(
             subject="Password Reset Request",
-            message=email_message,
+            body=text_message,
             from_email="quexgen@gmail.com",
-            recipient_list=[user.email],  # Send email to the user
-            fail_silently=False,
+            to=[user.email]
         )
-        
+        email.attach_alternative(html_message, "text/html")
+
+        # Attach the image
+        image_path = os.path.join(settings.MEDIA_ROOT, "assets/quexgen.png")
+        with open(image_path, 'rb') as img:
+            logo = MIMEImage(img.read())
+            logo.add_header('Content-ID', '<quexgen_logo>')  # Matches cid in HTML
+            logo.add_header("Content-Disposition", "inline", filename="quexgen.png")
+            email.attach(logo)
+
+        # Send the email
+        email.send()
 class FileUploadSerializer(serializers.ModelSerializer):
       class Meta:
         model = FileUpload
@@ -204,17 +287,7 @@ class ExamDatesSerializer(serializers.ModelSerializer):
         model = ExamDates
         fields = ['id', 'midterm_exam','finals_exam','summer_exam']
         
-class CoursesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Courses
-        fields = ['id', 'course_name', 'course_code', 'course_type','course_syllabus']
 
-    def validate_course_name(self, value):
-        """Check if the course name is appropriate."""
-        if len(value) < 3:
-            raise serializers.ValidationError("Course name must be at least 3 characters long.")
-        return value
-    
 class SettingsSerializer(serializers.ModelSerializer):
      class Meta:
         model = Settings
@@ -232,7 +305,4 @@ class TaxonomySerializer(serializers.ModelSerializer):
          fields = ['id','remembering','understanding','applying','analyzing','evaluating','creating','tos_content_id']
          
          
-class TeacherCourseSerializer(serializers.ModelSerializer):
-     class Meta:
-         model = Teacher_Course
-         fields = ['id','user_id','course_id']
+

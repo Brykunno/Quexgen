@@ -9,15 +9,19 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import { saveAs } from 'file-saver'; // FileSaver.js for saving the Excel file
-import * as XLSX from 'xlsx'; // xlsx for creating Excel file
-import { MenuItem, Select, FormControl, InputLabel } from '@mui/material';
-import { format, startOfYear, startOfMonth, startOfWeek, startOfDay, isWithinInterval } from 'date-fns'; // for date manipulation
+import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
+import { MenuItem, Select, FormControl, InputLabel, TextField } from '@mui/material';
+import { format, isWithinInterval } from 'date-fns';
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import PrintIcon from '@mui/icons-material/Print';
 
 function Logs() {
   const [logs, setLogs] = useState([]);
   const [filteredLogs, setFilteredLogs] = useState([]);
-  const [timePeriod, setTimePeriod] = useState('yearly'); // Default is daily
+  const [timePeriod, setTimePeriod] = useState('all');
+  const [startDate, setStartDate] = useState(format(new Date(), 'yyyy-MM-01'));
+  const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
 
   useEffect(() => {
     getLogs();
@@ -25,39 +29,38 @@ function Logs() {
 
   useEffect(() => {
     filterLogs();
-  }, [logs, timePeriod]);
+  }, [logs, timePeriod, startDate, endDate]);
 
   const getLogs = () => {
     api
       .get(`/api/logs/`)
       .then((res) => res.data)
       .then((data) => {
-        setLogs(data);
-        console.log('datalogs:', data);
+        // Sort logs from latest to oldest by log_date
+        const sorted = data.sort((a, b) => new Date(b.log_date) - new Date(a.log_date));
+        setLogs(sorted);
+        console.log('datalogs:', sorted);
       })
       .catch((err) => alert(err));
   };
 
   const filterLogs = () => {
-    const now = new Date();
     let filtered = [];
-
-    switch (timePeriod) {
-      case 'yearly':
-        filtered = logs.filter(log => isWithinInterval(new Date(log.log_date), { start: startOfYear(now), end: now }));
-        break;
-      case 'monthly':
-        filtered = logs.filter(log => isWithinInterval(new Date(log.log_date), { start: startOfMonth(now), end: now }));
-        break;
-      case 'weekly':
-        filtered = logs.filter(log => isWithinInterval(new Date(log.log_date), { start: startOfWeek(now), end: now }));
-        break;
-      case 'daily':
-      default:
-        filtered = logs.filter(log => isWithinInterval(new Date(log.log_date), { start: startOfDay(now), end: now }));
-        break;
+    if (
+      timePeriod === 'range' &&
+      startDate !== '' &&
+      endDate !== '' &&
+      startDate <= endDate
+    ) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      filtered = logs.filter(log =>
+        isWithinInterval(new Date(log.log_date), { start, end })
+      );
+    } else {
+      // Show all logs if no valid range is selected
+      filtered = logs;
     }
-
     setFilteredLogs(filtered);
   };
 
@@ -73,7 +76,7 @@ function Logs() {
         hour12: false,
       }).format(new Date(date));
     } catch {
-      return date; // Fallback to original format if parsing fails
+      return date;
     }
   };
 
@@ -85,8 +88,6 @@ function Logs() {
     })));
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Logs');
-    
-    // Export to file
     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     const file = new Blob([excelBuffer], { bookType: 'xlsx', type: 'application/octet-stream' });
     saveAs(file, 'logs_report.xlsx');
@@ -120,27 +121,51 @@ function Logs() {
     <div>
       <Topnavbar title="Logs" />
       <div className="content">
-        <div className="mb-3 flex justify-between ">
-          <FormControl variant="outlined" size="small" style={{ marginRight: '10px' }}>
+        <div className="mb-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <FormControl variant="outlined" size="small" style={{ minWidth: 140 }}>
             <InputLabel>Time Period</InputLabel>
             <Select
               value={timePeriod}
               onChange={(e) => setTimePeriod(e.target.value)}
               label="Time Period"
             >
-              <MenuItem value="daily">Daily</MenuItem>
-              <MenuItem value="weekly">Weekly</MenuItem>
-              <MenuItem value="monthly">Monthly</MenuItem>
-              <MenuItem value="yearly">Yearly</MenuItem>
+              <MenuItem value="all">All</MenuItem>
+              <MenuItem value="range">Date Range</MenuItem>
             </Select>
           </FormControl>
-          <div >
-          <Button variant="contained" color="primary" onClick={exportToExcel}>
-            Export to Excel
-          </Button>
-          <Button variant="contained" color="secondary"  onClick={printTable} style={{ marginLeft: '10px' }}>
-            Print
-          </Button>
+          {timePeriod === 'range' && (
+            <div className="flex gap-2 items-center">
+              <TextField
+                label="Start Date"
+                type="date"
+                size="small"
+                value={startDate}
+                onChange={e => setStartDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                label="End Date"
+                type="date"
+                size="small"
+                value={endDate}
+                onChange={e => setEndDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+              />
+            </div>
+          )}
+          <div>
+            <Button variant="contained" color="primary" onClick={exportToExcel} startIcon={<SaveAltIcon />}>
+              Export to Excel
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={printTable}
+              style={{ marginLeft: '10px' }}
+              startIcon={<PrintIcon />}
+            >
+              Print
+            </Button>
           </div>
         </div>
         <TableContainer component={Paper}>

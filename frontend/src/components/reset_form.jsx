@@ -22,7 +22,7 @@ const Reset_form = () => {
             text: message,
             icon: status,
             confirmButtonText: "Proceed",
-            confirmButtonColor: '#060164',
+            confirmButtonColor: '#0f23a5',
             preConfirm: () => {
                 if(success === true){
                         window.location.href = "/login"

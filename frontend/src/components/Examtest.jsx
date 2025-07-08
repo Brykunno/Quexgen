@@ -27,6 +27,7 @@ import LoadingGeneratePsu from './LoadingGeneratePsu';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import { useSnackbar } from 'notistack';
 import CircularProgress, {
   circularProgressClasses,
 } from '@mui/material/CircularProgress';
@@ -43,10 +44,10 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'light' ? 'primary' : '#308fe8',
   },
 }));
-function Examtest ({handleLessonDataChange, saveDataToLocalStorageTestPart,files,items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext,formData,setTOSPdfModal,addToast}) {
+function Examtest ({updateformData,setFormData,setLessonsDatainitial,handleLessonDataChange, saveDataToLocalStorageTestPart,files,items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext,formData,setTOSPdfModal,addToast}) {
 
 
-
+  const { enqueueSnackbar } = useSnackbar();
   const [disableAdd,setDisableAdd] = useState(false)
   const [disableAddTestMcq,setDisableAddTestMcq] = useState(false)
   const [disableAddTestIdentification,setDisableAddTestIdentification] = useState(false)
@@ -137,7 +138,7 @@ function Examtest ({handleLessonDataChange, saveDataToLocalStorageTestPart,files
       for(let i = 0; i<response.data.choices.length;i++){
         handleStateChange(response.data.index,i,response.data.choices[i])
       }
-        console.log('Response data:', response.data.choices[0]);
+       
     })
     .catch(error => {
         console.error('There was an error!', error);
@@ -239,18 +240,19 @@ const lessons = lessonsData.reduce((acc, cat,index) => {
   for(let k=0;k<cat.learning_outcomes.length;k++){
     const start = stringToIntegerStart(String(cat.placement[k]));
     const end = stringToIntegerEnd(String(cat.placement[k]));
+   
+
+    if(isNaN(end)){
+      subnum++;
+    }else{
     for (let i = start; i <= end; i++) {
       subnum++;
+   
       };
- 
+    }
+
   }
-
 acc[index] = subnum;
-       
-
- 
-      
-    
     return acc;
   }, {});
 
@@ -267,7 +269,7 @@ acc[index] = subnum;
   };
 
 
-  console.log('categories: ',categories[1])
+
 
   function stringToIntegerStart(placement) {
     const parts = placement.split(" - ");
@@ -983,8 +985,7 @@ let num4 = 1
         acc[item.test_part_num] = (acc[item.test_part_num] || 0) + 1;
         return acc;
       }, {}));
-    console.log(`Unique test_part_num values: ${uniqueTestPartNums}`);
-
+   
       disableBtn();
       disableBtnShowPart();
       const test1 = examStates.filter(test => test.question_type === 'mcq').length;
@@ -1070,7 +1071,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       }
     ]);
 
-    console.log("TestPart: ",TestPart)
+   
   };
 
 
@@ -1162,7 +1163,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
   const handleFileProcessing = async () => {
 
     if(testTotal!=items){
-      addToast("The total number of exam items doesn't match the desired number of items.")
+      enqueueSnackbar("The total number of exam items doesn't match the desired number of items.",{variant:'warning'})
       return
     }
 
@@ -1236,7 +1237,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       if (!files[i]) return alert('Please select a file.');
       const formData = new FormData();
 
-      console.log('numberbug:',num)
+    
       
       formData.append('file', files[i]); // Append the selected file
   
@@ -1261,13 +1262,13 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
 
         formData.append('mcq', mcq);
 
-        console.log("mcqtrail: ",mcq)
+     
         formData.append('identification', identification);
         
         formData.append('trueOrFalse', trueOrFalse);
         formData.append('subjective', subtest);
         formData.append('numques', lessons[num]);
-        console.log("numtrail: ",lessons[num])
+   
         formData.append('Remembering', rememberingTotal);
         formData.append('Understanding', understandingTotal);
         formData.append('Applying', applyingTotal);
@@ -1292,9 +1293,21 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
   
        
  
-        // Process the response
-        const dataques = response.data.generated_questions;
-        console.log('Processed response:', dataques);
+  // Process the response
+const dataques = response.data.generated_questions;
+
+
+const updatedFormData = {
+  ...(updateformData || {}),
+  total_tokens: (updateformData?.total_tokens || 0) +
+    dataques.reduce(
+      (acc, item) => acc + (parseInt(item.question?.total_tokens) || 0),
+      0
+    )
+};
+setFormData(updatedFormData);
+localStorage.setItem('formData', JSON.stringify(updatedFormData));
+
   
 
         // Check if data is an array before using map
@@ -1307,7 +1320,9 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
                 choices:
                   item.question.test_type === 'trueOrFalse' || !item.question.choices
                     ? []
-                    : item.question.choices.slice(0, 4), // Use slice to prevent accessing out of bounds
+                    :  item.question.choices.slice(0, 4).map(choice => 
+          choice.replace(/^\s*[-–•]\s*/, '') // Remove leading dash, bullet, etc.
+        ), // Use slice to prevent accessing out of bounds
                 question_type: item.question.test_type || '',
                 answer: item.question.answer || '',
                 test_part_num: 1,
@@ -1681,7 +1696,6 @@ setTestPart([])
    
     {loadingpercent && <LoadingGeneratePsu percent={percent}/>}
 
-    
   </div>
   
   );

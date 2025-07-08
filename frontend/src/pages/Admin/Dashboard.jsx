@@ -11,6 +11,10 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import dayjs from 'dayjs';
 import Topnavbar from '../../components/Topnavbar';
 import ToastMessage from '../../components/Toast';
+import Barchart from './Charts/Barchart.jsx';
+import DataGrid from './Charts/DataGrid.jsx';
+import Piechart from './Charts/Piechart.jsx';
+
 
 const localizer = momentLocalizer(moment);
 
@@ -73,38 +77,46 @@ function Dashboard() {
   };
 
   const handleSubmit = () => {
-    
     const examDatesJson = JSON.stringify(examDates);
-  
-    // Check if examDates already contains data
-    if (examDates.midterm_exam || examDates.finals_exam || examDates.summer_exam) {
-      // If data exists, update it
-      api.put(`/api/exam-dates/1/`, examDates) // Use PUT to update the exam dates with ID 1
-        .then(response => {
-          console.log('Exam dates updated:', response.data);
-          setLoading(true)
-          // Optionally show a success message
-        })
-        .catch(error => {
-          console.error('There was an error updating the exam dates:', error.response.data);
-        });
-    } else {
-      // If no data exists, create a new record
-      api.post("/api/exam-dates/", examDates) // Use POST to add new exam dates
-        .then(response => {
-          console.log('Exam dates added:', response.data);
-          setLoading(true)
-          // Optionally reset form or show success message
-        })
-        .catch(error => {
-          console.error('There was an error creating the exam dates:', error.response.data);
-        });
-    }
 
+    // Always try to insert first (POST), if it fails due to existing record, then update (PUT)
+    api.post("/api/exam-dates/", examDates)
+      .then(response => {
+        console.log('Exam dates added:', response.data);
+        setLoading(true);
+        // Optionally reset form or show success message
+      })
+      .catch(error => {
+        // If already exists (e.g., 400 or 409), then update instead
+        if (
+          error.response &&
+          (error.response.status === 400 || error.response.status === 409)
+        ) {
+          api.put(`/api/exam-dates/1/`, examDates)
+            .then(response => {
+              console.log('Exam dates updated:', response.data);
+              setLoading(true);
+            })
+            .catch(error2 => {
+              console.error('There was an error updating the exam dates:', error2.response?.data || error2);
+            });
+        } else {
+          console.error('There was an error creating the exam dates:', error.response?.data || error);
+        }
+      });
   };
   
   const StaffUsersCount = user.filter((u) => u.is_staff === true).length;
   const toreviewCount = TOSInfo.filter((r) => r.Status === 1).length;
+ const currentMonth = dayjs().month();
+const currentYear = dayjs().year();
+
+const token_usage_this_month = TOSInfo
+  .filter(item => {
+    const date = dayjs(item.tos_info_date_added);
+    return date.month() === currentMonth && date.year() === currentYear;
+  })
+  .reduce((acc, tokens) => acc + tokens.total_tokens, 0);
 
   
   const sampleEvents = [
@@ -127,7 +139,7 @@ function Dashboard() {
   
 
   const eventStyleGetter = (event) => {
-    let backgroundColor = '#060164'; // Default color
+    let backgroundColor = '#0f23a5'; // Default color
     return {
       style: {
         backgroundColor,
@@ -145,12 +157,12 @@ function Dashboard() {
       <div className='content'>
         <div className='flex flex-col gap-5 '>
         <div className='flex flex-col gap-5'>
-  <div className='flex flex-col gap-5 md:flex-row'>
+  <div className='flex flex-col gap-5 lg:flex-row'>
     <Card className='flex-1 bg-blue-500 text-white w-full'>
       <div className="flex flex-row gap-5 items-center">
         <div><SupervisedUserCircleIcon style={{ height: '60px', width: '60px' }} /></div>
         <div className='py-1'>
-          <div className="text-white font-bold">Teachers</div>
+          <div className="text-white font-bold">Instructors</div>
           <span className='font-bold text-2xl'>{StaffUsersCount}</span>
         </div>
       </div>
@@ -175,12 +187,34 @@ function Dashboard() {
         </div>
       </div>
     </Card>
+
+        <Card className='flex-1 bg-green-400 text-white w-full'>
+      <div className="flex flex-row gap-5 items-center">
+        <div><RateReviewIcon style={{ height: '60px', width: '60px' }} /></div>
+        <div className='py-1'>
+          <div className="text-white font-bold">Token Usage This Month</div>
+          <span className='font-bold text-2xl'>{token_usage_this_month.toLocaleString()}</span>
+        </div>
+      </div>
+    </Card>
   </div>
 </div>
 
+<div className='flex flex-col lg:flex-row gap-5'>
+    <div className='flex-1 flex-col gap-5'>
 
-          <Card>
-          <div className='flex flex-col gap-5 md:flex-row'>
+      {<Barchart />}
+      {/* <div>
+ {<Piechart />}
+      </div> */}
+           
+        {<DataGrid />}
+      
+          </div>
+          <div className='flex-1'>
+            <div> 
+   <Card >
+          <div className='flex flex-col gap-5 lg:flex-row'>
   <div className='flex-1 w-full'>
     <Label>Midterm exam</Label>
     <TextInput
@@ -229,6 +263,13 @@ function Dashboard() {
               <Button color={'primary'} variant='contained' className='mx-auto' onClick={handleSubmit}>Update</Button>
             </div>
           </Card>
+          </div>
+          </div>
+
+        
+</div>
+       
+    
           {loading && <ToastMessage message={"Exam dates successfully updated"} setToast={setLoading}/>}
         
         </div>

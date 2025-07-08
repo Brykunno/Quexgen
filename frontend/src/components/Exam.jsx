@@ -103,7 +103,7 @@ function Exam ({ items, tos_id, lessonsData,handleStateChange,examStates,setExam
       for(let i = 0; i<response.data.choices.length;i++){
         handleStateChange(response.data.index,i,response.data.choices[i])
       }
-        console.log('Response data:', response.data.choices[0]);
+       
     })
     .catch(error => {
         console.error('There was an error!', error);
@@ -183,7 +183,7 @@ function checkAnswer(localStore, answer){
   };
 
 
-  console.log('categories: ',categories[1])
+ 
 
   function stringToIntegerStart(placement) {
     const parts = placement.split(" - ");
@@ -782,7 +782,7 @@ function checkAnswer(localStore, answer){
         acc[item.test_part_num] = (acc[item.test_part_num] || 0) + 1;
         return acc;
       }, {}));
-    console.log(`Unique test_part_num values: ${uniqueTestPartNums}`);
+  
 
 
       setTest1(examStates.filter(item => item.test_part_num === 1).length);
@@ -859,7 +859,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
       }
     ]);
 
-    console.log("TestPart: ",TestPart)
+   
   };
 
 

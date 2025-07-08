@@ -31,13 +31,13 @@ const Menu = ({
 
         <div className='flex '>
          {/* Example of other content */}
-         <div className='md:hidden flex-1 mt-2'>
+         <div className='xl:hidden flex-1 mt-2'>
          {showPart && <p >Currently Viewing: Test Part {showPart}</p>}
          </div>
    
       
       {/* Burger Icon */}
-      <div className="md:hidden  justify-end items-center ">
+      <div className="xl:hidden  justify-end items-center ">
         <Button
           color="primary"
           onClick={() => setMenuOpen(!isMenuOpen)}
@@ -55,13 +55,13 @@ const Menu = ({
 
       {/* Menu Content */}
       <div
-        className={`flex flex-col md:flex-row gap-3 transition-all duration-300 ${
+        className={`flex flex-col xl:flex-row gap-3 transition-all duration-300 ${
           isMenuOpen ? 'block' : 'hidden'
-        } md:block`}
+        } xl:block`}
       >
-        <div className='flex flex-col md:flex-row gap-3'>
+        <div className='flex flex-col xl:flex-row gap-3'>
         {/* Left Section */}
-        <div className="flex flex-col md:flex-row gap-5 justify-start">
+        <div className="flex flex-col xl:flex-row gap-5 justify-start">
           <Button
             color="primary"
             onClick={() => setShowPart(1)}
@@ -103,7 +103,7 @@ const Menu = ({
         </div>
 
         {/* Right Section */}
-        <div className="flex flex-col md:flex-row flex-1 gap-5 justify-end">
+        <div className="flex flex-col xl:flex-row flex-1 gap-5 justify-end">
           <Button
             color="primary"
             onClick={() => setTOSPdfModal(true)}

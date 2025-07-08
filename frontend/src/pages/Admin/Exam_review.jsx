@@ -709,7 +709,7 @@ if (getQuestion.length && getAnswer.length) {
       <div className='mb-4'>
         <BreadCrumb crumbItem={crumbItem}/>
         </div>
-        <div className=' flex gap-8'>
+        <div className=' flex flex-col xl:flex-row gap-8'>
       <div >
    
         <Card>
@@ -761,7 +761,7 @@ if (getQuestion.length && getAnswer.length) {
 
     
    
-    <Table className="text-center ">
+    <Table className="text-center min-h-[500px]">
 
   <Table.Head>
     <Table.HeadCell className='text-lg font-bold' >Lesson/Topics</Table.HeadCell>

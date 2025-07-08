@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.contrib.auth.models import User
+
 from rest_framework import generics
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -14,6 +14,11 @@ from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import ValidationError
 from rest_framework.decorators import action
+from rest_framework.generics import DestroyAPIView
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
 
 
 
@@ -89,6 +94,23 @@ class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            # Print detailed validation errors to the console
+            print("Validation errors:", serializer.errors)
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Validation errors occurred.",
+                    "errors": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
     
     
 class TOSContentRetrieve(generics.ListAPIView):
@@ -223,7 +245,15 @@ class TOSInfoCreateView(generics.ListCreateAPIView):
         
         return Response(response_data, status=status.HTTP_201_CREATED)
     
-    
+class TOSInfoDelete(DestroyAPIView):
+    queryset = TOS_info.objects.all()
+    serializer_class = TOSInfoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Optionally, restrict deletion to the owner
+        user = self.request.user
+        return TOS_info.objects.filter(teacher_tos_info=user.id)
 
 
 class ExamCreateView(generics.ListCreateAPIView):
@@ -674,6 +704,20 @@ class ExamDatesCreateView(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         """Create a new exam date"""
+        # Example: Assume only one ExamDates instance should exist (or unique per some field)
+        # Adjust the filter below if you want uniqueness per user/course/etc.
+        if ExamDates.objects.exists():
+            error_msg = "Exam dates already exist. Please update the existing record instead."
+            print("Validation errors:", {"non_field_errors": [error_msg]})
+            return Response(
+                {
+                    "status": "error",
+                    "message": error_msg,
+                    "errors": {"non_field_errors": [error_msg]},
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             self.perform_create(serializer)

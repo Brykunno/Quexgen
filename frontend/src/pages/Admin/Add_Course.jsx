@@ -1,11 +1,14 @@
 import { useState } from "react";
-import api from "../../api";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 import { Radio, Label, TextInput, Card, FileInput } from "flowbite-react";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import api from "../../api";
+import { useSnackbar } from "notistack";
 
-function Add_Course({ setLoading }) {
+function Add_Course({ setLoading,setRefresh }) {
+
+  const { enqueueSnackbar } = useSnackbar();
   const [course_name, setCourseName] = useState("");
   const [course_code, setCourseCode] = useState("");
   const [course_type, setCourseType] = useState("");
@@ -35,14 +38,17 @@ function Add_Course({ setLoading }) {
         },
       });
 
-      alert("Course added successfully!");
+      enqueueSnackbar("Course added successfully!",{variant:"success"});
       setCourseName("");
       setCourseCode("");
       setCourseType("");
       setCourseSyllabus(null);
+
+
+     setRefresh(prev => !prev)
     } catch (error) {
       console.error(error);
-      alert("Failed to add course. Please try again.");
+      enqueueSnackbar("Failed to add course. Please try again.",{variant:"error"});
     } finally {
       setLoading(false);
     }

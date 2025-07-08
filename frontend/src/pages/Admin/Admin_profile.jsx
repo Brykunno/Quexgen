@@ -1,18 +1,54 @@
 import React, { useState, useEffect } from 'react';
-import { Card, TextInput, Label, Button, FileInput } from 'flowbite-react';
+import { Card, TextInput, Label, Button as FlowButton } from 'flowbite-react';
 import api from "../../api";
 import Avatar from '@mui/material/Avatar';
 import LoadingSubmit from '../../components/LoadingSubmit';
 import Topnavbar from '../../components/Topnavbar';
 
+// --- MUI Upload Button ---
+import { styled } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
+
+function InputFileUpload({ onChange }) {
+  return (
+    <Button
+      component="label"
+      role={undefined}
+      variant="contained"
+      tabIndex={-1}
+      startIcon={<CloudUploadIcon />}
+      sx={{ width: '100%', mt: 1 }}
+    >
+      Upload image
+      <VisuallyHiddenInput
+        type="file"
+        onChange={onChange}
+        accept="image/*"
+      />
+    </Button>
+  );
+}
+// --- end MUI Upload Button ---
+
 function stringToColor(string) {
   let hash = 0;
   let i;
-
   for (i = 0; i < string.length; i += 1) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
   }
-
   let color = '#';
   for (i = 0; i < 3; i += 1) {
     const value = (hash >> (i * 8)) & 0xff;
@@ -92,7 +128,6 @@ function Admin_profile() {
     })
     .then((res) => res.data)
     .then((data) => {
-      console.log(data);
       setLoading(false);
       getUser(); // Optionally refresh the user data after update
     })
@@ -112,63 +147,57 @@ function Admin_profile() {
   };
 
   return (
-    <div >
+    <div className="min-h-screen bg-gray-100">
       <Topnavbar title="Profile"/>
-    <div className="content">
-      
-      <Card style={{ width: '700px' }} className=' mx-auto mt-24'>
-        <div className="flex gap-5">
-          <div style={{ flex: 1 }}>
-            {userInfo.profile_image!==null  ? (
-              <img
-              src={typeof userInfo.profile_image === 'object' && userInfo.profile_image !== null && !Array.isArray(userInfo.profile_image) ? URL.createObjectURL(userInfo.profile_image) : userInfo.profile_image_url}
-                alt="Profile"
-                style={{
-                  width: '180px',
-                  height: '180px',
-                  borderRadius: '50%',
-                  objectFit: 'cover',
-                }}
-                className="mx-auto mb-3"
-              />
-            ) : (
-              <Avatar {...stringAvatar("admin admin")} size="large" style={{
-                width: '180px',
-                height: '180px',
-                borderRadius: '50%',
-                objectFit: 'cover',
-              }} className="mb-3 mx-auto" />
-            )}
-            <div className="mb-3 flex-1 gap-3 justify-end">
-              <FileInput id="file" onChange={(e) => handleChange(e, 'profile_image')} size="xs" />
+      <div className="flex justify-center items-center min-h-[80vh]">
+        <Card style={{ width: '100%', maxWidth: '600px', boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }} className="mx-auto mt-10">
+          <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
+            <div className="flex flex-col items-center w-full md:w-1/3">
+              {userInfo.profile_image !== null ? (
+                <img
+                  src={typeof userInfo.profile_image === 'object' && userInfo.profile_image !== null && !Array.isArray(userInfo.profile_image) ? URL.createObjectURL(userInfo.profile_image) : userInfo.profile_image_url}
+                  alt="Profile"
+                  style={{
+                    width: '140px',
+                    height: '140px',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    border: '4px solid #e5e7eb',
+                  }}
+                  className="mx-auto mb-3 shadow"
+                />
+              ) : (
+                <Avatar {...stringAvatar("admin admin")} sx={{ width: 140, height: 140, fontSize: 48, margin: '0 auto 12px auto' }} />
+              )}
+              {/* Use the custom MUI upload button */}
+              <InputFileUpload onChange={e => handleChange(e, 'profile_image')} />
+            </div>
+            <div className="flex-1 w-full">
+              <div className="mb-4">
+                <Label value="Username:" className="font-semibold" />
+                <TextInput value={userInfo.username} onChange={(e) => handleChange(e, 'username')} className="mt-1" />
+              </div>
+              <div className="mb-4">
+                <Label value="First Name:" className="font-semibold" />
+                <TextInput value={userInfo.first_name} onChange={(e) => handleChange(e, 'first_name')} className="mt-1" />
+              </div>
+              <div className="mb-4">
+                <Label value="Last Name:" className="font-semibold" />
+                <TextInput value={userInfo.last_name} onChange={(e) => handleChange(e, 'last_name')} className="mt-1" />
+              </div>
+              <div className="mb-4">
+                <Label value="Email:" className="font-semibold" />
+                <TextInput value={userInfo.email} onChange={(e) => handleChange(e, 'email')} className="mt-1" />
+              </div>
+              <div className="flex justify-end">
+                <FlowButton color="primary" onClick={updateProfile} disabled={loading}>
+                  {loading ? <LoadingSubmit /> : "Update"}
+                </FlowButton>
+              </div>
             </div>
           </div>
-          <div className="flex-1">
-            <div className="mb-3 flex gap-3 justify-end">
-              <Label value="Username:" className="mt-2 font-bold" />
-              <TextInput value={userInfo.username} onChange={(e) => handleChange(e, 'username')} />
-            </div>
-            <div className="mb-3 flex gap-3 justify-end">
-              <Label value="First name:" className="mt-2 font-bold" />
-              <TextInput value={userInfo.first_name} onChange={(e) => handleChange(e, 'first_name')} />
-            </div>
-            <div className="mb-3 flex gap-3 justify-end">
-              <Label value="Last name:" className="mt-2 font-bold" />
-              <TextInput value={userInfo.last_name} onChange={(e) => handleChange(e, 'last_name')} />
-            </div>
-            <div className="mb-3 flex gap-3 justify-end">
-              <Label value="Email:" className="mt-2 font-bold" />
-              <TextInput value={userInfo.email} onChange={(e) => handleChange(e, 'email')} />
-            </div>
-          </div>
-        </div>
-   
-        {loading && <LoadingSubmit />}
-        <div>
-        <Button className='mx-auto' color="primary" onClick={updateProfile}>Update</Button>
-        </div>
-      </Card>
-    </div>
+        </Card>
+      </div>
     </div>
   );
 }

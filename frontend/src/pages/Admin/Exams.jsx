@@ -137,19 +137,19 @@ const [termFilter, setTermFilter] = useState('');
     } else if (status === 1) {
       return (
         <div className='border border-green-700 rounded-full px-2 py-1 text-green-700 font-bold'>
-          For review <RateReviewIcon className='ml-2'/>
+          FOR REVIEW <RateReviewIcon className='ml-2'/>
         </div>
       );
     } else if (status === 2) {
       return (
         <div className='border border-green-800 rounded-full px-2 py-1 text-green-800 font-bold'>
-          {status_name} <RecommendIcon className='ml-2'/>
+          APPROVED <RecommendIcon className='ml-2'/>
         </div>
       );
     } else if (status === 3) {
       return (
         <div className='border border-orange-600 rounded-full px-2 py-1 text-orange-600 font-bold'>
-          For revision <EditNoteIcon className='ml-2'/>
+          FOR REVISION <EditNoteIcon className='ml-2'/>
         </div>
       );
     } else {
@@ -222,12 +222,12 @@ const [termFilter, setTermFilter] = useState('');
       <Table striped>
         <Table.Head>
           <Table.HeadCell>Creator</Table.HeadCell>
-          <Table.HeadCell>Title</Table.HeadCell>
+          <Table.HeadCell className="hidden lg:table-cell">Title</Table.HeadCell>
           <Table.HeadCell>Course Code</Table.HeadCell>
           <Table.HeadCell>Semester</Table.HeadCell>
-          <Table.HeadCell>Academic Year</Table.HeadCell>
+          <Table.HeadCell className="hidden lg:table-cell">Academic Year</Table.HeadCell>
           <Table.HeadCell>Action</Table.HeadCell>
-          <Table.HeadCell>Status</Table.HeadCell>
+          <Table.HeadCell className="hidden lg:table-cell">Status</Table.HeadCell>
         </Table.Head>
         <Table.Body className="divide-y">
           {
@@ -235,20 +235,25 @@ const [termFilter, setTermFilter] = useState('');
             currentExams.map((exam, index) => (
               <Table.Row key={index} className="bg-white dark:border-gray-700 dark:bg-gray-800">
                 <Table.Cell>{exam.user.first_name} {exam.user.last_name}</Table.Cell>
-                <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                <Table.Cell className=" hidden lg:table-cell whitespace-nowrap font-medium text-gray-900 dark:text-white">
                   {exam.Title}
                 </Table.Cell>
                 <Table.Cell>{exam.CourseCode}</Table.Cell>
                 <Table.Cell>{exam.Semester}</Table.Cell>
-                <Table.Cell>{exam.AcademicYear}</Table.Cell>
+                <Table.Cell className="hidden lg:table-cell">{exam.AcademicYear}</Table.Cell>
                 <Table.Cell>
                   <a href={`/exam_review/${exam.id}`} className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
-                    <Button color={'primary'} variant='contained' size={'small'} className='flex gap-1'>
-                      <VisibilityIcon /> <p className='mt-1 ml-1'>View</p>
+                    <Button color={'primary'} variant='contained' size={'small'}  >
+                      <VisibilityIcon /> <p className='mt-1'></p>
                     </Button>  
                   </a>
                 </Table.Cell>
-                <Table.Cell className='flex flex-wrap'>{statusIcons(exam.Status, exam.Status_display)}</Table.Cell>
+                <Table.Cell className="hidden lg:table-cell" >
+                  <div className=' flex flex-wrap'>
+    {statusIcons(exam.Status, exam.Status_display)}
+                  </div>
+              
+                  </Table.Cell>
               </Table.Row>
             ))
           ) : (
@@ -284,16 +289,16 @@ const [termFilter, setTermFilter] = useState('');
     <div className="content">
 
     <Tabs aria-label="Tabs with icons" variant="fullWidth" >
-    <Tabs.Item  title={<b className='text-green-600'>For review <RateReviewIcon/></b>}   >
+    <Tabs.Item  title={<b className='text-green-600'>FOR REVIEW <RateReviewIcon/></b>}   >
       {content(exam,'To review')}
       {statusFilter}
       </Tabs.Item>
-      <Tabs.Item title={<b className='text-orange-600'>To revise <EditNoteIcon/></b>}  >
+      <Tabs.Item title={<b className='text-orange-600'>FOR REVISION <EditNoteIcon/></b>}  >
       {content(exam,'Needs Revision')}
       {statusFilter}
 
       </Tabs.Item>
-      <Tabs.Item title={<b className='text-green-700'>Approved <RecommendIcon/></b>}  >
+      <Tabs.Item title={<b className='text-green-700'>APPROVED<RecommendIcon/></b>}  >
       {content(exam,'Approved')}
       {statusFilter}  
       </Tabs.Item>

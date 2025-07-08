@@ -6,7 +6,7 @@ function Create_exam() {
 
   return (
     <div>
-  <Topnavbar title="Create Exam"/>
+  <Topnavbar title="Create Exam" className="w-full"/>
     <div className='content'>
   
       <TOS />

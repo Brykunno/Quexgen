@@ -1,17 +1,15 @@
 
 
 .topnavbar {
-    background-color: #060164!important;
-
-
-    width: 81.5%;
+    background-color: #0f23a5!important;
+    /* width: 81.5%;
     position:relative;
     z-index: 50;
    top:10px;
-    left: 260px;
-    border-radius: 10px!important;
+    left: 260px; */
+    border-radius: 0px!important;
    
 
-
+    
 }
 

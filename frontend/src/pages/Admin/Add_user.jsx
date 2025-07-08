@@ -1,4 +1,3 @@
-
 import { useState,useEffect} from "react";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
@@ -9,27 +8,39 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Autocomplete, TextField, Chip } from '@mui/material';
+import { useSnackbar } from 'notistack';
 
 
-
-function Add_user({setLoading,setOpenModalAdd,openModalAdd}){
+function Add_user({setLoading,setOpenModalAdd,openModalAdd,setRefresh,refresh}){
     // return <Add_form route="/api/create_user/" method="add_user"/>
-
+  const { enqueueSnackbar } = useSnackbar();
     const [username, setUsername] = useState("");
     const [first_name, setfirst_name] = useState("");
     const [last_name, setlast_name] = useState("");
+    const [middle_name, setMiddle_name] = useState("");
     const [is_staff, setIs_staff] = useState(false);
     const [is_superuser, setIs_superuser] = useState(false);
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [password, setPassword] = useState("PSU_$C2025");
     const [showPassword, setShowPassword] = useState(false); 
-
-    const [testError,setTestError] = useState(false);
+      const [testError,setTestError] = useState(false);
 const [options,setOptions] = useState([]);
 
 const [courses,setCourses] = useState([])
 const [selected,setSelected] = useState([])
 
+
+useEffect(() => {
+  // Only generate if all fields are filled
+  if (first_name && middle_name && last_name) {
+    // Get first letter of first and middle name, and full last name (no spaces, uppercase)
+    const uname =
+      (first_name[0] || "").toUpperCase() +
+      (middle_name[0] || "").toUpperCase() +
+      (last_name.replace(/\s+/g, "").toUpperCase());
+    setUsername(uname);
+  }
+}, [first_name, middle_name, last_name]);
 
 
 
@@ -59,6 +70,7 @@ useEffect(() => {
           username,
           password,
           first_name,
+          middle_name,
           last_name,
           email,
           is_staff,
@@ -88,6 +100,7 @@ useEffect(() => {
         setUsername("");
         setfirst_name("");
         setlast_name("");
+        setMiddle_name("");
         setEmail("");
         setPassword("");
         setIs_staff(false);
@@ -95,10 +108,12 @@ useEffect(() => {
     
         // Optionally close the modal
         setOpenModalAdd(false);
-    
+
+        setRefresh(prev => !prev);
+    enqueueSnackbar("User successflly added!",{variant:'success'})
       } catch (error) {
-        console.error("Error creating user or associating courses:", error);
-        alert("Failed to create user or associate courses. Please try again.");
+       
+       enqueueSnackbar("Failed to create user or associate courses. Please try again.",{variant:'error'});
       } finally {
         setLoading(false); // Stop the loading spinner
       }
@@ -119,22 +134,22 @@ useEffect(() => {
             <Modal.Body>
             <div className="space-y-6">
                 <div>
-                  <Label htmlFor="uname" value="Username" />
-                  <TextInput
-                    id="uname"
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
                   <Label htmlFor="first_name" value="First Name" />
                   <TextInput
                     id="first_name"
                     type="text"
                     value={first_name}
                     onChange={(e) => setfirst_name(e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="middle_name" value="Middle Name" />
+                  <TextInput
+                    id="middle_name"
+                    type="text"
+                    value={middle_name}
+                    onChange={(e) => setMiddle_name(e.target.value)}
                     required
                   />
                 </div>
@@ -216,6 +231,18 @@ useEffect(() => {
                     required
                   />
                 </div>
+
+                               <div>
+                  <Label htmlFor="uname" value="Username (auto-generated)" />
+                  <TextInput
+                    id="uname"
+                    type="text"
+                    value={username}
+                    readOnly
+                    required
+                  />
+                </div>
+               
                 <div>
         <div className="mb-2 block">
           <Label htmlFor="password1" value="Password" />
@@ -239,12 +266,9 @@ useEffect(() => {
                     </div>
 
       </div>
-
-                <div>
-               
+ 
  
                 </div>
-              </div>
             </Modal.Body>
             <Modal.Footer>
               <Button color={'primary'} variant='contained' onClick={handleSubmit} >Add</Button>

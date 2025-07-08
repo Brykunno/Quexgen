@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.contrib.auth.models import User
 from rest_framework import generics,viewsets
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -10,6 +9,10 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from .models import *
 import json
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
 
 class AdminUserRetrieve(generics.ListCreateAPIView):
     serializer_class = UserSerializer

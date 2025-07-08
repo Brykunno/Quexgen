@@ -77,7 +77,7 @@ urlpatterns = [
     path('lesson-info/', ai_views.read_pdf, name='lesson_info'),
     path('validate-pdf/', ai_views.validate_pdf, name='validate-pdf'),
     path('count_outcomes/', ai_views.outcomes_count, name='count_outcomes'),
-   
+    path('tosinfo/<int:pk>/delete/', views.TOSInfoDelete.as_view(), name='tos_info_delete')
 
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
