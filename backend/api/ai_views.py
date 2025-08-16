@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from ai21 import AI21Client
-from ai21.models.chat import ChatMessage, ResponseFormat,DocumentSchema
+from ai21.models.chat import ChatMessage, ResponseFormat, DocumentSchema, FunctionToolDefinition, ToolDefinition, ToolParameters
 from rest_framework import status
 import random
 import re
@@ -238,7 +238,7 @@ def generate_question_ai(level, context_ques, index, test_type, max_retries=5):
     while retry_count < max_retries:
         try:
             response = client.chat.completions.create(
-                model="jamba-large-1.6",
+                model="jamba-large-1.7",
                 messages=[
                     ChatMessage(
                         role="user",
@@ -372,7 +372,7 @@ def generate_question_module(level, context_paragraph,test_type,extracted):
     while retries < max_retries:
         try:
             response = client.chat.completions.create(
-                model="jamba-large-1.6",
+                model="jamba-large-1.7",
                 messages=[
                     ChatMessage(
                         role="user",
@@ -889,7 +889,7 @@ def objectives_percentage(objectives):
         try:
             # API call to OpenAI or the client
             response = client.chat.completions.create(
-                model="jamba-mini-1.6",
+                model="jamba-mini-1.7",
                 messages=[
                     ChatMessage(
                         role="user",
@@ -938,7 +938,7 @@ def objectives_count(objectives):
 
             # API call to OpenAI or the client
     response = client.chat.completions.create(
-                model="jamba-mini-1.6",
+                model="jamba-mini-1.7",
                 messages=[
                     ChatMessage(
                         role="user",
