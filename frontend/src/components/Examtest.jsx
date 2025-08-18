@@ -1352,6 +1352,7 @@ localStorage.setItem('formData', JSON.stringify(updatedFormData));
         
       } catch (error) {
         console.error('Error processing the file and data:', error);
+        enqueueSnackbar("Question Generation failed. Please try again.",{variant:"error"})
       }
   
       num++;

@@ -72,6 +72,7 @@ iden_taxonomy_levels = {
 prompts = {
     "Remembering": (
         "Develop a thought-provoking multiple-choice question aligned with the 'Remembering' level of Bloom's taxonomy. Aim for questions that require recalling or identifying specific details, yet in a fresh and engaging way. For example, challenge learners to recognize details from the provided context: {context} in a unique format. Ensure questions prompt learners to remember key points, terminology, or data with a twist—consider trivia-style or association-based prompts."
+        "The question must be written immediately, without any introductory phrases, explanations, or prefaces (e.g., do NOT start with “The executive summary is designed to:” or similar)."
         "Avoid questions that rely solely on plain repetition, such as 'What is the primary...' or 'What is the purpose...'."
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
         "Ensure the question is distinct from previous questions by focusing on different facts, concepts, or wording, avoiding similarities with previously generated questions. "
@@ -81,6 +82,7 @@ prompts = {
     ),
     "Understanding": (
         "Craft a multiple-choice question that aligns with the 'Understanding' level of Bloom's taxonomy. Make the question not only ask for explanations but also apply comparisons, summaries, or interpretations that could spark curiosity: {context}."
+        "The question must be written immediately, without any introductory phrases, explanations, or prefaces (e.g., do NOT start with “The executive summary is designed to:” or similar)."
         "Avoid generic phrasing like 'What is the purpose...' and instead aim for questions that require comprehension in an engaging way, such as rephrasing or contextual examples."
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
         "Ensure the question is distinct from previous questions by focusing on different aspects, explanations, or wording, avoiding similarities with previously generated questions. "
@@ -98,6 +100,7 @@ prompts = {
     ),
     "Analyzing": (
         "Formulate an analysis-based multiple-choice question that aligns with the 'Analyzing' level of Bloom's taxonomy. Encourage deeper thought, such as finding causes, comparing elements, or identifying patterns within the context: {context}."
+        "The question must be written immediately, without any introductory phrases, explanations, or prefaces (e.g., do NOT start with “The executive summary is designed to:” or similar)."
         "Use analytical tasks, like distinguishing between correct and incorrect assumptions or deconstructing arguments. Steer away from asking simple, purpose-driven questions."
         "List five possible answers, ensuring the correct answer is followed by credible distractors, and keep options label-free and in plain text."
         "Do not create questions that rely on or reference figures, images, diagrams, or any visual elements. "
@@ -368,7 +371,7 @@ def generate_question_module(level, context_paragraph,test_type,extracted):
 
 
     retries = 0
-    max_retries = 5
+    max_retries = 10
     while retries < max_retries:
         try:
             response = client.chat.completions.create(
@@ -395,9 +398,16 @@ def generate_question_module(level, context_paragraph,test_type,extracted):
                 content = message.content  # Accessing the content of the message
 
                 # Process the content based on taxonomy level
-                lines = [re.sub(r'^[\d\.\)\*]*(?:[A-Da-d][\.\)])?\s*', '', line.strip()) for line in
-                        content.strip().split('\n')]
-
+                lines = [
+                        re.sub(r'^[\d\.\)\*]*(?:[A-Da-d][\.\)])?\s*', '', line.strip())
+                        for line in content.strip().split('\n')
+                        if line.strip()  # <-- this removes blank/empty lines
+                    ]
+                print(f"""
+                      
+                      content lines: {lines}
+                      
+                      """)
                 # Handle MCQ questions
                 if level in ["Remembering", "Understanding", "Analyzing"]:
                     if len(lines) < 4:
@@ -405,8 +415,8 @@ def generate_question_module(level, context_paragraph,test_type,extracted):
                             "The generated content does not have enough lines for a valid MCQ question and answers.")
 
                     question = lines[0]  # The first line is the question
-                    correct_answer = lines[2]  # The second option is assumed to be the correct answer
-                    choices = lines[2:]  # All options including the correct answer
+                    correct_answer = lines[1]  # The second option is assumed to be the correct answer
+                    choices = lines[1:]  # All options including the correct answer
 
                     # Clean the choices and remove any special characters or numbering
                     choices = [re.sub(r'^\w+\)\s*', '', choice.replace('*', '').strip()) for choice in choices]

@@ -612,6 +612,7 @@ function checkAbove(index){
         </div>
        
       </div>
+      
 <LearningOutcomeTabs 
 addLesson={       <Button
           color={'primary'}
