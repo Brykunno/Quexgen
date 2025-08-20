@@ -112,7 +112,9 @@ useEffect(() => {
         setRefresh(prev => !prev);
     enqueueSnackbar("User successflly added!",{variant:'success'})
       } catch (error) {
-       
+
+          enqueueSnackbar(error.response.data.errors.email[0],{variant:'error'});
+
        enqueueSnackbar("Failed to create user or associate courses. Please try again.",{variant:'error'});
       } finally {
         setLoading(false); // Stop the loading spinner

@@ -112,7 +112,7 @@ function Dashboard() {
   const currentMonth = dayjs().month();
   const currentYear = dayjs().year();
 
-  const token_usage_this_month = TOSInfo
+   const token_usage_this_month = TOSInfo
     .filter(item => {
       const date = dayjs(item.tos_info_date_added);
       return date.month() === currentMonth && date.year() === currentYear;
@@ -200,12 +200,12 @@ function Dashboard() {
           </div>
 
           <div className='flex flex-col xl:flex-row gap-5'>
-            <div className='flex-1 flex flex-col gap-5'>
+            <div className='flex-1 flex flex-col gap-5 min-w-[320px]'>
               {<Barchart />}
               {<DataGrid />}
             </div>
             
-            <div className='flex-1'>
+            <div className='flex-1 max-w-[650px]'>
               <Card className='h-full'>
                 <div className='flex items-center gap-2 mb-4'>
                   <CalendarTodayIcon className='text-blue-500' />

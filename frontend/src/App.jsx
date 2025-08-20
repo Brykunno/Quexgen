@@ -148,7 +148,7 @@ function App() {
                   key={key}
                   path={val.path}
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute role="admin">
                       <ProtectedLayout
                         sidebarOpen={sidebarOpen}
                         setSidebarOpen={setSidebarOpen}
@@ -165,7 +165,7 @@ function App() {
                   key={key}
                   path={val.path}
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute role="teacher">
                       <ProtectedLayout
                         sidebarOpen={sidebarOpen}
                         setSidebarOpen={setSidebarOpen}
