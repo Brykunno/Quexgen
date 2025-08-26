@@ -110,7 +110,7 @@ useEffect(() => {
         setOpenModalAdd(false);
 
         setRefresh(prev => !prev);
-    enqueueSnackbar("User successflly added!",{variant:'success'})
+    enqueueSnackbar("User successfully added!",{variant:'success'})
       } catch (error) {
 
           enqueueSnackbar(error.response.data.errors.email[0],{variant:'error'});

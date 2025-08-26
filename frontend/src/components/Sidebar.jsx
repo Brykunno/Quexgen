@@ -5,6 +5,8 @@ import api from "../api";
 import Avatar from '@mui/material/Avatar';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import LoadingPage from './LoadingPage';
+import Sidebarload from './Sidebarload';
 
 function stringToColor(string) {
   let hash = 0;
@@ -84,7 +86,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
       );
     })
   }
-  else {
+  else if(admin == false) {
     data = SidebarData_teacher.map((val, key) => {
       return (
         <li
@@ -94,11 +96,16 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
           onClick={() => {
             window.location.pathname = val.link;
           }}
+          
         >
-          <div id="icon">{val.icon}</div> <div id="title">{val.title} </div>
+    
+          <div id="icon">{val.icon}</div> <div id="title">{val.title}   </div>
         </li>
       );
     })
+  }
+  else{
+    data = null
   }
 
   return (
@@ -124,7 +131,8 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
           </div>
         </div>
         <ul className="SidebarList">
-          {data}
+          {data?(data):(<Sidebarload/>)}
+          
         </ul>
       </div>
     </>

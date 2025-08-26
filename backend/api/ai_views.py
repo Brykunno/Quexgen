@@ -1121,6 +1121,11 @@ def compare_extracted_texts(text1, text2):
     return '\n'.join(differences)
 
 
+def safe_unicode(text):
+    if isinstance(text, bytes):
+        return text.decode('utf-8', errors='replace')
+    return text.encode('utf-8', errors='replace').decode('utf-8')
+
 @csrf_exempt
 def read_pdf(request):
     global ques_gen  # Refer to the global variable
@@ -1156,7 +1161,9 @@ def read_pdf(request):
           
             if not file:
                 return JsonResponse({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)
-
+            
+            extracted_text_lesson = safe_unicode(extracted_text_lesson)
+            learning_outcomes = safe_unicode(learning_outcomes)
             # Debug log for file and form data
             print(f"Received file: {file.name}")
             
