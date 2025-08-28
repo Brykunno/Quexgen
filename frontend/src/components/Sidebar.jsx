@@ -56,7 +56,11 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
   }
 
   function admin_account(users) {
+    console.log("user_data: ",user)
     return users.some(user => user.is_superuser);
+  }
+    function staff_account(users) {
+    return users.some(user => user.is_staff);
   }
 
   function getFullNames(users) {
@@ -68,25 +72,10 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
   const admin = admin_account(user);
   const full_name = getFullNames(user);
+  const staff = staff_account(user);
 
   let data;
-  if (admin == 1) {
-    data = SidebarData.map((val, key) => {
-      return (
-        <li
-          key={key}
-          className="row"
-          id={window.location.pathname == val.link || removeIdFromPath(window.location.pathname) == val.link2 ? "active" : ""}
-          onClick={() => {
-            window.location.pathname = val.link;
-          }}
-        >
-          <div id="icon">{val.icon}</div> <div id="title">{val.title} </div>
-        </li>
-      );
-    })
-  }
-  else if(admin == false) {
+  if(!admin && staff) {
     data = SidebarData_teacher.map((val, key) => {
       return (
         <li
@@ -100,6 +89,23 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
         >
     
           <div id="icon">{val.icon}</div> <div id="title">{val.title}   </div>
+        </li>
+      );
+    })
+  }
+
+  else if (admin || staff) {
+    data = SidebarData.map((val, key) => {
+      return (
+        <li
+          key={key}
+          className="row"
+          id={window.location.pathname == val.link || removeIdFromPath(window.location.pathname) == val.link2 ? "active" : ""}
+          onClick={() => {
+            window.location.pathname = val.link;
+          }}
+        >
+          <div id="icon">{val.icon}</div> <div id="title">{val.title} </div>
         </li>
       );
     })

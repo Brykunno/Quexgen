@@ -994,54 +994,51 @@ def taxonomy_allocation(request):
     return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-
 def lesson_summary(pdf_path, header_height, footer_height, start_keyword, stop_keyword):
-    # Remove spaces in the keywords for comparison
+    import unicodedata
+    
     start_keyword_clean = start_keyword.replace(" ", "")
     stop_keyword_clean = stop_keyword.replace(" ", "")
     
     with pdfplumber.open(pdf_path) as pdf:
-        extracting = False  # Flag to indicate when to start and stop extraction
+        extracting = False
         extracted_text = []
 
         for page in pdf.pages:
-            # Define the area without the header and footer
             bbox = (0, header_height, page.width, page.height - footer_height)
             cropped_page = page.within_bbox(bbox)
             text = cropped_page.extract_text()
 
-            if text:  # Ensure there is text before processing
-                # Remove spaces from the extracted text for comparison
+            if text:
                 stripped_text = text.replace(" ", "").strip()
 
-                # Check if the start keyword is found to begin extraction
                 if start_keyword_clean in stripped_text and not extracting:
                     extracting = True
-                    # Ensure the start keyword is in the text before splitting
                     if start_keyword in text:
                         extracted_text.append(text.split(start_keyword, 1)[1].strip())
                     else:
-                        extracted_text.append(text)  # Fallback if split fails
+                        extracted_text.append(text)
 
-                # Append text if extraction has started
                 elif extracting:
                     extracted_text.append(text)
 
-                # Check if the stop keyword is found to end extraction
                 if stop_keyword_clean in stripped_text and extracting:
                     extracting = False
-                    # Add text up to where the stop keyword is found
                     if stop_keyword in text:
                         extracted_text.append(text.split(stop_keyword, 1)[0].strip())
                     else:
-                        extracted_text.append(text)  # Fallback if split fails
-                    break  # Stop processing further pages after finding the stop keyword
+                        extracted_text.append(text)
+                    break
 
-        # Join the extracted text and split into lines
         lines = '\n'.join(extracted_text).splitlines()
 
-        # Return the second line if it exists, otherwise return an empty string
-        return lines[1].strip() if len(lines) > 1 else ''
+        # normalize to remove weird unicode if needed
+        result = lines[1].strip() if len(lines) > 1 else ''
+        # Option A: keep unicode (UTF-8 safe)
+        return result  
+        # Option B: fallback to ASCII only
+        # return unicodedata.normalize("NFKD", result).encode("ascii", "ignore").decode("ascii")
+
 
 def extract_unit_content_first(pdf_path, header_height, footer_height, start_keyword, stop_keyword):
     with pdfplumber.open(pdf_path) as pdf:
