@@ -1285,11 +1285,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
   
       try {
         // Make a request to Django to process the file and JSON data
-        const response = await api.post('/api/generate-question-module/', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
+        const response = await api.post('/api/generate-question-module/', formData);
   
        
  

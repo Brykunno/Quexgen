@@ -11,6 +11,8 @@ import io
 import traceback 
 import time
 import difflib
+import sys
+
 
 
 
@@ -26,6 +28,79 @@ max_tokens = 1024
 #     lines = context.split('\n')
 #     paragraphs = ['\n'.join(lines[i:i+extracted_lines]) for i in range(0, len(lines), extracted_lines)]
 #     return paragraphs
+
+SUBSTITUTIONS = {
+    # Dashes & Hyphens
+    "\u2010": "-",   # hyphen
+    "\u2011": "-",   # non-breaking hyphen
+    "\u2012": "-",   # figure dash
+    "\u2013": "-",   # en dash
+    "\u2014": "-",   # em dash
+    "\u2015": "-",   # horizontal bar
+
+    # Quotes
+    "\u2018": "'",   # left single quote
+    "\u2019": "'",   # right single quote / apostrophe
+    "\u201A": ",",   # single low-9 quote
+    "\u201B": "'",   # single high-reversed-9 quote
+    "\u201C": '"',   # left double quote
+    "\u201D": '"',   # right double quote
+    "\u201E": '"',   # double low-9 quote
+    "\u201F": '"',   # double high-reversed-9 quote
+
+    # Ellipsis
+    "\u2026": "...", # ellipsis
+
+    # Spaces
+    "\u00A0": " ",   # non-breaking space
+    "\u2000": " ", "\u2001": " ", "\u2002": " ",
+    "\u2003": " ", "\u2004": " ", "\u2005": " ",
+    "\u2006": " ", "\u2007": " ", "\u2008": " ",
+    "\u2009": " ", "\u200A": " ", # various thin spaces
+    "\u202F": " ",   # narrow no-break space
+    "\u205F": " ",   # medium math space
+    "\u3000": " ",   # ideographic space
+
+    # Bullets & similar
+    "\u2022": "*",   # bullet
+    "\u2023": ">",   # triangular bullet
+    "\u25E6": "*",   # white bullet
+    "\u2043": "-",   # hyphen bullet
+    "\u2219": "*",   # bullet operator
+    "\u2756": "*",   # black diamond with white diamond
+    "\u2767": "*",   # floral heart
+
+    # Arrows
+    "\u2190": "<-",  # left arrow
+    "\u2192": "->",  # right arrow
+    "\u2191": "^",   # up arrow
+    "\u2193": "v",   # down arrow
+    "\u21D2": "=>",  # double arrow right
+    "\u21D0": "<=",  # double arrow left
+    "\u21D4": "<=>", # double arrow both
+
+    # Math symbols
+    "\u00D7": "x",   # multiplication
+    "\u00F7": "/",   # division
+    "\u2260": "!=",  # not equal
+    "\u2264": "<=",  # less than or equal
+    "\u2265": ">=",  # greater than or equal
+    "\u221E": "inf", # infinity
+}
+
+
+def safe_unicode(text):
+    if text is None:
+        return ""
+    if isinstance(text, bytes):
+        text = text.decode("utf-8", errors="replace")
+    else:
+        text = str(text)
+
+    for bad, sub in SUBSTITUTIONS.items():
+        text = text.replace(bad, sub)
+
+    return text
 
 def split_context_into_paragraphs(context,extracted_lines):
     lines = context.split('\n')
@@ -772,7 +847,7 @@ def generate_question_with_module(request):
            
 
             # Extract text from the PDF
-            extracted_text = extract_within_bounds(file, 70, 50)
+            extracted_text = safe_unicode(extract_within_bounds(file, 70, 50))
             if extracted_text is None:
                 return JsonResponse({"error": "Failed to extract text from the PDF"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -850,7 +925,7 @@ def generate_question_with_module(request):
 
         except Exception as e:
             print(f"Error during question generation: {e}")
-            return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({"error": str(e)+"errorhere"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -994,51 +1069,54 @@ def taxonomy_allocation(request):
     return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
+
 def lesson_summary(pdf_path, header_height, footer_height, start_keyword, stop_keyword):
-    import unicodedata
-    
+    # Remove spaces in the keywords for comparison
     start_keyword_clean = start_keyword.replace(" ", "")
     stop_keyword_clean = stop_keyword.replace(" ", "")
     
     with pdfplumber.open(pdf_path) as pdf:
-        extracting = False
+        extracting = False  # Flag to indicate when to start and stop extraction
         extracted_text = []
 
         for page in pdf.pages:
+            # Define the area without the header and footer
             bbox = (0, header_height, page.width, page.height - footer_height)
             cropped_page = page.within_bbox(bbox)
             text = cropped_page.extract_text()
 
-            if text:
+            if text:  # Ensure there is text before processing
+                # Remove spaces from the extracted text for comparison
                 stripped_text = text.replace(" ", "").strip()
 
+                # Check if the start keyword is found to begin extraction
                 if start_keyword_clean in stripped_text and not extracting:
                     extracting = True
+                    # Ensure the start keyword is in the text before splitting
                     if start_keyword in text:
                         extracted_text.append(text.split(start_keyword, 1)[1].strip())
                     else:
-                        extracted_text.append(text)
+                        extracted_text.append(text)  # Fallback if split fails
 
+                # Append text if extraction has started
                 elif extracting:
                     extracted_text.append(text)
 
+                # Check if the stop keyword is found to end extraction
                 if stop_keyword_clean in stripped_text and extracting:
                     extracting = False
+                    # Add text up to where the stop keyword is found
                     if stop_keyword in text:
                         extracted_text.append(text.split(stop_keyword, 1)[0].strip())
                     else:
-                        extracted_text.append(text)
-                    break
+                        extracted_text.append(text)  # Fallback if split fails
+                    break  # Stop processing further pages after finding the stop keyword
 
+        # Join the extracted text and split into lines
         lines = '\n'.join(extracted_text).splitlines()
 
-        # normalize to remove weird unicode if needed
-        result = lines[1].strip() if len(lines) > 1 else ''
-        # Option A: keep unicode (UTF-8 safe)
-        return result  
-        # Option B: fallback to ASCII only
-        # return unicodedata.normalize("NFKD", result).encode("ascii", "ignore").decode("ascii")
-
+        # Return the second line if it exists, otherwise return an empty string
+        return lines[1].strip() if len(lines) > 1 else ''
 
 def extract_unit_content_first(pdf_path, header_height, footer_height, start_keyword, stop_keyword):
     with pdfplumber.open(pdf_path) as pdf:
@@ -1118,10 +1196,7 @@ def compare_extracted_texts(text1, text2):
     return '\n'.join(differences)
 
 
-def safe_unicode(text):
-    if isinstance(text, bytes):
-        return text.decode('utf-8', errors='replace')
-    return text.encode('utf-8', errors='replace').decode('utf-8')
+
 
 @csrf_exempt
 def read_pdf(request):
@@ -1140,7 +1215,7 @@ def read_pdf(request):
             stop_keyword_lesson = 'MODULE OVERVIEW'
 
             extracted_text_lesson = lesson_summary(pdf_path, header_height, footer_height, start_keyword_lesson, stop_keyword_lesson)
-            print(extracted_text_lesson)
+            
             
             start_keyword = 'MODULE LEARNING OBJECTIVES'
             stop_keyword = 'LEARNING CONTENTS'
@@ -1182,8 +1257,12 @@ def read_pdf(request):
             return JsonResponse({"lesson_info": generated_questions}, status=status.HTTP_200_OK)
 
         except Exception as e:
-            print(f"Error during question generation: {e}")
-            return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            line_number = exc_tb.tb_lineno
+            error_message = f"Error: {e} (line {line_number})"
+            print(error_message)
+            traceback.print_exc()  # This prints the full traceback in your console
+            return JsonResponse({"error": error_message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
