@@ -97,8 +97,12 @@ def safe_unicode(text):
     else:
         text = str(text)
 
+    # Apply custom substitutions
     for bad, sub in SUBSTITUTIONS.items():
         text = text.replace(bad, sub)
+
+    # Replace all non-ASCII characters with "-"
+    text = ''.join(ch if ord(ch) < 128 else '-' for ch in text)
 
     return text
 
@@ -731,14 +735,9 @@ def generate_question(request):
             
             # Example: Extract values from the incoming data
           
-            extracted_text = extract_within_bounds('Net-101-Study-Guide-Module2.pdf', 70, 50)
-            
-            options = data.get('options', [])
             index = data.get('index', 0)
             test_type = data.get('test_type', '')
-            context = test_type+'question: '+data.get('context', 'Default context text')
-            print(extracted_text)
-            answer = "True"
+            context = safe_unicode(test_type+'question: '+data.get('context', 'Default context text'))
             taxonomy_level = data.get('taxonomy_level', '')
         
             
@@ -1072,7 +1071,7 @@ def taxonomy_allocation(request):
 
 def lesson_summary(pdf_path, header_height, footer_height, start_keyword, stop_keyword):
     # Remove spaces in the keywords for comparison
-    start_keyword_clean = start_keyword.replace(" ", "")
+    start_keyword_clean = [word.replace(" ","") for word in start_keyword] 
     stop_keyword_clean = stop_keyword.replace(" ", "")
     
     with pdfplumber.open(pdf_path) as pdf:
@@ -1090,11 +1089,12 @@ def lesson_summary(pdf_path, header_height, footer_height, start_keyword, stop_k
                 stripped_text = text.replace(" ", "").strip()
 
                 # Check if the start keyword is found to begin extraction
-                if start_keyword_clean in stripped_text and not extracting:
+                if any(cleaned in stripped_text for cleaned in start_keyword_clean ) and not extracting:
                     extracting = True
+                    matched = next((k for k in start_keyword if k in text), None)
                     # Ensure the start keyword is in the text before splitting
-                    if start_keyword in text:
-                        extracted_text.append(text.split(start_keyword, 1)[1].strip())
+                    if matched:
+                        extracted_text.append(text.split(matched, 1)[1].strip())
                     else:
                         extracted_text.append(text)  # Fallback if split fails
 
@@ -1211,13 +1211,13 @@ def read_pdf(request):
             pdf_path = file
             header_height = 70
             footer_height = 50
-            start_keyword_lesson = 'STUDY GUIDE'
+            start_keyword_lesson = ['STUDY GUIDE','MODULE']
             stop_keyword_lesson = 'MODULE OVERVIEW'
 
             extracted_text_lesson = lesson_summary(pdf_path, header_height, footer_height, start_keyword_lesson, stop_keyword_lesson)
             
             
-            start_keyword = 'MODULE LEARNING OBJECTIVES'
+            start_keyword = 'LEARNING OBJECTIVES'
             stop_keyword = 'LEARNING CONTENTS'
 
             extracted_text_first = extract_unit_content_first(pdf_path, header_height, footer_height, start_keyword, stop_keyword)

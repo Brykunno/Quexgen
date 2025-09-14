@@ -32,7 +32,7 @@ const LoadingGenerate = ({ percent }) => {
       </div>
 
       {/* Generating Text */}
-      <p style={{ color: 'white', fontSize: '18px', marginTop: '16px' }}>Generating...</p>
+      <p style={{ color: 'white', fontSize: '18px', marginTop: '16px' }}>Generating your exam, please wait...</p>
 
       {/* Progress Bar */}
      

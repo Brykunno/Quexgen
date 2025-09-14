@@ -7,6 +7,7 @@ import "react-pdf/dist/esm/Page/AnnotationLayer.css"
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { pdfjs } from 'react-pdf';
+import FileViewer from 'react-file-viewer';
 
 
 
@@ -19,7 +20,9 @@ function PdfViewer({ path }) {
   const [error, setError] = useState(null);
 
   // Build the full path to the PDF file
-  const pdfPath = new URL(`../../../backend/media/syllabus/${path}`, import.meta.url).toString();
+  const pdfPath = `${import.meta.env.VITE_API_URL}/api/media/syllabus/${path}`;
+  const type_length = path.split(".")
+  const type = path.split(".")[type_length.length -1]
 
 
   // Handle successful document load
@@ -42,18 +45,24 @@ function PdfViewer({ path }) {
   return (
     <div className="pdf-viewer-container flex w-full justify-center">
 
-      <div className="flex flex-col justify-center">
-      <Button variant={'contained'} onClick={goToPreviousPage} disabled={pageNumber <= 1}>
-          <ArrowBackIosIcon/>
-        </Button>
-      </div>
-      <div>
+ 
+
 
         
      
       {error ? (
-        <div className="error-message">{error}</div>
+        <FileViewer
+        fileType={type}
+        filePath={pdfPath}/>
+        // <div className="error-message">{error}</div>
       ) : (
+        <div className="flex">
+             <div className="flex flex-col justify-center">
+      <Button variant={'contained'} onClick={goToPreviousPage} disabled={pageNumber <= 1}>
+          <ArrowBackIosIcon/>
+        </Button>
+      </div>
+        <div>
         <Document
           file={pdfPath}
           onLoadSuccess={onDocumentLoadSuccess}
@@ -61,26 +70,31 @@ function PdfViewer({ path }) {
           className='p-0'
           
         >
-          
+           
           <Page pageNumber={pageNumber} renderTextLayer={false} /> 
         </Document>
-      )}
-  <div className="pdf-controls  flex justify-center ">
+       
+          <div className="pdf-controls  flex justify-center ">
         
         <span>
           Page {pageNumber} of {numPages || "?"}
         </span>
         
       </div>
-    
-
-</div>
-
-<div className="flex flex-col justify-center">
+       </div>
+        <div className="flex flex-col justify-center">
       <Button variant={'contained'} onClick={goToNextPage} disabled={pageNumber >= numPages}>
       <ArrowForwardIosIcon/>
         </Button>
       </div>
+      </div>
+      )}
+
+    
+
+
+
+
     </div>
   );
 }
