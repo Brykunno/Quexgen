@@ -141,7 +141,10 @@ function Examtest ({updateformData,setFormData,setLessonsDatainitial,handleLesso
        
     })
     .catch(error => {
-        console.error('There was an error!', error);
+         console.error('There was an errorss!', error);
+                 setLoading(false)
+                 enqueueSnackbar("Failed to generate question",{variant:"error"})
+        
     });
     }
 

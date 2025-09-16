@@ -47,9 +47,10 @@ useEffect(() => {
 useEffect(() => {
   api.get(`/api/courses/`)
     .then((res) => {
-      const courseNames = res.data.map((course) => course.course_name); // Extract course names
+      const courseNames = res.data.filter((course) => course.status!="archived").map((course) => course.course_name); // Extract course names
       setOptions(courseNames); // Update state once with the full array
       setCourses(res.data)
+
     })
     .catch((err) => {
       console.error("Error fetching courses:", err);

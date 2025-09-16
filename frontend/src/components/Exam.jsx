@@ -14,6 +14,7 @@ import ReactDOM from 'react-dom';
 import { PDFViewer } from '@react-pdf/renderer';
 import Exampdf from "./Exampdf";
 import Multiple_exam from './Multiple_exam';
+import { enqueueSnackbar } from 'notistack';
 
 
 
@@ -106,7 +107,9 @@ function Exam ({ items, tos_id, lessonsData,handleStateChange,examStates,setExam
        console.log("generated-exam:",response.data)
     })
     .catch(error => {
-        console.error('There was an error!', error);
+        console.error('There was an errorss!', error);
+         setLoading(false)
+         enqueueSnackbar("Failed to generate question",{variant:"error"})
     });
     }
 

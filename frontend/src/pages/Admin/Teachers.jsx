@@ -44,7 +44,7 @@ function Instructors() {
   useEffect(() => {
     api.get(`/api/courses/`)
       .then((res) => {
-        const courseNames = res.data.map((course) => course.course_name); // Extract course names
+        const courseNames = res.data.filter((course) => course.status!="archived").map((course) => course.course_name);// Extract course names
         setOptions(courseNames); // Update state once with the full array
         setCourses(res.data)
       })
@@ -55,12 +55,13 @@ api.get(`/api/teacherCourse/`)
       .then((res) => {
        
         setTeacherCourse(res.data);
+        console.log("data", res.data)
       })
       .catch((err) => {
         console.error("Error fetching courses:", err);
       });
 
-  }, []);
+  }, [refresh]);
 
   
   
@@ -68,14 +69,14 @@ api.get(`/api/teacherCourse/`)
   useEffect(() => {
     api.get(`/api/courses/`)
       .then((res) => {
-        const courseNames = res.data.map((course) => course.course_name); // Extract course names
+        const courseNames = res.data.filter((course) => course.status!="archived").map((course) => course.course_name); // Extract course names
         setOptions(courseNames); // Update state once with the full array
  
       })
       .catch((err) => {
         console.error("Error fetching courses:", err);
       });
-  }, []);
+  }, [refresh]);
 
   useEffect(() => {
     document.title = "Home";
@@ -143,6 +144,7 @@ api.get(`/api/teacherCourse/`)
       .then((res) => {
 
         getUser(); // Refresh the user list after the update
+            setRefresh((prev)=> !prev)
       })
       .catch((err) => {
         console.error('Error updating user:', err);
@@ -157,6 +159,7 @@ api.get(`/api/teacherCourse/`)
           // Optionally, refresh the teacher courses if needed
           getUser(); // Refresh the teacher courses
           setOpenModal(false); // Close the modal
+          setRefresh((prev)=> !prev)
         })
         .catch((err) => {
           console.error('Error deleting teacher course:', err);
@@ -177,6 +180,7 @@ api.get(`/api/teacherCourse/`)
           .then((res) => {
             console.log(`Teacher assigned to new course: ${courseName}`);
             getUser(); // Refresh the teacher courses after assignment
+            setRefresh((prev)=> !prev)
           })
           .catch((err) => {
             console.error('Error assigning teacher to course:', err);
@@ -204,6 +208,7 @@ api.get(`/api/teacherCourse/`)
         console.log('User archived successfully', res.data);
         getUser(); // Refresh the user list
         setOpenModal(false); // Close the modal
+        
       })
       .catch((err) => {
         console.error('Error archiving user:', err);
@@ -384,6 +389,7 @@ api.get(`/api/teacherCourse/`)
                 <Autocomplete
   multiple
   id="chip-selection"
+  className={is_superuser?'hidden':'show'}
   name="ExaminationType"
   options={options} // List of options
   value={updateOptions} // Current selected options

@@ -754,8 +754,9 @@ def generate_question(request):
             # Return a successful JSON response
             return JsonResponse(response_data, status=status.HTTP_200_OK)
 
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON data"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(f"Error during question generation: {e}")
+            return JsonResponse({"error": str(e)+"errorhere"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     # If the request method is not POST, return a method not allowed response
     return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)

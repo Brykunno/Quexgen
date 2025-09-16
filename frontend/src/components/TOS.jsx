@@ -3755,7 +3755,7 @@ const handleSubmitExam = () =>{
      
     </option>
            {
-  course.map((data, index) => (
+  course.filter((item) => item.status != "archived").map((data, index) => (
     <option key={index} value={data.course_name}>
       {data.course_name}
     </option>

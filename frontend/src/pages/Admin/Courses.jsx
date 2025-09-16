@@ -13,11 +13,13 @@ import ToastMessage from '../../components/Toast';
 import { Worker } from '@react-pdf-viewer/core';  // Import the Worker component
 import { Viewer } from '@react-pdf-viewer/core';  // Import the Viewer component
 import '@react-pdf-viewer/core/lib/styles/index.css';  // Import necessary styles
-
-
+import InventoryIcon from '@mui/icons-material/Inventory';
+import Tooltip from '@mui/material/Tooltip';
 
 // Import the styles
 import '@react-pdf-viewer/core/lib/styles/index.css';
+import { enqueueSnackbar } from 'notistack';
+import UnarchiveIcon from '@mui/icons-material/Unarchive';
 
 
 
@@ -34,6 +36,7 @@ function Courses() {
   const [course_syllabus, setcourse_syllabus] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [refresh,setRefresh] = useState(false);
+  const [syllabus, setSyllabus] = useState(false);
 
   useEffect(() => {
     document.title = "Home";
@@ -111,6 +114,38 @@ function Courses() {
       .catch((err) => {
         console.error('Error deleting user:', err);
       });
+    
+  };
+
+
+  const handleUserArchive = (id) => {
+    
+    api
+      .patch(`/api/courses/${id}/`, {status:"archived"})
+      .then((res) => {
+        console.log("Course updated successfully", res.data);
+        enqueueSnackbar("Course archived successfully!",{variant:"success"})
+        getUser(); // Refresh the course list
+        setOpenModal(false); // Close the modal
+      })
+      .catch((err) => {
+        console.error("Error updating course:", err);
+      });
+  };
+
+   const handleUserUnarchive = (id) => {
+    
+    api
+      .patch(`/api/courses/${id}/`, {status:"active"})
+      .then((res) => {
+        console.log("Course updated successfully", res.data);
+        enqueueSnackbar("Course unarchived successfully!",{variant:"success"})
+        getUser(); // Refresh the course list
+        setOpenModal(false); // Close the modal
+      })
+      .catch((err) => {
+        console.error("Error updating course:", err);
+      });
   };
   
   const filteredUsers = course.filter((user) =>
@@ -174,6 +209,7 @@ function Courses() {
                     <Table.Cell className="hidden lg:table-cell">{user.course_type}</Table.Cell>
                     
                     <Table.Cell className='flex gap-3'>
+                        <Tooltip title="View">
                       <Button
                         color={'primary'}
                         variant='contained'
@@ -182,9 +218,36 @@ function Courses() {
                         className='flex gap-1'
                       >
                         <VisibilityIcon />
-                        <p className='mt-1 ml-1'>View</p>
+                        {/* <p className='mt-1 ml-1'>View</p> */}
                       </Button>
-                     
+                      </Tooltip>
+                      
+                      {user?.status=="archived"?
+                       (   <Tooltip title="Unarchive">
+                       <Button
+                        color={'success'}
+                        variant='contained'
+                        size={'small'}
+                        onClick={() => handleUserUnarchive(user.id)}
+                        className='flex gap-1 px-0'
+                      >
+                        <UnarchiveIcon />
+                        {/* <p className='mt-1 ml-1'>View</p> */}
+                      </Button>
+                     </Tooltip>) :
+                        (   <Tooltip title="Archive">
+                       <Button
+                        color={'error'}
+                        variant='contained'
+                        size={'small'}
+                        onClick={() => handleUserArchive(user.id)}
+                        className='flex gap-1 px-0'
+                      >
+                        <InventoryIcon />
+                        {/* <p className='mt-1 ml-1'>View</p> */}
+                      </Button>
+                     </Tooltip>)}
+                   
                     
                     </Table.Cell>
                    
@@ -236,12 +299,21 @@ function Courses() {
                 </div>
 
                 <div>
+                 
   <Label htmlFor="course_syllabus" value="Course syllabus" />
+  <div className='flex'>
+
+{/* <Tooltip title="View Syllabus">
+   <Button color={'primary'} variant='contained'  onClick={()=>{setSyllabus(true)}}> 
+        <VisibilityIcon /></Button>
+        </Tooltip> */}
   <FileInput
     id="course_syllabus"
     onChange={handleFileChange} // Calls the file change handler
     required={false} // Not required for updates
+    className='flex-1'
   />
+    </div>
 </div>
                
               
@@ -249,7 +321,7 @@ function Courses() {
             </Modal.Body>
             <Modal.Footer>
               <Button color={'primary'} variant='contained' onClick={handleUserUpdate}>Update</Button>
-              <Button color={'error'} variant='contained' onClick={handleUserDelete}>Delete</Button>
+              {/* <Button color={'error'} variant='contained' onClick={handleUserDelete}>Delete</Button> */}
               
               <Button color="secondary" onClick={() => setOpenModal(false)}>
                 Cancel
