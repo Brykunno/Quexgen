@@ -1,74 +1,61 @@
-import re
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-from ai21 import AI21Client
-from ai21.models.chat import ChatMessage, ResponseFormat,DocumentSchema
-from rest_framework import status
-import random
-import re
 import pdfplumber
-import io
-import traceback 
-import time
-import difflib
+from ai21 import AI21Client, ChatMessage, ResponseFormat
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
 
 
-api_key = "psXbkP0lnnojkAVlf9Y1AR7yQlD4uuZW"
+api_key = "f197bb64-d6d1-42f9-b5f5-a2278bf08c9d"
 client = AI21Client(api_key=api_key)
-max_tokens = 1024
+# --- Step 1: Extract text from PDF with pdfplumber ---
+def load_pdf(file_path):
+    text = ""
+    with pdfplumber.open(file_path) as pdf:
+        for page in pdf.pages:
+            text += page.extract_text() + "\n"
+    return text
 
-objectives_string = """ Explain what a feasibility analysis is and why it’s important;
- Discuss the proper time to complete a feasibility analysis when developing an
-entrepreneurial venture;
- Describe the purpose of a product/service feasibility analysis and the two primary issues that
-a proposed business should consider in this area;
- Explain a concept statement and its components;
- Describe the purpose of a buying intentions survey and how it’s administered;
- Explain the importance of library, Internet, and gumshoe research;
- Describe the purpose of industry/market feasibility analysis and the two primary issues to
-consider in this area;
- Discuss the characteristics of an attractive industry;
- Describe the purpose of organizational feasibility analysis and list the two primary issues to
-consider in this area;
- Explain the importance of financial feasibility analysis and list the most critical issues to
-consider in this area."""
+pdf_text = load_pdf("TECH101_Module1_updated.pdf")
 
+# --- Step 2: Split text into chunks ---
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000,
+    chunk_overlap=100
+)
+docs = splitter.create_documents([pdf_text])
 
-# objective_count = "Be consistent. Identify how many learning objectives are in this context: {}. Only respond with a number nothing else"
-objective_count = "Make each of these learning outcomes to be in theri own single line:{}. Only respond with the modified learning outcomes nothing else"
-prompt =  objective_count.format(objectives_string)
+# --- Step 3: Create embeddings and store in FAISS ---
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+db = FAISS.from_documents(docs, embeddings)
+retriever = db.as_retriever(search_kwargs={"k": 5})
 
+# --- Step 4: Retrieve context from vector DB ---
+query = "Generate 20 questions about this document"
+retrieved_chunks = retriever.get_relevant_documents(query)
+context = "\n".join([doc.page_content for doc in retrieved_chunks])
 
-            # API call to OpenAI or the client
+# --- Step 5: Send context + query to Jamba ---
+prompt = f"""
+You are a question generator. Based on the following document context, create 20 thoughtful questions.
+
+Context:
+{context}
+
+Questions:
+"""
+
+client = AI21Client()
+
 response = client.chat.completions.create(
-                model="jamba-1.5-mini",
-                messages=[
-                    ChatMessage(
-                        role="user",
-                        content=prompt
-                    )
-                ],
-                n=1,
-                max_tokens=max_tokens,
-                temperature=0,
-                top_p=1,
-                response_format=ResponseFormat(type="text")
-            )
+    model="jamba-large-1.7",
+    messages=[
+        ChatMessage(role="user", content=prompt)
+    ],
+    n=1,
+    max_tokens=800,
+    temperature=0.7,
+    top_p=1,
+    response_format=ResponseFormat(type="text")
+)
 
-choice = response.choices[0]  # Accessing the first choice
-message = choice.message  # Accessing the message
-content = message.content  # Accessing the content of the message
-# Single string containing all topics
-
-# Split the string into a list based on line breaks
-topics_array = content.split("\n")
-
-# Print the resulting list
-for i, topic in enumerate(topics_array, start=1):
-    print(f"{i}. {topic}")
-
-
-
-print(topics_array)
-
+print(response.choices[0].message.content)

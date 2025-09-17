@@ -1115,7 +1115,7 @@ def lesson_summary(pdf_path, header_height, footer_height, start_keyword, stop_k
 
         # Join the extracted text and split into lines
         lines = '\n'.join(extracted_text).splitlines()
-
+        print("lines",lines)
         # Return the second line if it exists, otherwise return an empty string
         return lines[1].strip() if len(lines) > 1 else ''
 
@@ -1212,10 +1212,11 @@ def read_pdf(request):
             pdf_path = file
             header_height = 70
             footer_height = 50
-            start_keyword_lesson = ['STUDY GUIDE','MODULE']
+            start_keyword_lesson = ['STUDY GUIDE','STUDY','GUIDE','MODULE']
             stop_keyword_lesson = 'MODULE OVERVIEW'
 
             extracted_text_lesson = lesson_summary(pdf_path, header_height, footer_height, start_keyword_lesson, stop_keyword_lesson)
+            print('lesson_summary',extracted_text_lesson)
             
             
             start_keyword = 'LEARNING OBJECTIVES'

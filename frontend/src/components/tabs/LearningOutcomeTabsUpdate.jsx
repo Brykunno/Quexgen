@@ -194,7 +194,7 @@ function totalTeachingHours(index) {
           
    
 
-<div className='flex-1'> 
+<div className='flex-1 min-w-0'> <div className="overflow-x-auto">
     <Tabs
         value={innerValue}
         onChange={handleChangeInner}
@@ -395,7 +395,7 @@ function totalTeachingHours(index) {
   </div>
 
  
-       </div>
+       </div> </div>
 
 
    </Card>

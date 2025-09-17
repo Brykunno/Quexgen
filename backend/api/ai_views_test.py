@@ -1127,7 +1127,7 @@ def read_pdf(request):
             stop_keyword_lesson = 'MODULE OVERVIEW'
 
             extracted_text_lesson = lesson_summary(pdf_path, header_height, footer_height, start_keyword_lesson, stop_keyword_lesson)
-            print(extracted_text_lesson)
+            print("lesson_summary",extracted_text_lesson)
             
             start_keyword = 'MODULE LEARNING OBJECTIVES'
             stop_keyword = 'LEARNING CONTENTS'

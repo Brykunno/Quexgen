@@ -207,7 +207,7 @@ function PdfUpdate(props) {
   </View>
 
   <View style={[styles.tableCol,{flex:5}]}>
-    <Text style={[styles.tableCell,{fontSize:8,margin:'auto'}]}>{ props.view === true ? props.formData.ExaminationType :props.formData.ExaminationType.join('/') }</Text>
+    <Text style={[styles.tableCell,{fontSize:8,margin:'auto'}]}>{ props.view === true ? props.formData.ExaminationType :props.formData.ExaminationType?.join('/') }</Text>
   </View>
 
 </View>
