@@ -274,7 +274,7 @@ const columns = [
     
     const percent = Math.round((allocations[index][level]/total)*100)
   
-    console.log('totalAll: ',percent, '|level:',level,'|index:',index)
+    
   
     return percent
   
@@ -358,7 +358,7 @@ function getRemembering(remembering,items){
     
     const percent = Math.round((allocations[index][level]/total)*100)
   
-    console.log('totalAll: ',percent, '|level:',level,'|index:',index)
+    
   
     return percent
   
@@ -506,7 +506,7 @@ function getTotal(remembering,understanding,applying,analyzing,evaluating,creati
   
   
       
-        console.log('overall: ',overall)
+        
       
         if(overall<totalItems){
           newData[i]['items'] = Math.ceil(newData[i]['items']);

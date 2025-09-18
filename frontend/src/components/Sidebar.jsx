@@ -56,7 +56,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
   }
 
   function admin_account(users) {
-    console.log("user_data: ",user)
+    
     return users.some(user => user.is_superuser);
   }
     function staff_account(users) {

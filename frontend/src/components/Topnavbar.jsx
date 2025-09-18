@@ -274,7 +274,7 @@ const readNotif = (id) =>{
     api
     .patch(`api/notification/update/admin/${id}/`, updateStatus)
     .then((res) => {
-      console.log('notif updated', res.data);
+      
     })
     .catch((err) => {
       console.error('Error status:', err);
@@ -285,7 +285,7 @@ const readNotif = (id) =>{
     api
     .patch(`api/notification/update/teacher/${id}/`, updateStatus)
     .then((res) => {
-      console.log('notif updated', res.data);
+      
     })
     .catch((err) => {
       console.error('Error status:', err);

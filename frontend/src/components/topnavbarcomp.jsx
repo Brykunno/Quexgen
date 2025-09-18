@@ -68,7 +68,7 @@ import {
       .then((res) => res.data)
       .then((data) => {
         setUser(data);
-        console.log(data);
+        
       })
       .catch((err) => alert(err));
   };
@@ -98,8 +98,8 @@ import {
     }
   
   
-  console.log(admin_account(user));
-  console.log(getFullNames(user));
+  
+  
   const admin = admin_account(user);
   const full_name = getFullNames(user);
   const email = getEmail(user);

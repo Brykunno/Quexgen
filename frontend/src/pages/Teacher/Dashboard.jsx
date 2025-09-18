@@ -38,7 +38,7 @@ function Dashboard() {
     api.get(`/api/user/account/`)
       .then((res) => {
         setUser(res.data);
-        console.log('user : ', res.data)
+        
       })
       .catch((err) => {
         alert(err);
@@ -60,7 +60,7 @@ function Dashboard() {
     api.get(`/api/tos-info/detail/admin/`)
       .then((res) => {
         setTOSInfo(res.data);
-        console.log('TOS info: ', res.data);
+        
       })
       .catch((err) => alert(err));
   };

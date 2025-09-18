@@ -39,7 +39,7 @@ function Logs() {
         // Sort logs from latest to oldest by log_date
         const sorted = data.sort((a, b) => new Date(b.log_date) - new Date(a.log_date));
         setLogs(sorted);
-        console.log('datalogs:', sorted);
+        
       })
       .catch((err) => alert(err));
   };

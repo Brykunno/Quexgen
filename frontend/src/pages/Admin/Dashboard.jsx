@@ -50,7 +50,7 @@ function Dashboard() {
     api.get(`/api/tos-info/detail/admin/`)
       .then((res) => {
         setTOSInfo(res.data);
-        console.log('TOS info: ', res.data);
+        
       })
       .catch((err) => alert(err));
   };
@@ -83,7 +83,7 @@ function Dashboard() {
     // Always try to insert first (POST), if it fails due to existing record, then update (PUT)
     api.post("/api/exam-dates/", examDates)
       .then(response => {
-        console.log('Exam dates added:', response.data);
+        
         setLoading(true);
         // Optionally reset form or show success message
       })
@@ -95,7 +95,7 @@ function Dashboard() {
         ) {
           api.put(`/api/exam-dates/1/`, examDates)
             .then(response => {
-              console.log('Exam dates updated:', response.data);
+              
               setLoading(true);
             })
             .catch(error2 => {

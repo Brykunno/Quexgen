@@ -19,7 +19,7 @@ function Home() {
       .then((res) => res.data)
       .then((data) => {
         setUser(data);
-        console.log(data);
+        
       })
       .catch((err) => alert(err));
   };

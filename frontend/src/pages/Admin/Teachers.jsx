@@ -55,7 +55,7 @@ api.get(`/api/teacherCourse/`)
       .then((res) => {
        
         setTeacherCourse(res.data);
-        console.log("data", res.data)
+        
       })
       .catch((err) => {
         console.error("Error fetching courses:", err);
@@ -136,7 +136,7 @@ api.get(`/api/teacherCourse/`)
       .filter(course => course.user_id == selectedUserId) // Filter the courses matching the user_id
       .map(course => course.id); // Get the ids of the matching courses
   
-    console.log('Teacher Course IDs:', tcIds);
+    
   
     // Update the user details
     api
@@ -155,7 +155,7 @@ api.get(`/api/teacherCourse/`)
       api
         .delete(`/api/teacherCourse/${courseId}/`)
         .then((res) => {
-          console.log(`Teacher course with ID ${courseId} deleted successfully`);
+          
           // Optionally, refresh the teacher courses if needed
           getUser(); // Refresh the teacher courses
           setOpenModal(false); // Close the modal
@@ -178,7 +178,7 @@ api.get(`/api/teacherCourse/`)
         api
           .post(`/api/teacherCourse/`, { user_id, course_id })
           .then((res) => {
-            console.log(`Teacher assigned to new course: ${courseName}`);
+            
             getUser(); // Refresh the teacher courses after assignment
             setRefresh((prev)=> !prev)
           })
@@ -205,7 +205,7 @@ api.get(`/api/teacherCourse/`)
     api
       .patch(`/api/users/${selectedUserId}/`, updatedUser)
       .then((res) => {
-        console.log('User archived successfully', res.data);
+        
         getUser(); // Refresh the user list
         setOpenModal(false); // Close the modal
         
@@ -224,7 +224,7 @@ api.get(`/api/teacherCourse/`)
     api
       .patch(`/api/users/${selectedUserId}/`, updatedUser)
       .then((res) => {
-        console.log('User archived successfully', res.data);
+        
         getUser(); // Refresh the user list
         setOpenModal(false); // Close the modal
       })

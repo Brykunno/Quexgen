@@ -470,7 +470,7 @@ const getUser = () => {
     .then((res) => res.data)
     .then((data) => {
       setUser(data); // Set user data in state
-      console.log('name: ', data);
+      
     })
     .catch((err) => alert(err));
 };
@@ -484,7 +484,7 @@ useEffect(()=>{
   const getcourse = (user) => {
     api.get(`/api/courses/`)
       .then((res) => {
-        console.log('courses', res.data);
+        
 let user_id = getUserId(user)
 
          
@@ -493,14 +493,14 @@ let user_id = getUserId(user)
           .then((data) => {
             // Filter the teacherCourses data to match the user_id
             const teacherCourses = data.data.filter(course => course.user_id === user_id);
-            console.log('Teacher Courses:', teacherCourses);
+            
   
             // Create a list of course_ids from teacherCourses
             const teacherCourseIds = teacherCourses.map(course => course.course_id);
   
             // Now filter the courses based on the course_ids
             const filteredCourses = res.data.filter(course => teacherCourseIds.includes(course.id));
-            console.log('Filtered Teacher Courses:', filteredCourses);
+            
   
             // Do something with the filtered data
             setcourse(filteredCourses); // Update state with filtered courses
@@ -607,7 +607,7 @@ function getInnerLevelAllocation(allocations,level,index,subIndex){
 
   const Remembering = allocations[index][subIndex]['Remembering']
 
-  console.log('heremember:',Remembering,' index:',index)
+  
   const Understanding = allocations[index][subIndex]['Understanding']
   const Applying = allocations[index][subIndex]['Applying']
   const Analyzing = allocations[index][subIndex]['Analyzing']
@@ -619,7 +619,7 @@ function getInnerLevelAllocation(allocations,level,index,subIndex){
   
   const percent = Math.round((allocations[index][subIndex][level]/total)*100)
 
-  console.log('totalAll: ',percent, '|level:',level,'|index:',index)
+  
 
   return percent
 
@@ -640,7 +640,7 @@ function getLevelAllocation(allocations,level,index){
   
   const percent = Math.round((allocations[index][level]/total)*100)
 
-  console.log('totalAll: ',percent, '|level:',level,'|index:',index)
+  
 
   return percent
 
@@ -711,13 +711,13 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
       const sumAlloc =  newData[i]['allocation'].reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
       const lessonItem = getNumItems(totalItems,sumAlloc)
-      console.log('showitems:l',lessonItem)
+      
       for(let k=0;k<newData[i]['items'].length;k++){
         newData[i]['items'][k] = getInnerNumItems(totalItems,newData[i]['allocation'][k])
-        console.log('showitems:',newData[i]['items'][k])
-        console.log('showitems:a',newData[i]['allocation'][k])
+        
+        
      
-        console.log('showitems:s',sumAlloc)
+        
       }
     
       
@@ -746,7 +746,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
           creating[k] = getInnerLevelAllocation(allocations,'Creating',i,k)
         }
 
-        console.log('uprob: ',understanding)
+        
      
       }
       else{
@@ -782,9 +782,9 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
       }
       
 
-      console.log('nowrem:',remembering)
-       console.log('definedData?: ',newData[i])
-        console.log('defined?: ',newData[i]['remembering'])
+      
+       
+        
       for (let k = 0; k < newData[i]['allocation'].length; k++) {
 
        
@@ -833,7 +833,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
         }
     }
 
-    console.log('percenthere:',percent)
+    
 
     if(percent<100){
 
@@ -855,23 +855,23 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
 
 
     
-      console.log('overall: ',overall)
-      console.log('total items: ',totalItems)
+      
+      
 
             
-    console.log('overall: ',overall,' total items: ',totalItems)
+    
    
       
       if(overall<totalItems){
 
         
         newData[i]['items'][k] = Math.ceil(newData[i]['items'][k]);
-        console.log('remembertrailll',k,': ',newData[i]['remembering'][k])
-        console.log('true?: ',newData[i]['items'][k] ,':', newData[i]['total'][k])
+        
+        
         if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['remembering'][k])){
 
          
-          console.log('remembertraillls',k,': ',newData[i]['remembering'][k])
+          
           newData[i]['remembering'][k] = Math.round(newData[i]['remembering'][k]);
          
 
@@ -890,7 +890,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
         }
         else if(newData[i]['items'][k] < newData[i]['total'][k]){
           newData[i]['remembering'][k] = Math.floor(newData[i]['remembering'][k]);
-          console.log('remembertrailllss',k,': ',newData[i]['remembering'][k])
+          
             newData[i]['total'][k] = getTotal(
           newData[i]['remembering'][k],
           newData[i]['understanding'][k],
@@ -903,9 +903,9 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
         }
     
         else if(newData[i]['items'][k] > newData[i]['total'][k]){
-          console.log('larger?: ',newData[i]['items'][k] ,':', newData[i]['total'][k])
+          
           newData[i]['remembering'][k] = Math.ceil(newData[i]['remembering'][k]);
-          console.log('remembertrailllsss',k,': ',newData[i]['remembering'][k])
+          
              newData[i]['total'][k] = getTotal(
           newData[i]['remembering'][k],
           newData[i]['understanding'][k],
@@ -1116,7 +1116,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
     
         if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['remembering'][k])){
           newData[i]['remembering'][k] = Math.round(newData[i]['remembering'][k]);
-          console.log('rememberround2',k,': ',newData[i]['remembering'][k])
+          
             newData[i]['total'][k] = getTotal(
           newData[i]['remembering'][k],
           newData[i]['understanding'][k],
@@ -1131,7 +1131,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
         
           
           newData[i]['remembering'][k] = Math.floor(newData[i]['remembering'][k]);
-          console.log('rememberfloor2',k,': ',newData[i]['remembering'][k])
+          
              newData[i]['total'][k] = getTotal(
           newData[i]['remembering'][k],
           newData[i]['understanding'][k],
@@ -1145,7 +1145,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
     
         else if(newData[i]['items'][k] > newData[i]['total'][k]){
           newData[i]['remembering'][k] = Math.ceil(newData[i]['remembering'][k]);
-          console.log('rememberceil2',k,': ',newData[i]['remembering'][k])
+          
              newData[i]['total'][k] = getTotal(
           newData[i]['remembering'][k],
           newData[i]['understanding'][k],
@@ -1359,7 +1359,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
         
         if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['remembering'][k])){
           newData[i]['remembering'][k] = Math.round(newData[i]['remembering'][k]);
-          console.log('rememberround3',k,': ',newData[i]['remembering'][k])
+          
             newData[i]['total'][k] = getTotal(
           newData[i]['remembering'][k],
           newData[i]['understanding'][k],
@@ -1372,7 +1372,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
         }
         else if(newData[i]['items'][k] < newData[i]['total'][k]){
           newData[i]['remembering'][k] = Math.floor(newData[i]['remembering'][k]);
-          console.log('rememberfloor3',k,': ',newData[i]['remembering'][k])
+          
              newData[i]['total'][k] = getTotal(
           newData[i]['remembering'][k],
           newData[i]['understanding'][k],
@@ -1386,7 +1386,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
     
         else if(newData[i]['items'][k] > newData[i]['total'][k]){
           newData[i]['remembering'][k] = Math.ceil(newData[i]['remembering'][k]);
-          console.log('rememberceil3',k,': ',newData[i]['remembering'][k])
+          
              newData[i]['total'][k] = getTotal(
           newData[i]['remembering'][k],
           newData[i]['understanding'][k],
@@ -1707,7 +1707,7 @@ const handleLessonDataChange = (index, field, value) => {
 
 
     
-      console.log('overall: ',overall)
+      
     
       if(overall<totalItems){
         newData[i]['items'] = Math.ceil(newData[i]['items']);
@@ -2623,7 +2623,7 @@ const sendDataToBackendLearningOutcomes = async (dataArray) => {
 
     // Handle the responses in order
     responses.forEach(response => {
-      console.log(response.data);
+      
     });
   } catch (error) {
     console.error('Error sending data:', error);
@@ -3283,10 +3283,7 @@ useEffect(()=>{
       
     );
 
-    data.map((lesson) =>
-
-  console.log("acadyear",lesson.ExaminationDate,formData.ExaminationDate )
-    );
+    
  
 
     setExist(exists);
@@ -3524,7 +3521,7 @@ const handleSubmitExam = () =>{
           const response = await api.post('/api/taxonomy-allocation/', {
             objectives: outcome,
           });
-          console.log('heresss: ',outcome)
+          
           return response.data.allocation; 
         });
   
@@ -3580,7 +3577,7 @@ const handleSubmitExam = () =>{
       // Flatten if allocationsArray contains nested arrays
       const flatAllocations = allocationsArray.flat();
   
-      console.log('hereout:', flatAllocations);
+      
     } catch (error) {
       console.error('Error processing the file and data herout:', error);
     }
@@ -3604,7 +3601,7 @@ const handleSubmitExam = () =>{
       // Combine allocations into a single object if needed (flatten or process further)
       const combinedAllocations = allocationsArray.flat();
   
-      console.log('Allocations Arraytos2: ', combinedAllocations);
+      
   
       // Update the specific lesson with the new taxonomy levels
       const updatedLessonsData = [...lessonsDataInitial];
@@ -3991,6 +3988,11 @@ const handleSubmitExam = () =>{
         setTotalTaxonomy={setTotalTaxonomy} 
         getTotalTaxonomy={getTotalTaxonomy} 
         Remembering={Remembering}
+        Understanding={Understanding}
+        Analyzing={Analyzing}
+        Applying={Applying}
+        Evaluating={Evaluating}
+        Creating={Creating}
         addLesson={addLesson}sonDa
   addAllocation={addAllocation}
   setSpecific={setSpecific}
@@ -4011,253 +4013,21 @@ const handleSubmitExam = () =>{
         setFiles={setFiles}
         handletaxlevelChange={handletaxlevelChange}
         oneAllocation={handleOneAllocation}
-
-
-        taxonomyRange={
-          <div className="flex gap-3"> 
-      <Card className=" gap-4 mb-5  w-full p-3"> 
-        <div>
-        <div className="mb-3">
-        {/* <ToggleSwitch checked={specific} label={specific?'Locked':'Unlocked'} onChange={setSpecific} color={"primary"} className="mx-auto" /> */}
-        </div>
-<h1>
-
-</h1>
-        <h1 className='text-center font-bold'>Overall Taxonomy Allocation</h1>
-
-      {/* <div className="max-w-md flex gap-5">
-    
-        <div className="mt-3" >
-          <Label htmlFor="totalItems" className="font-bold" > Total of Items<span className="text-red-600">*</span></Label> 
-        </div>
-        <TextInput id="totalItems" type="number" className="max-w-32 " required value={totalItems} min={'0'} onChange={handleTotalItemsChange} />
-      </div> */}
-      </div>
-      <div>
-        <div className="flex gap-3">
-        <div className="mt-2 block w-32">
-          <Label htmlFor="md-range" value="Remembering" />
-        </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Remembering} onChange={handleRememberingChange} disabled={specific} />
-        <div className="flex">
-        <input type="number" disabled={specific}  className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Remembering}  onChange={handleRememberingChange} /><span className="mt-2">%</span>
-        </div>
-        </div>
-      </div>
-
-
-      <div>
-        <div className="flex gap-3">
-        <div className="mt-2 block w-32">
-          <Label htmlFor="md-range" value="Understanding" />
-        </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Understanding} onChange={handleUnderstandingChange} disabled={specific} />
-        <div className="flex">
-        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Understanding} disabled={specific}  onChange={handleUnderstandingChange} /><span className="mt-2">%</span>
-        </div>
-        </div>
-      </div>
-
-
-      <div>
-        <div className="flex gap-3">
-        <div className="mt-2 block w-32">
-          <Label htmlFor="md-range" value="Applying" />
-        </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Applying} onChange={handleApplyingChange} disabled={specific} />
-        <div className="flex">
-        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Applying} disabled={specific}  onChange={handleApplyingChange} /><span className="mt-2">%</span>
-        </div>
-        </div>
-      </div>
-
-
-      <div>
-        <div className="flex gap-3">
-        <div className="mt-2 block w-32">
-          <Label htmlFor="md-range" value="Analyzing" />
-        </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Analyzing} onChange={handleAnalyzingChange} disabled={specific} />
-        <div className="flex">
-        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Analyzing} disabled={specific}   onChange={handleAnalyzingChange} /><span className="mt-2">%</span>
-        </div>
-        </div>
-      </div>
+        specific={specific}
+        handleRememberingChange={handleRememberingChange}
+        handleUnderstandingChange={handleUnderstandingChange}
+        handleApplyingChange={handleApplyingChange}
+        handleAnalyzingChange={handleAnalyzingChange}
+        handleEvaluatingChange={handleEvaluatingChange}
+        handleCreatingChange={handleCreatingChange}
+        checkTaxonomy={checkTaxonomy}
 
 
 
-      <div>
-        <div className="flex gap-3">
-        <div className="mt-2 block w-32">
-          <Label htmlFor="md-range" value="Evaluating" />
-        </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Evaluating} onChange={handleEvaluatingChange} disabled={specific} />
-        <div className="flex">
-        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Evaluating} disabled={specific}  onChange={handleEvaluatingChange} /><span className="mt-2">%</span>
-        </div>
-        </div>
-      </div>
-
-
-      <div>
-        <div className="flex gap-3">
-        <div className="mt-2 block w-32">
-          <Label htmlFor="md-range" value="Creating" />
-        </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Creating} onChange={handleCreatingChange} disabled={specific} />
-        <div className="flex">
-        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Creating} disabled={specific}   onChange={handleCreatingChange} /><span className="mt-2">%</span>
-        </div>
-        </div>
-      </div>
-      <hr  />
-      <div className=" flex justify-between"> 
-      <span className="max-w-96 mr-20">Total:</span>
-      <span className="w-full text-center">
-      <Progress
-      
-      progress={getTotalTaxonomy}
-      progressLabelPosition="inside"
-  
-      color={'primary'}
-      className=" hidden md:block"
-    
-      size="lg"
      
-    />
-   
-      {checkTaxonomy(getTotalTaxonomy)} </span>
-      <span className="max-w-96 ml-6 flex justify-end ">
-        <div className="w-10 font-bold">
-        {getTotalTaxonomy}%</div></span> 
-      
-      </div>
-      <div className="my-3">
-      {/* <Button color={'primary'} className="mx-auto" onClick={submitAllocation}  isProcessing={loadingAllocate ? true : false}>
-      {loadingAllocate ? 'Allocating' : 'Allocate'}
-        </Button> */}
-      </div>
-      </Card>
-      </div> 
-        }
        
       />
-{/* <div className="flex gap-3"> 
-     
 
-      <Card className=" gap-4 mb-5  w-full p-3"> 
-        <div>
-        <div className="mb-3">
-    
-        </div>
-
-
-      </div>
-      <div>
-        <div className="flex gap-3">
-        <div className="mt-2 block w-32">
-          <Label htmlFor="md-range" value="Remembering" />
-        </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Remembering} onChange={handleRememberingChange} disabled={specific} />
-        <div className="flex">
-        <input type="number" disabled={specific}  className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Remembering}  onChange={handleRememberingChange} /><span className="mt-2">%</span>
-        </div>
-        </div>
-      </div>
-
-
-      <div>
-        <div className="flex gap-3">
-        <div className="mt-2 block w-32">
-          <Label htmlFor="md-range" value="Understanding" />
-        </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Understanding} onChange={handleUnderstandingChange} disabled={specific} />
-        <div className="flex">
-        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Understanding} disabled={specific}  onChange={handleUnderstandingChange} /><span className="mt-2">%</span>
-        </div>
-        </div>
-      </div>
-
-
-      <div>
-        <div className="flex gap-3">
-        <div className="mt-2 block w-32">
-          <Label htmlFor="md-range" value="Applying" />
-        </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Applying} onChange={handleApplyingChange} disabled={specific} />
-        <div className="flex">
-        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Applying} disabled={specific}  onChange={handleApplyingChange} /><span className="mt-2">%</span>
-        </div>
-        </div>
-      </div>
-
-
-      <div>
-        <div className="flex gap-3">
-        <div className="mt-2 block w-32">
-          <Label htmlFor="md-range" value="Analyzing" />
-        </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Analyzing} onChange={handleAnalyzingChange} disabled={specific} />
-        <div className="flex">
-        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Analyzing} disabled={specific}   onChange={handleAnalyzingChange} /><span className="mt-2">%</span>
-        </div>
-        </div>
-      </div>
-
-
-
-      <div>
-        <div className="flex gap-3">
-        <div className="mt-2 block w-32">
-          <Label htmlFor="md-range" value="Evaluating" />
-        </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Evaluating} onChange={handleEvaluatingChange} disabled={specific} />
-        <div className="flex">
-        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Evaluating} disabled={specific}  onChange={handleEvaluatingChange} /><span className="mt-2">%</span>
-        </div>
-        </div>
-      </div>
-
-
-      <div>
-        <div className="flex gap-3">
-        <div className="mt-2 block w-32">
-          <Label htmlFor="md-range" value="Creating" />
-        </div>
-        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Creating} onChange={handleCreatingChange} disabled={specific} />
-        <div className="flex">
-        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Creating} disabled={specific}   onChange={handleCreatingChange} /><span className="mt-2">%</span>
-        </div>
-        </div>
-      </div>
-      <hr  />
-      <div className=" flex justify-between"> 
-      <span className="max-w-96 mr-20">Total:</span>
-      <span className="w-full text-center">
-      <Progress
-      
-      progress={getTotalTaxonomy}
-      progressLabelPosition="inside"
-  
-      color={'primary'}
-      className=" hidden md:block"
-    
-      size="lg"
-     
-    />
-   
-      {checkTaxonomy(getTotalTaxonomy)} </span>
-      <span className="max-w-96 ml-6 flex justify-end ">
-        <div className="w-10 font-bold">
-        {getTotalTaxonomy}%</div></span> 
-      
-      </div>
-      <div className="my-3">
-
-      </div>
-      </Card>
-
-      </div> */}
 
        
       </Card>

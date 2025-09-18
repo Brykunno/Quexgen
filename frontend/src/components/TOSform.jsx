@@ -144,7 +144,7 @@ useEffect(() => {
 for (let i = 0; i < localStorage.length; i++) {
   const key = localStorage.key(i);
   const value = localStorage.getItem(key);
-  console.log(`${key}: ${value}`);
+  
 }
 
 const formDataStorage = localStorage.getItem('formData');
@@ -154,7 +154,7 @@ const handleSubmit = (e) => {
   e.preventDefault();
 
   if (formData) {
-    console.log("FormData:", formData);
+    
     const formDataJson = JSON.stringify(formData)
     api.post("/api/tos-info/", {formDataJson})  // send as object, not JSON string
       .then((res) => {

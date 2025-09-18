@@ -326,13 +326,13 @@ const totalAnalyzing = updatedLessonData.reduce((total, content) => total + cont
 const totalEvaluating = updatedLessonData.reduce((total, content) => total + content.evaluating.reduce((total2, content2) => total2 + content2, 0), 0);
 const totalCreating = updatedLessonData.reduce((total, content) => total + content.creating.reduce((total2, content2) => total2 + content2, 0), 0);
 
-console.log('updateTotalItems:', updateTotalItems);
-console.log('totalRemembering:', totalRemembering);
-console.log('totalUnderstanding:', totalUnderstanding);
-console.log('totalApplying:', totalApplying);
-console.log('totalAnalyzing:', totalAnalyzing); 
-console.log('totalEvaluating:', totalEvaluating);
-console.log('totalCreating:', totalCreating);
+
+
+
+
+
+
+
 
 
 
@@ -344,12 +344,12 @@ const updateAnalyzing = calculatePercentage(totalAnalyzing, updateTotalItems);
 const updateEvaluating = calculatePercentage(totalEvaluating, updateTotalItems);
 const updateCreating = calculatePercentage(totalCreating, updateTotalItems);
 
-console.log('updateRemembering:', updateRemembering);
-console.log('updateUnderstanding:', updateUnderstanding);
-console.log('updateApplying:', updateApplying);
-console.log('updateAnalyzing:', updateAnalyzing);
-console.log('updateEvaluating:', updateEvaluating);
-console.log('updateCreating:', updateCreating);
+
+
+
+
+
+
 
 
 
@@ -474,7 +474,7 @@ if (getQuestion.length && getAnswer.length) {
       const tosResponse = await api.get(`/api/tos-content/${id}/detail/`);
       const tosData = tosResponse.data;
       setTOSContent(tosData);
-      console.log('tosContent:', tosData);
+      
   
       // Fetch taxonomy levels for all topics in parallel
       const taxonomyRequests = tosData.map((item) =>
@@ -498,7 +498,7 @@ if (getQuestion.length && getAnswer.length) {
       );
   
       setTaxonomyLevel(taxonomyLevels);
-      console.log('taxonomyLevels:', taxonomyLevels);
+      
     } catch (error) {
       console.error('Error fetching TOS content or taxonomy levels:', error);
       alert('Failed to fetch data. Please try again later.');
@@ -541,7 +541,7 @@ if (getQuestion.length && getAnswer.length) {
     .get(`api/comments/${id}/detail/admin/`)
     .then((res) => res.data)
     .then((data) => {setComment(data)
-      console.log('toscontent: ', data);
+      
     })
     .catch((err) => alert(err));
   }
@@ -554,7 +554,7 @@ if (getQuestion.length && getAnswer.length) {
       .then((res) => res.data)
       .then((data) => {
         setExam(data);
-        console.log('examcontent: ', data);
+        
        
   
         // Assuming we want to make a second API call based on tos_id
@@ -563,7 +563,7 @@ if (getQuestion.length && getAnswer.length) {
       .then((testPart) => {
         
         // Handle the result of the second query
-        console.log('TOS data: ', testPart.data);
+        
         setGetTestPart(testPart.data)
         // Set some state based on the second query if needed
 
@@ -571,7 +571,7 @@ if (getQuestion.length && getAnswer.length) {
       })
       .then((question)=>{
 
-         console.log('ques data: ', question.data);
+         
         setGetQuestion(question.data)
          // Assuming `exam_id` is an array of question IDs
       const questionIds = question.data.map((exam) => exam.id);
@@ -584,14 +584,14 @@ if (getQuestion.length && getAnswer.length) {
       // Use Promise.all to handle multiple requests
       return Promise.all(questionPromises);
 
-        // console.log('ques data: ', question.data);
+        // 
         // setGetQuestion(question.data)
         // return api.get(`/api/answers/${question.data[0].exam_id}/detail/`);
       })
       .then((answer) => {
         const allAnswers = answer.map((response) => response.data);
 
-          console.log('answersdata: ',allAnswers)
+          
           setGetAnswer(allAnswers)
       })
       .catch((err) => alert(err));
@@ -604,7 +604,7 @@ if (getQuestion.length && getAnswer.length) {
       .then((res) => res.data)
       .then((data) => {
         setTOSInfo(data);
-        console.log('tosinfo: ', data);
+        
       })
       .catch((err) => alert(err));
   };
@@ -616,7 +616,7 @@ if (getQuestion.length && getAnswer.length) {
 
     
      
-      console.log('examtypes: ',formData.ExaminationType)
+      
       formData.Status = Submit===true?1:formData.Status
 
       
@@ -684,7 +684,7 @@ if (getQuestion.length && getAnswer.length) {
          // Await all the promises to complete
          try {
            const results = await Promise.all(updatePromisesTOScontent);
-           console.log('Responses:', results); // Array of responses for each operation
+           
          } catch (error) {
            console.error('Error in updating or creating tos content:', error);
          }
@@ -711,7 +711,7 @@ if (getQuestion.length && getAnswer.length) {
         
               // Perform the PUT request
 
-              console.log('learningcontentupdate:',learningContent)
+              
               return api.put(`/api/learning_outcomes/${data.learning_outcomes_id[index]}/`, learningContent);
             });
         
@@ -759,7 +759,7 @@ if (getQuestion.length && getAnswer.length) {
         try {
           const updatePromisesTaxonomyLevel = lessonData.map(updateOrCreateTaxonomyLevel);
           const results = await Promise.all(updatePromisesTaxonomyLevel);
-          console.log("Responses:", results); // Log all responses
+          
         } catch (error) {
           console.error("Error in updating or creating taxonomy levels:", error);
         }
@@ -822,7 +822,7 @@ if (getQuestion.length && getAnswer.length) {
         try {
           const updatePromisesTaxlevels = lessonData.map(updateOrCreateTaxlevels);
           const results = await Promise.all(updatePromisesTaxlevels);
-          console.log("Responses:", results); // Log all responses
+          
         } catch (error) {
           console.error("Error in updating or creating taxonomy levels:", error);
         }
@@ -859,7 +859,7 @@ if (getQuestion.length && getAnswer.length) {
                 const testPartRes = await api.post("/api/create-testpart/", { itemTestPartJson });
                 if (testPartRes.status === 201) {
                   const createdTestPart = Array.isArray(testPartRes.data) ? testPartRes.data[0] : testPartRes.data;
-                  console.log('createdtestpartid:', createdTestPart.id);
+                  
         
                   // Accumulate related questions based on the created test part's type
                   const itemsQues = examStates.reduce((acc, dataques) => {
@@ -883,7 +883,7 @@ if (getQuestion.length && getAnswer.length) {
                     const itemQuestionJson = JSON.stringify(itemsQues);
 
 
-                    console.log('debugcontext: ',itemQuestionJson)
+                    
         
                     const questionRes = await api.post("/api/create-questions/", { itemQuestionJson });
                     if (questionRes.status === 201) {
@@ -909,7 +909,7 @@ if (getQuestion.length && getAnswer.length) {
                       throw new Error("Failed to create questions.");
                     }
                   } else {
-                    console.log('No matching questions for the created test part.');
+                    
                   }
                 } else {
                   throw new Error("Failed to create test part.");
@@ -930,7 +930,7 @@ if (getQuestion.length && getAnswer.length) {
         // Await all the promises to complete
         try {
           const resulttest = await Promise.all(updatePromisesTestPart);
-          console.log('Responses:', resulttest); // Array of responses for each operation
+          
         } catch (error) {
           console.error('Error in updating or creating test parts:', error);
         }
@@ -999,7 +999,7 @@ if (getQuestion.length && getAnswer.length) {
         // Await all the promises to complete
         try {
           const results = await Promise.all(updatePromisesExamStates);
-          console.log('Responses:', results); // Array of responses for each operation
+          
         } catch (error) {
           console.error('Error in updating or creating questions:', error);
         }
@@ -1033,7 +1033,7 @@ if (getQuestion.length && getAnswer.length) {
         try {
           const resultsans = await Promise.all(updatePromisesAnswerChoices);
 
-          console.log('Responses:', resultsans); // Array of responses for each operation
+          
 
           const AdminNotifDataJson = JSON.stringify({
             notification_text: " updated ",
@@ -1381,7 +1381,7 @@ const removeLesson = (lessonsData, index) => {
 
 
   } else {
-    console.log('Invalid index or array is empty.');
+    
   }
 };
 
@@ -1742,7 +1742,7 @@ function getInnerLevelAllocation(allocations,level,index,subIndex){
 
   const Remembering = allocations[index][subIndex]['Remembering']
 
-  console.log('heremember:',Remembering,' index:',index)
+  
   const Understanding = allocations[index][subIndex]['Understanding']
   const Applying = allocations[index][subIndex]['Applying']
   const Analyzing = allocations[index][subIndex]['Analyzing']
@@ -1754,7 +1754,7 @@ function getInnerLevelAllocation(allocations,level,index,subIndex){
   
   const percent = Math.round((allocations[index][subIndex][level]/total)*100)
 
-  console.log('totalAll: ',percent, '|level:',level,'|index:',index)
+  
 
   return percent
 
@@ -1800,13 +1800,13 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
     
       const sumAlloc =  newData[i]['allocation'].reduce((accumulator, currentValue) => accumulator + currentValue, 0);
       const lessonItem = getNumItems(TotalItems,sumAlloc)
-      console.log('showitems:l',lessonItem)
+      
       for(let k=0;k<newData[i]['items'].length;k++){
         newData[i]['items'][k] = getInnerNumItems(TotalItems,newData[i]['allocation'][k])
-        console.log('showitems:',newData[i]['items'][k])
-        console.log('showitems:a',newData[i]['allocation'][k])
+        
+        
      
-        console.log('showitems:s',sumAlloc)
+        
       }
     
       
@@ -1835,7 +1835,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
           creating[k] = getInnerLevelAllocation(allocations,'Creating',i,k)
         }
 
-        console.log('uprob: ',understanding)
+        
      
     
 
@@ -1864,9 +1864,9 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
       }
       
 
-      console.log('nowrem:',remembering)
-       console.log('definedData?: ',newData[i])
-        console.log('defined?: ',newData[i]['remembering'])
+      
+       
+        
       for (let k = 0; k < newData[i]['allocation'].length; k++) {
 
        
@@ -1916,7 +1916,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
         }
     }
 
-    console.log('percenthere:',percent)
+    
 
     if(percent<100){
 
@@ -1938,23 +1938,23 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
 
 
     
-      console.log('overall: ',overall)
-      console.log('total items: ',TotalItems)
+      
+      
 
             
-    console.log('overall: ',overall,' total items: ',TotalItems)
+    
    
    
       if(overall<TotalItems){
 
         
         newData[i]['items'][k] = Math.ceil(newData[i]['items'][k]);
-        console.log('remembertrailll',k,': ',newData[i]['remembering'][k])
-        console.log('true?: ',newData[i]['items'][k] ,':', newData[i]['total'][k])
+        
+        
         if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['remembering'][k])){
 
           
-          console.log('remembertraillls',k,': ',newData[i]['remembering'][k])
+          
           newData[i]['remembering'][k] = Math.round(newData[i]['remembering'][k]);
          
 
@@ -1973,7 +1973,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
         }
         else if(newData[i]['items'][k] < newData[i]['total'][k]){
           newData[i]['remembering'][k] = Math.floor(newData[i]['remembering'][k]);
-          console.log('remembertrailllss',k,': ',newData[i]['remembering'][k])
+          
             newData[i]['total'][k] = getTotal(
           newData[i]['remembering'][k],
           newData[i]['understanding'][k],
@@ -1986,9 +1986,9 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
         }
     
         else if(newData[i]['items'][k] > newData[i]['total'][k]){
-          console.log('larger?: ',newData[i]['items'][k] ,':', newData[i]['total'][k])
+          
           newData[i]['remembering'][k] = Math.ceil(newData[i]['remembering'][k]);
-          console.log('remembertrailllsss',k,': ',newData[i]['remembering'][k])
+          
              newData[i]['total'][k] = getTotal(
           newData[i]['remembering'][k],
           newData[i]['understanding'][k],
@@ -2199,7 +2199,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
     
         if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['remembering'][k])){
           newData[i]['remembering'][k] = Math.round(newData[i]['remembering'][k]);
-          console.log('rememberround2',k,': ',newData[i]['remembering'][k])
+          
             newData[i]['total'][k] = getTotal(
           newData[i]['remembering'][k],
           newData[i]['understanding'][k],
@@ -2214,7 +2214,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
         
           
           newData[i]['remembering'][k] = Math.floor(newData[i]['remembering'][k]);
-          console.log('rememberfloor2',k,': ',newData[i]['remembering'][k])
+          
              newData[i]['total'][k] = getTotal(
           newData[i]['remembering'][k],
           newData[i]['understanding'][k],
@@ -2228,7 +2228,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
     
         else if(newData[i]['items'][k] > newData[i]['total'][k]){
           newData[i]['remembering'][k] = Math.ceil(newData[i]['remembering'][k]);
-          console.log('rememberceil2',k,': ',newData[i]['remembering'][k])
+          
              newData[i]['total'][k] = getTotal(
           newData[i]['remembering'][k],
           newData[i]['understanding'][k],
@@ -2442,7 +2442,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
         
         if(newData[i]['items'][k] == newData[i]['total'][k] && !Number.isInteger(newData[i]['remembering'][k])){
           newData[i]['remembering'][k] = Math.round(newData[i]['remembering'][k]);
-          console.log('rememberround3',k,': ',newData[i]['remembering'][k])
+          
             newData[i]['total'][k] = getTotal(
           newData[i]['remembering'][k],
           newData[i]['understanding'][k],
@@ -2455,7 +2455,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
         }
         else if(newData[i]['items'][k] < newData[i]['total'][k]){
           newData[i]['remembering'][k] = Math.floor(newData[i]['remembering'][k]);
-          console.log('rememberfloor3',k,': ',newData[i]['remembering'][k])
+          
              newData[i]['total'][k] = getTotal(
           newData[i]['remembering'][k],
           newData[i]['understanding'][k],
@@ -2469,7 +2469,7 @@ const handleInnerLessonDataChange = (index,subIndex, field, value) => {
     
         else if(newData[i]['items'][k] > newData[i]['total'][k]){
           newData[i]['remembering'][k] = Math.ceil(newData[i]['remembering'][k]);
-          console.log('rememberceil3',k,': ',newData[i]['remembering'][k])
+          
              newData[i]['total'][k] = getTotal(
           newData[i]['remembering'][k],
           newData[i]['understanding'][k],
@@ -2747,7 +2747,7 @@ const handleLessonDataChange = (index, field, value) => {
 
 
     
-      console.log('overall: ',overall)
+      
     
       if(overall<TotalItems){
         newData[i]['items'] = Math.ceil(newData[i]['items']);
@@ -4200,7 +4200,7 @@ const handleSubmitExam = () =>{
   api
     .patch(`/api/tos-info/${id}/update/`, updateStatus)
     .then((res) => {
-      console.log('Status updated', res.data);
+      
      
       setOpenModal(false); // Close the modal
       setLoading(false);
@@ -4290,7 +4290,7 @@ const [allocations, setAllocations] = useState([]);
           const response = await api.post('/api/taxonomy-allocation/', {
             objectives: outcome,
           });
-          console.log('heresss: ',outcome)
+          
           return response.data.allocation; 
         });
   
@@ -4341,7 +4341,7 @@ const [allocations, setAllocations] = useState([]);
     api.get(`/api/courses/`)
       .then((res) => {
         setcourse(res.data);
-        console.log('courses',res.data)
+        
         
       })
       .catch((err) => {

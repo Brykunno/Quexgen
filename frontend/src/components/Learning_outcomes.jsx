@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {Button} from "@mui/material";
+import {Button, CardContent, CardHeader} from "@mui/material";
 import { Textarea, TextInput,Card,Pagination,FileInput,Label,Spinner,Modal } from 'flowbite-react';
 import api from '../api';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -13,10 +13,19 @@ import LearningOutcomeTabs from './tabs/LearningOutcomeTabs';
 import ClearIcon from '@mui/icons-material/Clear';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useSnackbar } from 'notistack';
+import {RangeSlider} from "flowbite-react";
+import { Progress } from 'flowbite-react';
+import TaxonomyChart from './ui/snackbar/TaxonomyChart';
+
 
 function Learning_outcomes({
   setRemembering,
   Remembering,
+  Understanding,
+  Analyzing,
+  Applying,
+  Evaluating,
+  Creating,
   setUnderstanding,
   setAnalyzing,
   setApplying,
@@ -32,8 +41,8 @@ function Learning_outcomes({
   setFormData,
   submit,
   allocations,setTosModal,
-  setAllocations,files,setLessonsDatainitial,lessonsDataInitial,setFiles,handletaxlevelChange,oneAllocation,addAllocation,countOutcomes,handleInnerLessonDataChange,overallItems,handleTotalItemsChange,handleinnertaxlevelChange,addToast
-  ,taxonomyRange
+  setAllocations,files,setLessonsDatainitial,lessonsDataInitial,setFiles,handletaxlevelChange,oneAllocation,addAllocation,countOutcomes,handleInnerLessonDataChange,overallItems,handleTotalItemsChange,handleinnertaxlevelChange,addToast,specific,handleRememberingChange,handleUnderstandingChange,handleApplyingChange,handleAnalyzingChange,handleEvaluatingChange,handleCreatingChange,checkTaxonomy
+
 }) {
 
  
@@ -45,6 +54,7 @@ function Learning_outcomes({
   const [errorFile,setErrorFile] = useState(false)
   const [fileStatus, setFileStatus] = useState(Array(lessonsDataInitial.length).fill(false));
   const [levelModal,setLevelModal] = useState(false)
+  const [fileLoading,setFileLoading] = useState(false);
 
   const [maximum,setMaximum] = useState([])
 
@@ -356,6 +366,7 @@ const handleReadFile = async () => {
 };
 
 const handleReadOneFile = async (value,index) => {
+  setFileLoading(true)
   setRead(true)
   const updatedFileInfo = []; // Initialize an array to store file information
     const formData = new FormData();
@@ -375,6 +386,7 @@ const handleReadOneFile = async (value,index) => {
 
       // Add the lesson info object to the updated fileInfo array
       updatedFileInfo.push(dataques);
+      setFileLoading(false)
 
     } catch (error) {
       console.error('Error processing the file and data:', error);
@@ -610,20 +622,27 @@ function checkAbove(index){
       
       
         </div>
-       
+  
       </div>
       
 <LearningOutcomeTabs 
+
+fileLoading = {fileLoading}
 addLesson={       <Button
           color={'primary'}
           variant='contained'
           className="mt-3"
           onClick={() =>{
            
-            if(checkBelow(lessonsData.length-1) == false && checkAbove(lessonsData.length-1) == false || lessonsData.length ==0){
-              
-            
-            
+            if(checkBelow(lessonsData.length-1) == false && checkAbove(lessonsData.length-1) == false || lessonsData.length ==0  ){
+              const lessonlength = lessonsData.length
+               if(lessonsData[lessonlength-1]?.file_status == ""){
+                    return enqueueSnackbar(`Plese upload a study guide for lesson ${ lessonsData.length}`,{variant:"warning"});
+                }
+
+                if(lessonlength>0 && maximum[lessonsData.length-1]==0 || lessonlength>0 && maximum[lessonsData.length-1]==null){
+                    return enqueueSnackbar(`Plese enter the maximum teaching hours for lesson ${ lessonsData.length}`,{variant:"warning"});
+                }
             addLesson({
               topic: '',
               learning_outcomes: [],
@@ -666,10 +685,10 @@ addLesson={       <Button
           
           }
           else if(checkBelow(lessonsData.length-1)== true){
-            enqueueSnackbar(`The total allocation of teaching hours is below the maximum teaching hours allowed for the lesson ${ lessonsData.length}`)
+            enqueueSnackbar(`The total allocation of teaching hours is below the maximum teaching hours allowed for the lesson ${ lessonsData.length}`,{variant:"warning"})
           }
           else if(checkAbove(lessonsData.length-1)== true){
-            enqueueSnackbar(`The total allocation of teaching hours is above the maximum teaching hours allowed for the lesson ${ lessonsData.length}`)
+            enqueueSnackbar(`The total allocation of teaching hours is above the maximum teaching hours allowed for the lesson ${ lessonsData.length}`,{variant:"warning"})
           }
          
         }
@@ -678,17 +697,162 @@ addLesson={       <Button
           <AddCircleOutlineIcon className="mr-2 " /> Add Lesson
         </Button>
 } previewTOS={ <Button color="primary" variant="contained" onClick={() => setTosModal(true)}><VisibilityIcon className="mr-2"/>Preview TOS</Button>} handleinnertaxlevelChange={handleinnertaxlevelChange} checkMaxMin={checkMaxMin} handleMaximum={handleMaximum} handleInnerLessonDataChange={handleInnerLessonDataChange} handleReadOneFile={handleReadOneFile} handleValidateFile={handleValidateFile} setMaximum={setMaximum} removeFile={removeFile} handleLessonDataChange={handleLessonDataChange} removeLesson={removeLesson} lessonsData = {lessonsData} fileStatus={fileStatus} getFileStatus={getFileStatus} lessonsDataInitial={lessonsDataInitial}
-taxonomyRange={taxonomyRange}
-
-totalOfItems={<div className=" flex gap-5 mx-auto justify-between">
+taxonomyRange={   <div className="flex gap-3"> 
+      <Card className=" gap-4 mb-5  w-full px-3"> 
+<Card className='bg-yellow-50'>
+<div className=" flex gap-5 mx-auto justify-between w-full">
     
     <div className="mt-3" >
-      <Label htmlFor="totalItems" className="font-bold" >Overall Total of Items<span className="text-red-600">*</span></Label> 
+      <Label htmlFor="totalItems" className="font-bold text-blue-500" >OVERALL TOTAL ITEMS</Label> 
     </div>
     <TextInput id="totalItems" type="number" className="max-w-32 " required value={overallItems} min={'0'} onChange={handleTotalItemsChange} />
-  </div>}
+  </div>
+  </Card>
+           
+        <div>
+        <div className="mb-3">
+        {/* <ToggleSwitch checked={specific} label={specific?'Locked':'Unlocked'} onChange={setSpecific} color={"primary"} className="mx-auto" /> */}
+        </div>
+       
+ <h1 className='text-center font-bold'>Overall Bloom's Taxonomy Allocation</h1>
+      {/* <div className="max-w-md flex gap-5">
+    
+        <div className="mt-3" >
+          <Label htmlFor="totalItems" className="font-bold" > Total of Items<span className="text-red-600">*</span></Label> 
+        </div>
+        <TextInput id="totalItems" type="number" className="max-w-32 " required value={totalItems} min={'0'} onChange={handleTotalItemsChange} />
+      </div> */}
+      </div>
+
+      {/* <div>
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Remembering" />
+        </div>
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Remembering} onChange={handleRememberingChange} disabled={specific} />
+        <div className="flex">
+        <input type="number" disabled={specific}  className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Remembering}  onChange={handleRememberingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
+      </div>
+
+
+      <div>
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Understanding" />
+        </div>
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Understanding} onChange={handleUnderstandingChange} disabled={specific} />
+        <div className="flex">
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Understanding} disabled={specific}  onChange={handleUnderstandingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
+      </div>
+
+
+      <div>
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Applying" />
+        </div>
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Applying} onChange={handleApplyingChange} disabled={specific} />
+        <div className="flex">
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Applying} disabled={specific}  onChange={handleApplyingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
+      </div>
+
+
+      <div>
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Analyzing" />
+        </div>
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Analyzing} onChange={handleAnalyzingChange} disabled={specific} />
+        <div className="flex">
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Analyzing} disabled={specific}   onChange={handleAnalyzingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
+      </div>
+
+
+
+      <div>
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Evaluating" />
+        </div>
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Evaluating} onChange={handleEvaluatingChange} disabled={specific} />
+        <div className="flex">
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Evaluating} disabled={specific}  onChange={handleEvaluatingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
+      </div>
+
+
+      <div>
+        <div className="flex gap-3">
+        <div className="mt-2 block w-32">
+          <Label htmlFor="md-range" value="Creating" />
+        </div>
+        <RangeSlider id="md-range" sizing="md" className="mt-2 w-full hidden md:block" value={Creating} onChange={handleCreatingChange} disabled={specific} />
+        <div className="flex">
+        <input type="number" className="border-0 border-b-2 border-black w-10 bg-transparent focus:outline-none p-0" value={Creating} disabled={specific}   onChange={handleCreatingChange} /><span className="mt-2">%</span>
+        </div>
+        </div>
+      </div> */}
+        <TaxonomyChart Remembering={Remembering} Understanding={Understanding} Applying={Applying} Analyzing={Analyzing} Evaluating={Evaluating} Creating={Creating} />
+
+       
+      {/* <hr  />
+      <div className=" flex justify-between"> 
+      <span className="max-w-96 mr-20">Total:</span>
+      <span className="w-full text-center">
+      <Progress
+      
+      progress={getTotalTaxonomy}
+      progressLabelPosition="inside"
+  
+      color={'primary'}
+      className=" hidden md:block"
+    
+      size="lg"
+     
+    />
+   
+      {checkTaxonomy(getTotalTaxonomy)} </span>
+      <span className="max-w-96 ml-6 flex justify-end ">
+        <div className="w-10 font-bold">
+        {getTotalTaxonomy}%</div></span> 
+      
+      </div> */}
+    
+
+
+
+         <div className='text-center'>
+          <Button color="primary" variant="contained" onClick={() => setTosModal(true)}><VisibilityIcon className="mr-2"/>Preview TOS</Button>
+        </div>
+    
+      
+      </Card>
+    
+
+      </div> }
+
+totalOfItems={
+<Card >
+<div className=" flex gap-5 mx-auto justify-between w-full">
+    
+    <div className="mt-3" >
+      <Label htmlFor="totalItems" className="font-bold text-blue-500" >OVERALL TOTAL ITEMS</Label> 
+    </div>
+    <TextInput id="totalItems" type="number" className="max-w-32 " required value={overallItems} min={'0'} onChange={handleTotalItemsChange} />
+  </div>
+  </Card>}
 
 />
+
 
     {loading && <LoadingGenerate />}
     {errorFile && <ToastError message="Please upload a file for every lesson" setToast={setErrorFile}/>}
@@ -696,6 +860,7 @@ totalOfItems={<div className=" flex gap-5 mx-auto justify-between">
     {/* Pagination controls */}
     {/* {JSON.stringify(lessonsData)} */}
      {/* {JSON.stringify(maximum)} */}
+   
 
   </div>
   );

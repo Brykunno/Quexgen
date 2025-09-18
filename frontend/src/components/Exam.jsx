@@ -104,7 +104,7 @@ function Exam ({ items, tos_id, lessonsData,handleStateChange,examStates,setExam
       for(let i = 0; i<response.data.choices.length;i++){
         handleStateChange(response.data.index,i,response.data.choices[i])
       }
-       console.log("generated-exam:",response.data)
+       
     })
     .catch(error => {
         console.error('There was an errorss!', error);

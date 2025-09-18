@@ -93,7 +93,7 @@ function Courses() {
         },
       })
       .then((res) => {
-        console.log("Course updated successfully", res.data);
+        
         getUser(); // Refresh the course list
         setOpenModal(false); // Close the modal
       })
@@ -107,7 +107,7 @@ function Courses() {
     api
       .delete(`/api/courses/${selectedUserId}/`) // Remove the unnecessary parameter
       .then((res) => {
-        console.log('User deleted successfully', res.data);
+        
         getUser(); // Refresh the user list
         setOpenModal(false); // Close the modal
       })
@@ -123,7 +123,7 @@ function Courses() {
     api
       .patch(`/api/courses/${id}/`, {status:"archived"})
       .then((res) => {
-        console.log("Course updated successfully", res.data);
+        
         enqueueSnackbar("Course archived successfully!",{variant:"success"})
         getUser(); // Refresh the course list
         setOpenModal(false); // Close the modal
@@ -138,7 +138,7 @@ function Courses() {
     api
       .patch(`/api/courses/${id}/`, {status:"active"})
       .then((res) => {
-        console.log("Course updated successfully", res.data);
+        
         enqueueSnackbar("Course unarchived successfully!",{variant:"success"})
         getUser(); // Refresh the course list
         setOpenModal(false); // Close the modal

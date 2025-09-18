@@ -92,7 +92,7 @@ function Profile() {
     })
     .then((res) => res.data)
     .then((data) => {
-      console.log("profile",data);
+      
       setLoading(false);
       getUser(); // Optionally refresh the user data after update
     })

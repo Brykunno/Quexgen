@@ -3,7 +3,8 @@ import Box from '@mui/material/Box';
 import Tabs, { tabsClasses } from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import PropTypes from 'prop-types';
-import { Button, CardContent, CardHeader, Divider } from '@mui/material';
+import { Button, CardContent, CardHeader, Divider, LinearProgress, Skeleton } from '@mui/material';
+
 import { Textarea, TextInput,Card,Pagination,FileInput,Label,Spinner,Modal } from 'flowbite-react';
 import ClearIcon from '@mui/icons-material/Clear';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -51,7 +52,7 @@ function a11yProps(index) {
 
 
 
-export default function ScrollableTabsButtonVisible({addLesson,previewTOS,handleinnertaxlevelChange,totalOfItems,checkMaxMin,handleMaximum,handleInnerLessonDataChange,handleReadOneFile,handleValidateFile,setMaximum,handleLessonDataChange,removeFile,removeLesson,lessonsData,fileStatus,getFileStatus,lessonsDataInitial,taxonomyRange}) {
+export default function ScrollableTabsButtonVisible({addLesson,previewTOS,handleinnertaxlevelChange,totalOfItems,checkMaxMin,handleMaximum,handleInnerLessonDataChange,handleReadOneFile,handleValidateFile,setMaximum,handleLessonDataChange,removeFile,removeLesson,lessonsData,fileStatus,getFileStatus,lessonsDataInitial,taxonomyRange,fileLoading}) {
 
 
 function totalTeachingHours(index) {
@@ -142,7 +143,7 @@ function totalTeachingHours(index) {
               <div>
                 <div className="mb-2 block">
                   <Label htmlFor="file-upload">
-                    Upload file for Lesson {index + 1} <span className="text-red-600">*</span>
+                    Upload study guide for lesson {index + 1}
                   </Label>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -170,26 +171,42 @@ function totalTeachingHours(index) {
 
             {/* Lesson summary */}
             <div className={lessonsDataInitial[index]?.file_status.status !== "Valid" ? 'hidden' : 'flex-1'}>
-              <div className="ms-2 font-bold mb-2">Lesson {index + 1}</div>
-              <Textarea
+              <div className="ms-2 font-bold mb-2 text-blue-500">MODULE TITLE</div>
+
+              {
+                fileLoading?( <Skeleton variant="rectangular"  height={100} />):(<Textarea
                 value={lessonsData[index]['topic']}
                 style={{ height: '100px' }}
                 onChange={(e) => handleLessonDataChange(index, 'topic', e.target.value)}
                 placeholder="Enter the summary of the lesson"
                 className="w-full"
-              />
+              />)
+              }
+              
+             
+              {/* <LinearProgress size="lg" /> */}
             </div>
 
             {/* Main content: Responsive flex layout */}
             <div className={lessonsDataInitial[index]?.file_status.status !== "Valid" ? 'hidden' : 'flex flex-col xl:flex-row gap-4'}>
               {/* Left side */}
               <div className='flex-1 min-w-0'>
-                <div className='m-3 mb-4'>
-                  {totalOfItems}
-                  <div className="flex flex-col sm:flex-row gap-2 mt-3 justify-between">
+            
+                <div>
+                  {taxonomyRange}
+                  {/* <div className='text-center mb-3'>
+                    {previewTOS}
+                  </div> */}
+                </div>
+              </div>
+
+              {/* Right side: Learning Outcomes Tabs */}
+              <Card className='flex-1 min-w-0 '>
+                <Card className='bg-yellow-50' >
+                  <div className="flex flex-col sm:flex-row gap-2 justify-between px-5">
                     <div className="mt-3">
-                      <Label htmlFor="totalItems" className="font-bold">
-                        Maximum Teaching Hours for Lesson {index + 1}
+                      <Label htmlFor="totalItems" className="font-bold text-blue-500">
+                        MAXIMUM TEACHING HOURS FOR LESSON {index + 1}
                       </Label>
                     </div>
                     <TextInput
@@ -202,18 +219,7 @@ function totalTeachingHours(index) {
                       onChange={(e) => handleMaximum([index], e.target.value)}
                     />
                   </div>
-                  
-                </div>
-                <div>
-                  {taxonomyRange}
-                  <div className='text-center mb-3'>
-                    {previewTOS}
-                  </div>
-                </div>
-              </div>
-
-              {/* Right side: Learning Outcomes Tabs */}
-              <div className='flex-1 min-w-0'>
+                     </Card>
                 <div className="overflow-x-auto">
                   <Tabs
                     value={innerValue}
@@ -246,13 +252,17 @@ function totalTeachingHours(index) {
                     <div>
                       <div className="ms-2 font-bold mb-2">Learning Outcome</div>
                       <div key={lineIndex} style={{ marginBottom: '20px' }}>
-                        <Textarea
+                        {
+                          fileLoading?( <Skeleton variant="rectangular"  height={50}/>):(<Textarea
                           key={lineIndex}
                           value={line}
                           onChange={(e) => handleInnerLessonDataChange(index, lineIndex, 'learning_outcomes', e.target.value)}
                           placeholder={`Enter value for line ${lineIndex}`}
                           className="w-full"
-                        />
+                        />)
+                        }
+                        
+                       
                       </div>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-2 mb-3 justify-between">
@@ -278,7 +288,7 @@ function totalTeachingHours(index) {
                     </div>
                     <Card>
                       <h5 className="text-center text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-                        Bloom's Taxonomy Concentration
+                        Bloom's Taxonomy Distribution
                       </h5>
                       <CardContent>
                         {/* Taxonomy fields */}
@@ -286,7 +296,8 @@ function totalTeachingHours(index) {
                           <div className="flex flex-col sm:flex-row gap-2 mb-3 justify-between" key={level}>
                             <div className="ms-2 font-bold mb-2">{level}</div>
                             <div className='justify-end'>
-                              <TextInput
+                              {
+                          fileLoading?( <Skeleton variant="rectangular"  height={50}/>):(<TextInput
                                 type="number"
                                 name={`teachingHours-${index}-${lineIndex}`}
                                 onChange={(e) => handleinnertaxlevelChange(index, 'taxonomy_levels', level, lineIndex, e.target.value)}
@@ -294,7 +305,11 @@ function totalTeachingHours(index) {
                                 min={'0'}
                                 placeholder={`Enter value for line ${lineIndex}`}
                                 className="w-full max-w-xs"
-                              />
+                              />)
+                        }
+                              
+
+
                             </div>
                           </div>
                         ))}
@@ -302,7 +317,7 @@ function totalTeachingHours(index) {
                     </Card>
                   </CustomTabPanel>
                 ))}
-              </div>
+              </Card>
             </div>
           </Card>
         </CustomTabPanel>

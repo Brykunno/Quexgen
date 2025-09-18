@@ -50,7 +50,7 @@ function Upload() {
       });
 
       // Process the response
-      console.log('Processed response:', response.data);
+      
     } catch (error) {
       console.error('Error processing the file and data:', error);
     }

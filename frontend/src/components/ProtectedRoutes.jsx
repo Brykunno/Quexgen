@@ -32,7 +32,7 @@ function ProtectedRoute({ children, role }) {
         setIsAuthorized(false);
       }
     } catch {
-      console.log(error);
+      
       setIsAuthorized(false);
     }
   };

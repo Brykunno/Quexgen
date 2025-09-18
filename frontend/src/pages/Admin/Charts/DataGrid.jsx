@@ -140,7 +140,7 @@ export default function DataGridDemo() {
           .then((data) => {
             const filteredData = data.filter((exam) => exam.Status !== 0); // Filter out exams with Status of 0
        
-     console.log(data)
+     
 
             const newRows = filteredData.map((data) => ({
               id: data.id,

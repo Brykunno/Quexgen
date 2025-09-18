@@ -260,7 +260,7 @@ const sortTopicData = (topic) => {
   .filter(data => data.tos_content === content.id)
   .map(data => data.teachingHours);
 
-  console.log('logtrails:',thours)
+  
 
   const allocation = learningOutcomes
   .filter(data => data.tos_content === content.id)
@@ -399,7 +399,7 @@ if (getQuestion.length && getAnswer.length) {
       correspondingAnswers.forEach((answer) => {
         // Match the choices A, B, C, D to the answer_text
         
-        console.log('answerdebug',answer.id)
+        
         answerid.push(answer.id)
       
         switch (answer.choices) {
@@ -468,7 +468,7 @@ if (getQuestion.length && getAnswer.length) {
       .get(`/api/tos-content/${id}/detail/`)
       .then((res) => res.data)
       .then((data) => {setTOSContent(data)
-        console.log('toscontent: ', data);
+        
       })
       .catch((err) => alert(err));
   };
@@ -480,10 +480,10 @@ if (getQuestion.length && getAnswer.length) {
   
       if (!data) {
         setCommentData(null);
-        console.log('No comment data available.');
+        
       } else {
         setCommentData(data);
-        console.log('comment: ', data);
+        
       }
     } catch (err) {
       console.error('Error fetching comment:', err);
@@ -500,7 +500,7 @@ if (getQuestion.length && getAnswer.length) {
       .then((res) => res.data)
       .then((data) => {
         setExam(data);
-        console.log('examcontent: ', data);
+        
        
   
         // Assuming we want to make a second API call based on tos
@@ -509,7 +509,7 @@ if (getQuestion.length && getAnswer.length) {
       .then((testPart) => {
         
         // Handle the result of the second query
-        console.log('TOS data: ', testPart.data);
+        
         setGetTestPart(testPart.data)
         // Set some state based on the second query if needed
 
@@ -517,7 +517,7 @@ if (getQuestion.length && getAnswer.length) {
       })
       .then((question)=>{
 
-         console.log('ques data: ', question.data);
+         
         setGetQuestion(question.data)
          // Assuming `exam_id` is an array of question IDs
       const questionIds = question.data.map((exam) => exam.id);
@@ -530,14 +530,14 @@ if (getQuestion.length && getAnswer.length) {
       // Use Promise.all to handle multiple requests
       return Promise.all(questionPromises);
 
-        // console.log('ques data: ', question.data);
+        // 
         // setGetQuestion(question.data)
         // return api.get(`/api/answers/${question.data[0].exam_id}/detail/`);
       })
       .then((answer) => {
         const allAnswers = answer.map((response) => response.data);
 
-          console.log('answersdata: ',allAnswers)
+          
           setGetAnswer(allAnswers)
       })
       .catch((err) => alert(err));
@@ -550,7 +550,7 @@ if (getQuestion.length && getAnswer.length) {
       .then((res) => res.data)
       .then((data) => {
         setTOSInfo(data);
-        console.log('tosinfo: ', data);
+        
       })
       .catch((err) => alert(err));
   };
@@ -618,7 +618,7 @@ if (getQuestion.length && getAnswer.length) {
       const results = await Promise.all(updatePromisesComment);
       setLoading(false)
       setSwal(true)
-      console.log("Responses:", results); // Array of responses for each operation
+      
     } catch (error) {
       console.error("Error in updating or creating comments:", error);
     }
@@ -629,7 +629,7 @@ if (getQuestion.length && getAnswer.length) {
       };
   
       const res = await api.patch(`/api/tos-info/${id}/update/`, updateStatus);
-      console.log('Status updated', res.data);
+      
       const TeacherNotifDataJson = JSON.stringify({
         notification_text: "This exam needs revision",
         tos: id,
@@ -654,7 +654,7 @@ if (getQuestion.length && getAnswer.length) {
     api
       .patch(`/api/tos-info/${id}/update/`, updateStatus)
       .then((res) => {
-        console.log('Status updated', res.data);
+        
       
         const TeacherNotifDataJson = JSON.stringify({
           notification_text: "Admin approved ",
@@ -700,7 +700,7 @@ if (getQuestion.length && getAnswer.length) {
   // Extract the first number if a match is found
   const firstNumber = match ? parseInt(match[0], 10) : null;
   
-  console.log(firstNumber); // Output: 1
+  
  
   return (
     <div > 
