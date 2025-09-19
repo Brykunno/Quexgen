@@ -103,9 +103,13 @@ def safe_unicode(text):
     return "".join(result_chars)
 
 
-def split_context_into_paragraphs(context,extracted_lines):
-    lines = context.split('\n')
-    paragraphs = ['\n'.join(lines[i:i+extracted_lines]) for i in range(0, len(lines), extracted_lines)]
+def split_context_into_paragraphs(context: str, extracted_lines: int):
+    safe_context = safe_unicode(context)
+    lines = safe_context.split('\n')
+    paragraphs = [
+        '\n'.join(lines[i:i+extracted_lines])
+        for i in range(0, len(lines), extracted_lines)
+    ]
     return paragraphs
 
 # Number of questions to generate
