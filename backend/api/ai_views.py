@@ -1088,7 +1088,7 @@ def lesson_summary(pdf_path, header_height, footer_height, start_keyword, stop_k
 
             if text:  # Ensure there is text before processing
                 # Remove spaces from the extracted text for comparison
-                stripped_text = text.replace(" ", "").strip()
+                stripped_text = safe_unicode(text.replace(" ", "").strip())
 
                 # Check if the start keyword is found to begin extraction
                 if any(cleaned in stripped_text for cleaned in start_keyword_clean ) and not extracting:
