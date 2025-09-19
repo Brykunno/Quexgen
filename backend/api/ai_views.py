@@ -12,6 +12,7 @@ import traceback
 import time
 import difflib
 import sys
+from unidecode import unidecode
 
 
 
@@ -90,21 +91,17 @@ SUBSTITUTIONS = {
 
 
 def safe_unicode(text):
-    if text is None:
-        return ""
-    if isinstance(text, bytes):
-        text = text.decode("utf-8", errors="replace")
-    else:
-        text = str(text)
+    result_chars = []
+    
+    for i, c in enumerate(text):
+        if not c.isascii():
+            ascii_equiv = unidecode(c)
+            result_chars.append(ascii_equiv)
+        else:
+            result_chars.append(c)
+    
+    return "".join(result_chars)
 
-    # Apply custom substitutions
-    for bad, sub in SUBSTITUTIONS.items():
-        text = text.replace(bad, sub)
-
-    # Replace all non-ASCII characters with "-"
-    text = ''.join(ch if ord(ch) < 128 else '-' for ch in text)
-
-    return text
 
 def split_context_into_paragraphs(context,extracted_lines):
     lines = context.split('\n')
