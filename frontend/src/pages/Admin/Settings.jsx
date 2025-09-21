@@ -4,9 +4,10 @@ import {Button} from "@mui/material";
 import { Card, TextInput,  Label } from 'flowbite-react';
 import api from '../../api';
 import { useSnackbar } from 'notistack';
+import useAppSnackbar from '../../components/ui/snackbar/Snackbar';
 
 function Settings() {
-  const { enqueueSnackbar } = useSnackbar();
+   const { showSnackbar } = useAppSnackbar();
   const [settings, setSettings] = useState({
     chairperson: '',
     dean: '',
@@ -48,7 +49,7 @@ function Settings() {
         director: settings.director,
         academic_year: settings.academic_year,
       });
-      enqueueSnackbar("Changes saved successfully!",{variant: 'success'});
+      showSnackbar("Changes saved successfully!",{variant: 'success'});
     } catch (error) {
       alert(error);
     } finally {

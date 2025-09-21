@@ -259,21 +259,33 @@ function PdfUpdate(props) {
               </View>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCellCenter}>REMEMBERING</Text>
+                <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Remembering}%</Text>
+                
               </View>
               <View style={[styles.tableCol,{flex:1.2}]}>
                 <Text style={styles.tableCellCenter}>UNDERSTANDING</Text>
+                <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Understanding}%</Text>
+
               </View>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCellCenter}>APPLYING</Text>
+                <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Applying}%</Text>
+
               </View>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCellCenter}>ANALYZING</Text>
+                <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Analyzing}%</Text>
+
               </View>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCellCenter}>EVALUATING</Text>
+                <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Evaluating}%</Text>
+
               </View>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCellCenter}>CREATING</Text>
+                <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Creating}%</Text>
+
               </View>
               <View style={[styles.tableCol,{flex:0.8}]}>
                 <Text style={styles.tableCellCenter}>TOTAL</Text>

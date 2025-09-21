@@ -20,10 +20,11 @@ import Topnavbar from '../../components/Topnavbar';
 
 import { Tabs } from "flowbite-react";
 import { useSnackbar } from 'notistack';
+import useAppSnackbar from '../../components/ui/snackbar/Snackbar';
 
 
 function Exam_bank() {
-  const {enqueueSnackbar} = useSnackbar();
+   const { showSnackbar } = useAppSnackbar();
   const [exam, setExam] = useState([]);
   const [filteredExams, setFilteredExams] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -50,7 +51,7 @@ function Exam_bank() {
         .then(() => {
           setExam(prev => prev.filter(item => item.id !== deleteId));
           setFilteredExams(prev => prev.filter(item => item.id !== deleteId));
-          enqueueSnackbar("Exam deleted successfully", { variant: 'success' });
+          showSnackbar("Exam deleted successfully", { variant: 'success' });
             const log = `User ${localStorage.getItem('first_name')+" "+localStorage.getItem("last_name")} deleted an exam successfully`;
             const status = "success";
            api.post("/api/logs/", { log, status });

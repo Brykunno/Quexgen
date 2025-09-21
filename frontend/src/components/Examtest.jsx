@@ -32,6 +32,7 @@ import CircularProgress, {
   circularProgressClasses,
 } from '@mui/material/CircularProgress';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+import  useAppSnackbar  from './ui/snackbar/Snackbar';
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
@@ -47,7 +48,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 function Examtest ({updateformData,setFormData,setLessonsDatainitial,handleLessonDataChange, saveDataToLocalStorageTestPart,files,items, tos_id, lessonsData,handleStateChange,examStates,setExamStates,ExamTitle,handleExamTitleChange,handleRadioAnswer,TestPart,setTestPart,handleTestPartChange,setSubmit,setLoading,context,setContext,formData,setTOSPdfModal,addToast}) {
 
 
-  const { enqueueSnackbar } = useSnackbar();
+  const { showSnackbar } = useAppSnackbar();
   const [disableAdd,setDisableAdd] = useState(false)
   const [disableAddTestMcq,setDisableAddTestMcq] = useState(false)
   const [disableAddTestIdentification,setDisableAddTestIdentification] = useState(false)
@@ -141,9 +142,9 @@ function Examtest ({updateformData,setFormData,setLessonsDatainitial,handleLesso
        
     })
     .catch(error => {
-         console.error('There was an errorss!', error);
+         console.error('There was an errors!', error);
                  setLoading(false)
-                 enqueueSnackbar("Failed to generate question",{variant:"error"})
+                 showSnackbar("Failed to generate question",{variant:"error"})
         
     });
     }
@@ -1166,7 +1167,7 @@ setDisableAddTestTrueorFalse(trueOrFalseCount > 0);
   const handleFileProcessing = async () => {
 
     if(testTotal!=items){
-      enqueueSnackbar("The total number of exam items doesn't match the desired number of items.",{variant:'warning'})
+      showSnackbar("The total number of exam items doesn't match the desired number of items.",{variant:'warning'})
       return
     }
 
@@ -1351,7 +1352,7 @@ localStorage.setItem('formData', JSON.stringify(updatedFormData));
         
       } catch (error) {
         console.error('Error processing the file and data:', error);
-        enqueueSnackbar("Question Generation failed. Please try again.",{variant:"error"})
+        showSnackbar("Question Generation failed. Please try again.",{variant:"error"})
       }
   
       num++;

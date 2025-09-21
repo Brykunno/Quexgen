@@ -12,9 +12,10 @@ import ToastMessage from '../../components/Toast';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { Autocomplete, TextField, Chip } from '@mui/material';
 import { useSnackbar } from 'notistack';
+import useAppSnackbar from '../../components/ui/snackbar/Snackbar';
 
 function Instructors() {
-  const { enqueueSnackbar } = useSnackbar();
+   const { showSnackbar } = useAppSnackbar();
   const [user, setUser] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -188,7 +189,7 @@ api.get(`/api/teacherCourse/`)
       }
     });
 
-    enqueueSnackbar("User successfully updated!", { variant: 'success' });
+    showSnackbar("User successfully updated!", { variant: 'success' });
   };
   
   

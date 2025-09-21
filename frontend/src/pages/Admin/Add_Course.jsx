@@ -5,10 +5,11 @@ import { Radio, Label, TextInput, Card, FileInput } from "flowbite-react";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import api from "../../api";
 import { useSnackbar } from "notistack";
+import useAppSnackbar from "../../components/ui/snackbar/Snackbar";
 
 function Add_Course({ setLoading,setRefresh }) {
 
-  const { enqueueSnackbar } = useSnackbar();
+   const { showSnackbar } = useAppSnackbar();
   const [course_name, setCourseName] = useState("");
   const [course_code, setCourseCode] = useState("");
   const [course_type, setCourseType] = useState("");
@@ -38,7 +39,7 @@ function Add_Course({ setLoading,setRefresh }) {
         },
       });
 
-      enqueueSnackbar("Course added successfully!",{variant:"success"});
+      showSnackbar("Course added successfully!",{variant:"success"});
       setCourseName("");
       setCourseCode("");
       setCourseType("");
@@ -48,7 +49,7 @@ function Add_Course({ setLoading,setRefresh }) {
      setRefresh(prev => !prev)
     } catch (error) {
       console.error(error);
-      enqueueSnackbar("Failed to add course. Please try again.",{variant:"error"});
+      showSnackbar("Failed to add course. Please try again.",{variant:"error"});
     } finally {
       setLoading(false);
     }

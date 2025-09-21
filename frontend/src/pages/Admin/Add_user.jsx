@@ -9,11 +9,12 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Autocomplete, TextField, Chip } from '@mui/material';
 import { useSnackbar } from 'notistack';
+import useAppSnackbar from "../../components/ui/snackbar/Snackbar";
 
 
 function Add_user({setLoading,setOpenModalAdd,openModalAdd,setRefresh,refresh}){
     // return <Add_form route="/api/create_user/" method="add_user"/>
-  const { enqueueSnackbar } = useSnackbar();
+   const { showSnackbar } = useAppSnackbar();
     const [username, setUsername] = useState("");
     const [first_name, setfirst_name] = useState("");
     const [last_name, setlast_name] = useState("");
@@ -111,12 +112,12 @@ useEffect(() => {
         setOpenModalAdd(false);
 
         setRefresh(prev => !prev);
-    enqueueSnackbar("User successfully added!",{variant:'success'})
+    showSnackbar("User successfully added!",{variant:'success'})
       } catch (error) {
 
-          enqueueSnackbar(error.response.data.errors.email[0],{variant:'error'});
+          showSnackbar(error.response.data.errors.email[0],{variant:'error'});
 
-       enqueueSnackbar("Failed to create user or associate courses. Please try again.",{variant:'error'});
+       showSnackbar("Failed to create user or associate courses. Please try again.",{variant:'error'});
       } finally {
         setLoading(false); // Stop the loading spinner
       }

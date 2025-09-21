@@ -16,6 +16,7 @@ import { useSnackbar } from 'notistack';
 import {RangeSlider} from "flowbite-react";
 import { Progress } from 'flowbite-react';
 import TaxonomyChart from './ui/snackbar/TaxonomyChart';
+import useAppSnackbar from './ui/snackbar/Snackbar';
 
 
 function Learning_outcomes({
@@ -46,7 +47,7 @@ function Learning_outcomes({
 }) {
 
  
- const { enqueueSnackbar } = useSnackbar();
+ const { showSnackbar } = useAppSnackbar();
   const [percent, setPercent] = useState([]);
   const [loading,setLoading] = useState(false)
   const [fileInfo,setFileInfo] = useState([])
@@ -568,7 +569,7 @@ function checkMaxMin(index,max){
 
   const totalHours = newData[index]['teachingHours'].reduce((acc, current) => acc + current, 0);
 if(max<totalHours){
-  enqueueSnackbar(`Total allocation of teaching hours exceeds the maximum teaching hours for lesson ${index+1}`,{variant:"warning"})
+  showSnackbar(`Total allocation of teaching hours exceeds the maximum teaching hours for lesson ${index+1}`,{variant:"warning"})
 }
 
 
@@ -637,11 +638,11 @@ addLesson={       <Button
             if(checkBelow(lessonsData.length-1) == false && checkAbove(lessonsData.length-1) == false || lessonsData.length ==0  ){
               const lessonlength = lessonsData.length
                if(lessonsData[lessonlength-1]?.file_status == ""){
-                    return enqueueSnackbar(`Plese upload a study guide for lesson ${ lessonsData.length}`,{variant:"warning"});
+                    return showSnackbar(`Plese upload a study guide for lesson ${ lessonsData.length}`,{variant:"warning"});
                 }
 
                 if(lessonlength>0 && maximum[lessonsData.length-1]==0 || lessonlength>0 && maximum[lessonsData.length-1]==null){
-                    return enqueueSnackbar(`Plese enter the maximum teaching hours for lesson ${ lessonsData.length}`,{variant:"warning"});
+                    return showSnackbar(`Plese enter the maximum teaching hours for lesson ${ lessonsData.length}`,{variant:"warning"});
                 }
             addLesson({
               topic: '',
@@ -685,10 +686,10 @@ addLesson={       <Button
           
           }
           else if(checkBelow(lessonsData.length-1)== true){
-            enqueueSnackbar(`The total allocation of teaching hours is below the maximum teaching hours allowed for the lesson ${ lessonsData.length}`,{variant:"warning"})
+            showSnackbar(`The total allocation of teaching hours is below the maximum teaching hours allowed for the lesson ${ lessonsData.length}`,{variant:"warning"})
           }
           else if(checkAbove(lessonsData.length-1)== true){
-            enqueueSnackbar(`The total allocation of teaching hours is above the maximum teaching hours allowed for the lesson ${ lessonsData.length}`,{variant:"warning"})
+            showSnackbar(`The total allocation of teaching hours is above the maximum teaching hours allowed for the lesson ${ lessonsData.length}`,{variant:"warning"})
           }
          
         }

@@ -8,6 +8,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import LearningOutcomeTabsUpdate from './tabs/LearningOutcomeTabsUpdate';
+import  useAppSnackbar  from './ui/snackbar/Snackbar';
 function Learning_outcomes_update({
   setRemembering,
   Remembering,
@@ -41,7 +42,7 @@ function Learning_outcomes_update({
 }) {
   // State to manage input data
  
- 
+  const { showSnackbar } = useAppSnackbar();
   const [percent, setPercent] = useState([]);
   const [loading,setLoading] = useState(false)
   const [openModals, setOpenModals] = useState([]);
@@ -73,7 +74,7 @@ function handleMaximum(index,values){
   })
 
     // Update the state with the new data
-    setLessonsDatainitial(newDataLesson);
+    setLessonsDataInitial(newDataLesson);
 
     // Save the updated lessonsData to localStorage
     localStorage.setItem('lessonsData', JSON.stringify(newDataLesson));
@@ -90,7 +91,7 @@ function checkMaxMin(index,max){
 
   const totalHours = newData[index]['teachingHours'].reduce((acc, current) => acc + current, 0);
 if(max<totalHours){
-  enqueueSnackbar(`Total allocation of teaching hours exceeds the maximum teaching hours for lesson ${index+1}`,{variant:"warning"})
+  showSnackbar(`Total allocation of teaching hours exceeds the maximum teaching hours for lesson ${index+1}`,{variant:"warning"})
 }
 
 
@@ -128,7 +129,9 @@ const calculatePercentages = (allocations) => {
 };
 
 
-    
+    useEffect(()=>{
+      console.log(allocations)
+    },[allocations])
 
 useEffect(()=>{
   
@@ -287,75 +290,7 @@ const tax_allocation = flattenedAllocations.reduce((acc, data) => {
   setPercent(updatedPercents);
 },[allocations])
 
-  useEffect(()=>{
-    
-    const remember = Remembering||0;
-    const understand = Understanding||0;
-    const apply = Applying||0;
-    const analyze = Analyzing||0;
-    const evaluate = Evaluating||0;
-    const create = Creating||0;
-    
-   
-
-    if(percent.Remembering || percent.Remembering==0){
-      setRemembering(percent.Remembering);
-     
-    }else{
-      setRemembering(remember);
-    
-    }
-   
-
-    if(percent.Understanding || percent.Understanding==0){
-      setUnderstanding(percent.Understanding);
-
-    }else{
-      setUnderstanding(understand);
-      
-    }
-
-    
-
-    if(percent.Applying || percent.Applying==0){
-      
-      setApplying(percent.Applying);
-    }else{
-      setApplying(apply);
-
-    }
-
   
-
-    if(percent.Analyzing || percent.Analyzing==0){
-      setAnalyzing(percent.Analyzing);
-   
-    }
-    else{
-      setAnalyzing(analyze);
-   
-    }
-  
-
-    if(percent.Evaluating || percent.Evaluating==0){
-      setEvaluating(percent.Evaluating);
-   
-    }else{
-      setEvaluating(evaluate);
-
-    }
-    
-
-    if(percent.Creating || percent.Creating==0){
-      setCreating(percent.Creating);
-      
-    }
-    else{
-      setCreating(create);
-    
-    }
-  },[percent]
-)    
 
 
 

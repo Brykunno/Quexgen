@@ -32,6 +32,7 @@ import ToastMessage from "./Toast";
 import LoadingGenerate from "./LoadingGenerate";
 
 import { useSnackbar } from 'notistack';
+import useAppSnackbar from './ui/snackbar/Snackbar';
 
 
 function createData(
@@ -74,7 +75,7 @@ function createData(
 
 function TOSview() {
 
-    const { enqueueSnackbar } = useSnackbar();
+    const { showSnackbar } = useAppSnackbar();
 
   const [modalComment,setModalComment]=useState(false)
 
@@ -513,14 +514,12 @@ if (getQuestion.length && getAnswer.length) {
     const newDataAllocation = [...allocations]
   
     // Update the specific field in the corresponding lesson object
-    newData[index][field][subIndex][level] = value;
+    newData[index][field][subIndex][level] = Number(value);
     newDataAllocation[index][subIndex][level] = Number(value)
 
       // Update the state with the new data
       setLessonData(newData);
       
-
-
       setAllocations(newDataAllocation)
   
   }
@@ -1051,7 +1050,7 @@ if (getQuestion.length && getAnswer.length) {
 
 
       setLoading(false);
-      Submit===true?enqueueSnackbar('Exam successfully submitted!',{variant:'success'}):enqueueSnackbar('Exam successfully updated!',{variant:'success'})
+      Submit===true?showSnackbar('Exam successfully submitted!',{variant:'success'}):showSnackbar('Exam successfully updated!',{variant:'success'})
       
         
     } catch (error) {
@@ -4394,6 +4393,8 @@ const [allocations, setAllocations] = useState([]);
       setAllocations(newDataAllocation)
   
   }
+
+
   return (
     <div className='content'>
       <form  onSubmit={updateTOSinfo}>
@@ -4746,9 +4747,13 @@ const [allocations, setAllocations] = useState([]);
       </div>
       </div>
 
+     
+
  
       {loadingGenerate  && <LoadingGenerate/>}
       {loading  && <LoadingSubmit/>}
+
+      
   
            
 

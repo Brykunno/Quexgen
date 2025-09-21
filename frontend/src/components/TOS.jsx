@@ -38,6 +38,7 @@ import Examtest from "./Examtest";
 import LoadingGenerate from "./LoadingGenerate";
 import ToastError from "./ToastError";
 import Tostest from "./Tostest";
+import useAppSnackbar from "./ui/snackbar/Snackbar";
 
 
 function createData(
@@ -78,7 +79,7 @@ function createData(
 
 
  function TOS() {
-   const { enqueueSnackbar } = useSnackbar();
+    const { showSnackbar } = useAppSnackbar();
 
   if (localStorage.getItem('lessonsData') === null) {
     
@@ -3228,7 +3229,7 @@ return api.post("/api/tos-content/", { lessonsDataJson })
           api.post(`api/notification/admin/`, {AdminNotifDataJson});
 
            
-                Submit===true? enqueueSnackbar("Exam created and submitted successfully!",{variant:"success"}):enqueueSnackbar("Exam successfully created!",{variant:"success"})
+                Submit===true? showSnackbar("Exam created and submitted successfully!",{variant:"success"}):showSnackbar("Exam successfully created!",{variant:"success"})
                
                 setStep(1)
 
@@ -3304,13 +3305,13 @@ const handleNext = () => {
    
 
       if(exist==true){
-        enqueueSnackbar('This exam already exists.',{variant:"warning"});
+        showSnackbar('This exam already exists.',{variant:"warning"});
         return
       }
       
   if(formData.ExaminationDate==''){
 
-    enqueueSnackbar('Select date',{variant:"warning"});
+    showSnackbar('Select date',{variant:"warning"});
     setDateError(true)
  
    } else{
@@ -3319,7 +3320,7 @@ const handleNext = () => {
  
    if(formData.Title==''){
  
-     enqueueSnackbar('Choose course',{variant:"warning"});
+     showSnackbar('Choose course',{variant:"warning"});
      setCourseError(true)
  
    }
@@ -3328,7 +3329,7 @@ const handleNext = () => {
    }
  
    if(formData.ExaminationType.length == 0){
-     enqueueSnackbar('Choose a type of examination',{variant:"warning"});
+     showSnackbar('Choose a type of examination',{variant:"warning"});
      setTestError(true)
  
    }
@@ -3345,14 +3346,14 @@ const handleNext = () => {
     let err = 0
     lessonsDataInitial.map((data,index)=>{
       if(data.file_status == ''){
-        enqueueSnackbar(`Please upload a file for lesson ${index+1}`,{variant:"warning"})
+        showSnackbar(`Please upload a file for lesson ${index+1}`,{variant:"warning"})
         err++
       }
      
     })
 
     if(totalItems==0){
-      enqueueSnackbar(`Please input a total number of items`,{variant:"warning"})
+      showSnackbar(`Please input a total number of items`,{variant:"warning"})
     }
 
    
@@ -3361,7 +3362,7 @@ const handleNext = () => {
       lessonsDataInitial.map((data,index)=>{
         data.teachingHours.map((hours,idx)=>{
           if(hours == 0){
-           enqueueSnackbar(`Please input the number of teaching hours for lesson ${index+1}, learning outcome ${idx+1}`,{variant:"warning"})
+           showSnackbar(`Please input the number of teaching hours for lesson ${index+1}, learning outcome ${idx+1}`,{variant:"warning"})
             err3++
           }
         })

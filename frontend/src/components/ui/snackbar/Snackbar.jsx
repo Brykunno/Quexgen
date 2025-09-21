@@ -1,24 +1,23 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import { SnackbarProvider, useSnackbar } from 'notistack';
+import React from "react";
+import { useSnackbar } from "notistack";
+import { IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
-function Snackbar() {
-  const { enqueueSnackbar } = useSnackbar();
+function useAppSnackbar() {
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  const handleClick = () => {
-    enqueueSnackbar('I love snacks.');
+  const showSnackbar = (message, status) => {
+    enqueueSnackbar(message, {
+      action: (key) => (
+        <IconButton onClick={() => closeSnackbar(key)} color="inherit">
+          <CloseIcon />
+        </IconButton>
+      ),
+      variant: status?.variant || "default", // success, error, warning, info
+    });
   };
 
-  const handleClickVariant = (variant) => () => {
-    // variant could be success, error, warning, info, or default
-    enqueueSnackbar('This is a success message!', { variant });
-  };
-
-  return (
-    <React.Fragment>
-      <Button onClick={handleClick}>Show snackbar</Button>
-      <Button onClick={handleClickVariant('success')}>Show success snackbar</Button>
-    </React.Fragment>
-  );
+  return { showSnackbar };
 }
 
+export default useAppSnackbar

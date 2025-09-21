@@ -1,6 +1,8 @@
 import { React, useState,useEffect } from "react";
 import { Breadcrumb,Card,Progress,Label, Textarea,ToggleSwitch, TextInput,Button,RangeSlider,Modal,Select } from "flowbite-react";
 import Learning_outcomes_update from "./Learning_outcomes_update";
+import TaxonomyChart from "./ui/snackbar/TaxonomyChart";
+
 
 function TaxonomyAllocation(props) {
 
@@ -35,7 +37,7 @@ function TaxonomyAllocation(props) {
         </div>
         <h1 className='text-center font-bold'>Overall Taxonomy Allocation</h1>
       </div>
-      <div>
+      {/* <div>
         <div className="flex gap-3">
           <div className="mt-2 block w-32">
             <Label htmlFor="md-range" value="Remembering" />
@@ -124,12 +126,14 @@ function TaxonomyAllocation(props) {
             {props.getTotalTaxonomy}%
           </div>
         </span> 
-      </div>
-      <div className="my-3">
-        {/* <Button color={'primary'} className="mx-auto" onClick={props.submitAllocation}  isProcessing={props.loadingAllocate ? true : false}>
+      </div> */}
+      {/* <div className="my-3">
+        <Button color={'primary'} className="mx-auto" onClick={props.submitAllocation}  isProcessing={props.loadingAllocate ? true : false}>
         {props.loadingAllocate ? 'Allocating' : 'Allocate'}
-        </Button> */}
-      </div>
+        </Button>
+      </div> */}
+      <TaxonomyChart Remembering={props.Remembering} Understanding={props.Understanding} Applying={props.Applying} Analyzing={props.Analyzing} Evaluating={props.Evaluating} Creating={props.Creating} />
+
     </Card>
   </div> 
 }

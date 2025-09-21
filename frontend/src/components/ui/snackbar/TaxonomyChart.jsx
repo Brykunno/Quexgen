@@ -64,7 +64,7 @@ export default function TaxonomyChart({Remembering,Understanding,Applying,Analyz
 
   
       height={300}
-      width={600}
+
     />
   );
 }

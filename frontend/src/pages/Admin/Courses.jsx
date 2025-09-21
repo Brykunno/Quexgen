@@ -18,12 +18,14 @@ import Tooltip from '@mui/material/Tooltip';
 
 // Import the styles
 import '@react-pdf-viewer/core/lib/styles/index.css';
-import { enqueueSnackbar } from 'notistack';
+
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
+import useAppSnackbar from '../../components/ui/snackbar/Snackbar';
 
 
 
 function Courses() {
+   const { showSnackbar } = useAppSnackbar();
   const [course, setcourse] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -124,7 +126,7 @@ function Courses() {
       .patch(`/api/courses/${id}/`, {status:"archived"})
       .then((res) => {
         
-        enqueueSnackbar("Course archived successfully!",{variant:"success"})
+        showSnackbar("Course archived successfully!",{variant:"success"})
         getUser(); // Refresh the course list
         setOpenModal(false); // Close the modal
       })
@@ -139,7 +141,7 @@ function Courses() {
       .patch(`/api/courses/${id}/`, {status:"active"})
       .then((res) => {
         
-        enqueueSnackbar("Course unarchived successfully!",{variant:"success"})
+        showSnackbar("Course unarchived successfully!",{variant:"success"})
         getUser(); // Refresh the course list
         setOpenModal(false); // Close the modal
       })
