@@ -75,7 +75,35 @@ function totalTeachingHours(index) {
     setInnerValue(newValue);
   };
 
-  
+const [uploads, setUploads] = React.useState([]); // should be []
+
+const handleUpload = (event, index) => {
+  const file = event.target.files[0];
+  if (file) {
+    const info = {
+      name: file.name,
+      size: (file.size / (1024 * 1024)).toFixed(2), // MB
+    };
+
+    setUploads((prev) => {
+      const updated = [...prev];
+      if (index !== undefined && index < updated.length) {
+        // ✅ Update existing file at index
+        updated[index] = info;
+      } else {
+        // ✅ Add new file
+        updated.push(info);
+      }
+      return updated;
+    });
+  }
+};
+
+const handleRemoveUpload = (index) => {
+  setUploads((prev) => prev.filter((_, i) => i !== index));
+};
+
+
 
   return (
     <Box
@@ -85,6 +113,7 @@ function totalTeachingHours(index) {
         bgcolor: 'background.paper',
       }}
     >
+
       {/* Make Tabs horizontally scrollable on small screens */}
       <div className="overflow-x-auto">
         <Tabs
@@ -132,6 +161,7 @@ function totalTeachingHours(index) {
                     });
                     removeLesson(lessonsData, index);
                     removeFile(index);
+                    handleRemoveUpload(index);
                     setMaximum((prevMaximum) => prevMaximum.slice(0, prevMaximum.length - 1));
                   }}
                 />
@@ -146,7 +176,74 @@ function totalTeachingHours(index) {
                     Upload study guide for lesson {index + 1}
                   </Label>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3">
+
+                 <div className="flex w-full flex-col items-center justify-center">
+      <Label
+        htmlFor="dropzone-file"
+        className="flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+      >
+        <div className="flex flex-col items-center justify-center pb-6 pt-5">
+          <svg
+            className="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 20 16"
+          >
+            <path
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+            />
+          </svg>
+            {uploads[index]? (
+        <div>
+
+          <div className='flex gap-2'>
+          <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+            <span className="font-semibold">{uploads[index].name}</span>
+          </p>   <div>
+                    {fileStatus[index] ? (
+                      <div><Spinner color="primary" /> Validating file...</div>
+                    ) : (
+                      <span>{getFileStatus(lessonsDataInitial[index]?.file_status)}</span>
+                    )}
+                  </div>
+                     </div>
+          <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+           {uploads[index].size} MB
+          </p>
+          </div>
+      
+      ):(<div>
+          <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+            <span className="font-semibold">Click to upload</span>
+          </p>
+          
+          <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+           PDF
+          </p>
+          </div>)}
+        </div>
+        <FileInput
+          id="dropzone-file"
+          className="hidden"
+          accept="application/pdf"
+                    sizing="sm"
+                    onChange={(e) => {
+                      handleLessonDataChange(index, 'study_guide', e.target.files[0]);
+                      handleValidateFile(e.target.files[0], index);
+                      handleReadOneFile(e.target.files[0], index);
+                      handleUpload(e,index)
+                    }}
+        />
+      </Label>
+
+    
+    </div>
+                {/* <div className="flex flex-col sm:flex-row gap-3">
                   <FileInput
                     id="file-upload"
                     accept="application/pdf"
@@ -165,7 +262,7 @@ function totalTeachingHours(index) {
                       <span>{getFileStatus(lessonsDataInitial[index]?.file_status)}</span>
                     )}
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
 

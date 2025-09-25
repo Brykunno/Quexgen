@@ -519,13 +519,13 @@ const getFileStatus = (fileStatus) => {
 
   
   if(fileStatus.status === "Valid"){
-    
-    return <div className='text-green-600 font-semibold flex gap-1'>Valid file <HiCheckCircle className='mt-1'/></div>
+return <span class="flex items-center gap-1 bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300">Valid file <HiCheckCircle /></span>
+    // return <div className='text-green-600 font-semibold flex gap-1'>Valid file <HiCheckCircle className='mt-1'/></div>
   } 
      else if(fileStatus.status === "Invalid"){
-      return <div className='text-red-600 font-semibold '><div className='flex gap-1'>Invalid file    <InvalidFileError lessonsData={lessonsData} getTotalTaxonomy={getTotalTaxonomy} totalItems={totalItems} files={files} missing_keywords={fileStatus.missing_keywords}  /></div> 
-   
-      </div>;
+
+      return <div className='flex'> <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">Invalid file</span><InvalidFileError lessonsData={lessonsData} getTotalTaxonomy={getTotalTaxonomy} totalItems={totalItems} files={files} missing_keywords={fileStatus.missing_keywords}  /></div>
+    
      }
      
 };
