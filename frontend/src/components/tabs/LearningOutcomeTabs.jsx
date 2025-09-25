@@ -364,7 +364,7 @@ const handleRemoveUpload = (index) => {
                     </div>
                     <div className="flex flex-col sm:flex-row gap-2 mb-3 justify-between">
                       <div className="ms-2 font-bold mb-2">
-                        Number of teaching hours ( {totalTeachingHours(index)}/{lessonsData[index]['max']} )
+                        Teaching hours ( {totalTeachingHours(index)}/{lessonsData[index]['max']} )
                       </div>
                       <div key={lineIndex} className="justify-end">
                         <TextInput
