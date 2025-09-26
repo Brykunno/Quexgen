@@ -281,10 +281,10 @@ let num1=1
             />
           </div>
 
-      <div className='mt-3'>
-        <div className='flex flex-wrap gap-3 mx-auto'>
-          <div>
-            <div className='flex gap-3 w-80 mb-3'>
+      <div className='mt-3 '>
+        <div className='flex flex-wrap gap-3 mx-auto '>
+          <div className='flex-1'>
+            <div className='flex gap-3 w-full mb-3'>
               <Radio
                 name={`answers-${index}`}
                 value="A"
@@ -299,7 +299,7 @@ let num1=1
               />
             </div>
   
-            <div className='flex gap-3 w-80 mb-3'>
+            <div className='flex gap-3 w-full mb-3'>
               <Radio
                 name={`answers-${index}`}
                 value="B"
@@ -314,8 +314,8 @@ let num1=1
               />
             </div>
           </div>
-          <div>
-            <div className='flex gap-3 w-80 mb-3'>
+          <div className='flex-1'>
+            <div className='flex gap-3 w-full mb-3'>
               <Radio
                 name={`answers-${index}`}
                 value="C"
@@ -330,7 +330,7 @@ let num1=1
               />
             </div>
   
-            <div className='flex gap-3 w-80 mb-3'>
+            <div className='flex gap-3 w-full mb-3'>
               <Radio
                 name={`answers-${index}`}
                 value="D"

@@ -1,3 +1,4 @@
+
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -12,8 +13,6 @@ import traceback
 import time
 import difflib
 import sys
-from unidecode import unidecode
-import re
 
 
 
@@ -91,35 +90,26 @@ SUBSTITUTIONS = {
 }
 
 
-def safe_unicode(text: str) -> str:
-    result_chars = []
+def safe_unicode(text):
+    if text is None:
+        return ""
+    if isinstance(text, bytes):
+        text = text.decode("utf-8", errors="replace")
+    else:
+        text = str(text)
 
-    # Replace explicit unicode escapes (e.g., "\u2013") with real characters
-    def replace_unicode_escape(match):
-        code = match.group(0)   # e.g. "\u2013"
-        char = code.encode().decode("unicode_escape")  # convert to actual char
-        return unidecode(char)  # transliterate to ASCII
+    # Apply custom substitutions
+    for bad, sub in SUBSTITUTIONS.items():
+        text = text.replace(bad, sub)
 
-    # First handle \uXXXX escape sequences
-    text = re.sub(r'\\u[0-9a-fA-F]{4}', replace_unicode_escape, text)
+    # Replace all non-ASCII characters with "-"
+    text = ''.join(ch if ord(ch) < 128 else '-' for ch in text)
 
-    # Now handle actual characters that are non-ASCII
-    for c in text:
-        if not c.isascii():
-            result_chars.append(unidecode(c))
-        else:
-            result_chars.append(c)
+    return text
 
-    return "".join(result_chars)
-
-
-def split_context_into_paragraphs(context: str, extracted_lines: int):
-    safe_context = safe_unicode(context)
-    lines = safe_context.split('\n')
-    paragraphs = [
-        '\n'.join(lines[i:i+extracted_lines])
-        for i in range(0, len(lines), extracted_lines)
-    ]
+def split_context_into_paragraphs(context,extracted_lines):
+    lines = context.split('\n')
+    paragraphs = ['\n'.join(lines[i:i+extracted_lines]) for i in range(0, len(lines), extracted_lines)]
     return paragraphs
 
 # Number of questions to generate
@@ -356,11 +346,7 @@ def generate_question_ai(level, context_ques, index, test_type, max_retries=5):
             content = message.content  # Accessing the content of the message
 
             # Process the content to remove any numbers, letters, or asterisks from the answer options
-            lines = [
-                        re.sub(r'^[\d\.\)\*]*(?:[A-Da-d][\.\)])?\s*', '', line.strip())
-                        for line in content.strip().split('\n')
-                        if line.strip()  # <-- this removes blank/empty lines
-                    ]
+            lines = [re.sub(r'^[\d\.\)\*]*(?:[A-Da-d][\.\)])?\s*', '', line.strip()) for line in content.strip().split('\n')]
 
             # Ensure there are enough lines for MCQ, retry if incomplete
             if len(lines) < 5 and test_type != "trueOrFalse":
@@ -372,7 +358,6 @@ def generate_question_ai(level, context_ques, index, test_type, max_retries=5):
             if test_type == "mcq":
                 correct_answer = lines[2]  # First option is the correct answer
                 choices = lines[2:]  # All five options including the correct answer
-                print(choices)
                 choices = [re.sub(r'^\w+\)\s*', '', choice.replace('*', '').strip()) for choice in choices]  # Clean choices
                 
            
@@ -756,7 +741,7 @@ def generate_question(request):
             context = safe_unicode(test_type+'question: '+data.get('context', 'Default context text'))
             taxonomy_level = data.get('taxonomy_level', '')
         
-            print(str(taxonomy_level), context,index,test_type)
+            
             generated_ques = generate_question_ai(str(taxonomy_level), context,index,test_type)
 
 
@@ -1131,7 +1116,7 @@ def lesson_summary(pdf_path, header_height, footer_height, start_keyword, stop_k
 
         # Join the extracted text and split into lines
         lines = '\n'.join(extracted_text).splitlines()
-        print("lines",lines)
+
         # Return the second line if it exists, otherwise return an empty string
         return lines[1].strip() if len(lines) > 1 else ''
 
@@ -1231,8 +1216,7 @@ def read_pdf(request):
             start_keyword_lesson = ['STUDY GUIDE','STUDY','GUIDE','MODULE']
             stop_keyword_lesson = 'MODULE OVERVIEW'
 
-            extracted_text_lesson = safe_unicode(lesson_summary(pdf_path, header_height, footer_height, start_keyword_lesson, stop_keyword_lesson))
-            print('lesson_summary',extracted_text_lesson)
+            extracted_text_lesson = lesson_summary(pdf_path, header_height, footer_height, start_keyword_lesson, stop_keyword_lesson)
             
             
             start_keyword = 'LEARNING OBJECTIVES'
@@ -1280,7 +1264,7 @@ def read_pdf(request):
             error_message = f"Error: {e} (line {line_number})"
             print(error_message)
             traceback.print_exc()  # This prints the full traceback in your console
-            return JsonResponse({"errorss": error_message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({"error": error_message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -1389,5 +1373,3 @@ def outcomes_count(request):
             return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-

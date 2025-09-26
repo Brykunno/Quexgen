@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
 });
 
 function Exampdf(props) {
+  let numbering =0
   const renderQuestionsByType = (questions, typeLabel, testType) => {
     const filteredQuestions = questions.filter(q => q.question_type === testType);
     
@@ -73,11 +74,11 @@ function Exampdf(props) {
           return (
             <View key={idx} >
               {testType === 'subjective'?<View style={[styles.tableRow,{paddingLeft:'30px',paddingRight:'50px'}]}>
-              <View style={[styles.tableCol,{fontWeight: 'bold',flex:0.07}]}><Text style={[styles.tableCell,{padding:0,marginRight:0}]}>{idx + 1}. </Text></View>
+              <View style={[styles.tableCol,{fontWeight: 'bold',flex:0.07}]}><Text style={[styles.tableCell,{padding:0,marginRight:0}]}>{++numbering}. </Text></View>
               <View style={[styles.tableCol,{fontWeight: 'bold'}]}><Text style={[styles.tableCell,{padding:0,marginLeft:'-10px'}]}>{question.question}</Text></View>
             
               </View> : <View style={[styles.tableRow,{paddingRight:'50px'}]}>
-              <View style={[styles.tableCol,{fontWeight: 'bold',flex:0.22}]}><Text style={[styles.tableCell,{padding:0,marginRight:0}]}>____________ {idx + 1}. </Text></View>
+              <View style={[styles.tableCol,{fontWeight: 'bold',flex:0.22}]}><Text style={[styles.tableCell,{padding:0,marginRight:0}]}>____________ {++numbering}. </Text></View>
               <View style={[styles.tableCol,{fontWeight: 'bold'}]}><Text style={[styles.tableCell,{padding:0,marginLeft:'-10px'}]}>{question.question}</Text></View>
             
               </View>}
