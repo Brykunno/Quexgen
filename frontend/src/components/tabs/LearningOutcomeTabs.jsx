@@ -13,6 +13,8 @@ import api from '../../api';
 import { useSnackbar } from 'notistack';
 import ErrorIcon from '@mui/icons-material/Error';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DragAndDrop from '../ui/snackbar/DragAndDrop';
+import { useRef } from "react";
 
 function CustomTabPanel(props) {
 
@@ -46,13 +48,27 @@ function a11yProps(index) {
   };
 }
 
-
-
-
-
-
-
-export default function ScrollableTabsButtonVisible({addLesson,previewTOS,handleinnertaxlevelChange,totalOfItems,checkMaxMin,handleMaximum,handleInnerLessonDataChange,handleReadOneFile,handleValidateFile,setMaximum,handleLessonDataChange,removeFile,removeLesson,lessonsData,fileStatus,getFileStatus,lessonsDataInitial,taxonomyRange,fileLoading}) {
+export default function ScrollableTabsButtonVisible({
+  addLesson,
+  previewTOS,
+  handleinnertaxlevelChange,
+  totalOfItems,
+  checkMaxMin,
+  handleMaximum,
+  handleInnerLessonDataChange,
+  handleReadOneFile,
+  handleValidateFile,
+  setMaximum,
+  handleLessonDataChange,
+  removeFile,
+  removeLesson,
+  lessonsData,
+  fileStatus,
+  getFileStatus,
+  lessonsDataInitial,
+  taxonomyRange,
+  fileLoading
+}) {
 
 
 function totalTeachingHours(index) {
@@ -75,33 +91,48 @@ function totalTeachingHours(index) {
     setInnerValue(newValue);
   };
 
-const [uploads, setUploads] = React.useState([]); // should be []
+  const [uploads, setUploads] = React.useState([]);
+  const fileInputRefs = useRef([]);
 
-const handleUpload = (event, index) => {
-  const file = event.target.files[0];
-  if (file) {
-    const info = {
-      name: file.name,
-      size: (file.size / (1024 * 1024)).toFixed(2), // MB
-    };
+  // Drag and drop handlers
+  const handleDrop = (event, index) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    if (file && file.type === "application/pdf") {
+      handleLessonDataChange(index, 'study_guide', file);
+      handleValidateFile(file, index);
+      handleReadOneFile(file, index);
+      handleUpload({ target: { files: [file] } }, index);
+    }
+  };
 
-    setUploads((prev) => {
-      const updated = [...prev];
-      if (index !== undefined && index < updated.length) {
-        // ✅ Update existing file at index
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  const handleUpload = (event, index) => {
+    const file = event.target.files[0];
+    if (file) {
+      const info = {
+        name: file.name,
+        size: (file.size / (1024 * 1024)).toFixed(2), // MB
+      };
+      setUploads((prev) => {
+        const updated = [...prev];
         updated[index] = info;
-      } else {
-        // ✅ Add new file
-        updated.push(info);
-      }
-      return updated;
-    });
-  }
-};
+        return updated;
+      });
+    }
+  };
 
-const handleRemoveUpload = (index) => {
-  setUploads((prev) => prev.filter((_, i) => i !== index));
-};
+  const handleRemoveUpload = (index) => {
+    setUploads((prev) => prev.filter((_, i) => i !== index));
+    handleLessonDataChange(index, 'study_guide', null);
+    removeFile(index);
+    if (fileInputRefs.current[index]) {
+      fileInputRefs.current[index].value = "";
+    }
+  };
 
 
 
@@ -115,6 +146,7 @@ const handleRemoveUpload = (index) => {
     >
 
       {/* Make Tabs horizontally scrollable on small screens */}
+    
       <div className="overflow-x-auto">
         <Tabs
           value={value}
@@ -168,101 +200,107 @@ const handleRemoveUpload = (index) => {
               </Button>
             </div>
 
-            {/* File upload and status */}
+            {/* Drag and Drop File Upload */}
             <div className="mb-3">
-              <div>
-                <div className="mb-2 block">
-                  <Label htmlFor="file-upload">
-                    Upload study guide for lesson {index + 1}
-                  </Label>
+              <div className="mb-2 block">
+                <Label htmlFor={`file-upload-${index}`}>
+                  Upload study guide for lesson {index + 1}
+                </Label>
+              </div>
+              <div
+                className="flex w-full flex-col items-center justify-center"
+                onDrop={(e) => handleDrop(e, index)}
+                onDragOver={handleDragOver}
+                style={{
+                  border: "2px dashed #3b82f6",
+                  borderRadius: "0.5rem",
+                  background: "#f3f4f6",
+                  padding: "1.5rem",
+                  position: "relative"
+                }}
+              >
+                <div className="flex flex-col items-center justify-center pb-6 pt-5">
+                  <svg
+                    className="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 20 16"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                    />
+                  </svg>
+                  {uploads[index] ? (
+                    <div>
+                      <div className='flex flex-col gap-2 items-center'>
+                        <div className='text-center flex gap-3 items-center'>
+
+                        
+                        <p className=" text-sm text-gray-500 dark:text-gray-400">
+                          <span className="font-semibold">{uploads[index].name}</span>
+                        </p>
+                        <Button
+                          size="small"
+                          color="error"
+                          variant="outlined"
+                          onClick={() => handleRemoveUpload(index)}
+                        >
+                          Remove
+                        </Button>
+                        </div>
+                        
+                        <div className='text-center'>
+                          {fileStatus[index] ? (
+                            <div><Spinner color="primary" /> Validating file...</div>
+                          ) : (
+                            <span>{getFileStatus(lessonsDataInitial[index]?.file_status)}</span>
+                          )}
+                        </div>
+                      </div>
+                      <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+                        {uploads[index].size} MB
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                        <span className="font-semibold">Drag & drop PDF here or click to upload</span>
+                      </p>
+                      <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+                        PDF only
+                      </p>
+                    </div>
+                  )}
                 </div>
-
-                 <div className="flex w-full flex-col items-center justify-center">
-      <Label
-        htmlFor="dropzone-file"
-        className="flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-      >
-        <div className="flex flex-col items-center justify-center pb-6 pt-5">
-          <svg
-            className="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 20 16"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-            />
-          </svg>
-            {uploads[index]? (
-        <div>
-
-          <div className='flex gap-2'>
-          <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-            <span className="font-semibold">{uploads[index].name}</span>
-          </p>   <div>
-                    {fileStatus[index] ? (
-                      <div><Spinner color="primary" /> Validating file...</div>
-                    ) : (
-                      <span>{getFileStatus(lessonsDataInitial[index]?.file_status)}</span>
-                    )}
-                  </div>
-                     </div>
-          <p className="text-xs text-center text-gray-500 dark:text-gray-400">
-           {uploads[index].size} MB
-          </p>
-          </div>
-      
-      ):(<div>
-          <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-            <span className="font-semibold">Click to upload</span>
-          </p>
-          
-          <p className="text-xs text-center text-gray-500 dark:text-gray-400">
-           PDF
-          </p>
-          </div>)}
-        </div>
-        <FileInput
-          id="dropzone-file"
-          className="hidden"
-          accept="application/pdf"
-                    sizing="sm"
-                    onChange={(e) => {
-                      handleLessonDataChange(index, 'study_guide', e.target.files[0]);
-                      handleValidateFile(e.target.files[0], index);
-                      handleReadOneFile(e.target.files[0], index);
-                      handleUpload(e,index)
-                    }}
-        />
-      </Label>
-
-    
-    </div>
-                {/* <div className="flex flex-col sm:flex-row gap-3">
-                  <FileInput
-                    id="file-upload"
-                    accept="application/pdf"
-                    className="flex-1"
-                    sizing="sm"
-                    onChange={(e) => {
-                      handleLessonDataChange(index, 'study_guide', e.target.files[0]);
-                      handleValidateFile(e.target.files[0], index);
-                      handleReadOneFile(e.target.files[0], index);
-                    }}
-                  />
-                  <div>
-                    {fileStatus[index] ? (
-                      <div><Spinner color="primary" /> Validating file...</div>
-                    ) : (
-                      <span>{getFileStatus(lessonsDataInitial[index]?.file_status)}</span>
-                    )}
-                  </div>
-                </div> */}
+                <FileInput
+                  id={`file-upload-${index}`}
+                  ref={el => fileInputRefs.current[index] = el}
+                  className="hidden"
+                  accept="application/pdf"
+                  sizing="sm"
+                  onChange={(e) => {
+                    handleLessonDataChange(index, 'study_guide', e.target.files[0]);
+                    handleValidateFile(e.target.files[0], index);
+                    handleReadOneFile(e.target.files[0], index);
+                    handleUpload(e, index);
+                  }}
+                />
+                {/* Clickable overlay to trigger file input */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    cursor: "pointer",
+                    zIndex: 1,
+                    background: "transparent"
+                  }}
+                  onClick={() => fileInputRefs.current[index]?.click()}
+                />
               </div>
             </div>
 

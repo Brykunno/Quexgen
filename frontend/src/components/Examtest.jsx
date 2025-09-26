@@ -161,7 +161,7 @@ let subtest = 0
 
     for(let k = 0; k<cat.learning_outcomes.length;k++){
       const start = stringToIntegerStart(String(cat.placement[k]));
-    const end = stringToIntegerEnd(String(cat.placement[k]));
+    const end = stringToIntegerEnd(String(cat.placement[k]))||start+1;
     const ind = index + 1
 
     let remembering = cat.remembering[k]
