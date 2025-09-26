@@ -11,7 +11,7 @@ function InvalidFileError(props) {
   return (
     <div>
           
-      <Dropdown arrowIcon={false} inline label={
+      <div arrowIcon={false} inline label={
         <Badge badgeContent={errors.length} color="error"  >
         <ErrorOutlineIcon className={errors>0?'text-red-600':''} />
         </Badge>
@@ -20,13 +20,13 @@ function InvalidFileError(props) {
         {props.missing_keywords.length > 0 ? (
         <div >
           {props.missing_keywords.map((kw, index) => (
-            <DropdownHeader key={index} className='text-red-600'>The uploaded file doesn't have {kw}</DropdownHeader>  
+            <div key={index} className='text-red-600'>The uploaded file doesn't have <span className='font-bold'> {kw}</span></div>  
           ))}
         </div>
       ) : (
-        <DropdownHeader>No keywords are missing.</DropdownHeader> // Optional message
+        <div>No keywords are missing.</div> // Optional message
       )}
-      </Dropdown>
+      </div>
  
     </div>
   );

@@ -524,7 +524,7 @@ return <span class="flex items-center gap-1 bg-green-100 text-green-800 text-xs 
   } 
      else if(fileStatus.status === "Invalid"){
 
-      return <div className='flex'> <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">Invalid file</span><InvalidFileError lessonsData={lessonsData} getTotalTaxonomy={getTotalTaxonomy} totalItems={totalItems} files={files} missing_keywords={fileStatus.missing_keywords}  /></div>
+      return <div > <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">Invalid file</span><InvalidFileError lessonsData={lessonsData} getTotalTaxonomy={getTotalTaxonomy} totalItems={totalItems} files={files} missing_keywords={fileStatus.missing_keywords}  /></div>
     
      }
      
