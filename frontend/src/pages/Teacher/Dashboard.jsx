@@ -14,7 +14,7 @@ import ToastMessage from '../../components/Toast';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import RecommendIcon from '@mui/icons-material/Recommend';  
 import RateReviewIcon from '@mui/icons-material/RateReview';
-
+import FirstLogIn from '../../components/ui/snackbar/modal/firstLogIn';
 const localizer = momentLocalizer(moment);
 
 function Dashboard() {
@@ -167,7 +167,7 @@ function Dashboard() {
 
           <Card>
        
-            
+            <FirstLogIn/>
             <div style={{ height: '500px' }}>
               <Calendar
                 localizer={localizer}
