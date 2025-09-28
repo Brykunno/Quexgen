@@ -21,6 +21,7 @@ from rest_framework.permissions import IsAdminUser
 from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth import get_user_model
 User = get_user_model()
+from django.contrib.auth.hashers import check_password
 
 
 
@@ -1082,3 +1083,28 @@ class SendCustomWelcomeEmailView(APIView):
             return Response({"message": "Custom welcome email sent!"})
         except User.DoesNotExist:
             return Response({"error": "User not found"}, status=404)
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        new_password = request.data.get("new_password")
+        user = request.user   # ✅ safer
+
+        if not new_password:
+            return Response({"error": "New password is required"}, status=400)
+
+        user.set_password(new_password)
+        user.save()
+        return Response({"message": "Password successfully changed!"})
+
+    def get(self, request, *args, **kwargs):
+        user = request.user   # ✅ safer
+        default_password = "PSU_$C2025"
+
+        if check_password(default_password, user.password):
+            return Response({"isChanged": "false"})
+        else:
+            return Response({"isChanged": "true"})
+
+        

@@ -48,10 +48,13 @@ function Form({ route, method }) {
           localStorage.setItem('username', data[0].username);
           localStorage.setItem('first_name', data[0].first_name);
           localStorage.setItem('last_name', data[0].last_name);
+          localStorage.setItem('email', data[0].email);
           console.log(data[0])
           const first_login = data[0].last_login == null? true:false 
           localStorage.setItem('first_login', first_login);
           api.post('api/update-last-login/',{})
+          const isChanged = await api.get('api/change-password/')
+          localStorage.setItem('passwordChanged',isChanged.data.isChanged)
 
 
 

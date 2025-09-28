@@ -18,6 +18,20 @@ import FirstLogIn from '../../components/ui/snackbar/modal/firstLogIn';
 const localizer = momentLocalizer(moment);
 
 function Dashboard() {
+  const [isChanged, setIsChanged] = useState("true");
+
+  useEffect(() => {
+    const checkpass = async () => {
+      try {
+        const res = await api.get("api/change-password/");
+        setIsChanged(res.data.isChanged); // save "true"/"false"
+      } catch (err) {
+        console.error(err.response?.data || err.message);
+      }
+    };
+
+    checkpass();
+  }, []);
   const [loading,setLoading] = useState(false);
   const [user, setUser] = useState([]);
   const [TOSInfo, setTOSInfo] = useState([]);
@@ -166,8 +180,9 @@ function Dashboard() {
 
 
           <Card>
+       {isChanged == "true"?<></>:<FirstLogIn/>}
        
-            <FirstLogIn/>
+            
             <div style={{ height: '500px' }}>
               <Calendar
                 localizer={localizer}

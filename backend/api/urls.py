@@ -80,6 +80,6 @@ urlpatterns = [
     path('tosinfo/<int:pk>/delete/', views.TOSInfoDelete.as_view(), name='tos_info_delete'),
     path("update-last-login/", views.update_last_login, name="update_last_login"),
     path("send-welcome-email/", views.SendCustomWelcomeEmailView.as_view(), name="send_welcome_email"),
-
+    path("change-password/",views.ChangePasswordView.as_view(),name="change_password"),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
