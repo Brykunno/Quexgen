@@ -31,7 +31,9 @@ function Exam_review() {
   const [loading,setLoading] = useState(false)
   const [swal,setSwal] =useState(false)
   const [learningOutcomes, setLearningOutcomes] = useState([]);  
-
+  const [TaxonomyLevel, setTaxonomyLevel] = useState([]);
+  const [allocations,setAllocations] = useState([]);
+  const [percent, setPercent] = useState([]);
 
   const [Comment,setComment] = useState([{
     comment:'',
@@ -48,7 +50,34 @@ function Exam_review() {
 
   const [coursepath,setcoursepath] = useState("")
 
+  const calculatePercentages = (allocations) => {
+  const total = Object.values(allocations).reduce((sum, value) => sum + value, 0);
+  const percentages = {};
+
   
+  // Step 1: Calculate initial percentages using Math.floor
+  let sumOfPercentages = 0;
+
+
+  for (const key in allocations) {
+    percentages[key] = total > 0 ? Math.floor((allocations[key] / total) * 100) : 0;
+    sumOfPercentages += percentages[key];
+  }
+
+  // Step 2: Calculate the difference and distribute it
+  let difference = 100 - sumOfPercentages;
+  if (difference > 0) {
+    // Sort keys to ensure a consistent distribution
+    const keys = Object.keys(percentages).sort((a, b) => allocations[b] - allocations[a]);
+    
+    // Distribute the difference using Math.ceil
+    for (let i = 0; i < difference; i++) {
+      percentages[keys[i % keys.length]] += 1;
+    }
+  }
+
+  return percentages;
+};
 
   // Function to sort each topic
 const sortTopicData = (topic) => {
@@ -157,8 +186,19 @@ const sortTopicData = (topic) => {
   creating: [],
   total: [],
   placement: [],
-  TotalItems:0,
-  teacher_tos: 0,
+  totalItems:0,
+  max:0,
+  study_guide:null,
+  tos_teacher: 0,
+  file_status:'',
+  taxonomy_levels: {
+    Remembering:0,
+    Understanding:0,
+    Applying:0,
+    Analyzing:0,
+    Evaluating:0,
+    Creating:0
+  }
   }])
   const [getTestPart, setGetTestPart] = useState([]);
   const [TestPart, setTestPart] = useState([]);
@@ -255,6 +295,9 @@ const sortTopicData = (topic) => {
           return out
         })
 
+        const lid = learningOutcomes
+  .filter(data => data.tos_content === content.id)
+  .map(data => data.id);
 
         const thours = learningOutcomes
   .filter(data => data.tos_content === content.id)
@@ -303,13 +346,14 @@ const sortTopicData = (topic) => {
   .map(data => data.total);
 
 
-
+ const taxonomy = TaxonomyLevel.filter(data => data.Tos_content_id === content.id)
 
         
         
         return{
         id:content.id,
         topic: content.topic,
+        learning_outcomes_id: lid || [],
         learning_outcomes: l_outcome || [],
         teachingHours: thours || [],
         allocation: allocation || [],
@@ -322,14 +366,20 @@ const sortTopicData = (topic) => {
         creating: creating || [],
         total: total || [],
         placement: placement || [],
+        taxonomy_levels:taxonomy || [],
         TotalItems: total.reduce((total,content)=> total +content,0) || 0,
         teacher_tos: content.teacher_tos || 0,
        
       }});
 
       const updateTotalItems = updatedLessonData.reduce((total, content) => total + content.TotalItems, 0);
+      const updateTotalTaxonomy = updatedLessonData.reduce((total, content) => total + content.TotalItems, 0);
 
-      const calculatePercentage = (totalValue, TotalItems) => (totalValue / TotalItems) * 100;
+
+      setAllocations(updatedLessonData.map((data)=>{return data.taxonomy_levels}))
+      // const calculatePercentage = (totalValue, TotalItems) => Math.round((totalValue / TotalItems) * 100);
+      const calculatePercentage = (totalValue, TotalItems) => Math.round((totalValue / TotalItems) * 100);
+      
 
 
 // Sum for each category
@@ -341,13 +391,68 @@ const totalAnalyzing = updatedLessonData.reduce((total, content) => total + cont
 const totalEvaluating = updatedLessonData.reduce((total, content) => total + content.evaluating.reduce((total2, content2) => total2 + content2, 0), 0);
 const totalCreating = updatedLessonData.reduce((total, content) => total + content.creating.reduce((total2, content2) => total2 + content2, 0), 0);
 
+
+const totals = updatedLessonData.reduce(
+  (acc, data) => {
+    data.taxonomy_levels.forEach((second) => {
+      acc.Remembering += second.Remembering || 0;
+      acc.Understanding += second.Understanding || 0;
+      acc.Applying += second.Applying || 0;
+      acc.Analyzing += second.Analyzing || 0;
+      acc.Evaluating += second.Evaluating || 0;
+      acc.Creating += second.Creating || 0;
+    });
+    return acc;
+  },
+  { Remembering: 0, Understanding: 0, Applying: 0, Analyzing: 0, Evaluating: 0, Creating: 0 }
+);
+
+// 👇 Add overall total
+const overallTotal =
+  totals.Remembering +
+  totals.Understanding +
+  totals.Applying +
+  totals.Analyzing +
+  totals.Evaluating +
+  totals.Creating;
+
+ // Calculate the total allocations
+// Flatten the nested arrays into a single array
+const flattenedAllocations = allocations.flat();
+
+// Calculate the total sums using reduce
+const tax_allocation = flattenedAllocations.reduce((acc, data) => {
+  acc.Remembering = (acc.Remembering || 0) + (data.Remembering || 0);
+  acc.Understanding = (acc.Understanding || 0) + (data.Understanding || 0);
+  acc.Analyzing = (acc.Analyzing || 0) + (data.Analyzing || 0);
+  acc.Applying = (acc.Applying || 0) + (data.Applying || 0);
+  acc.Evaluating = (acc.Evaluating || 0) + (data.Evaluating || 0);
+  acc.Creating = (acc.Creating || 0) + (data.Creating || 0);
+  return acc;
+}, {});
+
+
+
+  const percentages = calculatePercentages(tax_allocation);
+  const updatedPercents = percentages
+  
+  setPercent(updatedPercents);
+
 // Calculate percentages
-const updateRemembering = calculatePercentage(totalRemembering, updateTotalItems);
-const updateUnderstanding = calculatePercentage(totalUnderstanding, updateTotalItems);
-const updateApplying = calculatePercentage(totalApplying, updateTotalItems);
-const updateAnalyzing = calculatePercentage(totalAnalyzing, updateTotalItems);
-const updateEvaluating = calculatePercentage(totalEvaluating, updateTotalItems);
-const updateCreating = calculatePercentage(totalCreating, updateTotalItems);
+const updateRemembering = percent.Remembering
+const updateUnderstanding = percent.Understanding
+const updateApplying = percent.Applying
+const updateAnalyzing = percent.Analyzing
+const updateEvaluating = percent.Evaluating
+const updateCreating = percent.C
+
+console.log("updateRemembering:", updateRemembering);
+console.log("updateUnderstanding:", updateUnderstanding);
+console.log("updateApplying:", updateApplying);
+console.log("updateAnalyzing:", updateAnalyzing);
+console.log("updateEvaluating:", updateEvaluating);
+console.log("updateCreating:", updateCreating);
+
 
 // Set state for each percentage
 setRemembering(updateRemembering);
@@ -463,15 +568,43 @@ if (getQuestion.length && getAnswer.length) {
   }, [TOSInfo, TOSContent,exam,getTestPart,getQuestion,getAnswer]);
   
 
-  const getTOSContent = () => {
-    api
-      .get(`/api/tos-content/${id}/detail/`)
-      .then((res) => res.data)
-      .then((data) => {setTOSContent(data)
-        
-      })
-      .catch((err) => alert(err));
+   const getTOSContent = async () => {
+    try {
+      // Fetch TOS content
+      const tosResponse = await api.get(`/api/tos-content/${id}/detail/`);
+      const tosData = tosResponse.data;
+      setTOSContent(tosData);
+      
+  
+      // Fetch taxonomy levels for all topics in parallel
+      const taxonomyRequests = tosData.map((item) =>
+        api.get(`/api/taxonomy_levels/by-topic/${item.id}/`)
+      );
+  
+      const taxonomyResponses = await Promise.all(taxonomyRequests);
+  
+      // Flatten and process taxonomy levels
+      const taxonomyLevels = taxonomyResponses.flatMap((res) =>
+        res.data.map((item) => ({
+          id: item.id,
+          Remembering: item.remembering,
+          Understanding: item.understanding,
+          Applying: item.applying,
+          Analyzing: item.analyzing,
+          Evaluating: item.evaluating,
+          Creating: item.creating,
+          Tos_content_id: item.tos_content_id,
+        }))
+      );
+  
+      setTaxonomyLevel(taxonomyLevels);
+      
+    } catch (error) {
+      console.error('Error fetching TOS content or taxonomy levels:', error);
+      alert('Failed to fetch data. Please try again later.');
+    }
   };
+  
 
   const getComment = async () => {
     try {
@@ -566,6 +699,15 @@ if (getQuestion.length && getAnswer.length) {
   const [ExamPdfModal, setExamPdfModal] = useState(false);
 
   const charData = [
+    { id: 0, value: Remembering, label: 'Remembering' },
+    { id: 1, value: Understanding, label: 'Understanding' },
+    { id: 2, value: Applying, label: 'Applying' },
+    { id: 3, value: Analyzing, label: 'Analyzing' },
+    { id: 4, value: Evaluating, label: 'Evaluating' },
+    { id: 5, value: Creating, label: 'Creating' },
+  ];
+
+  const charDatasample = [
     { id: 0, value: lessonData.reduce((acc, data) => acc + data.remembering.reduce((acc2, data2) => acc2 + data2, 0), 0), label: 'Remembering' },
     { id: 1, value: lessonData.reduce((acc, data) => acc + data.understanding.reduce((acc2, data2) => acc2 + data2, 0), 0), label: 'Understanding' },
     { id: 2, value: lessonData.reduce((acc, data) => acc + data.applying.reduce((acc2, data2) => acc2 + data2, 0), 0), label: 'Applying' },
@@ -573,10 +715,9 @@ if (getQuestion.length && getAnswer.length) {
     { id: 4, value: lessonData.reduce((acc, data) => acc + data.evaluating.reduce((acc2, data2) => acc2 + data2, 0), 0), label: 'Evaluating' },
     { id: 5, value: lessonData.reduce((acc, data) => acc + data.creating.reduce((acc2, data2) => acc2 + data2, 0), 0), label: 'Creating' },
   ];
-
-  
     
   
+    
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 1;
 

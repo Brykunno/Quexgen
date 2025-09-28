@@ -292,7 +292,7 @@ function totalTeachingHours(index) {
       <TextInput
   key={lineIndex}
         type="number"
-  name={`teachingHours-${index}-${lineIndex}`}
+  name={`taxonomy-${index}-${lineIndex}-Remembering`}
    onChange={(e) => handleinnertaxlevelChange(index, 'taxonomy_levels', "Remembering",lineIndex, e.target.value)}
                value={lessonsData[index]?.taxonomy_levels?.[lineIndex]?.["Remembering"]}
           min={'0'}
@@ -309,7 +309,7 @@ function totalTeachingHours(index) {
       <TextInput
   key={lineIndex}
         type="number"
-  name={`teachingHours-${index}-${lineIndex}`}
+  name={`taxonomy-${index}-${lineIndex}-Understanding`}
    onChange={(e) => handleinnertaxlevelChange(index, 'taxonomy_levels', "Understanding",lineIndex, e.target.value)}
                value={lessonsData[index]?.taxonomy_levels?.[lineIndex]?.["Understanding"]}
           min={'0'}
@@ -326,7 +326,7 @@ function totalTeachingHours(index) {
       <TextInput
   key={lineIndex}
         type="number"
-  name={`teachingHours-${index}-${lineIndex}`}
+  name={`taxonomy-${index}-${lineIndex}-Applying`}
    onChange={(e) => handleinnertaxlevelChange(index, 'taxonomy_levels', "Applying",lineIndex, e.target.value)}
                value={lessonsData[index]?.taxonomy_levels?.[lineIndex]?.["Applying"]}
           min={'0'}
@@ -342,7 +342,7 @@ function totalTeachingHours(index) {
       <TextInput
   key={lineIndex}
         type="number"
-  name={`teachingHours-${index}-${lineIndex}`}
+  name={`taxonomy-${index}-${lineIndex}-Analyzing`}
    onChange={(e) => handleinnertaxlevelChange(index, 'taxonomy_levels', "Analyzing",lineIndex, e.target.value)}
                value={lessonsData[index]?.taxonomy_levels?.[lineIndex]?.["Analyzing"]}
           min={'0'}
@@ -359,7 +359,7 @@ function totalTeachingHours(index) {
       <TextInput
   key={lineIndex}
         type="number"
-  name={`teachingHours-${index}-${lineIndex}`}
+  name={`taxonomy-${index}-${lineIndex}-Evaluating`}
    onChange={(e) => handleinnertaxlevelChange(index, 'taxonomy_levels', "Evaluating",lineIndex, e.target.value)}
                value={lessonsData[index]?.taxonomy_levels?.[lineIndex]?.["Evaluating"]}
           min={'0'}
@@ -376,7 +376,7 @@ function totalTeachingHours(index) {
       <TextInput
   key={lineIndex}
         type="number"
-  name={`teachingHours-${index}-${lineIndex}`}
+  name={`taxonomy-${index}-${lineIndex}-Creating`}
    onChange={(e) => handleinnertaxlevelChange(index, 'taxonomy_levels', "Creating",lineIndex, e.target.value)}
                value={lessonsData[index]?.taxonomy_levels?.[lineIndex]?.["Creating"]}
           min={'0'}

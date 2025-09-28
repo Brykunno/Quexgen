@@ -434,7 +434,7 @@ function totalTeachingHours(index) {
                               {
                           fileLoading?( <Skeleton variant="rectangular"  height={50}/>):(<TextInput
                                 type="number"
-                                name={`teachingHours-${index}-${lineIndex}`}
+                                name={`taxonomy-${index}-${lineIndex}-${level}`}
                                 onChange={(e) => handleinnertaxlevelChange(index, 'taxonomy_levels', level, lineIndex, e.target.value)}
                                 value={lessonsData[index]?.taxonomy_levels?.[lineIndex]?.[level]}
                                 min={'0'}

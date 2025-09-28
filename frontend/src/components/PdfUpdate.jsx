@@ -284,7 +284,7 @@ function PdfUpdate(props) {
               </View>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCellCenter}>CREATING</Text>
-                <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Creating}%</Text>
+                <Text style={[styles.tableCellCenter,{marginTop: 'auto'}]}>{props.Creating || 0}%</Text>
 
               </View>
               <View style={[styles.tableCol,{flex:0.8}]}>
