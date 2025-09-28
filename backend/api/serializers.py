@@ -62,12 +62,15 @@ class UserSerializer(serializers.ModelSerializer):
             "is_staff",
             "is_superuser",
             "is_active",
+            "last_login",
             "profile_image",
             "profile_image_url",
             "password",
             "associated_courses"
         ]
         extra_kwargs = {"password": {"write_only": True}}
+        read_only_fields = ("last_login",)
+
 
     def get_full_name(self, obj):
         middle_name = obj.middle_name if hasattr(obj, "middle_name") and obj.middle_name else ""
@@ -277,6 +280,8 @@ The Quexgen Team
 
         # Send the email
         email.send()
+        
+
 class FileUploadSerializer(serializers.ModelSerializer):
       class Meta:
         model = FileUpload

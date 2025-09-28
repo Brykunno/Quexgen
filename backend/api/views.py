@@ -15,7 +15,10 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import ValidationError
 from rest_framework.decorators import action
 from rest_framework.generics import DestroyAPIView
-
+from django.utils import timezone
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAdminUser
+from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -972,3 +975,110 @@ class LearningOutcomesViewset(viewsets.ModelViewSet):
         instance = self.get_object()
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def update_last_login(request):
+    user = request.user
+    user.last_login = timezone.now()
+    user.save(update_fields=["last_login"])
+    return Response({"message": "last_login updated", "last_login": user.last_login})
+
+class CustomWelcomeEmail:
+    def __init__(self, user):
+        self.user = user
+
+    def send(self):
+        
+        user = self.user
+        activation_url = ""
+
+        # Default password
+        default_password = "PSU_$C2025"
+
+        # HTML email
+        html_message = f"""
+        <div style="font-family: Arial, sans-serif; background: #f4f4f4; padding: 40px 0;">
+          <div style="max-width: 520px; margin: auto; background: #fff; border-radius: 8px; 
+                      box-shadow: 0 2px 8px #0001; padding: 32px;">
+            <div style="text-align: center; margin-bottom: 24px;">
+              <img src="cid:quexgen_logo" alt="Quexgen Logo" style="width: 64px; height: 64px; margin-bottom: 8px;" />
+              <h2 style="color: #1a237e; margin: 0;">Welcome to Quexgen!</h2>
+            </div>
+            <p style="font-size: 16px; color: #333;">
+              Hi <b>{user.first_name+ " "+ user.last_name}</b>, your account at <b>Quexgen.online</b> has been successfully created 🎉
+            </p>
+            <p style="font-size: 16px; color: #333;">
+              Your initial login credentials are:
+            </p>
+            <div style="background: #f0f0f0; padding: 12px 16px; border-radius: 6px; margin: 20px 0;">
+              <p style="margin: 4px 0;"><b>Username:</b> {user.username}</p>
+              <p style="margin: 4px 0;"><b>Password:</b> {default_password}</p>
+            </div>
+            <p style="font-size: 16px; color: #d32f2f; font-weight: bold;">
+              ⚠️ Important: Please change your password immediately after logging in for the first time.
+            </p>
+            <p style="font-size: 16px; color: #333;">
+              To login your account, please click the button below:
+            </p>
+            <div style="text-align: center; margin: 32px 0;">
+              <a href="http://quexgen.online/{activation_url}" 
+                 style="background: #3949ab; color: #fff; text-decoration: none; 
+                        padding: 14px 32px; border-radius: 6px; font-size: 16px; font-weight: bold;">
+                Login Account
+              </a>
+            </div>
+          </div>
+        </div>
+        """
+
+        # Plain text fallback
+        text_message = f"""
+Hi {user.username},
+
+Your account at Quexgen.com has been created!
+
+Initial login credentials:
+- Username: {user.username}
+- Password: {default_password}
+
+⚠️ Please change your password immediately after logging in.
+
+Login your account by clicking the link below:
+http://localhost:5173/{activation_url}
+
+Thanks,
+The Quexgen Team
+        """
+
+        email = EmailMultiAlternatives(
+            subject="Your Quexgen Account is Ready!",
+            body=text_message,
+            from_email="quexgen@gmail.com",
+            to=[user.email]
+        )
+        email.attach_alternative(html_message, "text/html")
+
+        # Attach logo
+        image_path = os.path.join(settings.MEDIA_ROOT, "assets/quexgen.png")
+        if os.path.exists(image_path):
+            with open(image_path, "rb") as img:
+                logo = MIMEImage(img.read())
+                logo.add_header("Content-ID", "<quexgen_logo>")
+                logo.add_header("Content-Disposition", "inline", filename="quexgen.png")
+                email.attach(logo)
+
+        email.send()
+
+class SendCustomWelcomeEmailView(APIView):
+    permission_classes = [IsAdminUser]  # or change as needed
+
+    def post(self, request, *args, **kwargs):
+        user_id = request.data.get("user_id")
+        try:
+            user = User.objects.get(id=user_id)
+            print("user email",user)
+            CustomWelcomeEmail(user).send()
+            return Response({"message": "Custom welcome email sent!"})
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=404)

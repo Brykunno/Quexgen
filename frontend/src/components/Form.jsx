@@ -48,6 +48,12 @@ function Form({ route, method }) {
           localStorage.setItem('username', data[0].username);
           localStorage.setItem('first_name', data[0].first_name);
           localStorage.setItem('last_name', data[0].last_name);
+          console.log(data[0])
+          const first_login = data[0].last_login == null? true:false 
+          localStorage.setItem('first_login', first_login);
+          api.post('api/update-last-login/',{})
+
+
 
                   if (data[0].first_name && data[0].last_name) {
             const log = `User ${data[0].first_name+" "+data[0].last_name} logged in successfully`;

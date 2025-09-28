@@ -2,7 +2,6 @@ import { useState,useEffect} from "react";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
 import {Button} from "@mui/material";
-
 import {  Radio, Label, TextInput,Card,Modal } from "flowbite-react";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -10,6 +9,8 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Autocomplete, TextField, Chip } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import useAppSnackbar from "../../components/ui/snackbar/Snackbar";
+import { Spinner } from "flowbite-react";
+
 
 
 function Add_user({setLoading,setOpenModalAdd,openModalAdd,setRefresh,refresh}){
@@ -29,6 +30,7 @@ const [options,setOptions] = useState([]);
 
 const [courses,setCourses] = useState([])
 const [selected,setSelected] = useState([])
+ const [loadingbtn, setLoadingBtn] = useState(false);
 
 
 useEffect(() => {
@@ -65,7 +67,7 @@ useEffect(() => {
     const handleSubmit = async (e) => {
       e.preventDefault();
       setLoading(true); // Start the loading spinner
-    
+      setLoadingBtn(true);
       try {
         // Send the API request to create the user
         const res = await api.post('/api/create_user/', {
@@ -96,7 +98,7 @@ useEffect(() => {
         await Promise.all(postCoursePromises);
         }
    
-    
+        await api.post('api/send-welcome-email/', {user_id:user_id});
     
         // Reset fields after successful submission
         setUsername("");
@@ -112,10 +114,12 @@ useEffect(() => {
         setOpenModalAdd(false);
 
         setRefresh(prev => !prev);
+        setLoadingBtn(false)
+
     showSnackbar("User successfully added!",{variant:'success'})
       } catch (error) {
 
-          showSnackbar(error.response.data.errors.email[0],{variant:'error'});
+          showSnackbar(error.response.data.errors?.email[0],{variant:'error'});
 
        showSnackbar("Failed to create user or associate courses. Please try again.",{variant:'error'});
       } finally {
@@ -128,6 +132,10 @@ useEffect(() => {
       const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);  // Toggle the state to switch between "text" and "password"
     };
+
+    const spinner = () => {
+        return <Spinner aria-label="Medium sized spinner example" size="sm" />
+    }
       
     return(
 
@@ -275,7 +283,9 @@ useEffect(() => {
                 </div>
             </Modal.Body>
             <Modal.Footer>
-              <Button color={'primary'} variant='contained' onClick={handleSubmit} >Add</Button>
+              <Button color={'primary'} variant='contained' onClick={handleSubmit}   isProcessing
+          loadingPosition="end" className="flex gap-2 items-center" >Add {loadingbtn && spinner()} </Button>
+         
               
               <Button  onClick={() => setOpenModalAdd(false)}>
                 Cancel

@@ -38,6 +38,21 @@ export const resetPassword = async (uid, token, newPassword,confirmPassword) => 
     }
 };
 
+export const activateAccount = async (uid, token, newPassword,confirmPassword) => {
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/users/reset_password_confirm/`, {
+            uid: uid,
+
+            new_password: newPassword,
+            re_new_password:confirmPassword
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error resetting password:', error.response.data);
+        throw error;
+    }
+};
+
 export const requestPasswordReset = async (email) => {
     try {
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/users/reset_password/`, {

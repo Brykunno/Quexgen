@@ -20,7 +20,7 @@ function Instructors() {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
-  const [itemsPerPage] = useState(7);
+  const [itemsPerPage] = useState(10);
   const [openModal, setOpenModal] = useState(false);
   const [openModalAdd, setOpenModalAdd] = useState(false);
   const [username, setUsername] = useState("");

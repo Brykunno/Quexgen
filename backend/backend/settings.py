@@ -93,6 +93,7 @@ DJOSER = {
     'SERIALIZERS': {},
    'EMAIL': {
         'password_reset': 'api.serializers.CustomPasswordResetEmail',
+        
     },
 }
 
